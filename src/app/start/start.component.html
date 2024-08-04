@@ -1,2 +1,26 @@
-<p>start works!</p>
-<button [routerLink]="['/chatcontent']">to chatcontent</button>
+<button class="debug-btn" [routerLink]="['/chatcontent']">to chatcontent</button>
+<section>
+    <span>Anmeldung</span>
+    <div>
+        Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.
+    </div>
+    <div class="input-div">
+        <input [(ngModel)]="email" type="text" placeholder="E-Mail-Adresse">
+    </div>
+    <div class="input-div">
+        <input [(ngModel)]="password" type="password" placeholder="Passwort">
+    </div>
+    <div class="password-missed">
+        <span>Passwort vergessen?</span>
+    </div>
+    <div>
+        <span>oder</span>
+    </div>
+    <div class="input-div">
+        <button>Anmelden mit Google</button>
+    </div>
+    <div>
+        <button [disabled]="!isEmailandPasswordValid()">Anmelden</button>
+        <button>Gäste-Login</button>
+    </div>
+</section>
