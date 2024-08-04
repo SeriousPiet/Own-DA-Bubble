@@ -3,12 +3,21 @@
 $accent: #444df2;
 $primary: #797ef3;
 $secondary: #eceefe;
+$tertiary: #535af1;
 
 $disabled: #686868;
 $error: #ed1e79;
+$activ: #92c83e;
 
-$box-shadow: box-shadow(4px 4px 6px #00000033);
-$filter-drop-shadow: drop-shadow(4px 4px 6px #00000033);
+$box-shadow-45: 4px 4px 6px #00000033;
+$drop-shadow-45: 4px 4px 6px #00000033;
+
+$modal-box-shadow: 0px 2px 10px 0px #00000014;
+$profile-box-shadow: 0px 6px 10px 0px #00000033;
+
+$default-border: 1px solid #adb0d9;
+$hover-border: 1px solid #797ef3;
+$hover-border: 1px solid #535af1;
 
 @import "./fonts.scss";
 
