@@ -1,212 +1,67 @@
-// fonts definitions
+// variables
 
+$accent: #444df2;
+$primary: #797ef3;
+$secondary: #eceefe;
 
-.font-bold {
-    font-weight: bold;
-  }
-  
-  .nunito-24-700 {
-    font-family: 'Nunito', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
-  }
-  
-  .nunito-18-400 {
-    font-family: 'Nunito', sans-serif;
-    font-size: 18px;
-    font-weight: 400;
-  }
-  
-  .nunito-14-400 {
-    font-family: 'Nunito', sans-serif;
+$disabled: #686868;
+$error: #ed1e79;
+
+$box-shadow: box-shadow(4px 4px 6px #00000033);
+$filter-drop-shadow: drop-shadow(4px 4px 6px #00000033);
+
+@import "./fonts.scss";
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $primary;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #fff;
+  border: none;
+}
+
+html {
+  font-size: 16px;
+
+  @media (width <= 768px) {
     font-size: 14px;
-    font-weight: 400;
   }
-  
-  .nunito-18-700 {
-    font-family: 'Nunito', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
+
+  @media (width <= 375px) {
+    font-size: 12px;
   }
-  
-  .nunito-20-700 {
-    font-family: 'Nunito', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-  }
-  
-  /* nunito-200 - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 200;
-    src: url('./assets/fonts/nunito-v26-latin-200.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-200italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 200;
-    src: url('./assets/fonts/nunito-v26-latin-200italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-300 - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 300;
-    src: url('./assets/fonts/nunito-v26-latin-300.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-300italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 300;
-    src: url('./assets/fonts/nunito-v26-latin-300italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-regular - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 400;
-    src: url('./assets/fonts/nunito-v26-latin-regular.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 400;
-    src: url('./assets/fonts/nunito-v26-latin-italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-500 - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 500;
-    src: url('./assets/fonts/nunito-v26-latin-500.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-500italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 500;
-    src: url('./assets/fonts/nunito-v26-latin-500italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-600 - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 600;
-    src: url('./assets/fonts/nunito-v26-latin-600.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-600italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 600;
-    src: url('./assets/fonts/nunito-v26-latin-600italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-700 - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 700;
-    src: url('./assets/fonts/nunito-v26-latin-700.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-700italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 700;
-    src: url('./assets/fonts/nunito-v26-latin-700italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-800 - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 800;
-    src: url('./assets/fonts/nunito-v26-latin-800.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-800italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 800;
-    src: url('./assets/fonts/nunito-v26-latin-800italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-900 - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 900;
-    src: url('./assets/fonts/nunito-v26-latin-900.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-  
-  /* nunito-900italic - latin */
-  @font-face {
-    font-display: swap;
-    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 900;
-    src: url('./assets/fonts/nunito-v26-latin-900italic.woff2') format('woff2');
-    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
+}
+
+button {
+  cursor: pointer;
+  border: unset;
+  background-color: unset;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0;
+
+  font-family: "Nunito", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
