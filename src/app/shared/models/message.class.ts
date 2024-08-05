@@ -9,7 +9,6 @@ export class Message {
   readonly answerable: boolean;
   readonly answerCount: number;
   readonly lastAnswerAt: Date;
-  readonly chatID: string;
 
   constructor(data: any) {
     this.id = data.id ? data.id : '';
@@ -20,7 +19,6 @@ export class Message {
     this.answerable = data.answerable;
     this.answerCount = data.answerCount ? data.answerCount : 0;
     this.lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : new Date();
-    this.chatID = data.chatID ? data.chatID : '';
   }
 
 }
