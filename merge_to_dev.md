@@ -1,5 +1,14 @@
-Es gibt zwei Scripte, eins für die powershell und eins für git bash.
-Beide machen das gleiche, ohne die Angabe von Parametern.
+ACHTUNG: -----------------------------------------------------------------------
+
+!!!!!!!   Das Script muss im git bash Terminal ausgeführt werden    !!!!!!!
+
+--------------------------------------------------------------------------------
+
+Starten über:
+
+$./merge_to_dev.sh
+
+Das Script benötigt keine weiteren Argumente.
 
 Das Skript führt folgende Schritte aus:
 
