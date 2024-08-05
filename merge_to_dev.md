@@ -1,3 +1,6 @@
+Es gibt zwei Scripte, eins für die powershell und eins für git bash.
+Beide machen das gleiche, ohne die Angabe von Parametern.
+
 Das Skript führt folgende Schritte aus:
 
  - Überprüft, ob du dich im Root-Verzeichnis eines Git-Repositories befindest.
@@ -9,4 +12,3 @@ Das Skript führt folgende Schritte aus:
  - Pusht die Änderungen zum Remote-Repository.
  - Wechselt zurück zum ursprünglichen Feature-Branch.
 
-Stelle sicher, dass du die erforderlichen Berechtigungen hast, um Änderungen in den Development-Branch zu pushen.
