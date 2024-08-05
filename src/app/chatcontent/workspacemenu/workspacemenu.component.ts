@@ -5,8 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './workspacemenu.component.html',
-  styleUrl: './workspacemenu.component.scss'
+  styleUrl: './workspacemenu.component.scss',
 })
-export class WorkspacemenuComponent {
-
-}
+export class WorkspacemenuComponent {}

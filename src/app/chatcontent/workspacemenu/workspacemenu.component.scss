@@ -1,0 +1,71 @@
+@mixin display-standard {
+  display: flex;
+  align-items: center;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .header-workspace-menu {
+    @include display-standard;
+    div {
+      @include display-standard;
+    }
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+    li {
+      @include display-standard;
+    }
+    li:hover {
+      cursor: pointer;
+    }
+  }
+
+  details {
+    position: relative;
+  }
+
+  summary {
+    @include display-standard;
+    list-style: none;
+    cursor: pointer;
+    position: relative;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::before {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 10px;
+    background-image: url("../../../assets/icons/arrow_drop_down.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform 0.3s ease;
+  }
+
+  summary::before {
+    transform: rotate(-90deg);
+  }
+
+  details[open] summary::before {
+    transform: rotate(0deg);
+  }
+
+  button {
+    all: unset;
+    @include display-standard;
+    text-align: center;
+    line-height: normal;
+  }
+}
