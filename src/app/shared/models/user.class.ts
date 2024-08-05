@@ -24,7 +24,7 @@ export class User {
         this.id = userObj.id ? userObj.id : '';
         this.name = userObj.name ? userObj.name : '';
         this.email = userObj.email ? userObj.email : '';
-        this.avatar = userObj.avatar ? userObj.avatar : '';
+        this.avatar = userObj.avatar ? userObj.avatar : 1;
         this.online = userObj.online ? userObj.online : false;
         this.createdAt = userObj.createdAt ? (userObj.createdAt as any).toDate() : serverTimestamp();
         this.chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
