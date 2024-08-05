@@ -5,9 +5,12 @@ $primary: #797ef3;
 $secondary: #eceefe;
 $tertiary: #535af1;
 
+$vert-spacer: #adb0d9;
+
 $disabled: #686868;
+$hover-grey: #e6e6e6;
 $error: #ed1e79;
-$activ: #92c83e;
+$active: #92c83e;
 
 $box-shadow-45: 4px 4px 6px #00000033;
 $drop-shadow-45: 4px 4px 6px #00000033;
@@ -17,7 +20,12 @@ $profile-box-shadow: 0px 6px 10px 0px #00000033;
 
 $default-border: 1px solid #adb0d9;
 $hover-border: 1px solid #797ef3;
-$hover-border: 1px solid #535af1;
+$active-border: 1px solid #535af1;
+
+$outline-hover: 4px solid #e6e6e6;
+$outline-active: 4px solid #eceefe;
+
+$border-online-status: 2px solid #fff;
 
 @import "./fonts.scss";
 
