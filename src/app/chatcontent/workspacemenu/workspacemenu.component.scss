@@ -6,23 +6,36 @@
 section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  padding: 32px 30px 32px 30px;
+  gap: 25px;
 
-  .header-workspace-menu {
+  .workspace {
     @include display-standard;
+    justify-content: space-between;
     div {
       @include display-standard;
+      gap: 15px;
+      width: 306px;
+      font-size: 24px;
+    }
+    img:hover {
+      cursor: pointer;
     }
   }
 
   ul {
     list-style-type: none;
     padding-left: 0;
+    gap: 13px;
     li {
       @include display-standard;
+      border-radius: 20px;
+      padding: 4px 20px 4px 45px;
+      gap: 10px;
     }
     li:hover {
       cursor: pointer;
+      background-color: #eceefe;
     }
   }
 
@@ -32,6 +45,13 @@ section {
 
   summary {
     @include display-standard;
+    font-size: 20px;
+    gap: 15px;
+    > div {
+      @include display-standard;
+      gap: 15px;
+      width: 306px;
+    }
     list-style: none;
     cursor: pointer;
     position: relative;
@@ -48,13 +68,10 @@ section {
     height: 1em;
     margin-right: 10px;
     background-image: url("../../../assets/icons/arrow_drop_down.svg");
-    background-size: contain;
+    background-size: 9px;
     background-repeat: no-repeat;
     background-position: center;
-    transition: transform 0.3s ease;
-  }
-
-  summary::before {
+    transition: transform 0.3s ease-in-out;
     transform: rotate(-90deg);
   }
 
@@ -67,5 +84,11 @@ section {
     @include display-standard;
     text-align: center;
     line-height: normal;
+    padding: 4px 20px 4px 45px;
+    gap: 10px;
+  }
+
+  button:hover {
+    cursor: pointer;
   }
 }
