@@ -1,8 +1,12 @@
-<button class="debug-btn" [routerLink]="['/chatcontent']">to chatcontent</button>
+<div class="debug-btn">
+    <button [routerLink]="['/chatcontent']">to chatcontent</button>
+    <button (click)="userservice.logoutUser()">logout</button>
+</div>
+
 <button class="signup-btn" [routerLink]="['signup']">Signup</button>
 <section>
-    <span>Anmeldung</span>
-    <div>
+    <span class="title nunito-46-700">Anmeldung</span>
+    <div class="info nunito-20-400">
         Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.
     </div>
     <div class="input-div">
@@ -21,7 +25,8 @@
         <button>Anmelden mit Google</button>
     </div>
     <div class="action-btns">
-        <button (click)="submitLoginForm()" class="blue-btn" [disabled]="!isEmailandPasswordValid()">Anmelden</button>
+        <button (click)="submitLoginForm($event)" class="blue-btn"
+            [disabled]="!isEmailandPasswordValid()">Anmelden</button>
         <button class="white-btn">Gäste-Login</button>
     </div>
 </section>
