@@ -1,5 +1,8 @@
+:host {
+    width: 100%;
+}
+
 .chatview-main-ctn {
-    width: 66%;
     height: 90%;
     background-color: white;
     border-radius: 30px;
@@ -19,25 +22,61 @@
     align-items: center;
     width: 100%;
     padding: 1.5625rem 2.8125rem;
+
+    >div {
+        >button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+    }
+
+
 }
 
 .member-avatar-overview {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 192px;
 
-    .member-avatar {
-        margin-left: -0.750rem;
-        border-radius: 100%;
-        background-color: #000000; // only while waiting for img path
-        width: 2.5rem;
-        height: 2.5rem;
+    >div {
+        .member-avatar {
+            margin-left: -0.750rem;
+            border-radius: 100%;
+            border: 2px solid #FFFFFF;
+            // background-color: #000000; // only while waiting for img path
+            width: 2.5rem;
+            height: 2.5rem;
+        }
     }
+
+    .add-member-icon-ctn{
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        background-color: #ECEEFE;
+        border-radius: 100%;
+
+        >img{
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+
 }
 
 
 .chatview-content {
-    height: 52.75rem;
+    height: 47.75rem;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -45,13 +84,13 @@
     position: relative;
     margin-bottom: 1.25rem;
 
-    .chat-messages-content{
+    .chat-messages-content {
         width: 100%;
         height: 80%;
         overflow-y: scroll;
     }
 
-    ::-webkit-scrollbar{
+    ::-webkit-scrollbar {
         display: none;
     }
 
@@ -68,7 +107,7 @@
         justify-content: space-between;
         align-items: center;
 
-        >textarea{
+        >textarea {
             resize: none;
             width: 100%;
             height: 90%;
