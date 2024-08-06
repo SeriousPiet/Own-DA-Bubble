@@ -1,1 +1,36 @@
-<p>chatview works!</p>
+<main class="chatview-main-ctn">
+    <section class="chatview-header">
+        <div>
+            <button> # Office-team</button>
+            <img src="" alt="arrow-down">
+        </div>
+        <div class="member-avatar-overview">
+            <img class="member-avatar" src="" alt="member-avatar">
+            <img class="member-avatar" src="" alt="member-avatar">
+            <img class="member-avatar" src="" alt="member-avatar">
+            <span>6</span>
+            <img src="" alt="add-member-icon">
+        </div>
+
+    </section>
+    <section class="chatview-content">
+        <div class="chat-messages-content">
+            @for (item of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]; track $index) {
+                <app-message-date></app-message-date>
+                <app-message></app-message>
+                }
+        </div>
+        <div class="input-message">
+            <textarea name="" id="" placeholder="Nachricht an #Entwicklerteam"></textarea>
+            <div class="input-message-toolbar">
+                <div>
+                    <img src="" alt="+">
+                    <span>|</span>
+                    <img src="" alt="smiley">
+                    <img src="" alt="@">
+                </div>
+                <button><img src="" alt="senden"></button>
+            </div>
+        </div>
+    </section>
+</main>
