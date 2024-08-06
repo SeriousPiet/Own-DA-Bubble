@@ -21,7 +21,7 @@
         <button>Anmelden mit Google</button>
     </div>
     <div class="action-btns">
-        <button (click)="submitLoginForm()" class="blue-btn" [disabled]="!isEmailandPasswordValid()">Anmelden</button>
+        <button (click)="submitLoginForm($event)" class="blue-btn" [disabled]="!isEmailandPasswordValid()">Anmelden</button>
         <button class="white-btn">Gäste-Login</button>
     </div>
 </section>
