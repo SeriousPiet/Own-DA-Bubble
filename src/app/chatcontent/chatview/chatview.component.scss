@@ -1,0 +1,127 @@
+:host {
+    width: 100%;
+}
+
+.chatview-main-ctn {
+    height: 90%;
+    background-color: white;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+.chatview-header {
+    background-color: white;
+    box-shadow: 0 0.125rem 0.625rem 0 rgba($color: #000000, $alpha: 0.2);
+    height: 6rem;
+    border-radius: 1.875rem 1.875rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1.5625rem 2.8125rem;
+
+    >div {
+        >button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+    }
+
+
+}
+
+.member-avatar-overview {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 192px;
+
+    >div {
+        .member-avatar {
+            margin-left: -0.750rem;
+            border-radius: 100%;
+            border: 2px solid #FFFFFF;
+            // background-color: #000000; // only while waiting for img path
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+    }
+
+    .add-member-icon-ctn{
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        background-color: #ECEEFE;
+        border-radius: 100%;
+
+        >img{
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+
+}
+
+
+.chatview-content {
+    height: 47.75rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin-bottom: 1.25rem;
+
+    .chat-messages-content {
+        width: 100%;
+        height: 80%;
+        overflow-y: scroll;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    .input-message {
+        height: 9.0625rem;
+        width: 90%;
+        position: absolute;
+        bottom: 0;
+        border: 1px solid #ADB0D9;
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+
+        >textarea {
+            resize: none;
+            width: 100%;
+            height: 90%;
+            border: none;
+            outline: none;
+
+        }
+
+
+        .input-message-toolbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+}

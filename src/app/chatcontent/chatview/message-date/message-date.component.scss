@@ -1,0 +1,26 @@
+:host{
+    display: flex;
+    justify-content: center;
+}
+
+.message-date-comp {
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    >hr{
+        position: absolute;
+        color: #ADB0D9;
+        width: 100%;
+    }
+
+    >span {
+        border: 1px solid #ADB0D9;
+        border-radius: 30px;
+        padding: .3125rem .9375rem;
+        z-index: 2;
+        background-color: white;
+    }
+}
