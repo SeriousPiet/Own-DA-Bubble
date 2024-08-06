@@ -49,13 +49,13 @@ export class UsersService implements OnDestroy {
             if (user) {
                 this.getUserFromFirestoreByID(user.displayName)
                     .then((user) => {
-                        console.log('user login - ' + (user ? user.email : 'no user'));
+                        console.warn('user login - ' + (user ? user.email : 'no user'));
                         this.currentUser = user;
                         if (this.currentUser) this.updateUserOnFirestore(this.currentUser.id, { online: true });
                     })
             }
             else if (this.currentUser) {
-                console.log('user logout - ' + this.currentUser.email);
+                console.warn('user logout - ' + this.currentUser.email);
                 this.updateUserOnFirestore(this.currentUser.id, { online: false });
                 this.currentUser = undefined;
             }

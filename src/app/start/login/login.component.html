@@ -1,4 +1,8 @@
-<button class="debug-btn" [routerLink]="['/chatcontent']">to chatcontent</button>
+<div class="debug-btn">
+    <button [routerLink]="['/chatcontent']">to chatcontent</button>
+    <button (click)="userservice.logoutUser()">logout</button>
+</div>
+
 <button class="signup-btn" [routerLink]="['signup']">Signup</button>
 <section>
     <span>Anmeldung</span>
@@ -21,7 +25,8 @@
         <button>Anmelden mit Google</button>
     </div>
     <div class="action-btns">
-        <button (click)="submitLoginForm($event)" class="blue-btn" [disabled]="!isEmailandPasswordValid()">Anmelden</button>
+        <button (click)="submitLoginForm($event)" class="blue-btn"
+            [disabled]="!isEmailandPasswordValid()">Anmelden</button>
         <button class="white-btn">Gäste-Login</button>
     </div>
 </section>

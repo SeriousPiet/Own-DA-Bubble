@@ -16,7 +16,7 @@ import { UsersService } from '../../utils/services/user.service';
 })
 export class LoginComponent {
 
-  private userservice = inject(UsersService);
+  public userservice = inject(UsersService);
 
   public email: string = '';
   public password: string = '';
