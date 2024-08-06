@@ -2,10 +2,8 @@
 
 $accent: #444df2;
 $primary: #797ef3;
-$secondary: #eceefe;
-$tertiary: #535af1;
-
-$vert-spacer: #adb0d9;
+$background: #eceefe;
+$secondary: #535af1;
 
 $disabled: #686868;
 $hover-grey: #e6e6e6;
@@ -15,17 +13,30 @@ $active: #92c83e;
 $box-shadow-45: 4px 4px 6px #00000033;
 $drop-shadow-45: 4px 4px 6px #00000033;
 
+// zenit-like and top-left to bottom-right - shadow
 $modal-box-shadow: 0px 2px 10px 0px #00000014;
 $profile-box-shadow: 0px 6px 10px 0px #00000033;
 
+// border styles of buttons - might be obsolet due to mixins in the near future!
 $default-border: 1px solid #adb0d9;
 $hover-border: 1px solid #797ef3;
 $active-border: 1px solid #535af1;
 
+// for buttons and input-containers to be perfectly rounded
+$circled-border-radius: 4rem;
+
+// for the big avatar-dummy icon within the 'choose avatar' modal, during signup process
 $outline-hover: 4px solid #e6e6e6;
 $outline-active: 4px solid #eceefe;
 
+// for the online status indicator thingy on each avatar-icon
 $border-online-status: 2px solid #fff;
+
+// for the horizontal line separating the chat history by date
+$vert-spacer: #adb0d9;
+
+// transitions
+$transition-standard: all 0.2s ease-in-out;
 
 @import "./fonts.scss";
 
@@ -69,6 +80,10 @@ a {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+}
+
+input[checkbox] {
+  appearance: none;
 }
 
 body {
