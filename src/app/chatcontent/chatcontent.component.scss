@@ -1,0 +1,37 @@
+@import "../../styles.scss";
+@import "../../mixins.scss";
+
+section.chatcontent {
+  width: 100%;
+  max-width: 1920px;
+  min-height: 100vh;
+  padding: 1.25rem;
+
+  display: grid;
+  grid:
+    "top-bar top-bar top-bar" auto
+    "workspace-menu chatview threadview" 1fr
+    / 17.5% 1fr 20%;
+  gap: 1.25rem;
+}
+
+.top-bar,
+.workspace-menu,
+.chatview,
+.threadview {
+  padding: 1rem;
+  border: 1px solid $disabled;
+}
+
+.top-bar {
+  grid-area: top-bar;
+}
+.workspace-menu {
+  grid-area: workspace-menu;
+}
+.chatview {
+  grid-area: chatview;
+}
+.threadview {
+  grid-area: threadview;
+}
