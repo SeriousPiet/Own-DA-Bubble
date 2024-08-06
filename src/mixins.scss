@@ -37,6 +37,12 @@
     filter: invert(37%) sepia(0%) saturate(270%) hue-rotate(151deg)
       brightness(106%) contrast(84%);
   }
+
+  &:focus-within::before,
+  input:not(:placeholder-shown) + &::before,
+  &:has(input:not(:placeholder-shown))::before {
+    filter: none;
+  }
 }
 
 @mixin iconBox {
