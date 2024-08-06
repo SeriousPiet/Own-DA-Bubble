@@ -1,0 +1,48 @@
+@import "../../../../styles.scss";
+@import "../../../../mixins.scss";
+
+section.try-outs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .input-box {
+    @include inputBox;
+    background: $background;
+
+    input {
+      position: relative;
+      @include input;
+    }
+  }
+
+  .mail::before {
+    background-image: url("../../../../assets/icons/start/mail.svg");
+  }
+
+  .pw::before {
+    background-image: url("../../../../assets/icons/start/lock.svg");
+  }
+
+  .btn-box {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+  }
+
+  button {
+    margin: 0.5rem 0;
+  }
+
+  button:nth-of-type(1) {
+    @include buttonFull;
+  }
+
+  button:nth-of-type(2) {
+    @include buttonEmpty;
+  }
+
+  button:nth-of-type(3) {
+    @include buttonNoBorder;
+  }
+}
