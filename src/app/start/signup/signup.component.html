@@ -1,1 +1,23 @@
-<p>signup works!</p>
+<section>
+    <button class="return" [routerLink]="['/']">zurück</button>
+    <span class="headline">Konto erstellen</span>
+    <span class="info">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</span>
+    <div class="input-div">
+        <input [(ngModel)]="name" type="text" placeholder="Name und Nachname">
+    </div>
+    <div class="input-div">
+        <input [(ngModel)]="email" type="text" placeholder="beispielname@email.com">
+    </div>
+    <div class="input-div">
+        <input [(ngModel)]="password" type="text" placeholder="password">
+    </div>
+    <div>
+        <label>
+            <input [(ngModel)]="checkboxPP" type="checkbox" name="" id="">
+            <span>Ich stimme der <a href="">Datenschutzerklärung</a> zu</span>
+        </label>
+    </div>
+    <div class="action">
+        <button [disabled]="!ifSignUpFormValid()" (click)="submitSignUpForm($event)" class="blue-btn">Weiter</button>
+    </div>
+</section>
