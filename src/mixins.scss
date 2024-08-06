@@ -1,54 +1,47 @@
 @import "./styles.scss";
 
-@mixin inputContainer {
+@mixin inputBox {
+  position: relative;
   display: flex;
-  padding: 1.125rem 2rem;
-  gap: 3.5rem;
-  background: $background;
-  border: none;
+  align-items: center;
+  padding: 0.125rem 2rem;
+  border: 1px solid transparent;
   border-radius: $circled-border-radius;
-  font-family: "Nunito", sans-serif;
-  font-size: 1.125rem;
-  font-weight: 500;
   transition: $transition-standard;
 
   &:hover {
     border: 1px solid $disabled;
   }
 
-  &:active {
+  &:focus-within {
     border: 1px solid $secondary;
   }
 
-  // when input-container is focused, sub-element is styled
-  &:focus-within .input-icon svg {
+  &:focus-within::before {
     filter: none;
   }
-}
 
-@mixin inputIcon {
-  width: 1.5rem;
-  height: 1.5rem;
+  // when input-container is focused, sub-element is styled
+  &:focus-within img.input-icon {
+    filter: none;
+  }
 
-  // filter sets the color initially to $disabled
-  svg {
+  &::before {
+    content: "";
+    left: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left;
     filter: invert(37%) sepia(0%) saturate(270%) hue-rotate(151deg)
       brightness(106%) contrast(84%);
   }
 }
 
-@mixin input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background-color: unset;
-
-  &::placeholder {
-    color: $disabled;
-  }
-}
-
 @mixin iconBox {
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   background-color: none;
   transition: $transition-standard;
@@ -58,7 +51,24 @@
   }
 }
 
+@mixin input {
+  width: 100%;
+  padding: 1rem 0;
+  padding-left: 3.5rem;
+  border: none;
+  outline: none;
+  background-color: unset;
+  font-family: "Nunito", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 500;
+
+  &::placeholder {
+    color: $disabled;
+  }
+}
+
 @mixin buttonFull {
+  width: fit-content;
   padding: 0.75rem 1.5rem;
   background-color: $accent;
   border: none;
@@ -68,6 +78,7 @@
   font-weight: 700;
   color: #fff;
   cursor: pointer;
+  text-align: center;
   transition: $transition-standard;
 
   &:hover {
@@ -83,6 +94,7 @@
 }
 
 @mixin buttonEmpty {
+  width: fit-content;
   padding: 0.75rem 1.5rem;
   background-color: unset;
   border: 1px solid $accent;
@@ -90,13 +102,15 @@
   font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
-  color: #fff;
+  color: $accent;
   cursor: pointer;
+  text-align: center;
   transition: $transition-standard;
 
   &:hover {
     background-color: $primary;
     border-color: $primary;
+    color: #fff;
   }
   &:active {
     background-color: $accent;
@@ -111,16 +125,18 @@
 }
 
 // imprint + policy buttons in start-screen
-@mixin mandatoryButton {
+@mixin buttonNoBorder {
+  width: fit-content;
   padding: 0.75rem 1.5rem;
   background-color: unset;
-  border: unset;
+  border: 1px solid transparent;
   border-radius: $circled-border-radius;
   font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
   color: $primary;
   cursor: pointer;
+  text-align: center;
   transition: $transition-standard;
 
   &:hover {
