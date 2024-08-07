@@ -1,8 +1,15 @@
+:host{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+}
+
 .input-message {
     height: 9.0625rem;
     width: 90%;
-    position: absolute;
-    bottom: 0;
     border: 1px solid #ADB0D9;
     border-radius: 1.25rem;
     padding: 1.25rem;
