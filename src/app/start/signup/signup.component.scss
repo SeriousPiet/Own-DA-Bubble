@@ -1,13 +1,17 @@
 @import "../../../styles.scss";
 @import "../../../mixins.scss";
 
-section {
+form {
     position: relative;
 
     .return {
         position: absolute;
         top: 1rem;
-        right: 1rem;
+        left: 1rem;
+        @include iconBox;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     padding: 2rem;
@@ -96,18 +100,10 @@ section {
     }
 
     .blue-btn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 1rem;
-        outline: unset;
-        border: unset;
-        border-radius: 5000px;
-        background-color: #444DF2;
-        color: white;
+        @include buttonFull;
 
         &:disabled {
-            background-color: #BFC0F2;
+            pointer-events: none;
         }
     }
 

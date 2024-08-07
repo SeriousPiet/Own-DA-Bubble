@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterModule } from '@angular/router';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 
 @Component({
@@ -8,8 +8,8 @@ import { UsersService } from '../../utils/services/user.service';
   standalone: true,
   imports: [
     RouterModule,
-    RouterLink,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
@@ -17,26 +17,39 @@ import { UsersService } from '../../utils/services/user.service';
 export class SignupComponent {
 
   private userservice = inject(UsersService);
+  private router: Router = inject(Router);
 
-  public name: string = '';
-  public email: string = '';
-  public password: string = '';
-  public checkboxPP: boolean = false;
-
-
-  ifSignUpFormValid(): boolean {
-    return this.name.length > 0 && this.email.length > 0 && this.password.length > 0 && this.checkboxPP;
-  }
+  signupForm = new FormGroup({
+    name: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(20),
+    ]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email,
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(20),
+    ]),
+    checkboxPP: new FormControl(false, [
+      Validators.required,
+      Validators.requiredTrue
+    ]),
+  })
 
 
   submitSignUpForm(event: Event): void {
     event.preventDefault();
+    const name = this.signupForm.value.name || '';
+    const email = this.signupForm.value.email || '';
+    const password = this.signupForm.value.password || '';
     this.userservice
-      .registerNewUser({ name: this.name, email: this.email, password: this.password })
+      .registerNewUser({ name: name, email: email, password: password })
       .then(
-        (user) => {
-          console.log('User registered successfully:', user);
-          console.log('show avatar modal... etc');
+        (response) => {
+          this.router.navigate(['/chooseavatar']);
         }
       )
       .catch(

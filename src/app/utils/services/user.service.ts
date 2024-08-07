@@ -1,5 +1,5 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, getDoc } from '@angular/fire/firestore';
+import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, getDoc, query, getDocs, where } from '@angular/fire/firestore';
 import { User } from '../../shared/models/user.class';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
 
@@ -47,26 +47,37 @@ export class UsersService implements OnDestroy {
     private initUserWatchDog(): void {
         this.user$ = user(this.firebaseauth).subscribe((user) => {
             if (user) {
-                this.getUserFromFirestoreByID(user.displayName)
+                this.getUserFromFirestore(user)
                     .then((user) => {
                         console.warn('user login - ' + (user ? user.email : 'no user'));
+                        if (this.currentUser) this.setOnlineStatus(this.currentUser.id, false);
                         this.currentUser = user;
-                        if (this.currentUser) this.updateUserOnFirestore(this.currentUser.id, { online: true });
+                        if (user) this.setOnlineStatus(user.id, true);
                     })
             }
             else if (this.currentUser) {
                 console.warn('user logout - ' + this.currentUser.email);
-                this.updateUserOnFirestore(this.currentUser.id, { online: false });
+                this.setOnlineStatus(this.currentUser.id, false);
                 this.currentUser = undefined;
             }
         })
     }
 
 
-    private async getUserFromFirestoreByID(userID: string | null): Promise<User | undefined> {
-        if (userID == null) return undefined;
-        const userObj = await getDoc(doc(this.firestore, '/users/' + userID));
-        return new User(userObj.data());
+    private async getUserFromFirestore(user: any): Promise<User | undefined> {
+        if (user.displayName == null || user.displayName === '') {
+            const querySnapshot = await getDocs(
+                query(collection(this.firestore, '/users'), where('email', '==', user.email))
+            );
+            if (querySnapshot.docs.length > 0) {
+                const userObj = querySnapshot.docs[0];
+                return new User(userObj.data(), userObj.id);
+            } else {
+                return undefined;
+            }
+        }
+        const userObj = await getDoc(doc(this.firestore, '/users/' + user.displayName));
+        return new User(userObj.data(), userObj.id);
     }
 
 
@@ -89,24 +100,32 @@ export class UsersService implements OnDestroy {
     }
 
 
-    async registerNewUser(user: { email: string, password: string, name: string }): Promise<User | undefined> {
+    async registerNewUser(user: { email: string, password: string, name: string }): Promise<boolean> {
         createUserWithEmailAndPassword(this.firebaseauth, user.email, user.password)
             .then((response) => {
                 this.addUserToFirestore({ name: user.name, email: response.user.email })
                     .then((userID) => {
-                        updateProfile(response.user, { displayName: userID });
+                        updateProfile(response.user, { displayName: userID })
+                            .then(() => {
+                                return true;
+                            })
                     })
             })
             .catch((error) => {
                 console.error('userservice/auth: Error registering user(', error.message, ')');
-                return undefined;
+                return false;
             });
-        return undefined;
+        return false;
     }
 
 
-    private async updateUserOnFirestore(userID: string, userChangeData: any): Promise<void> {
+    async updateUserOnFirestore(userID: string, userChangeData: any): Promise<void> {
         await updateDoc(doc(this.firestore, '/users/' + userID), userChangeData);
+    }
+
+
+    private async setOnlineStatus(userID: string, online: boolean): Promise<void> {
+        await updateDoc(doc(this.firestore, '/users/' + userID), { online: online });
     }
 
 
@@ -114,6 +133,8 @@ export class UsersService implements OnDestroy {
         const userObj = {
             name: user.name,
             email: user.email,
+            online: false,
+            avatar: 0
         };
         let ref = collection(this.firestore, '/users');
         let newUser = await addDoc(ref, userObj);

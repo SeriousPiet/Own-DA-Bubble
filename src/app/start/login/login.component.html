@@ -6,32 +6,32 @@
     }
 </div>
 
-<button class="signup-btn" [routerLink]="['chooseavatar']">Signup</button>
-<section>
+<!-- Konto erstellen Button -->
+<button class="signup-btn" [routerLink]="['/signup']">Konto erstellen</button>
+
+
+<form [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
     <span class="title nunito-46-700">Anmeldung</span>
     <div class="info nunito-20-400">
         Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.
     </div>
     <div class="input-box mail">
-        <input [(ngModel)]="email" type="email" placeholder="email eintippern" />
+        <input formControlName="email" type="email" placeholder="beispielname@email.com" />
     </div>
-
     <div class="input-box pw">
-        <input [(ngModel)]="password" type="password" placeholder="pw eintippern" />
+        <input formControlName="password" type="password" placeholder="Passwort" />
     </div>
-
     <div class="password-missed">
-        <span>Passwort vergessen?</span>
+        <button type="button">Passwort vergessen?</button>
     </div>
-    <div>
+    <div class="or-separator">
         <span>oder</span>
     </div>
-    <div class="input-div">
-        <button>Anmelden mit Google</button>
+    <div class="login-with-google">
+        <button type="button">Anmelden mit Google</button>
     </div>
     <div class="action-btns">
-        <button (click)="submitLoginForm($event)" class="blue-btn"
-            [disabled]="!isEmailandPasswordValid()">Anmelden</button>
-        <button class="white-btn">Gäste-Login</button>
+        <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">Anmelden</button>
+        <button type="button" class="white-btn">Gäste-Login</button>
     </div>
-</section>
+</form>
