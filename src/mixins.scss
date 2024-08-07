@@ -1,0 +1,152 @@
+@import "./styles.scss";
+
+@mixin inputBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.125rem 2rem;
+  border: 1px solid transparent;
+  border-radius: $circled-border-radius;
+  transition: $transition-standard;
+
+  &:hover {
+    border: 1px solid $disabled;
+  }
+
+  &:focus-within {
+    border: 1px solid $secondary;
+  }
+
+  &:focus-within::before {
+    filter: none;
+  }
+
+  // when input-container is focused, sub-element is styled
+  &:focus-within img.input-icon {
+    filter: none;
+  }
+
+  &::before {
+    content: "";
+    left: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left;
+    filter: invert(37%) sepia(0%) saturate(270%) hue-rotate(151deg)
+      brightness(106%) contrast(84%);
+  }
+
+  &:focus-within::before,
+  input:not(:placeholder-shown) + &::before,
+  &:has(input:not(:placeholder-shown))::before {
+    filter: none;
+  }
+}
+
+@mixin iconBox {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: none;
+  transition: $transition-standard;
+
+  &:hover {
+    background-color: $background;
+  }
+}
+
+@mixin input {
+  width: 100%;
+  padding: 1rem 0;
+  padding-left: 3.5rem;
+  border: none;
+  outline: none;
+  background-color: unset;
+  font-family: "Nunito", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 500;
+
+  &::placeholder {
+    color: $disabled;
+  }
+}
+
+@mixin buttonFull {
+  width: fit-content;
+  padding: 0.75rem 1.5rem;
+  background-color: $accent;
+  border: none;
+  border-radius: $circled-border-radius;
+  font-family: "Nunito", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: $transition-standard;
+
+  &:hover {
+    background-color: $primary;
+  }
+  &:active {
+    background-color: $accent;
+  }
+
+  &:disabled {
+    background-color: $disabled;
+  }
+}
+
+@mixin buttonEmpty {
+  width: fit-content;
+  padding: 0.75rem 1.5rem;
+  background-color: unset;
+  border: 1px solid $accent;
+  border-radius: $circled-border-radius;
+  font-family: "Nunito", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $accent;
+  cursor: pointer;
+  text-align: center;
+  transition: $transition-standard;
+
+  &:hover {
+    background-color: $primary;
+    border-color: $primary;
+    color: #fff;
+  }
+  &:active {
+    background-color: $accent;
+    border-color: $accent;
+  }
+
+  &:disabled {
+    background-color: unset;
+    border-color: $disabled;
+    color: $disabled;
+  }
+}
+
+// imprint + policy buttons in start-screen
+@mixin buttonNoBorder {
+  width: fit-content;
+  padding: 0.75rem 1.5rem;
+  background-color: unset;
+  border: 1px solid transparent;
+  border-radius: $circled-border-radius;
+  font-family: "Nunito", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $primary;
+  cursor: pointer;
+  text-align: center;
+  transition: $transition-standard;
+
+  &:hover {
+    color: $accent;
+    border: 1px solid $accent;
+  }
+}

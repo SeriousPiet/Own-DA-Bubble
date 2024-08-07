@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterModule } from '@angular/router';
+import { UsersService } from '../../utils/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,8 @@ import { RouterLink, RouterModule } from '@angular/router';
 })
 export class LoginComponent {
 
+  public userservice = inject(UsersService);
+
   public email: string = '';
   public password: string = '';
 
@@ -22,8 +25,15 @@ export class LoginComponent {
     return this.email != '' && this.password != '';
   }
 
-  submitLoginForm() {
-    console.log('Email: ', this.email, 'Password:', this.password);
+  submitLoginForm(event: Event) {
+    event.preventDefault();
+    this.userservice.loginUser(this.email, this.password)
+    .then(() => {
+      console.log('Successfully logged in');
+    })
+    .catch((error) => {
+      console.error('Error logging in:', error);
+    });
   }
 
 }
