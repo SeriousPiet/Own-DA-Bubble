@@ -51,12 +51,12 @@ export class ChannelService implements OnDestroy {
     this.unsubChannels = onSnapshot(collection(this.firestore, '/channels'), (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
-          this.channels.push(new Channel(change.doc.data()));
+          this.channels.push(new Channel(change.doc.data(), change.doc.id));
         }
         if (change.type === 'modified') {
           this.channels = this.channels.map((channel) => {
             if (channel.id === change.doc.data()['id']) {
-              return new Channel(change.doc.data());
+              return new Channel(change.doc.data(), change.doc.id);
             }
             return channel;
           });
