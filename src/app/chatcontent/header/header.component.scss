@@ -9,15 +9,14 @@ section.header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    // max-height: 4.5rem;
+    padding: 0 1rem;
 
     .logo {
       img {
         width: 4.375rem;
         aspect-ratio: 1 / 1;
       }
-    }
-
-    .searchbar-box {
     }
 
     .profile-box {
