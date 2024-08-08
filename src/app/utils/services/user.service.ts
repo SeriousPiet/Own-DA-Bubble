@@ -21,6 +21,10 @@ export class UsersService implements OnDestroy {
         this.initUserWatchDog();
     }
 
+    getAllUserIDs(): string[] {
+        return this.users.map((user) => user.id);
+    }
+
 
     private initUserCollection(): void {
         this.unsubUsers = onSnapshot(collection(this.firestore, '/users'), (snapshot) => {

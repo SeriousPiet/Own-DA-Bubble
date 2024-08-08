@@ -36,7 +36,6 @@ export class ChannelService implements OnDestroy {
   }
 
 
-  // name, description, members
   addNewChannelToFirestore(name: string, description: string, membersIDs: string[]) {
     const newchannel = {
       name: name,

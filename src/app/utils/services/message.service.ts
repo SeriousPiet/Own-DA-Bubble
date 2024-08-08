@@ -15,10 +15,10 @@ export class MessageService {
   constructor() { }
 
 
-  addNewMessageToChannel(channel: Channel, message: any) {
+  addNewMessageToChannel(channel: Channel, message: string) {
     const channelMessagesRef = collection(this.firestore, 'channels/' + channel.id + '/messages/');
     if (!channelMessagesRef) throw new Error('MessageService: addNewMessageToChannel: path "channels/' + channel.id + '/messages/" is undefined');
-    addDoc(channelMessagesRef, this.createNewMessageObject(message.content, true))
+    addDoc(channelMessagesRef, this.createNewMessageObject(message, true))
       .then(
         () => { console.warn('MessageService: addNewMessageToChannel: message added'); }
       )
