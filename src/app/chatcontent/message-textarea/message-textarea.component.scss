@@ -1,4 +1,4 @@
-:host{
+:host {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -38,6 +38,11 @@
             align-items: center;
             gap: .3125rem;
 
+            >img {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+
             >button {
                 display: flex;
                 align-items: center;
@@ -50,4 +55,58 @@
             }
         }
     }
+}
+
+.button-ctn {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 100%;
+
+    &:hover {
+        background-color: #ECEEFE;
+    }
+
+    >img {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+#add-attachment-icon:hover {
+    >img {
+        content: url('../../../assets/icons/chat/write-message/add-attachment-hover.svg');
+    }
+}
+
+#emoji-picker-icon:hover {
+    >img {
+        content: url('../../../assets/icons/chat/write-message/emoji-picker-hover.svg');
+    }
+}
+
+#tag-person-icon:hover {
+    >img {
+        content: url('../../../assets/icons/chat/write-message/tag-person-hover.svg');
+    }
+}
+
+#send-message-icon {
+    cursor: pointer;
+    >img {
+        width: 1.875rem;
+        height: 1.875rem;
+    }
+    &:hover{
+        >img{
+            content: url('../../../assets/icons/chat/write-message/send-hover.svg');
+        }
+    }
+}
+
+.d-none {
+    display: none !important;
 }

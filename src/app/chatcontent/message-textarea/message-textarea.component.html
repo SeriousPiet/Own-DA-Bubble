@@ -1,12 +1,29 @@
 <div class="input-message">
     <textarea name="" id="" placeholder="Nachricht an #Entwicklerteam"></textarea>
     <div class="input-message-toolbar">
-        <div class="message-action-button">
-            <button><img src="./assets/icons/chat/write-message/add-attachment.svg" alt="+"></button>
+        <div class="message-action-button" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
+            <div id="add-attachment-icon" class="button-ctn">
+                <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/add-attachment.svg"
+                    alt="+">
+                <img [ngClass]="{ 'd-none': !isActive }"
+                    src="./assets/icons/chat/write-message/add-attachment-active.svg" alt="+">
+            </div>
             <span>|</span>
-            <button><img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="smiley"></button>
-            <button><img src="./assets/icons/chat/write-message/tag-person.svg" alt="@"></button>
+            <div id="emoji-picker-icon" class="button-ctn">
+                <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/emoji-picker.svg"
+                    alt="+">
+                <img [ngClass]="{ 'd-none': !isActive }"
+                    src="./assets/icons/chat/write-message/emoji-picker-active.svg" alt="smiley">
+            </div>
+            <div id="tag-person-icon" class="button-ctn">
+                <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/tag-person.svg"
+                    alt="+">
+                <img [ngClass]="{ 'd-none': !isActive }"
+                    src="./assets/icons/chat/write-message/tag-person-active.svg" alt="@">
+            </div>
         </div>
-        <button><img src="./assets/icons/chat/write-message/send.svg" alt=""> </button>
+        <div id="send-message-icon" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
+            <img src="./assets/icons/chat/write-message/send.svg" alt="">
+        </div>
     </div>
 </div>
