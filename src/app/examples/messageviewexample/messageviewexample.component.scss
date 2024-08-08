@@ -4,3 +4,22 @@
     gap: 1rem;
     align-items: center;
 }
+
+.message-answers {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    width: 100%;
+    border: 1px solid black;
+}
+
+button {
+    width: 100%;
+    border: 1px solid black;
+}
+
+h3 {
+    border: 1px solid lightgray;
+}

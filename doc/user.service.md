@@ -24,3 +24,9 @@ Logs in a user using their email and password. Returns an error message if there
 
 ### `logoutUser(): void`
 Logs out the current user.
+
+### `getAllUserIDs(): string[]`
+Get an id array of all current user
+
+### `getUserByID(id: string): User | undefined `
+Get the User Object that has the id

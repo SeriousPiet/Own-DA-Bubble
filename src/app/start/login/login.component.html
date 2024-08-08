@@ -6,7 +6,9 @@
     }
 </div>
 
-<!-- Konto erstellen Button -->
+
+<!-- ##################################################################################################### -->
+
 <div class="service-debug">
     <h1>Channels erzeugen</h1>
     <input [(ngModel)]="name" type="text" placeholder="name">
@@ -15,6 +17,7 @@
     <hr>
     <h1>Message hinzufügen</h1>
     <input [(ngModel)]="messagecontent" type="text" placeholder="messagetext">
+    <hr>
     <h2>Channels</h2>
     @for (kanal of channelservice.channels; track channelservice.channels; let i = $index) {
     <div>
@@ -22,11 +25,19 @@
         <button (click)="addMessageToChannel(i)">addmessage</button>
     </div>
     }
+    @empty {
+        <span>no channels</span>
+    }
     @if(currentChannel) {
+    <hr>
     <h1>Messages of {{currentChannel.name}}</h1>
     <app-messageviewexample [messagesPath]="currentMessagesPath"></app-messageviewexample>
     }
 </div>
+
+<!-- ##################################################################################################### -->
+
+<!-- Konto erstellen Button -->
 <button class="signup-btn" [routerLink]="['/signup']">Konto erstellen</button>
 
 
