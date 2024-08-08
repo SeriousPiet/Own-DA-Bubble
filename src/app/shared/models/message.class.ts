@@ -2,6 +2,7 @@ import { Timestamp } from "@angular/fire/firestore";
 
 export class Message {
   readonly id: string;
+  readonly collectionPath: string;
   readonly creatorID: string;
   readonly createdAt: Date;
   readonly content: string;
@@ -9,9 +10,13 @@ export class Message {
   readonly answerable: boolean;
   readonly answerCount: number;
   readonly lastAnswerAt: Date;
+  get messagePath(): string {
+    return this.collectionPath + '/' + this.id;
+  }
 
-  constructor(data: any) {
+  constructor(data: any, collectionPath: string) {
     this.id = data.id ? data.id : '';
+    this.collectionPath = collectionPath;
     this.creatorID = data.creatorID ? data.creatorID : '';
     this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
     this.content = data.content ? data.content : '';
