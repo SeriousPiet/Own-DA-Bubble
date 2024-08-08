@@ -38,12 +38,24 @@ $border-online-status: 2px solid #fff;
 $vert-spacer: #adb0d9;
 
 // transitions
-$transition-standard: all 0.125s ease-in-out;
+$transition-standard: all 0.125 s ease-in-out;
 
 @import "./fonts.scss";
 
 * {
   box-sizing: border-box;
+}
+
+.d-none {
+  display: none;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.d-block {
+  display: block;
 }
 
 ::-webkit-scrollbar {
@@ -72,10 +84,16 @@ html {
   }
 }
 
-button {
-  cursor: pointer;
-  border: unset;
-  background-color: unset;
+h1 {
+  @extend .nunito-46-700;
+}
+
+h2 {
+  @extend .nunito-32-700;
+}
+
+h3 {
+  @extend .nunito-24-700;
 }
 
 input {
@@ -84,14 +102,20 @@ input {
   background-color: unset;
 }
 
+input[checkbox] {
+  appearance: none;
+}
+
 a {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
 }
 
-input[checkbox] {
-  appearance: none;
+button {
+  cursor: pointer;
+  border: unset;
+  background-color: unset;
 }
 
 body {

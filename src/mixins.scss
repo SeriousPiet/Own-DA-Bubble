@@ -293,3 +293,14 @@ $offline: $disabled;
 @mixin iconFilter($filter: none) {
   filter: $filter;
 }
+
+// ########## FONT-STYLING
+
+@mixin fontStyleEDIT {
+  @extend .nunito-18-600;
+  color: $accent;
+
+  &:hover {
+    font-weight: 700;
+  }
+}
