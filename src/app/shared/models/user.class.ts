@@ -20,8 +20,12 @@ export class User {
         this._ifCurrentUser = value;
     }
 
-    constructor(userObj: any) {
-        this.id = userObj.id ? userObj.id : '';
+    constructor(userObj: any, userID?: string) {
+        if (userID) {
+            this.id = userID;
+        } else {
+            this.id = userObj.id ? userObj.id : '';
+        }
         this.name = userObj.name ? userObj.name : '';
         this.email = userObj.email ? userObj.email : '';
         this.avatar = userObj.avatar ? userObj.avatar : 1;
