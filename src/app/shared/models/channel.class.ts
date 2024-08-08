@@ -8,6 +8,9 @@ export class Channel {
   createdAt: Date;
   creatorID: string; // User id
   members: string[]; // User ids
+  get channelMessagesPath(): string {
+    return `channels/${this.id}/messages/`;
+  }
 
   constructor(data: any) {
     this.id = data.id ? data.id : '';

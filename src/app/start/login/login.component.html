@@ -18,12 +18,13 @@
     <h2>Channels</h2>
     @for (kanal of channelservice.channels; track channelservice.channels; let i = $index) {
     <div>
-        <button (click)="currentChannel = kanal">{{kanal.name}} <br> {{kanal.description}}</button>
+        <button (click)="setCurrentChannel(kanal)">{{kanal.name}} <br> {{kanal.description}}</button>
         <button (click)="addMessageToChannel(i)">addmessage</button>
     </div>
     }
     @if(currentChannel) {
     <h1>Messages of {{currentChannel.name}}</h1>
+    <app-messageviewexample [messagesPath]="currentMessagesPath"></app-messageviewexample>
     }
 </div>
 <button class="signup-btn" [routerLink]="['/signup']">Konto erstellen</button>
