@@ -3,6 +3,13 @@
   align-items: center;
 }
 
+@mixin background-properties {
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 section {
   display: flex;
   flex-direction: column;
@@ -10,6 +17,7 @@ section {
   gap: 1.5625rem;
 
   .workspace {
+    overflow: visible;
     @include display-standard;
     justify-content: space-between;
     div {
@@ -18,9 +26,26 @@ section {
       width: 19.125rem;
       font-size: 1.5rem;
     }
-    img:hover {
-      cursor: pointer;
+    .ws-write {
+      padding: 0.5rem;
+      gap: 0.625rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      overflow: visible;
+      background-image: url("../../../assets/icons/wsm/ws-write.svg");
+      background-size: cover;
+      @include background-properties;
     }
+
+    .ws-write:hover {
+      cursor: pointer;
+      background-image: url("../../../assets/icons/wsm/ws-write-hover.svg");
+    }
+  }
+
+  .hashtag {
+    background-image: url("../../../assets/icons/wsm/hashtag.svg");
+    @include background-properties;
   }
 
   ul {
@@ -36,6 +61,9 @@ section {
     li:hover {
       cursor: pointer;
       background-color: #eceefe;
+      > .hashtag {
+        background-image: url("../../../assets/icons/wsm/hashtag-hover.svg");
+      }
     }
   }
 
@@ -47,6 +75,18 @@ section {
     @include display-standard;
     font-size: 1.25rem;
     gap: 0.9375rem;
+    .ws-channels {
+      background-image: url("../../../assets/icons/wsm/ws-channels.svg");
+      @include background-properties;
+    }
+    .add-channel {
+      background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
+      @include background-properties;
+    }
+    .dm-symbol {
+      background-image: url("../../../assets/icons/wsm/dm-symbol.svg");
+      @include background-properties;
+    }
     > div {
       @include display-standard;
       gap: 0.9375rem;
@@ -57,6 +97,23 @@ section {
     position: relative;
   }
 
+  summary:hover::before {
+    background-image: url("../../../assets/icons/wsm/dropdown-open-hover.svg");
+    background-repeat: no-repeat;
+  }
+
+  summary:hover {
+    > div > .ws-channels {
+      background-image: url("../../../assets/icons/wsm/ws-channels-hover.svg");
+    }
+    > .add-channel {
+      background-image: url("../../../assets/icons/wsm/add-channel-1-hover.svg");
+    }
+    > .dm-symbol {
+      background-image: url("../../../assets/icons/wsm/dm-symbol-hover.svg");
+    }
+  }
+
   summary::-webkit-details-marker {
     display: none;
   }
@@ -64,13 +121,12 @@ section {
   summary::before {
     content: "";
     display: inline-block;
+    background-image: url("../../../assets/icons/wsm/dropdown-open.svg");
+    background-repeat: no-repeat;
+    background-position: center;
     width: 1rem;
     height: 1rem;
     margin-right: 0.625rem;
-    background-image: url("../../../assets/icons/arrow_drop_down.svg");
-    background-size: 0.5625rem;
-    background-repeat: no-repeat;
-    background-position: center;
     transition: transform 0.3s ease-in-out;
     transform: rotate(-90deg);
   }
@@ -86,9 +142,17 @@ section {
     line-height: normal;
     padding: 0.25rem 1.25rem 0.25rem 2.8125rem;
     gap: 0.625rem;
+    > .add-channel-2 {
+      background-image: url("../../../assets/icons/wsm/add-channel-2.svg");
+      @include background-properties;
+    }
   }
 
   button:hover {
     cursor: pointer;
+    > .add-channel-2 {
+      background-image: url("../../../assets/icons/wsm/add-channel-2-hover.svg");
+      @include background-properties;
+    }
   }
 }

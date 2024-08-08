@@ -1,6 +1,47 @@
+nav {
+  position: absolute;
+  left: 0rem;
+  top: 36.3125rem;
+  gap: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.4375rem 0.875rem 1.4375rem 0.875rem;
+  background-color: #f8f8f8;
+  border-bottom: 0.0625rem solid #e0e0e0;
+  width: 3.75rem;
+  height: 21.6875rem;
+  border-radius: 0 1.875rem 1.875rem 0;
+  box-shadow: 0.25rem 0.25rem 0.4375rem rgba(0, 0, 0, 0.3);
+  div {
+    background-image: url("../../assets/icons/wsm/wsm-close.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  img {
+    width: 2rem;
+  }
+  span {
+    transform: rotate(-90deg);
+    width: 100%;
+    text-wrap: nowrap;
+    font-size: 1.25rem;
+  }
+}
+
+nav:hover {
+  cursor: pointer;
+  div {
+    background-image: url("../../assets/icons/wsm/wsm-open.svg");
+  }
+}
+
 app-workspacemenu {
   display: flex;
   height: 100vh;
-  border-radius: 30px;
+  border-radius: 1.875rem;
   background-color: white;
 }
