@@ -1,0 +1,23 @@
+<section>
+    <button [routerLink]="['/signup']" class="arrow-back">
+        <img src="../../../assets/icons/start/go-back.svg" alt="">
+    </button>
+    <span class="title nunito-46-700">Wähle deinen Avatar</span>
+    <img class="avatar" src="{{ selectedAvatarName }}" alt="">
+    <span class="name">Frederik Kröger</span>
+    <span class="choose-avatar">Aus der Liste wählen</span>
+    <div class="avatar-list">
+        @for(avatar of avatarList; track avatarList) {
+        @if(avatar.id != 0) {
+        <img (click)="setAvatar(avatar.id)" src="{{ avatar.img_name}}" alt="">
+        }
+        }
+    </div>
+    <div class="choose-picture">
+        <span>eigenes Bild hochladen</span>
+        <button>Datei hochladen</button>
+    </div>
+    <div class="action">
+        <button (click)="submitChooseAvatar($event)">Weiter</button>
+    </div>
+</section>

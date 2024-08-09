@@ -1,0 +1,107 @@
+:host {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.input-message {
+    height: 9.0625rem;
+    width: 90%;
+    border: 1px solid #ADB0D9;
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    >textarea {
+        resize: none;
+        width: 100%;
+        height: 90%;
+        border: none;
+        outline: none;
+        font-family: "Nunito";
+    }
+
+    .input-message-toolbar {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .message-action-button {
+            display: flex;
+            align-items: center;
+            gap: .3125rem;
+
+            >img {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+
+            >button {
+                display: flex;
+                align-items: center;
+            }
+
+            >span {
+                font-size: 24px;
+
+                font-weight: 100;
+            }
+        }
+    }
+}
+
+.button-ctn {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 100%;
+
+    &:hover {
+        background-color: #ECEEFE;
+    }
+}
+
+#add-attachment-icon:hover {
+    >img {
+        content: url('../../../assets/icons/chat/write-message/add-attachment-hover.svg');
+    }
+}
+
+#emoji-picker-icon:hover {
+    >img {
+        content: url('../../../assets/icons/chat/write-message/emoji-picker-hover.svg');
+    }
+}
+
+#tag-person-icon:hover {
+    >img {
+        content: url('../../../assets/icons/chat/write-message/tag-person-hover.svg');
+    }
+}
+
+#send-message-icon {
+    cursor: pointer;
+    >img {
+        width: 1.875rem;
+        height: 1.875rem;
+    }
+    &:hover{
+        >img{
+            content: url('../../../assets/icons/chat/write-message/send-hover.svg');
+        }
+    }
+}
+
+.d-none {
+    display: none !important;
+}

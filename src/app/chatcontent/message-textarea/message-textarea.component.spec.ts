@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChatcontentComponent } from './chatcontent.component';
+import { MessageTextareaComponent } from './message-textarea.component';
 
-describe('ChatcontentComponent', () => {
-  let component: ChatcontentComponent;
-  let fixture: ComponentFixture<ChatcontentComponent>;
+describe('MessageTextareaComponent', () => {
+  let component: MessageTextareaComponent;
+  let fixture: ComponentFixture<MessageTextareaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChatcontentComponent]
+      imports: [MessageTextareaComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ChatcontentComponent);
+    fixture = TestBed.createComponent(MessageTextareaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

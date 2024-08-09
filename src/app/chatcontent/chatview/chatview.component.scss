@@ -1,12 +1,14 @@
-.chatview-main-ctn {
-    width: 66%;
+:host {
+    width: 100%;
+}
+
+.chatview {
     height: 90%;
     background-color: white;
     border-radius: 30px;
     display: flex;
     align-items: center;
     flex-direction: column;
-
 }
 
 .chatview-header {
@@ -19,25 +21,109 @@
     align-items: center;
     width: 100%;
     padding: 1.5625rem 2.8125rem;
+
+    .chatview-chanel-name {
+        cursor: pointer;
+
+        >div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: .375rem .625rem;
+
+            &:hover {
+                filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg) brightness(94%) contrast(101%);
+            }
+        }
+
+        &:hover {
+            border-radius: 6.25rem;
+            background-color: #ECEEFE;
+        }
+    }
+
+
 }
 
 .member-avatar-overview {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 192px;
 
-    .member-avatar {
-        margin-left: -0.750rem;
-        border-radius: 100%;
-        background-color: #000000; // only while waiting for img path
-        width: 2.5rem;
-        height: 2.5rem;
+    .member-avatars-ctn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 3px 10px;
+        width: -webkit-fill-available;
+        cursor: pointer;
+
+        >div {
+            display: flex;
+        }
+
+        >span{
+            font-weight: 600;
+        }
+
+        &:hover {
+            border-radius: 6.25rem;
+            background-color: #ECEEFE;
+
+            >span{
+                color: #535AF1;
+                font-weight: 700;
+            }
+        }
     }
+
+
+
+    >div {
+        .member-avatar {
+            margin-left: -0.750rem;
+            border-radius: 100%;
+            border: 2px solid #FFFFFF;
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+    }
+
+    .add-member-icon-ctn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        background-color: #ECEEFE;
+        border-radius: 100%;
+        cursor: pointer;
+
+        >img {
+            width: 1.5rem;
+            height: 1.5rem;
+
+            &:hover{
+                filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg) brightness(94%) contrast(101%);
+                transform: scale(1.1);
+                transition: all .125sec ease-in-out;
+            }
+        }
+    }
+
 }
 
 
 .chatview-content {
-    height: 52.75rem;
+    height: 47.75rem;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -45,44 +131,19 @@
     position: relative;
     margin-bottom: 1.25rem;
 
-    .chat-messages-content{
+    .chat-messages-content {
         width: 100%;
         height: 80%;
         overflow-y: scroll;
     }
 
-    ::-webkit-scrollbar{
+    ::-webkit-scrollbar {
         display: none;
     }
 
-    .input-message {
-        height: 9.0625rem;
-        width: 90%;
-        position: absolute;
-        bottom: 0;
-        border: 1px solid #ADB0D9;
-        border-radius: 1.25rem;
-        padding: 1.25rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-
-        >textarea{
-            resize: none;
-            width: 100%;
-            height: 90%;
-            border: none;
-            outline: none;
-
-        }
-
-
-        .input-message-toolbar {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-    }
 }
+
+// #load-item-icon ::after {
+//     content: '';
+//     border: 1px solid rgb(124, 123, 123);
+// }
