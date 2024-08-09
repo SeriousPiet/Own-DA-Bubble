@@ -15,29 +15,37 @@ export class MessageService {
   constructor() { }
 
 
-  addNewMessageToChannel(channel: Channel, message: any) {
-    const channelMessagesRef = collection(this.firestore, 'channels/' + channel.id + '/messages/');
+  addNewMessageToChannel(channel: Channel, messageContent: string) {
+    const channelMessagesRef = collection(this.firestore, channel.channelMessagesPath);
     if (!channelMessagesRef) throw new Error('MessageService: addNewMessageToChannel: path "channels/' + channel.id + '/messages/" is undefined');
-    addDoc(channelMessagesRef, this.createNewMessageObject(message.content, true))
+    addDoc(channelMessagesRef, this.createNewMessageObject(messageContent, true))
       .then(
-        () => { console.warn('MessageService: addNewMessageToChannel: message added'); }
+        (response) => {
+          const newMessageRef = doc(channelMessagesRef, response.id);
+          updateDoc(newMessageRef, { id: response.id });
+          console.warn('MessageService: addNewMessageToChannel: message added');
+        }
       )
   }
 
 
   addNewAnswerToMessage(message: Message, answerContent: string) {
-    let messageUpdateData = {
-      answerCount: message.answerCount + 1,
-      lastAnswered: serverTimestamp()
-    };
-    const answerCollectionRef = collection(this.firestore, message.messagePath + '/messages/');
+    const answerCollectionRef = collection(this.firestore, message.messagePath + '/messages');
     if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.messagePath + '/messages/" is undefined');
     addDoc(answerCollectionRef, this.createNewMessageObject(answerContent, false))
       .then(
-        () => {
-          updateDoc(doc(this.firestore, message.messagePath), messageUpdateData)
+        (response) => {
+          const newMessageRef = doc(answerCollectionRef, response.id);
+          updateDoc(newMessageRef, { id: response.id })
             .then(
-              () => { console.warn('MessageService: addNewAnswerToMessage: answer added'); },
+              () => {
+                updateDoc(doc(this.firestore, message.messagePath), { answerCount: message.answerCount + 1, lastAnswered: serverTimestamp() })
+                  .then(
+                    () => {
+                      console.warn('MessageService: addNewAnswerToMessage: answer added');
+                    },
+                  )
+              }
             )
         }
       );

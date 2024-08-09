@@ -1,48 +1,59 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
-section.try-outs {
-  display: flex;
+.profile {
+  @include flex(flex-end, center);
+  width: fit-content;
+  gap: 1.25rem;
+  cursor: pointer;
+
+  span,
+  img {
+    transition: $transition-standard;
+  }
+
+  &:hover span {
+    color: $primary;
+  }
+
+  &:hover img.icon {
+    content: url("../../../../assets/icons/modals/expand-down-hover.svg");
+  }
+
+  .avatar {
+    @include avatarStatusThumbnail($online, 4.5rem, 1rem, $background);
+  }
+}
+
+#profile-popover {
+  @include flex(center, center);
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
+  top: 7.5rem;
+  margin: 0 1.25rem 0 auto;
+  width: 20%;
+  padding: 1.25rem;
+  border: none;
+  border-radius: 1rem 0 1rem 1rem;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
 
-  .input-box {
-    @include inputBox;
-    background: $background;
-
-    input {
-      position: relative;
-      @include input;
-    }
-  }
-
-  .mail::before {
-    background-image: url("../../../../assets/icons/start/mail.svg");
-  }
-
-  .pw::before {
-    background-image: url("../../../../assets/icons/start/lock.svg");
-  }
-
-  .btn-box {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-  }
+  transition: $transition-popover;
 
   button {
-    margin: 0.5rem 0;
+    @include buttonNoBorder(100%);
   }
+}
+::backdrop {
+  background-color: #00000066;
+}
 
-  button:nth-of-type(1) {
-    @include buttonFull;
-  }
+#profile-popover:popover-open {
+  opacity: 1;
+}
 
-  button:nth-of-type(2) {
-    @include buttonEmpty;
-  }
-
-  button:nth-of-type(3) {
-    @include buttonNoBorder;
+@starting-style {
+  #profile-popover:popover-open {
+    opacity: 0;
   }
 }

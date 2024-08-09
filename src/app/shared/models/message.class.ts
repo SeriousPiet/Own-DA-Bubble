@@ -11,7 +11,7 @@ export class Message {
   readonly answerCount: number;
   readonly lastAnswerAt: Date;
   get messagePath(): string {
-    return this.collectionPath + '/' + this.id;
+    return this.collectionPath + this.id;
   }
 
   constructor(data: any, collectionPath: string) {
