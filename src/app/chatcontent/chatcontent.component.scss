@@ -1,3 +1,43 @@
+@import "../../styles.scss";
+@import "../../mixins.scss";
+
+section.chatcontent {
+  width: 100%;
+  max-width: 1920px;
+  min-height: 100vh;
+  padding: 1.5rem 1.25rem 1.25rem;
+  background-color: $background;
+
+  display: grid;
+  grid:
+    "top-bar top-bar top-bar" auto
+    "workspace-menu chatview threadview" 1fr
+    / 17.5% 1fr 20%;
+  gap: 1.25rem;
+}
+
+.top-bar {
+  grid-area: top-bar;
+}
+.workspace-menu {
+  grid-area: workspace-menu;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: #fff;
+}
+.chatview {
+  grid-area: chatview;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: #fff;
+}
+.threadview {
+  grid-area: threadview;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: #fff;
+}
+
 nav {
   position: absolute;
   left: 0rem;
@@ -14,17 +54,17 @@ nav {
   height: 21.6875rem;
   border-radius: 0 1.875rem 1.875rem 0;
   box-shadow: 0.25rem 0.25rem 0.4375rem rgba(0, 0, 0, 0.3);
-  div {
+  > div {
     background-image: url("../../assets/icons/wsm/wsm-close.svg");
     background-repeat: no-repeat;
     background-position: center;
     width: 1.5rem;
     height: 1.5rem;
   }
-  img {
+  > img {
     width: 2rem;
   }
-  span {
+  > span {
     transform: rotate(-90deg);
     width: 100%;
     text-wrap: nowrap;

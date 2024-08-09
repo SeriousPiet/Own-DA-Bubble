@@ -1,56 +1,75 @@
 @import "./styles.scss";
+@import "./fonts.scss";
 
-@mixin inputContainer {
+$iconFilterGrey: invert(37%) sepia(0%) saturate(270%) hue-rotate(151deg)
+  brightness(106%) contrast(84%);
+
+$iconFilterPurple: invert(24%) sepia(40%) saturate(5509%) hue-rotate(238deg)
+  brightness(91%) contrast(107%);
+
+$online: #92c83e;
+$offline: $disabled;
+
+@mixin flex($j_content, $a_item: center) {
   display: flex;
-  padding: 1.125rem 2rem;
-  gap: 3.5rem;
-  background: $background;
-  border: none;
+  justify-content: $j_content;
+  align-items: $a_item;
+}
+
+@mixin inputBox($width: auto) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: $width;
+  padding: 0.125rem 2rem;
+  border: 1px solid transparent;
   border-radius: $circled-border-radius;
-  font-family: "Nunito", sans-serif;
-  font-size: 1.125rem;
-  font-weight: 500;
   transition: $transition-standard;
 
   &:hover {
     border: 1px solid $disabled;
   }
 
-  &:active {
+  &:focus-within {
     border: 1px solid $secondary;
   }
 
+  &:focus-within::before {
+    filter: none;
+  }
+
   // when input-container is focused, sub-element is styled
-  &:focus-within .input-icon svg {
+  &:focus-within img.input-icon {
+    filter: none;
+  }
+
+  &::before {
+    content: "";
+    left: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left;
+    filter: $iconFilterGrey;
+  }
+
+  &:focus-within::before,
+  input:not(:placeholder-shown) + &::before,
+  &:has(input:not(:placeholder-shown))::before {
     filter: none;
   }
 }
 
-@mixin inputIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-
-  // filter sets the color initially to $disabled
-  svg {
-    filter: invert(37%) sepia(0%) saturate(270%) hue-rotate(151deg)
-      brightness(106%) contrast(84%);
-  }
-}
-
-@mixin input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background-color: unset;
-
-  &::placeholder {
-    color: $disabled;
-  }
-}
-
 @mixin iconBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   background-color: none;
+  cursor: pointer;
   transition: $transition-standard;
 
   &:hover {
@@ -58,17 +77,44 @@
   }
 }
 
-@mixin buttonFull {
-  padding: 0.75rem 1.5rem;
-  background-color: $accent;
+@mixin input {
+  width: 100%;
+  padding: 1rem 0;
+  padding-left: 3.5rem;
   border: none;
-  border-radius: $circled-border-radius;
+  outline: none;
+  background-color: unset;
   font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 500;
+
+  &::placeholder {
+    color: $disabled;
+  }
+}
+@mixin button-base($width: auto) {
+  @extend .nunito-18-700;
+  width: $width;
+  padding: 0.75rem 1.5rem;
+  border-radius: $circled-border-radius;
   cursor: pointer;
+  text-align: center;
   transition: $transition-standard;
+}
+
+@mixin buttonDisabled($width: auto) {
+  @include button-base($width);
+  background-color: $disabled;
+  border: 1px solid transparent;
+  color: #fff;
+  font-weight: 700;
+}
+
+@mixin buttonFull($width: auto) {
+  @include button-base($width);
+  background-color: $accent;
+  border: none;
+  color: #fff;
 
   &:hover {
     background-color: $primary;
@@ -76,33 +122,26 @@
   &:active {
     background-color: $accent;
   }
-
   &:disabled {
     background-color: $disabled;
   }
 }
 
-@mixin buttonEmpty {
-  padding: 0.75rem 1.5rem;
+@mixin buttonEmpty($width: auto) {
+  @include button-base($width);
   background-color: unset;
   border: 1px solid $accent;
-  border-radius: $circled-border-radius;
-  font-family: "Nunito", sans-serif;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #fff;
-  cursor: pointer;
-  transition: $transition-standard;
+  color: $accent;
 
   &:hover {
     background-color: $primary;
     border-color: $primary;
+    color: #fff;
   }
   &:active {
     background-color: $accent;
     border-color: $accent;
   }
-
   &:disabled {
     background-color: unset;
     border-color: $disabled;
@@ -110,21 +149,163 @@
   }
 }
 
-// imprint + policy buttons in start-screen
-@mixin mandatoryButton {
-  padding: 0.75rem 1.5rem;
+@mixin buttonNoBg($width: auto) {
+  @include button-base($width);
   background-color: unset;
-  border: unset;
-  border-radius: $circled-border-radius;
-  font-family: "Nunito", sans-serif;
-  font-size: 1.125rem;
-  font-weight: 700;
+  border: 1px solid transparent;
   color: $primary;
-  cursor: pointer;
-  transition: $transition-standard;
 
   &:hover {
     color: $accent;
+    border: 1px solid $primary;
+  }
+  &:active {
     border: 1px solid $accent;
+  }
+}
+
+@mixin buttonNoBorder($width: auto) {
+  @include button-base($width);
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: $primary;
+  font-weight: 500;
+
+  &:hover {
+    color: $accent;
+    background-color: $background;
+    font-weight: 700;
+  }
+  &:active {
+    border: 1px solid $accent;
+  }
+}
+
+@mixin buttonGoogle($width: auto) {
+  @include button-base($width);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  border: 1px solid transparent;
+  background-color: $background;
+  color: $accent;
+  font-weight: 500;
+
+  &:hover {
+    font-weight: 500;
+    border-color: $accent;
+  }
+  &:active {
+    font-weight: 700;
+  }
+}
+
+// ########## CHECKBOXES
+
+@mixin base-checkbox($size: 20px) {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: $size;
+  height: $size;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+  cursor: pointer;
+
+  &::after {
+    content: "";
+    display: inline-block;
+    width: $size;
+    height: $size;
+    border: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}
+
+@mixin square-checkbox($size: 24px) {
+  @include base-checkbox($size);
+
+  &::after {
+    background-image: url("./assets/icons/start/checkbox-empty.svg");
+  }
+
+  &:checked::after {
+    background-image: url("./assets/icons/start/checkbox-checked.svg");
+  }
+
+  &:hover::after {
+    background-image: url("./assets/icons/start/checkbox-empty-hover.svg");
+  }
+
+  &:checked:hover::after {
+    background-image: url("./assets/icons/start/checkbox-checked-hover.svg");
+  }
+}
+
+@mixin round-checkbox($size: 20px) {
+  @include base-checkbox($size);
+
+  &::after {
+    background-image: url("./assets/icons/wsm/round-checkbox.svg");
+  }
+
+  &:checked::after {
+    background-image: url("./assets/icons/wsm/round-checkbox-checked.svg");
+  }
+
+  &:hover::after {
+    background-image: url("./assets/icons/wsm/round-checkbox-hover.svg");
+  }
+
+  &:checked:hover::after {
+    background-image: url("./assets/icons/wsm/round-checkbox-checked.svg");
+  }
+}
+
+@mixin avatarStatusThumbnail(
+  $status: $online,
+  $img_size: 3rem,
+  $status_size: 0.75rem,
+  $border_color: #fff
+) {
+  position: relative;
+  width: $img_size;
+  height: $img_size;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: $status_size;
+    height: $status_size;
+    border-radius: 50%;
+    background-color: $status;
+    border: 2px solid $border_color;
+  }
+}
+
+@mixin iconFilter($filter: none) {
+  filter: $filter;
+}
+
+// ########## FONT-STYLING
+
+@mixin fontStyleEDIT {
+  @extend .nunito-18-600;
+  color: $accent;
+
+  &:hover {
+    font-weight: 700;
   }
 }
