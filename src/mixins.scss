@@ -265,10 +265,15 @@ $offline: $disabled;
   }
 }
 
-@mixin avatarStatusThumbnail($status: $online) {
+@mixin avatarStatusThumbnail(
+  $status: $online,
+  $img_size: 3rem,
+  $status_size: 0.75rem,
+  $border_color: #fff
+) {
   position: relative;
-  width: 3rem;
-  height: 3rem;
+  width: $img_size;
+  height: $img_size;
 
   img {
     width: 100%;
@@ -282,11 +287,11 @@ $offline: $disabled;
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 0.75rem;
-    height: 0.75rem;
+    width: $status_size;
+    height: $status_size;
     border-radius: 50%;
     background-color: $status;
-    border: 2px solid #fff;
+    border: 2px solid $border_color;
   }
 }
 
