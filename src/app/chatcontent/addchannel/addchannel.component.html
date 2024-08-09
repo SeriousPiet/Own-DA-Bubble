@@ -1,0 +1,19 @@
+<section>
+  <div class="headline">
+    <h2>Channels erzeugen</h2>
+    <div class="close-addchannel"></div>
+  </div>
+  <p>
+    Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+    themenbezogen sein #marketing zum Beispiel.
+  </p>
+  <h3>Channel-Name</h3>
+  <input
+    [(ngModel)]="name"
+    type="text"
+    placeholder="# z.B. Kooperationsprojekte"
+  />
+  <h3>Beschreibung <span>(optional)</span></h3>
+  <input [(ngModel)]="description" type="text" placeholder="Dein Text hier" />
+  <button (click)="addNewChannel()">Erstellen</button>
+</section>

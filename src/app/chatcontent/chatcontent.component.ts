@@ -3,7 +3,7 @@ import { HeaderComponent } from './header/header.component';
 import { WorkspacemenuComponent } from './workspacemenu/workspacemenu.component';
 import { ChatviewComponent } from './chatview/chatview.component';
 import { ThreadviewComponent } from './threadview/threadview.component';
-import { WorkspacemenuComponent } from './workspacemenu/workspacemenu.component';
+import { AddchannelComponent } from './addchannel/addchannel.component';
 
 @Component({
   selector: 'app-chatcontent',
@@ -14,6 +14,7 @@ import { WorkspacemenuComponent } from './workspacemenu/workspacemenu.component'
     ChatviewComponent,
     ThreadviewComponent,
     WorkspacemenuComponent,
+    AddchannelComponent,
   ],
   templateUrl: './chatcontent.component.html',
   styleUrl: './chatcontent.component.scss',

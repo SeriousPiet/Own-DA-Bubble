@@ -1,13 +1,18 @@
-@mixin display-standard {
-  display: flex;
-  align-items: center;
+@mixin display-standard($display: flex, $align-items: center) {
+  display: $display;
+  align-items: $align-items;
 }
 
-@mixin background-properties {
-  background-repeat: no-repeat;
-  background-position: center;
-  width: 1.5rem;
-  height: 1.5rem;
+@mixin background-properties(
+  $bg-rep: no-repeat,
+  $bg-pos: center,
+  $bg-width: 2.5rem,
+  $bg-height: 2.5rem
+) {
+  background-repeat: $bg-rep;
+  background-position: $bg-pos;
+  width: $bg-width;
+  height: $bg-height;
 }
 
 section {
@@ -20,6 +25,7 @@ section {
     overflow: visible;
     @include display-standard;
     justify-content: space-between;
+    z-index: 1;
     div {
       @include display-standard;
       gap: 0.9375rem;
@@ -29,12 +35,10 @@ section {
     .ws-write {
       padding: 0.5rem;
       gap: 0.625rem;
-      width: 2.5rem;
-      height: 2.5rem;
       overflow: visible;
       background-image: url("../../../assets/icons/wsm/ws-write.svg");
       background-size: cover;
-      @include background-properties;
+      @include background-properties($bg-height: 1.5rem, $bg-width: 1.5rem);
     }
 
     .ws-write:hover {
@@ -98,7 +102,7 @@ section {
   }
 
   summary:hover::before {
-    background-image: url("../../../assets/icons/wsm/dropdown-open-hover.svg");
+    background-image: url("../../../assets/icons/wsm/dropdown-hover.svg");
     background-repeat: no-repeat;
   }
 
@@ -121,7 +125,7 @@ section {
   summary::before {
     content: "";
     display: inline-block;
-    background-image: url("../../../assets/icons/wsm/dropdown-open.svg");
+    background-image: url("../../../assets/icons/wsm/dropdown.svg");
     background-repeat: no-repeat;
     background-position: center;
     width: 1rem;
