@@ -39,6 +39,8 @@ $vert-spacer: #adb0d9;
 
 // transitions
 $transition-standard: all 0.125 s ease-in-out;
+$transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
+  0.25s overlay allow-discrete, 0.25s transform ease-out;
 
 @import "./fonts.scss";
 
@@ -115,6 +117,7 @@ a {
 button {
   cursor: pointer;
   border: unset;
+  outline: unset;
   background-color: unset;
 }
 
