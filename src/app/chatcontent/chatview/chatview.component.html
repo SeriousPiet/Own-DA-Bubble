@@ -28,16 +28,19 @@
     <section class="chatview-content">
         <div class="chat-messages-content">
             <!-- @for (item of [1,2]; track $index;) { -->
-             <div>
-                <app-message-date></app-message-date>
-                <app-message></app-message>
-                <app-message [class.message-from-user] = 'messagefromUser'></app-message>
+             <div class="chat-messages-wrapper">
+                <div>
+                    <app-message-date></app-message-date>
+                    <app-message></app-message>
+                    <app-message [class.message-from-user] = 'messagefromUser'></app-message>
+                 </div>
+                 <div>
+                    <app-message-date></app-message-date>
+                    <app-message></app-message>
+                    <app-message [class.message-from-user] = 'messagefromUser'></app-message>
+                 </div>
              </div>
-             <div>
-                <app-message-date></app-message-date>
-                <app-message></app-message>
-                <app-message [class.message-from-user] = 'messagefromUser'></app-message>
-             </div>
+            
             <!-- } -->
         </div>
         <app-message-textarea></app-message-textarea>
