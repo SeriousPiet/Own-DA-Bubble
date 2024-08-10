@@ -44,7 +44,13 @@ section.chatcontent {
   padding: 1rem;
   border-radius: 1rem;
   background-color: #fff;
+  border: 0.0625rem;
   box-shadow: 0rem 0.375rem 0.625rem rgba(0, 0, 0, 0.2);
+}
+
+.addchannel::backdrop {
+  background: black;
+  opacity: 0.5;
 }
 
 nav {

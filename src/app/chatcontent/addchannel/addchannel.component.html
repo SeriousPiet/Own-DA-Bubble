@@ -1,19 +1,29 @@
 <section>
   <div class="headline">
     <h2>Channels erzeugen</h2>
-    <div class="close-addchannel"></div>
+    <button
+      class="close-addchannel"
+      popovertarget="addchannel"
+      popovertargetaction="hide"
+    ></button>
   </div>
-  <p>
-    Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
-    themenbezogen sein #marketing zum Beispiel.
-  </p>
-  <h3>Channel-Name</h3>
+  <div>
+    <p>
+      Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+      themenbezogen sein #marketing zum Beispiel.
+    </p>
+  </div>
+  <div><h3>Channel-Name</h3></div>
   <input
     [(ngModel)]="name"
     type="text"
     placeholder="# z.B. Kooperationsprojekte"
   />
-  <h3>Beschreibung <span>(optional)</span></h3>
+  <div>
+    <h3>Beschreibung <span>(optional)</span></h3>
+  </div>
   <input [(ngModel)]="description" type="text" placeholder="Dein Text hier" />
-  <button (click)="addNewChannel()">Erstellen</button>
+  <div style="justify-content: end">
+    <button (click)="addNewChannel()">Erstellen</button>
+  </div>
 </section>

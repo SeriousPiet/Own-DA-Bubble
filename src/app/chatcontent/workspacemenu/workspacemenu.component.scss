@@ -20,16 +20,17 @@ section {
   flex-direction: column;
   padding: 2rem 1.875rem 2rem 1.875rem;
   gap: 1.5625rem;
+  width: 100%;
+  z-index: 1;
 
   .workspace {
     overflow: visible;
     @include display-standard;
     justify-content: space-between;
-    z-index: 1;
+    width: 19.125rem;
     div {
       @include display-standard;
       gap: 0.9375rem;
-      width: 19.125rem;
       font-size: 1.5rem;
     }
     .ws-write {
@@ -37,13 +38,14 @@ section {
       gap: 0.625rem;
       overflow: visible;
       background-image: url("../../../assets/icons/wsm/ws-write.svg");
-      background-size: cover;
-      @include background-properties($bg-height: 1.5rem, $bg-width: 1.5rem);
+      border-radius: 1.25rem;
+      @include background-properties;
     }
 
     .ws-write:hover {
       cursor: pointer;
       background-image: url("../../../assets/icons/wsm/ws-write-hover.svg");
+      background-color: #eceefe;
     }
   }
 
@@ -75,6 +77,30 @@ section {
     position: relative;
   }
 
+  .channels {
+    display: flex;
+    flex-direction: row;
+    width: 19.125rem;
+    justify-content: space-between;
+
+    .add-channel {
+      all: unset;
+      background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
+      @include background-properties;
+      @include display-standard;
+      z-index: 1;
+      position: relative;
+      min-width: 2.5rem;
+      border-radius: 1.25rem;
+    }
+
+    .add-channel:hover {
+      cursor: pointer;
+      background-image: url("../../../assets/icons/wsm/add-channel-1-hover.svg");
+      background-color: #eceefe;
+    }
+  }
+
   summary {
     @include display-standard;
     font-size: 1.25rem;
@@ -83,18 +109,15 @@ section {
       background-image: url("../../../assets/icons/wsm/ws-channels.svg");
       @include background-properties;
     }
-    .add-channel {
-      background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
-      @include background-properties;
-    }
+
     .dm-symbol {
       background-image: url("../../../assets/icons/wsm/dm-symbol.svg");
       @include background-properties;
     }
+
     > div {
       @include display-standard;
       gap: 0.9375rem;
-      width: 19.125rem;
     }
     list-style: none;
     cursor: pointer;
@@ -110,9 +133,7 @@ section {
     > div > .ws-channels {
       background-image: url("../../../assets/icons/wsm/ws-channels-hover.svg");
     }
-    > .add-channel {
-      background-image: url("../../../assets/icons/wsm/add-channel-1-hover.svg");
-    }
+
     > .dm-symbol {
       background-image: url("../../../assets/icons/wsm/dm-symbol-hover.svg");
     }
