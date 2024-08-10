@@ -29,9 +29,19 @@
             display: flex;
             gap: 10px;
 
-            >img{
-                &:hover{
-                    filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg) brightness(94%) contrast(101%);
+            >div {
+                padding: 5px 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                border: 1px solid #ADB0D9;
+                border-radius: 20px;
+            }
+
+            >img {
+                &:hover {
+                    content: url(../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
                 }
             }
         }
@@ -72,8 +82,17 @@
             >p {
                 background-color: #FFFFFF;
             }
-        }
 
+            .message-reactions {
+                >div {
+                    background-color: #FFFFFF;
+
+                    &:hover{
+                        border-color: #444DF2;
+                    }
+                }
+            }
+        }
     }
 
 }
@@ -81,6 +100,7 @@
 :host(.message-from-user) {
     .message-ctn {
         flex-direction: row-reverse;
+        padding: .625rem 2.8125rem .625rem 0;
 
         >section {
 
