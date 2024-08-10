@@ -2,6 +2,11 @@
     width: 100%;
 }
 
+.chatview-main-ctn{
+    background-color: white;
+    border-radius: 1.875rem;
+}
+
 .chatview {
     height: 90%;
     background-color: white;
@@ -133,17 +138,23 @@
 
     .chat-messages-content {
         width: 100%;
-        height: 80%;
+        height: 100%;
         overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-bottom: 1.875rem;
+        margin-top: auto;
+
+        >div{
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding-top: .625rem;
+        }
     }
 
     ::-webkit-scrollbar {
         display: none;
     }
-
 }
-
-// #load-item-icon ::after {
-//     content: '';
-//     border: 1px solid rgb(124, 123, 123);
-// }
