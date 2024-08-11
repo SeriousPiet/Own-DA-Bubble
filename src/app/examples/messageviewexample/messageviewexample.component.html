@@ -1,0 +1,17 @@
+@for(message of messages ; track messages; let i = $index) {
+<div class="message">
+    <h3>{{userservice.getUserByID(message.creatorID)?.name}}</h3>
+    <h3>{{message.content}}</h3>
+    <div class="message-answers">
+        @if(message.answerCount > 0) {
+        <span>Answers: {{message.answerCount}}</span>
+        }
+        <input [(ngModel)]="answerContent" type="text" placeholder="answer">
+        @if(message.answerable) {
+        <button (click)="addAnswerToMessage(message)">add answer</button>
+        <button (click)="viewThread(message)">view thread</button>
+        }
+        <button (click)="changeMessageContent(message)">update message</button>
+    </div>
+</div>
+}

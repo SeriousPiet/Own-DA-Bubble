@@ -8,7 +8,6 @@ $secondary: #535af1;
 $disabled: #686868;
 $hover-grey: #e6e6e6;
 $error: #ed1e79;
-$active: #92c83e;
 
 // start aimation background
 $intro-gradient: linear-gradient(1.46deg, #313ae6 1.22%, #797ef3 98.76%);
@@ -39,12 +38,26 @@ $border-online-status: 2px solid #fff;
 $vert-spacer: #adb0d9;
 
 // transitions
-$transition-standard: all 0.125s ease-in-out;
+$transition-standard: all 0.125 s ease-in-out;
+$transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
+  0.25s overlay allow-discrete, 0.25s transform ease-out;
 
 @import "./fonts.scss";
 
 * {
   box-sizing: border-box;
+}
+
+.d-none {
+  display: none;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.d-block {
+  display: block;
 }
 
 ::-webkit-scrollbar {
@@ -73,10 +86,16 @@ html {
   }
 }
 
-button {
-  cursor: pointer;
-  border: unset;
-  background-color: unset;
+h1 {
+  @extend .nunito-46-700;
+}
+
+h2 {
+  @extend .nunito-32-700;
+}
+
+h3 {
+  @extend .nunito-24-700;
 }
 
 input {
@@ -85,14 +104,21 @@ input {
   background-color: unset;
 }
 
+input[checkbox] {
+  appearance: none;
+}
+
 a {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
 }
 
-input[checkbox] {
-  appearance: none;
+button {
+  cursor: pointer;
+  border: unset;
+  outline: unset;
+  background-color: unset;
 }
 
 body {
@@ -103,6 +129,7 @@ body {
   padding: 0;
 
   font-family: "Nunito", sans-serif;
+  font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

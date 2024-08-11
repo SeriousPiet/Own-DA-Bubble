@@ -1,4 +1,4 @@
-import { serverTimestamp } from "@angular/fire/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 
 export class Channel {
 
@@ -8,13 +8,22 @@ export class Channel {
   createdAt: Date;
   creatorID: string; // User id
   members: string[]; // User ids
+  get channelMessagesPath(): string {
+    return `channels/${this.id}/messages/`;
+  }
 
-  constructor(data: any) {
-    this.id = data.id ? data.id : '';
+  constructor(data: any, channelID: string) {
+    this.id = channelID;
     this.name = data.name ? data.name : 'New Channel';
     this.description = data.description ? data.description : '';
-    this.createdAt = data.createdAt ? (data.createdAt as any).toDate() : serverTimestamp();
+    this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
     this.creatorID = data.creatorID ? data.creatorID : '';
     this.members = data.members ? data.members : [];
+  }
+
+  update(data: any) {
+    if(data.name) this.name = data.name;
+    if(data.description) this.description = data.description;
+    if(data.members) this.members = data.members;
   }
 }

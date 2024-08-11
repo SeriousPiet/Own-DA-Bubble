@@ -8,19 +8,35 @@ It also provides methods to watch for changes in the user collection and update 
 ## Propertys
 
 ### `users: User[]`
+
 List of all users as User Object
 
 ### `currentUser: User | undefined`
-The current user logged in or undefined when no user is logged in
 
+The current user logged in or undefined when no user is logged in
 
 ## Methods
 
+### `updateUserOnFirestore(userID: string, userChangeData: { name?: string, chatIDs?: string[], avatar?: number })`
+
+Update data of the user on Firestore database
+
 ### `registerNewUser(user: { email: string, password: string, name: string }): Promise<User | undefined>`
+
 Registers a new user in the Firestore database.
 
 ### `loginUser(email: string, password: string): Promise<string | undefined>`
+
 Logs in a user using their email and password. Returns an error message if there was an error logging in.
 
 ### `logoutUser(): void`
+
 Logs out the current user.
+
+### `getAllUserIDs(): string[]`
+
+Get an id array of all current user
+
+### `getUserByID(id: string): User | undefined `
+
+Get the User Object that has the id
