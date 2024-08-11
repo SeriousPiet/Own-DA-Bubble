@@ -41,21 +41,9 @@
         <span>Direktnachrichten</span>
       </summary>
       <ul>
-        <li>
+        <li *ngFor="let user of userservice.users">
           <div class="profil-image"></div>
-          <span>Michael Buschmann</span>
-        </li>
-        <li>
-          <div class="profil-image"></div>
-          <span>Bela Schramm</span>
-        </li>
-        <li>
-          <div class="profil-image"></div>
-          <span>Anthony Hamon</span>
-        </li>
-        <li>
-          <div class="profil-image"></div>
-          <span>Peter Wallbaum</span>
+          <span>{{ user.name }}</span>
         </li>
       </ul>
     </details>

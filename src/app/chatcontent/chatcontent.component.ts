@@ -19,4 +19,15 @@ import { AddchannelComponent } from './addchannel/addchannel.component';
   templateUrl: './chatcontent.component.html',
   styleUrl: './chatcontent.component.scss',
 })
-export class ChatcontentComponent {}
+export class ChatcontentComponent {
+  ngOnInit() {
+    document
+      .getElementsByClassName('hide_show_wsm')[0]
+      .addEventListener('click', () => this.wsmVisibility());
+  }
+
+  wsmVisibility() {
+    const wsm = document.getElementsByClassName('workspace-menu');
+    wsm[0].classList.toggle('hidden');
+  }
+}
