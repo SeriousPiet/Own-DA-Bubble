@@ -39,6 +39,11 @@ export class MessageService {
   }
 
 
+  ifMessageFromCurrentUser(message: Message): boolean {
+    return message.creatorID === this.userservice.currentUser?.id;
+  }
+
+
   addNewAnswerToMessage(message: Message, answerContent: string) {
     const answerCollectionRef = collection(this.firestore, message.messagePath + '/messages');
     if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.messagePath + '/messages/" is undefined');
