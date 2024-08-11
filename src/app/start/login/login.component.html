@@ -29,10 +29,15 @@
     @empty {
     <span>no channels</span>
     }
-    @if(currentChannel) {
+    @if(navigationService.ifMainMessageObjectIsChannel() && navigationService.mainMessageListPath) {
     <hr>
-    <h1>Messages of {{currentChannel.name}}</h1>
-    <app-messageviewexample [messagesPath]="currentMessagesPath"></app-messageviewexample>
+    <h1># {{getTitle(navigationService.mainMessageListObject)}}</h1>
+    <app-messageviewexample [messagesPath]="navigationService.mainMessageListPath"></app-messageviewexample>
+    }
+    @if(navigationService.messageAnswersPath) {
+    <hr>
+    <h1>{{ getTitle(navigationService.message) }}</h1>
+    <app-messageviewexample [messagesPath]="navigationService.messageAnswersPath"></app-messageviewexample>
     }
 </div>
 

@@ -21,6 +21,8 @@ export class Message {
 
   get messagePath(): string { return this.collectionPath + this.id; }
 
+  get answerPath(): string { return this.messagePath + '/answers/'; }
+
   constructor(data: any, collectionPath: string) {
     this.id = data.id ? data.id : '';
     this.collectionPath = collectionPath;
