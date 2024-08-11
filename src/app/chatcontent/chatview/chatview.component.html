@@ -1,12 +1,12 @@
 <main class="chatview-main-ctn">
     <section class="chatview-header">
-        <div class="chatview-chanel-name">
+        <button class="chatview-chanel-name" popovertarget="channel-menu-popover">
             <div>
                 <img src="assets/icons/chat/general/hashtag.svg" alt="#">
                 <span>Entwickler-team</span>
                 <img src="assets/icons/modals/expand-down.svg" alt="arrow-down">
             </div>
-        </div>
+        </button>
         <div class="member-avatar-overview">
             <div class="member-avatars-ctn">
                 <div class="d-flex">
@@ -46,3 +46,7 @@
         <app-message-textarea></app-message-textarea>
     </section>
 </main>
+
+<div id="channel-menu-popover" popover>
+
+</div>
