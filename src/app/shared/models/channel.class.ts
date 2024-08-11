@@ -20,4 +20,10 @@ export class Channel {
     this.creatorID = data.creatorID ? data.creatorID : '';
     this.members = data.members ? data.members : [];
   }
+
+  update(data: any) {
+    if(data.name) this.name = data.name;
+    if(data.description) this.description = data.description;
+    if(data.members) this.members = data.members;
+  }
 }

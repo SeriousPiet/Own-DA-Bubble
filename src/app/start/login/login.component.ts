@@ -39,6 +39,10 @@ export class LoginComponent {
     this.messageservice.addNewMessageToChannel(this.channelservice.channels[channelNumber], this.messagecontent);
   }
 
+  updateChannel(channelNumber: number) {
+    this.channelservice.updateChannelOnFirestore(this.channelservice.channels[channelNumber], { memberIDs: [this.userservice.getAllUserIDs()[0]], description: this.description });
+  }
+
   setCurrentChannel(newChannel: Channel) {
     this.currentChannel = newChannel;
     this.currentMessagesPath = newChannel.channelMessagesPath;

@@ -5,7 +5,7 @@
  */
 
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { addDoc, collection, Firestore, onSnapshot, serverTimestamp, updateDoc } from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, onSnapshot, serverTimestamp, updateDoc } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
 import { Channel } from '../../shared/models/channel.class';
 
@@ -54,12 +54,8 @@ export class ChannelService implements OnDestroy {
           this.channels.push(new Channel(change.doc.data(), change.doc.id));
         }
         if (change.type === 'modified') {
-          this.channels = this.channels.map((channel) => {
-            if (channel.id === change.doc.data()['id']) {
-              return new Channel(change.doc.data(), change.doc.id);
-            }
-            return channel;
-          });
+          const channel = this.channels.find((channel) => channel.id === change.doc.data()['id']);
+          if (channel) channel.update(change.doc.data());
         }
         if (change.type === 'removed') {
           this.channels = this.channels.filter((channel) => channel.id !== change.doc.data()['id']);
@@ -92,6 +88,16 @@ export class ChannelService implements OnDestroy {
             console.warn('ChannelService: addNewChannelToFirestore: channel added');
           })
       })
+  }
+
+
+  updateChannelOnFirestore(channel: Channel, updateData: { name?: string, description?: string, memberIDs?: string[] }) {
+    const channelDocRef = doc(this.firestore, '/channels', channel.id);
+    updateDoc(channelDocRef, updateData)
+      .then(() => {
+        console.warn('ChannelService: updateChannelOnFirestore: channel updated ->', updateData);
+      });
+
   }
 
 

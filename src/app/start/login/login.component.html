@@ -23,10 +23,11 @@
     <div>
         <button (click)="setCurrentChannel(kanal)">{{kanal.name}} <br> {{kanal.description}}</button>
         <button (click)="addMessageToChannel(i)">addmessage</button>
+        <button (click)="updateChannel(i)">update channel</button>
     </div>
     }
     @empty {
-        <span>no channels</span>
+    <span>no channels</span>
     }
     @if(currentChannel) {
     <hr>
