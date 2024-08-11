@@ -1,3 +1,6 @@
+@import "../../../styles.scss";
+@import "../../../mixins.scss";
+
 :host {
     width: 100%;
 }
@@ -10,9 +13,8 @@
 .chatview {
     height: 90%;
     background-color: white;
-    border-radius: 30px;
-    display: flex;
-    align-items: center;
+    border-radius: 1.875rem;
+    @include flex(normal, center);
     flex-direction: column;
 }
 
@@ -21,9 +23,7 @@
     box-shadow: 0 0.125rem 0.625rem 0 rgba($color: #000000, $alpha: 0.2);
     height: 6rem;
     border-radius: 1.875rem 1.875rem 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include flex(space-between, center);
     width: 100%;
     padding: 1.5625rem 2.8125rem;
 
@@ -31,9 +31,7 @@
         cursor: pointer;
 
         >div {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            @include flex(center, center);
             font-size: 1.5rem;
             font-weight: 700;
             padding: .375rem .625rem;
@@ -45,7 +43,7 @@
 
         &:hover {
             border-radius: 6.25rem;
-            background-color: #ECEEFE;
+            background-color: $background;
         }
     }
 
@@ -53,26 +51,17 @@
 }
 
 .member-avatar-overview {
-    display: flex;
+    @include flex(center, center);
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    align-items: center;
     gap: 10px;
     width: 192px;
 
     .member-avatars-ctn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include flex(center, center);
         gap: 10px;
-        padding: 3px 10px;
+        padding: 0.1875rem 0.625rem;
         width: -webkit-fill-available;
         cursor: pointer;
-
-        >div {
-            display: flex;
-        }
 
         >span{
             font-weight: 600;
@@ -80,10 +69,10 @@
 
         &:hover {
             border-radius: 6.25rem;
-            background-color: #ECEEFE;
+            background-color: $background;
 
             >span{
-                color: #535AF1;
+                color: $secondary;
                 font-weight: 700;
             }
         }
@@ -102,13 +91,11 @@
     }
 
     .add-member-icon-ctn {
+        @include flex(center, center);
         width: 40px;
         height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         padding: 8px;
-        background-color: #ECEEFE;
+        background-color: $background;
         border-radius: 100%;
         cursor: pointer;
 
@@ -130,9 +117,8 @@
 .chatview-content {
     height: 47.75rem;
     width: 100%;
-    display: flex;
+    @include flex(normal, center);
     flex-direction: column;
-    align-items: center;
     position: relative;
     margin-bottom: 1.25rem;
 
@@ -146,17 +132,18 @@
         padding-bottom: 1.875rem;
 
         .chat-messages-wrapper{
-            display: flex;
+            @include flex(flex-end, normal);
             flex-direction: column;
-            justify-content: flex-end;
+            
+            >div{
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+                padding-top: .625rem;
+            }
         }
 
-        >div{
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-            padding-top: .625rem;
-        }
+      
     }
 
     ::-webkit-scrollbar {
