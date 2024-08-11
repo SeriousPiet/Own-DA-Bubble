@@ -30,6 +30,9 @@ export class MessageviewexampleComponent implements OnDestroy {
   addAnswerToMessage(message: Message) {
     this.messageservice.addNewAnswerToMessage(message, this.answerContent);
   }
+  changeMessageContent(message: Message) {
+    this.messageservice.updateMessage(message, { content: this.answerContent });
+  }
 
   // ==================================================================== debug
 
@@ -53,12 +56,8 @@ export class MessageviewexampleComponent implements OnDestroy {
             this.messages.push(newMessage);
           }
           if (change.type === 'modified') {
-            this.messages = this.messages.map((message) => {
-              if (message.id === change.doc.data()['id']) {
-                return new Message(change.doc.data(), newPath);
-              }
-              return message;
-            });
+            const message = this.messages.find((message) => message.id === change.doc.data()['id']);
+            if (message) message.update(change.doc.data());
           }
           if (change.type === 'removed') {
             this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
