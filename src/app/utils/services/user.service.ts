@@ -21,12 +21,63 @@ export class UsersService implements OnDestroy {
         this.initUserWatchDog();
     }
 
+
     getAllUserIDs(): string[] {
         return this.users.map((user) => user.id);
     }
 
+
     getUserByID(id: string): User | undefined {
         return this.users.find((user) => user.id === id);
+    }
+
+
+    updateUserOnFirestore(userID: string, userChangeData: { name?: string, chatIDs?: string[], avatar?: number }) {
+        updateDoc(doc(this.firestore, '/users/' + userID), userChangeData)
+            .then(() => {
+                console.warn('userservice/firestore: User updated(', userID, ')');
+            })
+            .catch((error) => {
+                console.error('userservice/firestore: Error updating user(', error.message, ')');
+            });
+    }
+
+
+    logoutUser(): void {
+        if (this.currentUser) {
+            signOut(this.firebaseauth);
+        }
+    }
+
+
+    async loginUser(email: string, password: string): Promise<string | undefined> {
+        return await signInWithEmailAndPassword(this.firebaseauth, email, password)
+            .then((response) => {
+                return undefined;
+            })
+            .catch((error) => {
+                console.error('userservice/auth: Error logging in user(', error.message, ')');
+                return error.message;
+            });
+    }
+
+
+    async registerNewUser(user: { email: string, password: string, name: string }): Promise<boolean> {
+        createUserWithEmailAndPassword(this.firebaseauth, user.email, user.password)
+            .then((response) => {
+                this.addUserToFirestore({ name: user.name, email: response.user.email })
+                    .then((userID) => {
+                        updateProfile(response.user, { displayName: userID })
+                            .then(() => {
+                                return true;
+                            })
+                    })
+            })
+            .catch((error) => {
+                console.error('userservice/auth: Error registering user(', error.message, ')');
+                return false;
+            });
+        return false;
     }
 
 
@@ -37,12 +88,8 @@ export class UsersService implements OnDestroy {
                     this.users.push(new User(change.doc.data()));
                 }
                 if (change.type === 'modified') {
-                    this.users = this.users.map((user) => {
-                        if (user.email === change.doc.data()['email']) {
-                            return new User(change.doc.data());
-                        }
-                        return user;
-                    });
+                    const user = this.users.find((user) => user.id === change.doc.data()['id']);
+                    if (user) user.update(change.doc.data());
                 }
                 if (change.type === 'removed') {
                     this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
@@ -86,49 +133,6 @@ export class UsersService implements OnDestroy {
         }
         const userObj = await getDoc(doc(this.firestore, '/users/' + user.displayName));
         return new User(userObj.data(), userObj.id);
-    }
-
-
-    logoutUser(): void {
-        if (this.currentUser) {
-            signOut(this.firebaseauth);
-        }
-    }
-
-
-    async loginUser(email: string, password: string): Promise<string | undefined> {
-        return await signInWithEmailAndPassword(this.firebaseauth, email, password)
-            .then((response) => {
-                return undefined;
-            })
-            .catch((error) => {
-                console.error('userservice/auth: Error logging in user(', error.message, ')');
-                return error.message;
-            });
-    }
-
-
-    async registerNewUser(user: { email: string, password: string, name: string }): Promise<boolean> {
-        createUserWithEmailAndPassword(this.firebaseauth, user.email, user.password)
-            .then((response) => {
-                this.addUserToFirestore({ name: user.name, email: response.user.email })
-                    .then((userID) => {
-                        updateProfile(response.user, { displayName: userID })
-                            .then(() => {
-                                return true;
-                            })
-                    })
-            })
-            .catch((error) => {
-                console.error('userservice/auth: Error registering user(', error.message, ')');
-                return false;
-            });
-        return false;
-    }
-
-
-    async updateUserOnFirestore(userID: string, userChangeData: any): Promise<void> {
-        await updateDoc(doc(this.firestore, '/users/' + userID), userChangeData);
     }
 
 
