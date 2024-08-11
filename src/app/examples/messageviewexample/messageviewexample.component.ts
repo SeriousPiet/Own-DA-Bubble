@@ -40,7 +40,7 @@ export class MessageviewexampleComponent implements OnDestroy {
     this.messageservice.updateMessage(message, { content: this.answerContent });
   }
   viewThread(message: Message) {
-    this.naviservice.setThreadMessagePath(message);
+    this.naviservice.setThreadViewObject(message);
   }
 
   // ==================================================================== debug

@@ -21,19 +21,32 @@ export class NavigationService {
 
 
   /**
+   * For chatview.
    * The main message list object and the path to its messages.
    */
-  public mainMessageListObject: Channel | Chat | undefined;
-
-  public mainMessageListPath: string | undefined;
+  private _chatViewObject: Channel | Chat | undefined;
+  get chatViewObject(): Channel | Chat | undefined {
+    return this._chatViewObject;
+  }
+  private _chatViewPath: string | undefined;
+  get chatViewPath(): string | undefined {
+    return this._chatViewPath;
+  }
 
 
   /**
+   * For the threadview.
    * The path for message answers and the message object.
    */
-  public message: Message | undefined;
+  private _threadViewObject: Message | undefined;
+  get threadViewObject(): Message | undefined {
+    return this._threadViewObject;
+  }
 
-  public messageAnswersPath: string | undefined;
+  private _threadViewPath: string | undefined;
+  get threadViewPath(): string | undefined {
+    return this._threadViewPath;
+  }
 
 
   /**
@@ -43,13 +56,13 @@ export class NavigationService {
    * @param object - The object to set as the main message object.
    * @returns void
    */
-  setMainMessageObject(object: Channel | Chat): void {
-    this.mainMessageListObject = object;
+  setChatViewObject(object: Channel | Chat): void {
+    this._chatViewObject = object;
     if (object instanceof Channel) {
-      this.mainMessageListPath = object.channelMessagesPath;
+      this._chatViewPath = object.channelMessagesPath;
       console.warn('Navigationservice: setMainMessageObject: Channel ' + object.name);
     } else {
-      this.mainMessageListPath = object.chatMessagesPath;
+      this._chatViewPath = object.chatMessagesPath;
       console.warn('Navigationservice: setMainMessageObject: Chat ' + object.memberIDs);
     }
     this.clearThread();
@@ -62,7 +75,7 @@ export class NavigationService {
    * @returns {boolean} True if the main message object is a Channel, false otherwise.
    */
   ifMainMessageObjectIsChannel(): boolean {
-    return this.mainMessageListObject instanceof Channel;
+    return this._chatViewObject instanceof Channel;
   }
 
 
@@ -72,7 +85,7 @@ export class NavigationService {
    * @returns {boolean} True if the main message object is of type Chat, false otherwise.
    */
   ifMainMessageObjectIsChat(): boolean {
-    return this.mainMessageListObject instanceof Chat;
+    return this._chatViewObject instanceof Chat;
   }
 
 
@@ -82,9 +95,9 @@ export class NavigationService {
    * @param message - The message object containing the answer path.
    * @returns void
    */
-  setThreadMessagePath(message: Message): void {
-    this.messageAnswersPath = message.answerPath;
-    this.message = message;
+  setThreadViewObject(message: Message): void {
+    this._threadViewPath = message.answerPath;
+    this._threadViewObject = message;
     this.changeSubject.next('message');
     console.warn('Navigationservice: setThreadMessagePath to ' + message.answerPath);
   }
@@ -94,8 +107,8 @@ export class NavigationService {
    * Clears the thread by resetting the messageAnswersPath and message properties.
    */
   private clearThread(): void {
-    this.messageAnswersPath = undefined;
-    this.message = undefined;
+    this._threadViewPath = undefined;
+    this._threadViewObject = undefined;
     console.warn('Navigationservice: clearThread');
   }
 

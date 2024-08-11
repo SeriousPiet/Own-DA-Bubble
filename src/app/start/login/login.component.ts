@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   public channelservice = inject(ChannelService);
   public messageservice = inject(MessageService);
 
-  
+
   public navigationService = inject(NavigationService);
 
   ngOnInit(): void {
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
 
   getTitle(object: Channel | Chat | Message | undefined): string {
     if (object instanceof Channel) return object.name;
-    if (object instanceof Message) return 'Messageanswers of ' + this.userservice.getUserByID(object.creatorID)?.name;
+    if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
     if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
     return '';
   }
@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit {
   }
 
   setCurrentChannel(newChannel: Channel) {
-    this.navigationService.setMainMessageObject(newChannel);
+    this.navigationService.setChatViewObject(newChannel);
   }
 
   // ======================================================================
