@@ -60,10 +60,10 @@ export class NavigationService {
     this._chatViewObject = object;
     if (object instanceof Channel) {
       this._chatViewPath = object.channelMessagesPath;
-      console.warn('Navigationservice: setMainMessageObject: Channel ' + object.name);
+      console.warn('Navigationservice: setChatViewObject: Channel ' + object.name);
     } else {
       this._chatViewPath = object.chatMessagesPath;
-      console.warn('Navigationservice: setMainMessageObject: Chat ' + object.memberIDs);
+      console.warn('Navigationservice: setChatViewObject: Chat ' + object.memberIDs);
     }
     this.clearThread();
     this.changeSubject.next('mainMessageList');
@@ -99,7 +99,7 @@ export class NavigationService {
     this._threadViewPath = message.answerPath;
     this._threadViewObject = message;
     this.changeSubject.next('message');
-    console.warn('Navigationservice: setThreadMessagePath to ' + message.answerPath);
+    console.warn('Navigationservice: setThreadViewObject to ' + message.answerPath);
   }
 
 

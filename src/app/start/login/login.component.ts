@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
   }
 
   updateChannel(channelNumber: number) {
-    this.channelservice.updateChannelOnFirestore(this.channelservice.channels[channelNumber], { memberIDs: [this.userservice.getAllUserIDs()[0]], description: this.description });
+    this.channelservice.updateChannelOnFirestore(this.channelservice.channels[channelNumber], { memberIDs: [this.userservice.getAllUserIDs()[0]], description: this.description, name: this.name });
   }
 
   setCurrentChannel(newChannel: Channel) {
