@@ -1,0 +1,103 @@
+@import "../../../../../styles.scss";
+@import "../../../../../mixins.scss";
+
+:host {
+    border: none;
+    width: 50%;
+    border-radius: 0px 1.875rem 1.875rem 1.875rem;
+    top: -5.3125rem
+}
+
+main {
+    @include flex(center, normal);
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2.5rem;
+
+    >div {
+        @include flex(space-between, center);
+
+        >div {
+            @include flex(normal, center);
+            font-size: 1.5rem;
+            font-weight: 700;
+            gap: .9375rem
+        }
+    }
+
+    >section {
+        @include flex(space-between, center);
+        flex-direction: column;
+        gap: 0.625rem;
+        border: $default-border;
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+
+        >div {
+            width: 100%;
+
+            >span {
+                font-size: 1.125rem;
+                font-weight: 700;
+            }
+
+            >button {
+                font-size: 1.125rem;
+                font-weight: 500;
+                color: $secondary;
+                width: 6.25rem;
+                transition: all 250ms ease-in-out;
+
+                &:hover {
+                    font-weight: 600;
+                    color: $secondary;
+                }
+            }
+        }
+    }
+}
+
+.channel-name {
+    >div {
+        @include flex(space-between, center);
+    }
+
+    :nth-child(2) {
+        @include flex(normal, center);
+    }
+}
+
+.channel-description {
+    >div {
+        @include flex(space-between, center);
+    }
+
+    >textarea {
+        width: 100%;
+        resize: none;
+        border: none;
+        font-family: Nunito;
+        outline: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    hr {
+        border: $default-border;
+        width: 100%;
+    }
+
+    :nth-child(4) {
+        @include flex(normal, normal);
+        flex-direction: column;
+        gap: 1.25rem;
+
+        >:nth-child(2) {
+            font-weight: 400;
+            font-size: 1.5rem;
+            color: $secondary;
+        }
+    }
+}
