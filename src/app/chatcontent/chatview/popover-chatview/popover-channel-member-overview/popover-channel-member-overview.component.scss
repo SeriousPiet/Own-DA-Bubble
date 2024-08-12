@@ -1,0 +1,111 @@
+@import "../../../../../styles.scss";
+@import "../../../../../mixins.scss";
+
+
+:host {
+    border: none;
+    width: 35%;
+    border-radius: 1.875rem 0 1.875rem 1.875rem;
+    top: -5.3125rem;
+    right: -3.125rem;
+}
+
+.avatar {
+    @include avatarStatusThumbnail($online, 4.5rem, 1rem, $background);
+}
+
+main {
+    @include flex(center, center);
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2.5rem;
+
+    >div {
+        @include flex(space-between, center);
+        width: 100%;
+
+        h4 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        >div {
+            height: 2.5rem;
+            width: 2.5rem;
+            border-radius: 100%;
+            @include flex(center, center);
+
+            &:hover {
+                background-color: $background;
+                cursor: pointer;
+
+                >img {
+                    content: url('../../../../../assets/icons/chat/general/close-hover.svg');
+                }
+            }
+        }
+    }
+
+
+
+    .member-list {
+        @include flex(center, center);
+        flex-direction: column;
+        gap: .9375rem;
+
+        >div {
+            @include flex(normal, center);
+            gap: .8125rem;
+            width: 100%;
+        }
+
+        .member {
+            padding: .25rem 1.25rem;
+            
+            &:hover {
+                background-color: $background;
+                cursor: pointer;
+                border-radius: 6.25rem;
+            }
+        }
+    }
+
+
+    .add-member {
+        @include flex(center, center);
+        gap: .9375rem;
+        width: 100%;
+        cursor: pointer;
+
+        padding: .75rem 1.25rem;
+        border-radius: 6.25rem;
+
+        >div {
+            @include flex(center, center);
+            width: 2.5rem;
+            height: 2.5rem;
+
+            >img {
+                border-radius: 100%;
+                background-color: $background;
+                padding: .25rem;
+                width: 2rem;
+                height: 2rem;
+            }
+        }
+
+        &:hover {
+            cursor: pointer;
+            background-color: $background;
+            color: $secondary;
+
+            >div {
+                >img {
+                    content: url('../../../../../assets/icons/chat/general/add-to-channel-hover.svg');
+                    border-radius: unset;
+                }
+            }
+
+        }
+    }
+}
