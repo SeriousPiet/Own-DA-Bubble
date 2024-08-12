@@ -10,70 +10,63 @@ $iconFilterPurple: invert(24%) sepia(40%) saturate(5509%) hue-rotate(238deg)
 $online: #92c83e;
 $offline: $disabled;
 
-@mixin flex($j_content, $a_item: center) {
+@mixin flex($j_content: flex-start, $a_item: center) {
   display: flex;
   justify-content: $j_content;
   align-items: $a_item;
 }
 
-@mixin inputBox($width: auto) {
+@mixin inputBox(
+  $width: auto,
+  $defBorderColor: transparent,
+  $hoverBorderColor: $disabled,
+  $focWiBorderColor: $secondary,
+  $includeBefore: true
+) {
   position: relative;
   display: flex;
   align-items: center;
   width: $width;
   padding: 0.125rem 2rem;
-  border: 1px solid transparent;
+  border: 1px solid $defBorderColor;
   border-radius: $circled-border-radius;
   transition: $transition-standard;
 
   &:hover {
-    border: 1px solid $disabled;
+    border: 1px solid $hoverBorderColor;
   }
 
   &:focus-within {
-    border: 1px solid $secondary;
-  }
-
-  &:focus-within::before {
-    filter: none;
+    border: 1px solid $focWiBorderColor;
   }
 
   // when input-container is focused, sub-element is styled
-  &:focus-within img.input-icon {
-    filter: none;
-  }
 
-  &::before {
-    content: "";
-    left: 0;
-    width: 1.5rem;
-    height: 1.5rem;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: left;
-    filter: $iconFilterGrey;
-  }
+  @if $includeBefore {
+    &:focus-within img.input-icon {
+      filter: none;
+    }
 
-  &:focus-within::before,
-  input:not(:placeholder-shown) + &::before,
-  &:has(input:not(:placeholder-shown))::before {
-    filter: none;
-  }
-}
+    &:focus-within::before {
+      filter: none;
+    }
 
-@mixin iconBox {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: none;
-  cursor: pointer;
-  transition: $transition-standard;
+    &::before {
+      content: "";
+      left: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: left;
+      filter: $iconFilterGrey;
+    }
 
-  &:hover {
-    background-color: $background;
+    &:focus-within::before,
+    input:not(:placeholder-shown) + &::before,
+    &:has(input:not(:placeholder-shown))::before {
+      filter: none;
+    }
   }
 }
 
@@ -92,6 +85,25 @@ $offline: $disabled;
     color: $disabled;
   }
 }
+
+@mixin iconBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  transition: $transition-standard;
+
+  &:hover {
+    background-color: $background;
+  }
+}
+
 @mixin button-base($width: auto) {
   @extend .nunito-18-700;
   width: $width;
@@ -197,6 +209,15 @@ $offline: $disabled;
     border-color: $accent;
   }
   &:active {
+    font-weight: 700;
+  }
+}
+
+@mixin buttonFontWeightOnly {
+  @extend .nunito-18-600;
+  color: $accent;
+
+  &:hover {
     font-weight: 700;
   }
 }
