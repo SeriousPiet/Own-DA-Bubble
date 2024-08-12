@@ -1,5 +1,9 @@
-<button class="profile" popovertarget="profile-popover">
-  <span class="name nunito-32-700">Mangio Pane</span>
+<button
+  class="profile"
+  popovertarget="profile-popover"
+  (click)="resetPopoverState()"
+>
+  <span class="username">Mangio Pane</span>
   <div class="avatar">
     <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
   </div>
@@ -7,6 +11,75 @@
 </button>
 
 <div id="profile-popover" popover>
-  <button>Profil</button>
-  <button>Logout</button>
+  @if (!showProfileDetails) {
+  <div class="choose-action">
+    <button (click)="toggleProfileDetails()">Profil</button>
+    <button>Logout</button>
+  </div>
+  } @else { @if (!editMode) {
+  <div class="profile-details">
+    <div class="top">
+      <span class="modal-title">Profil</span>
+      <div class="icon-box" (click)="showProfileDetails = false">
+        <img src="./assets/icons/chat/general/close.svg" alt="Close" />
+      </div>
+    </div>
+    <div class="avatar">
+      <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
+    </div>
+    <div class="edit-username">
+      <span class="username">Mangio Pane</span>
+      <button class="edit" (click)="toggleEditMode()">Bearbeiten</button>
+    </div>
+    <div class="online-status">
+      <div class="online-status-indicator"></div>
+      <span>Aktiv</span>
+    </div>
+    <div class="usermail">
+      <img src="./assets/icons/start/mail.svg" alt="" />
+      <div class="mail-adress">
+        <span>Email-Adresse</span>
+        <a href="mailto: hard@coded.com">hard&#64;coded.com</a>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div class="profile-edit">
+    <div class="top">
+      <span class="modal-title">Dein Profil Bearbeiten</span>
+      <div class="icon-box" (click)="toggleEditMode()">
+        <img src="./assets/icons/chat/general/close.svg" alt="Close" />
+      </div>
+    </div>
+
+    <div class="avatar">
+      <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
+    </div>
+    <div class="edit-box">
+      <div class="edit">
+        <div class="input-label">
+          <img src="./assets/icons/modals/profile/person_circle.svg" alt="" />
+          <span>Vollständiger Name</span>
+        </div>
+        <div class="input-box">
+          <input type="text" placeholder="Dein Name hier" />
+        </div>
+      </div>
+
+      <div class="edit">
+        <div class="input-label">
+          <img src="./assets/icons/modals/profile/mail.svg" alt="" />
+          <span>E-mail Adresse</span>
+        </div>
+        <div class="input-box">
+          <input type="mail" placeholder="Deine Mailadresse hier " />
+        </div>
+      </div>
+    </div>
+    <div class="btn-box">
+      <button>Abbrechen</button>
+      <button>Speichern</button>
+    </div>
+  </div>
+  } }
 </div>
