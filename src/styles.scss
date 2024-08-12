@@ -9,6 +9,8 @@ $disabled: #686868;
 $hover-grey: #e6e6e6;
 $error: #ed1e79;
 
+$mail: #1381ff;
+
 // start aimation background
 $intro-gradient: linear-gradient(1.46deg, #313ae6 1.22%, #797ef3 98.76%);
 
@@ -38,9 +40,10 @@ $border-online-status: 2px solid #fff;
 $vert-spacer: #adb0d9;
 
 // transitions
-$transition-standard: all 0.125 s ease-in-out;
+$transition-standard: all 0.125s ease-in-out;
 $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
-  0.25s overlay allow-discrete, 0.25s transform ease-out;
+  0.25s overlay allow-discrete, 0.25s transform ease-out,
+  width 0.25s ease-in-out, height 0.25s ease-in-out;
 
 @import "./fonts.scss";
 
@@ -132,4 +135,8 @@ body {
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  @media (width <= 1440px) {
+    font-size: 16px;
+  }
 }
