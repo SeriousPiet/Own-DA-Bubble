@@ -5,6 +5,10 @@
     width: 100%;
 }
 
+::backdrop{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
 .chatview-main-ctn{
     background-color: white;
     border-radius: 1.875rem;
@@ -26,6 +30,7 @@
     @include flex(space-between, center);
     width: 100%;
     padding: 1.5625rem 2.8125rem;
+    gap: .625rem;
 
     position: relative;
 
@@ -53,6 +58,11 @@
             &:hover {
                 filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg) brightness(94%) contrast(101%);
             }
+
+            >div{
+                @include flex(center, center);
+                gap: 0.9375rem;
+            }
         }
 
         &:hover {
@@ -79,6 +89,7 @@
 
         >span{
             font-weight: 600;
+            font-size: large;
         }
 
         &:hover {
@@ -94,7 +105,7 @@
 
 
 
-    >div {
+    >button {
         .member-avatar {
             margin-left: -0.750rem;
             border-radius: 100%;

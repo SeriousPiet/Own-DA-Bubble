@@ -1,14 +1,16 @@
 <main class="chatview-main-ctn">
     <section class="chatview-header">
-        <button class="chatview-chanel-name" popovertarget="channel-menu-popover">
+        <button class="chatview-chanel-name" popovertarget="channel-editor-popover">
             <div>
-                <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-                <span>Entwickler-team</span>
+                <div>
+                    <img src="assets/icons/chat/general/hashtag.svg" alt="#">
+                    <span>Entwicklerteam</span>
+                </div>
                 <img src="assets/icons/modals/expand-down.svg" alt="arrow-down">
             </div>
         </button>
         <div class="member-avatar-overview">
-            <div class="member-avatars-ctn">
+            <button class="member-avatars-ctn" popovertarget="channel-member-overview-popover">
                 <div class="d-flex">
                     <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
                         alt="member-avatar">
@@ -18,7 +20,7 @@
                         alt="member-avatar">
                 </div>
                 <span>6</span>
-            </div>
+            </button>
             <div class="add-member-icon-ctn">
                 <img src="assets/icons/chat/general/add-to-channel.svg" alt="add-member-icon">
             </div>
@@ -28,25 +30,25 @@
     <section class="chatview-content">
         <div class="chat-messages-content">
             <!-- @for (item of [1,2]; track $index;) { -->
-             <div class="chat-messages-wrapper">
+            <div class="chat-messages-wrapper">
                 <div>
                     <app-message-date></app-message-date>
                     <app-message></app-message>
-                    <app-message [class.message-from-user] = 'messagefromUser'></app-message>
-                 </div>
-                 <div>
+                    <app-message [class.message-from-user]='messagefromUser'></app-message>
+                </div>
+                <div>
                     <app-message-date></app-message-date>
                     <app-message></app-message>
-                    <app-message [class.message-from-user] = 'messagefromUser'></app-message>
-                 </div>
-             </div>
-            
+                    <app-message [class.message-from-user]='messagefromUser'></app-message>
+                </div>
+            </div>
+
             <!-- } -->
         </div>
         <app-message-textarea></app-message-textarea>
     </section>
+
+    <app-popover-channel-editor id="channel-editor-popover" popover></app-popover-channel-editor>
+    <app-popover-channel-member-overview id="channel-member-overview-popover" popover></app-popover-channel-member-overview>
+
 </main>
-
-<div id="channel-menu-popover" popover>
-
-</div>
