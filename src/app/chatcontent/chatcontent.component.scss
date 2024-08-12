@@ -4,7 +4,7 @@
 section.chatcontent {
   width: 100%;
   max-width: 1920px;
-  min-height: 100vh;
+  max-height: 100vh;
   padding: 1.5rem 1.25rem 1.25rem;
   background-color: $background;
 
@@ -22,18 +22,21 @@ section.chatcontent {
 .workspace-menu {
   grid-area: workspace-menu;
   padding: 1rem;
-  border-radius: 1rem;
+  border-radius: 1.875rem;
   background-color: #fff;
+  max-height: 100vh;
 }
 .chatview {
   grid-area: chatview;
   border-radius: 1.875rem;
   background-color: #fff;
+  max-height: 100vh;
 }
 
 .threadview {
   grid-area: threadview;
   padding: 1rem;
-  border-radius: 1rem;
+  border-radius: 1.875rem;
   background-color: #fff;
+  max-height: 100vh;
 }
