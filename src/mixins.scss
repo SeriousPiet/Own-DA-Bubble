@@ -301,6 +301,12 @@ $offline: $disabled;
 
 // ########## FONT-STYLING
 
+@mixin fontSizer($size: 18, $weight: 700, $color: black) {
+  $class-name: "nunito-#{$size}-#{$weight}";
+  @extend .#{$class-name};
+  color: $color;
+}
+
 @mixin fontStyleEDIT {
   @extend .nunito-18-600;
   color: $accent;
