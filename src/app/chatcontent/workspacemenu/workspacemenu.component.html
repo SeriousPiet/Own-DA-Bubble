@@ -1,62 +1,55 @@
 <section>
-  <div class="header-workspace-menu">
+  <div class="workspace">
     <div>
       <img
-        src="../../../assets/icons/workspace_logo.svg"
-        alt="workspace_logo.svg"
+        src="../../../assets/icons/wsm/devspace-logo.svg"
+        alt="devspace-logo.svg"
       />
-      <span>Devspace</span>
+      <h1 class="nunito-24-700">Devspace</h1>
     </div>
-    <img src="../../../assets/icons/add.svg" alt="add.svg" />
+    <div class="ws-write"></div>
   </div>
-  <div>
+  <div class="channels">
     <details>
-      <summary>
-        <img
-          src="../../../assets/icons/workspaces.svg"
-          alt="workspaces.svg"
-        />Channels
+      <summary class="blue">
+        <div>
+          <div>
+            <div class="ws-channels"></div>
+            <h2 class="nunito-20-700">Channels</h2>
+          </div>
+          <button
+            class="add-channel"
+            popoverTarget="addchannel"
+            popovertargetaction="show"
+          ></button>
+        </div>
       </summary>
-      <ul>
-        <li>
-          <img src="../../../assets/icons/tag.svg" alt="tag.svg" />
-          <span>Entwicklerteam</span>
+      <ul class="channel-list">
+        <li class="blue" *ngFor="let channel of channelservice.channels">
+          <div class="hashtag"></div>
+          <h3 class="nunito-18-400">{{ channel.name }}</h3>
         </li>
-        <button class="add-channel">
-          <img
-            src="../../../assets/icons/add_circle.svg"
-            alt="add_circle.svg"
-          />
-          <span>Channel hinzufügen</span>
-        </button>
       </ul>
+      <button
+        popoverTarget="addchannel"
+        popovertargetaction="show"
+        class="blue"
+      >
+        <div class="add-channel-2 blue"></div>
+        <h3 class="nunito-18-400">Channel hinzufügen</h3>
+      </button>
     </details>
   </div>
   <div>
     <details>
-      <summary>
-        <img
-          src="../../../assets/icons/account_circle.svg"
-          alt="account_circle.svg"
-        />
-        <span>Direktnachrichten</span>
+      <summary class="blue">
+        <div class="dm-symbol"></div>
+        <h2 class="nunito-20-700">Direktnachrichten</h2>
       </summary>
       <ul>
-        <li>
+        <li class="blue" *ngFor="let user of userservice.users">
           <div class="profil-image"></div>
-          <span>Michael Buschmann</span>
-        </li>
-        <li>
-          <div class="profil-image"></div>
-          <span>Bela Schramm</span>
-        </li>
-        <li>
-          <div class="profil-image"></div>
-          <span>Anthony Hamon</span>
-        </li>
-        <li>
-          <div class="profil-image"></div>
-          <span>Peter Wallbaum</span>
+          <h3 class="nunito-18-400 blue">{{ user.name }}</h3>
         </li>
       </ul>
     </details>

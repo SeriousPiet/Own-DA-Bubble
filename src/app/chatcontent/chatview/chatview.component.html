@@ -1,48 +1,63 @@
 <main class="chatview-main-ctn">
-    <section class="chatview-header">
-        <div class="chatview-chanel-name">
-            <div>
-                <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-                <span>Entwickler-team</span>
-                <img src="assets/icons/modals/expand-down.svg" alt="arrow-down">
-            </div>
+  <section class="chatview-header">
+    <div class="chatview-chanel-name">
+      <div>
+        <img src="assets/icons/chat/general/hashtag.svg" alt="#" />
+        <span>Entwickler-team</span>
+        <img src="assets/icons/modals/expand-down.svg" alt="arrow-down" />
+      </div>
+    </div>
+    <div class="member-avatar-overview">
+      <div class="member-avatars-ctn">
+        <div class="d-flex">
+          <img
+            class="member-avatar"
+            src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
+            alt="member-avatar"
+          />
+          <img
+            class="member-avatar"
+            src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
+            alt="member-avatar"
+          />
+          <img
+            class="member-avatar"
+            src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
+            alt="member-avatar"
+          />
         </div>
-        <div class="member-avatar-overview">
-            <div class="member-avatars-ctn">
-                <div class="d-flex">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
-                        alt="member-avatar">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
-                        alt="member-avatar">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
-                        alt="member-avatar">
-                </div>
-                <span>6</span>
-            </div>
-            <div class="add-member-icon-ctn">
-                <img src="assets/icons/chat/general/add-to-channel.svg" alt="add-member-icon">
-            </div>
+        <span>6</span>
+      </div>
+      <div class="add-member-icon-ctn">
+        <img
+          src="assets/icons/chat/general/add-to-channel.svg"
+          alt="add-member-icon"
+        />
+      </div>
+    </div>
+  </section>
+  <section class="chatview-content">
+    <div class="chat-messages-content">
+      <!-- @for (item of [1,2]; track $index;) { -->
+      <div class="chat-messages-wrapper">
+        <div>
+          <app-message-date></app-message-date>
+          <app-message></app-message>
+          <app-message
+            [class.message-from-user]="messagefromUser"
+          ></app-message>
         </div>
+        <div>
+          <app-message-date></app-message-date>
+          <app-message></app-message>
+          <app-message
+            [class.message-from-user]="messagefromUser"
+          ></app-message>
+        </div>
+      </div>
 
-    </section>
-    <section class="chatview-content">
-        <div class="chat-messages-content">
-            <!-- @for (item of [1,2]; track $index;) { -->
-             <div class="chat-messages-wrapper">
-                <div>
-                    <app-message-date></app-message-date>
-                    <app-message></app-message>
-                    <app-message [class.message-from-user] = 'messagefromUser'></app-message>
-                 </div>
-                 <div>
-                    <app-message-date></app-message-date>
-                    <app-message></app-message>
-                    <app-message [class.message-from-user] = 'messagefromUser'></app-message>
-                 </div>
-             </div>
-            
-            <!-- } -->
-        </div>
-        <app-message-textarea></app-message-textarea>
-    </section>
+      <!-- } -->
+    </div>
+    <app-message-textarea></app-message-textarea>
+  </section>
 </main>

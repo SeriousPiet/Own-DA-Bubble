@@ -7,15 +7,17 @@ import { MessageComponent } from './message/message.component';
 @Component({
   selector: 'app-chatview',
   standalone: true,
-  imports: [MessageDateComponent, MessageComponent, MessageTextareaComponent, CommonModule],
+  imports: [
+    MessageDateComponent,
+    MessageComponent,
+    MessageTextareaComponent,
+    CommonModule,
+  ],
   templateUrl: './chatview.component.html',
-  styleUrl: './chatview.component.scss'
+  styleUrl: './chatview.component.scss',
 })
 export class ChatviewComponent implements OnInit {
-
   messagefromUser = true;
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit(): void {}
 }

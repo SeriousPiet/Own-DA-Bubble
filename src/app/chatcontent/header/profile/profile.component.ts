@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { UsersService } from '../../../utils/services/user.service';
+import { NavigationService } from '../../../utils/services/navigation.service';
 
 @Component({
   selector: 'app-profile',
@@ -22,5 +24,21 @@ export class ProfileComponent {
 
   toggleEditMode() {
     this.editMode = !this.editMode;
+  }
+
+  public onlineStatus: string = 'offline';
+  public onlineColor: string = '#92c83e'; // Farbe für online
+  public offlineColor: string = '#686868'; // Farbe für offline
+
+  constructor(
+    public userservice: UsersService,
+    private navigationService: NavigationService
+  ) {
+    this.navigationService.change$.subscribe(() => {
+      this.onlineStatus = this.userservice.currentUser?.online
+        ? 'online'
+        : 'offline';
+      console.log('Online-Status:', this.onlineStatus);
+    });
   }
 }
