@@ -7,6 +7,10 @@
   gap: 1.25rem;
   cursor: pointer;
 
+  span.username {
+    @include fontSizer(32, 700, black);
+  }
+
   span,
   img {
     transition: $transition-standard;
@@ -28,22 +32,176 @@
 #profile-popover {
   @include flex(center, center);
   flex-direction: column;
-  gap: 0.25rem;
   top: 7.5rem;
   margin: 0 1.25rem 0 auto;
-  width: 20%;
+  min-width: 15.5rem;
+  width: fit-content;
+  height: fit-content;
+  max-height: 34rem;
   padding: 1.25rem;
   border: none;
-  border-radius: 1rem 0 1rem 1rem;
+  border-radius: 1.875rem 0 1.875rem 1.875rem;
   box-shadow: $profile-box-shadow;
   opacity: 0;
-
   transition: $transition-popover;
 
-  button {
-    @include buttonNoBorder(100%);
+  .choose-action {
+    @include flex(center, center);
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+
+    button {
+      @include buttonNoBorder(100%);
+      @include fontSizer(24, 600, black);
+    }
+  }
+
+  .profile-details {
+    @include flex(center, center);
+    flex-direction: column;
+    min-width: 20rem;
+
+    .edit-username {
+      @include flex(space-between, center);
+      width: 100%;
+
+      span.username {
+        @include fontSizer(32, 700, black);
+      }
+
+      button.edit {
+        @include buttonFontWeightOnly;
+      }
+    }
+
+    .online-status {
+      @include flex(flex-start, center);
+      width: 100%;
+      gap: 1rem;
+      margin: 1rem 0 2.5rem;
+
+      .online-status-indicator {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: $online;
+      }
+
+      span {
+        @include fontSizer(20, 600, $online);
+      }
+    }
+
+    .usermail {
+      @include flex(flex-start, flex-start);
+      width: 100%;
+      gap: 1.25rem;
+
+      .mail-adress {
+        @include flex(center, flex-start);
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+
+        span {
+          @include fontSizer(20, 700, black);
+        }
+
+        a {
+          color: $mail;
+        }
+      }
+    }
+  }
+
+  .profile-edit {
+    @include flex(center, center);
+    flex-direction: column;
+    min-width: 20rem;
+
+    .edit-box {
+      @include flex(flex-start, flex-start);
+      flex-direction: column;
+      width: 100%;
+      gap: 1.25rem;
+
+      .edit {
+        @include flex(flex-start, flex-start);
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+      }
+
+      .input-label {
+        @include flex(flex-start, center);
+        width: 100%;
+        gap: 1.25rem;
+
+        span {
+          @include fontSizer(20, 700, black);
+        }
+      }
+
+      .input-box {
+        @include inputBox(100%, #adb0d9, $secondary, $secondary, false);
+
+        input {
+          @include input;
+          @include fontSizer(18, 400, black);
+          padding: 0.875rem 0;
+        }
+      }
+    }
+
+    .btn-box {
+      @include flex(center, center);
+      width: 100%;
+      gap: 2rem;
+      margin-top: 1rem;
+
+      button:first-of-type {
+        @include buttonEmpty;
+      }
+
+      button:last-of-type {
+        @include buttonFull;
+      }
+    }
+  }
+
+  .avatar {
+    @include flex(center, center);
+    flex-grow: 1;
+    max-height: 8rem;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    margin: 1.25rem 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+
+      object-fit: cover;
+    }
+  }
+
+  .icon-box {
+    @include iconBox;
+  }
+
+  .top {
+    @include flex(space-between, center);
+    width: 100%;
+    height: fit-content;
+
+    .modal-title {
+      @include fontSizer(24, 700, black);
+    }
   }
 }
+
 ::backdrop {
   background-color: #00000066;
 }

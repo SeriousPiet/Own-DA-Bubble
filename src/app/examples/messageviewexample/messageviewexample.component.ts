@@ -1,10 +1,13 @@
-import { ChangeDetectorRef, Component, inject, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Message } from '../../shared/models/message.class';
 import { onSnapshot } from '@firebase/firestore';
 import { collection, Firestore } from '@angular/fire/firestore';
 import { UsersService } from '../../utils/services/user.service';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from '../../utils/services/message.service';
+import { NavigationService } from '../../utils/services/navigation.service';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-messageviewexample',
@@ -19,16 +22,25 @@ export class MessageviewexampleComponent implements OnDestroy {
 
   private unsubMessages: any = null;
   private firestore = inject(Firestore);
-  private messageservice = inject(MessageService);
   public userservice = inject(UsersService);
 
   public messages: Message[] = [];
 
   // ==================================================================== debug
+  // kann in der richtigen Componente gelöscht werden
+
+  private naviservice = inject(NavigationService);
+  private messageservice = inject(MessageService);
 
   public answerContent: string = '';
   addAnswerToMessage(message: Message) {
     this.messageservice.addNewAnswerToMessage(message, this.answerContent);
+  }
+  changeMessageContent(message: Message) {
+    this.messageservice.updateMessage(message, { content: this.answerContent });
+  }
+  viewThread(message: Message) {
+    this.naviservice.setThreadViewObject(message);
   }
 
   // ==================================================================== debug
@@ -40,7 +52,7 @@ export class MessageviewexampleComponent implements OnDestroy {
   }
 
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private _cdr: ChangeDetectorRef) { }
 
 
   private subscribeMessages(newPath: string | undefined) {
@@ -53,18 +65,15 @@ export class MessageviewexampleComponent implements OnDestroy {
             this.messages.push(newMessage);
           }
           if (change.type === 'modified') {
-            this.messages = this.messages.map((message) => {
-              if (message.id === change.doc.data()['id']) {
-                return new Message(change.doc.data(), newPath);
-              }
-              return message;
-            });
+            const message = this.messages.find((message) => message.id === change.doc.data()['id']);
+            if (message) message.update(change.doc.data());
           }
           if (change.type === 'removed') {
             this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
           }
-          this._changeDetectorRef.detectChanges();
         });
+        this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        this._cdr.detectChanges();
       })
     }
   }

@@ -4,40 +4,46 @@
   font-weight: bold;
 }
 
-.nunito-24-700 {
-  font-family: "Nunito", sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.nunito-18-400 {
-  font-family: "Nunito", sans-serif;
-  font-size: 1.125rem;
-  font-weight: 400;
-}
-
 .nunito-14-400 {
   font-family: "Nunito", sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
 }
 
+.nunito-18-400 {
+  font-family: "Nunito", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  @media (width <= 1440px) {
+    font-size: 16px;
+  }
+}
+
 .nunito-18-500 {
   font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
   font-weight: 500;
+  @media (width <= 1440px) {
+    font-size: 16px;
+  }
 }
 
 .nunito-18-600 {
   font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
   font-weight: 600;
+  @media (width <= 1440px) {
+    font-size: 16px;
+  }
 }
 
 .nunito-18-700 {
   font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
+  @media (width <= 1440px) {
+    font-size: 16px;
+  }
 }
 
 .nunito-20-700 {
@@ -46,10 +52,28 @@
   font-weight: 700;
 }
 
+.nunito-20-600 {
+  font-family: "Nunito", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
 .nunito-20-400 {
   font-family: "Nunito", sans-serif;
   font-size: 1.25rem;
   font-weight: 400;
+}
+
+.nunito-24-600 {
+  font-family: "Nunito", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.nunito-24-700 {
+  font-family: "Nunito", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .nunito-32-700 {

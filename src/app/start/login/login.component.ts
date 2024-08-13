@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
@@ -6,6 +6,9 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { MessageService } from '../../utils/services/message.service';
 import { Channel } from '../../shared/models/channel.class';
 import { MessageviewexampleComponent } from '../../examples/messageviewexample/messageviewexample.component';
+import { NavigationService } from '../../utils/services/navigation.service';
+import { Chat } from '../../shared/models/chat.class';
+import { Message } from '../../shared/models/message.class';
 
 @Component({
   selector: 'app-login',
@@ -19,15 +22,39 @@ import { MessageviewexampleComponent } from '../../examples/messageviewexample/m
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   // für service debug ====================================================
 
   public channelservice = inject(ChannelService);
   public messageservice = inject(MessageService);
 
+
+  public navigationService = inject(NavigationService);
+
+  ngOnInit(): void {
+    this.navigationService.change$.subscribe((change) => {
+      this.cdr.detectChanges();
+    });
+  }
+
+  constructor(private cdr: ChangeDetectorRef) { }
+
   public name: string = '';
   public description: string = '';
+
+  getTitle(object: Channel | Chat | Message | undefined): string {
+    if (object instanceof Channel) return object.name;
+    if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
+    if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
+    return '';
+  }
+
+  getChatPartner(object: Chat): string | undefined {
+    const chatPartnerID = object.memberIDs.find(id => id !== this.userservice.currentUser?.id);
+    if (chatPartnerID) return this.userservice.getUserByID(chatPartnerID)?.name;
+    return 'Unknown Partner';
+  }
 
   addNewChannel() {
     this.channelservice.addNewChannelToFirestore(this.name, this.description, this.userservice.getAllUserIDs());
@@ -39,13 +66,13 @@ export class LoginComponent {
     this.messageservice.addNewMessageToChannel(this.channelservice.channels[channelNumber], this.messagecontent);
   }
 
-  setCurrentChannel(newChannel: Channel) {
-    this.currentChannel = newChannel;
-    this.currentMessagesPath = newChannel.channelMessagesPath;
+  updateChannel(channelNumber: number) {
+    this.channelservice.updateChannelOnFirestore(this.channelservice.channels[channelNumber], { memberIDs: [this.userservice.getAllUserIDs()[0]], description: this.description, name: this.name });
   }
 
-  public currentChannel: Channel | undefined = undefined;
-  public currentMessagesPath: string | undefined = undefined;
+  setCurrentChannel(newChannel: Channel) {
+    this.navigationService.setChatViewObject(newChannel);
+  }
 
   // ======================================================================
 

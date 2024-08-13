@@ -29,9 +29,24 @@ export class MessageService {
   }
 
 
+  updateMessage(message: Message, updateData: { content?: string, emojies?: string[] }) {
+    updateDoc(doc(this.firestore, message.messagePath), updateData)
+      .then(
+        () => {
+          console.warn('MessageService: updateMessage: message updated - id: ' + message.id);
+        }
+      );
+  }
+
+
+  ifMessageFromCurrentUser(message: Message): boolean {
+    return message.creatorID === this.userservice.currentUser?.id;
+  }
+
+
   addNewAnswerToMessage(message: Message, answerContent: string) {
-    const answerCollectionRef = collection(this.firestore, message.messagePath + '/messages');
-    if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.messagePath + '/messages/" is undefined');
+    const answerCollectionRef = collection(this.firestore, message.answerPath);
+    if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.answerPath + '" is undefined');
     addDoc(answerCollectionRef, this.createNewMessageObject(answerContent, false))
       .then(
         (response) => {

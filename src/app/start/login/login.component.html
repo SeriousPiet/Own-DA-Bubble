@@ -23,15 +23,21 @@
     <div>
         <button (click)="setCurrentChannel(kanal)">{{kanal.name}} <br> {{kanal.description}}</button>
         <button (click)="addMessageToChannel(i)">addmessage</button>
+        <button (click)="updateChannel(i)">update channel</button>
     </div>
     }
     @empty {
-        <span>no channels</span>
+    <span>no channels</span>
     }
-    @if(currentChannel) {
+    @if(navigationService.ifMainMessageObjectIsChannel() && navigationService.chatViewPath) {
     <hr>
-    <h1>Messages of {{currentChannel.name}}</h1>
-    <app-messageviewexample [messagesPath]="currentMessagesPath"></app-messageviewexample>
+    <h1># {{getTitle(navigationService.chatViewObject)}}</h1>
+    <app-messageviewexample [messagesPath]="navigationService.chatViewPath"></app-messageviewexample>
+    }
+    @if(navigationService.threadViewObject) {
+    <hr>
+    <h1>{{ getTitle(navigationService.threadViewObject) }}</h1>
+    <app-messageviewexample [messagesPath]="navigationService.threadViewPath"></app-messageviewexample>
     }
 </div>
 
