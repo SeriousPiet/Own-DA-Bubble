@@ -1,28 +1,28 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
-:host{
-    @include flex(center, normal);
+:host {
+  @include flex(center, normal);
 }
 
 .message-date-comp {
-    width: 90%;
-    @include flex(center, center);
-    position: relative;
+  width: 90%;
+  @include flex(center, center);
+  position: relative;
 
-    >hr{
-        position: absolute;
-        background-color: $vert-spacer;
-        height: 1px;
-        border: none;
-        width: 100%;
-    }
+  > hr {
+    position: absolute;
+    background-color: $vert-spacer;
+    height: 1px;
+    border: none;
+    width: 100%;
+  }
 
-    >span {
-        border: $default-border;
-        border-radius: 1.875rem;
-        padding: .3125rem .9375rem;
-        z-index: 2;
-        background-color: white;
-    }
+  > span {
+    border: $default-border;
+    border-radius: 1.875rem;
+    padding: 0.3125rem 0.9375rem;
+    z-index: 2;
+    background-color: white;
+  }
 }
