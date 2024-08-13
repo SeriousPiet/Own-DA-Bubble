@@ -5,45 +5,51 @@
         src="../../../assets/icons/wsm/devspace-logo.svg"
         alt="devspace-logo.svg"
       />
-      <span>Devspace</span>
+      <h1 class="nunito-24-700">Devspace</h1>
     </div>
     <div class="ws-write"></div>
   </div>
   <div class="channels">
     <details>
-      <summary>
+      <summary class="blue">
         <div>
-          <div class="ws-channels"></div>
-          <span>Channels</span>
+          <div>
+            <div class="ws-channels"></div>
+            <h2 class="nunito-20-700">Channels</h2>
+          </div>
+          <button
+            class="add-channel"
+            popoverTarget="addchannel"
+            popovertargetaction="show"
+          ></button>
         </div>
       </summary>
       <ul class="channel-list">
-        <li>
+        <li class="blue" *ngFor="let channel of channelservice.channels">
           <div class="hashtag"></div>
-          <span>Entwicklerteam</span>
+          <h3 class="nunito-18-400">{{ channel.name }}</h3>
         </li>
       </ul>
-      <button popoverTarget="addchannel" popovertargetaction="show">
-        <div class="add-channel-2"></div>
-        <span>Channel hinzufügen</span>
+      <button
+        popoverTarget="addchannel"
+        popovertargetaction="show"
+        class="blue"
+      >
+        <div class="add-channel-2 blue"></div>
+        <h3 class="nunito-18-400">Channel hinzufügen</h3>
       </button>
     </details>
-    <button
-      class="add-channel"
-      popoverTarget="addchannel"
-      popovertargetaction="show"
-    ></button>
   </div>
   <div>
     <details>
-      <summary>
+      <summary class="blue">
         <div class="dm-symbol"></div>
-        <span>Direktnachrichten</span>
+        <h2 class="nunito-20-700">Direktnachrichten</h2>
       </summary>
       <ul>
-        <li *ngFor="let user of userservice.users">
+        <li class="blue" *ngFor="let user of userservice.users">
           <div class="profil-image"></div>
-          <span>{{ user.name }}</span>
+          <h3 class="nunito-18-400 blue">{{ user.name }}</h3>
         </li>
       </ul>
     </details>

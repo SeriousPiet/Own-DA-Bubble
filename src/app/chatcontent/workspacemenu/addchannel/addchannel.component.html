@@ -1,6 +1,6 @@
 <section>
   <div class="headline">
-    <h2>Channels erzeugen</h2>
+    <h2 class="nunito-24-700">Channels erzeugen</h2>
     <button
       class="close-addchannel"
       popovertarget="addchannel"
@@ -8,22 +8,28 @@
     ></button>
   </div>
   <div>
-    <p>
+    <p class="nunito-18-400">
       Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
       themenbezogen sein #marketing zum Beispiel.
     </p>
   </div>
-  <div><h3>Channel-Name</h3></div>
+  <div><h3 class="nunito-18-700">Channel-Name</h3></div>
   <input
     [(ngModel)]="name"
     type="text"
     placeholder="# z.B. Kooperationsprojekte"
+    class="nunito-18-400"
   />
   <div>
-    <h3>Beschreibung <span>(optional)</span></h3>
+    <h3 class="nunito-18-700">Beschreibung <span>(optional)</span></h3>
   </div>
-  <input [(ngModel)]="description" type="text" placeholder="Dein Text hier" />
-  <div style="justify-content: end">
+  <input
+    [(ngModel)]="description"
+    type="text"
+    placeholder="Dein Text hier"
+    class="nunito-18-400"
+  />
+  <div style="justify-content: end" class="nunito-18-700">
     <button (click)="addNewChannel()">Erstellen</button>
   </div>
 </section>

@@ -1,5 +1,9 @@
 // fonts definitions
 
+.blue:hover {
+  color: #535af1;
+}
+
 .font-bold {
   font-weight: bold;
 }
@@ -25,6 +29,12 @@
 .nunito-18-500 {
   font-family: "Nunito", sans-serif;
   font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.nunito-20-500 {
+  font-family: "Nunito", sans-serif;
+  font-size: 1.25rem;
   font-weight: 500;
 }
 

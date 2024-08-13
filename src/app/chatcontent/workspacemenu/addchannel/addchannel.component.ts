@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { UsersService } from '../../utils/services/user.service';
-import { ChannelService } from '../../utils/services/channel.service';
-import { Channel } from '../../shared/models/channel.class';
+import { UsersService } from '../../../utils/services/user.service';
+import { ChannelService } from '../../../utils/services/channel.service';
+import { Channel } from '../../../shared/models/channel.class';
 
 @Component({
   selector: 'app-addchannel',

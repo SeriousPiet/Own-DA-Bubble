@@ -1,3 +1,5 @@
+@import "../../../fonts.scss";
+
 @mixin display-standard($display: flex, $align-items: center) {
   display: $display;
   align-items: $align-items;
@@ -31,7 +33,6 @@ section {
     div {
       @include display-standard;
       gap: 0.9375rem;
-      font-size: 1.5rem;
     }
     .ws-write {
       padding: 0.5rem;
@@ -80,8 +81,22 @@ section {
   .channels {
     display: flex;
     flex-direction: row;
-    width: 19.125rem;
     justify-content: space-between;
+    align-items: center;
+
+    > details {
+      > summary {
+        width: 19.125rem;
+        > div {
+          width: 19.125rem;
+          justify-content: space-between;
+          > div {
+            @include display-standard;
+            gap: 0.9375rem;
+          }
+        }
+      }
+    }
 
     .add-channel {
       all: unset;
@@ -103,14 +118,16 @@ section {
 
   summary {
     @include display-standard;
-    font-size: 1.25rem;
     gap: 0.9375rem;
+    width: 19.125rem;
     .ws-channels {
       background-image: url("../../../assets/icons/wsm/ws-channels.svg");
       @include background-properties;
     }
 
     .dm-symbol {
+      min-width: 2.5rem;
+      height: 2.5rem;
       background-image: url("../../../assets/icons/wsm/dm-symbol.svg");
       @include background-properties;
     }
@@ -130,7 +147,7 @@ section {
   }
 
   summary:hover {
-    > div > .ws-channels {
+    > div > div > .ws-channels {
       background-image: url("../../../assets/icons/wsm/ws-channels-hover.svg");
     }
 

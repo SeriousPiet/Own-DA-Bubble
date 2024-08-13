@@ -57,7 +57,7 @@ section.chatcontent {
   visibility: hidden;
 }
 
-button {
+.hide_show_wsm {
   position: absolute;
   z-index: 2;
   left: 0rem;
@@ -85,11 +85,10 @@ button {
     transform: rotate(-90deg);
     width: 100%;
     text-wrap: nowrap;
-    font-size: 1.25rem;
   }
 }
 
-button:hover {
+.hide_show_wsm:hover {
   cursor: pointer;
   div {
     background-image: url("../../assets/icons/wsm/wsm-open.svg");
