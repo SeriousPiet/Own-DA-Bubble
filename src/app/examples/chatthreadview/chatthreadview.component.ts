@@ -38,6 +38,8 @@ export class ChatthreadviewComponent {
 
   public name: string = '';
   public description: string = '';
+  public newemail: string = '';
+  public username: string = '';
 
   getTitle(object: Channel | Chat | Message | undefined): string {
     if (object instanceof Channel) return object.name;
@@ -68,6 +70,16 @@ export class ChatthreadviewComponent {
 
   setCurrentChannel(newChannel: Channel) {
     this.navigationService.setChatViewObject(newChannel);
+  }
+
+  changeEmail(event: Event) {
+    event.preventDefault();
+    this.userservice.updateCurrentUserEmail(this.newemail, '12345678');
+  }
+
+  changeName(event: Event) {
+    event.preventDefault();
+    this.userservice.updateCurrentUserDataOnFirestore({ name: this.username });
   }
 
 }

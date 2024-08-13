@@ -8,6 +8,17 @@
     top: 1rem;
     left: 1rem;
 
+    .user {
+
+        .userchangebuttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.1rem;
+            width: 100%;
+        }
+    }
+
     h1,
     h2,
     h3,

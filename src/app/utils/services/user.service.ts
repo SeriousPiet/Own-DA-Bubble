@@ -1,7 +1,7 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, getDoc, query, getDocs, where } from '@angular/fire/firestore';
+import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, getDoc, query, getDocs, where, serverTimestamp } from '@angular/fire/firestore';
 import { User } from '../../shared/models/user.class';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user } from '@angular/fire/auth';
 
 @Injectable({
     providedIn: 'root'
@@ -12,9 +12,11 @@ export class UsersService implements OnDestroy {
     private firebaseauth = inject(Auth);
     private unsubUsers: any = null;
     private user$: any = null;
+    private currentUserSubscriber: any = null;
 
     public users: User[] = [];
     public currentUser: User | undefined;
+
 
     constructor() {
         this.initUserCollection();
@@ -32,15 +34,50 @@ export class UsersService implements OnDestroy {
     }
 
 
-    updateUserOnFirestore(userID: string, userChangeData: { name?: string, chatIDs?: string[], avatar?: number }) {
-        updateDoc(doc(this.firestore, '/users/' + userID), userChangeData)
+    updateCurrentUserDataOnFirestore(userChangeData: { email?: string, name?: string, online?: boolean, chatIDs?: string[], avatar?: number }) {
+        if (this.currentUser) {
+            updateDoc(doc(this.firestore, '/users/' + this.currentUser.id), userChangeData)
+                .then(() => {
+                    console.warn('userservice/firestore: User updated(', this.currentUser?.id, ') # ', userChangeData);
+                })
+                .catch((error) => {
+                    console.error('userservice/firestore: Error updating user(', error.message, ')');
+                });
+        }
+        else {
+            console.error('userservice/firestore: No current user signed in');
+        }
+    }
+
+
+    updateCurrentUserEmail(newEmail: string, currentPassword: string): string | undefined {
+        this.reauthenticate(currentPassword)
             .then(() => {
-                console.warn('userservice/firestore: User updated(', userID, ')');
+                const auth = getAuth();
+                if (auth.currentUser) {
+                    updateEmail(auth.currentUser, newEmail)
+                        .then(() => {
+                            console.warn('userservice/auth: Email updated on Firebase/Auth');
+                            this.updateCurrentUserDataOnFirestore({ email: newEmail });
+                            return undefined;
+                        })
+                        .catch((error) => {
+                            console.error('userservice/auth: Error updating email on Firebase/Auth(', error.message, ')');
+                            return error.message;
+                        });
+                }
             })
             .catch((error) => {
-                console.error('userservice/firestore: Error updating user(', error.message, ')');
+                console.error('userservice/auth: Error reauthenticating user(', error.message, ')');
+                return 'user/reauthenticate';
             });
+        return undefined;
     }
+
+
+    // ############################################################################################################
+    // methodes for login and logout and signup
+    // ############################################################################################################
 
 
     logoutUser(): void {
@@ -50,8 +87,8 @@ export class UsersService implements OnDestroy {
     }
 
 
-    async loginUser(email: string, password: string): Promise<string | undefined> {
-        return await signInWithEmailAndPassword(this.firebaseauth, email, password)
+    loginUser(email: string, password: string): string | undefined {
+        signInWithEmailAndPassword(this.firebaseauth, email, password)
             .then((response) => {
                 return undefined;
             })
@@ -59,25 +96,46 @@ export class UsersService implements OnDestroy {
                 console.error('userservice/auth: Error logging in user(', error.message, ')');
                 return error.message;
             });
+        return undefined;
     }
 
 
-    async registerNewUser(user: { email: string, password: string, name: string }): Promise<boolean> {
+    registerNewUser(user: { email: string, password: string, name: string }): string | undefined {
         createUserWithEmailAndPassword(this.firebaseauth, user.email, user.password)
             .then((response) => {
                 this.addUserToFirestore({ name: user.name, email: response.user.email })
                     .then((userID) => {
                         updateProfile(response.user, { displayName: userID })
                             .then(() => {
-                                return true;
+                                return undefined;
                             })
                     })
             })
             .catch((error) => {
                 console.error('userservice/auth: Error registering user(', error.message, ')');
-                return false;
+                return error.message;
             });
-        return false;
+        return undefined;
+    }
+
+
+    // ############################################################################################################
+
+
+    private async reauthenticate(currentPassword: string): Promise<void> {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user && user.email) {
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            return reauthenticateWithCredential(user, credential).then(() => {
+                console.warn('userservice/auth: Reauthentication successful');
+            }).catch(error => {
+                console.error('userservice/auth: Error during reauthentication:', error);
+                throw error;
+            });
+        } else {
+            return Promise.reject(new Error('userservice/auth: No authenticated user found'));
+        }
     }
 
 
@@ -101,14 +159,25 @@ export class UsersService implements OnDestroy {
 
     private initUserWatchDog(): void {
         this.user$ = user(this.firebaseauth).subscribe((user) => {
+            this.unsubscribeFromCurrentUser();
             if (user) {
-                this.getAuthUserFromFirestore(user)
-                    .then((user) => {
-                        console.warn('user login - ' + (user ? user.email : 'no user'));
-                        if (this.currentUser) this.setOnlineStatus(this.currentUser.id, false);
-                        this.currentUser = user;
-                        if (user) this.setOnlineStatus(user.id, true);
-                    })
+                console.warn('userservice/auth: Authentication successful: ', user.email);
+                this.currentUserSubscriber = onSnapshot(doc(this.firestore, '/users/' + user.displayName), (snapshot) => {
+                    if (snapshot.exists()) {
+                        if (!this.currentUser || this.currentUser.id !== snapshot.data()['id']) {
+                            this.currentUser = new User(snapshot.data());
+                            if (this.currentUser) {
+                                this.setOnlineStatus(this.currentUser.id, true);
+                                console.warn('userservice/firestore: currentUser is ' + this.currentUser.email);
+                            }
+                        }
+                        else {
+                            this.currentUser?.update(snapshot.data());
+                            console.warn('userservice/firestore: user update ' + this.currentUser.email);
+                        }
+
+                    }
+                });
             }
             else if (this.currentUser) {
                 console.warn('user logout - ' + this.currentUser.email);
@@ -116,34 +185,6 @@ export class UsersService implements OnDestroy {
                 this.currentUser = undefined;
             }
         })
-    }
-
-
-    private async getAuthUserFromFirestore(user: any): Promise<User | undefined> {
-        const userID = await this.getUserIdFromFirestore(user);
-        if (userID) {
-            const querySnapshot = await getDoc(doc(this.firestore, '/users/' + userID));
-            if (querySnapshot.exists()) {
-                return new User(querySnapshot.data());
-            }
-        }
-        return undefined;
-    }
-
-
-    private async getUserIdFromFirestore(user: any): Promise<string | undefined> {
-        if (user.displayName == null || user.displayName === '') {
-            const querySnapshot = await getDocs(
-                query(collection(this.firestore, '/users'), where('email', '==', user.email))
-            );
-            if (querySnapshot.docs.length > 0) {
-                const userObj = querySnapshot.docs[0];
-                return userObj.id;
-            } else {
-                return undefined;
-            }
-        }
-        return user.displayName;
     }
 
 
@@ -157,6 +198,7 @@ export class UsersService implements OnDestroy {
             name: user.name,
             email: user.email,
             online: false,
+            signupAt: serverTimestamp(),
             avatar: 0
         };
         let ref = collection(this.firestore, '/users');
@@ -166,13 +208,34 @@ export class UsersService implements OnDestroy {
     }
 
 
-    ngOnDestroy(): void {
+    private unsubscribeFromCurrentUser(): void {
+        if (this.currentUserSubscriber) {
+            this.currentUserSubscriber();
+            this.currentUserSubscriber = null;
+        }
+    }
+
+
+    private unsubscribeFromUsers(): void {
         if (this.unsubUsers) {
             this.unsubUsers();
+            this.unsubUsers = null;
         }
+    }
+
+
+    private unsubscribeFromAuthUser(): void {
         if (this.user$) {
             this.user$.unsubscribe();
+            this.user$ = null;
         }
+    }
+
+
+    ngOnDestroy(): void {
+        this.unsubscribeFromCurrentUser();
+        this.unsubscribeFromUsers();
+        this.unsubscribeFromAuthUser();
     }
 }
 

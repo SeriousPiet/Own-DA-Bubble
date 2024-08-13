@@ -1,8 +1,20 @@
 <div class="service-debug">
     <button [routerLink]="['/']">to Login</button>
     @if(userservice.currentUser) {
-    <h1>SignedIn User:</h1>
-    <span>{{ userservice.currentUser.name }}</span>
+    <div class="user">
+        <h1>User:</h1>
+        <span>{{ userservice.currentUser.name }}</span>
+        <div class="userchangebuttons">
+            <div>
+                <input [(ngModel)]="newemail" type="text">
+                <button (click)="changeEmail($event)">change email</button>
+            </div>
+            <div>
+                <input [(ngModel)]="username" type="text">
+                <button (click)="changeName($event)">change name</button>
+            </div>
+        </div>
+    </div>
     <h1>Channels erzeugen</h1>
     <input [(ngModel)]="name" type="text" placeholder="name">
     <input [(ngModel)]="description" type="text" placeholder="description">

@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
-import { MessageviewexampleComponent } from '../../examples/messageviewexample/messageviewexample.component';
 
 @Component({
   selector: 'app-login',
@@ -36,13 +35,14 @@ export class LoginComponent {
     event.preventDefault();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
-    this.userservice.loginUser(email, password)
-      .then(() => {
-        this.router.navigate(['/chatcontent']);
-      })
-      .catch((error) => {
-        console.error('Error logging in:', error);
-      });
+    const error = this.userservice.loginUser(email, password);
+    if (error) {
+      console.error('Error logging in:', error);
+      // auth/user-not-found
+      // auth/wrong-password
+    } else {
+      this.router.navigate(['/chatcontent']);
+    };
   }
 
 }
