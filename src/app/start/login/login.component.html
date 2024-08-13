@@ -1,47 +1,12 @@
 <div class="debug-btn">
-    <button [routerLink]="['/chatcontent']">to chatcontent</button>
+    <button [routerLink]="['/chatthreadtest']">DEBUG</button>
+    <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
     @if(userservice.currentUser) {
+    User: {{userservice.currentUser.name}}
     <button (click)="userservice.logoutUser()">logout</button>
-    - {{userservice.currentUser.name}}
     }
 </div>
 
-
-<!-- ##################################################################################################### -->
-
-<div class="service-debug">
-    <h1>Channels erzeugen</h1>
-    <input [(ngModel)]="name" type="text" placeholder="name">
-    <input [(ngModel)]="description" type="text" placeholder="description">
-    <button (click)="addNewChannel()">channel create</button>
-    <hr>
-    <h1>Message hinzufügen</h1>
-    <input [(ngModel)]="messagecontent" type="text" placeholder="messagetext">
-    <hr>
-    <h2>Channels</h2>
-    @for (kanal of channelservice.channels; track channelservice.channels; let i = $index) {
-    <div>
-        <button (click)="setCurrentChannel(kanal)">{{kanal.name}} <br> {{kanal.description}}</button>
-        <button (click)="addMessageToChannel(i)">addmessage</button>
-        <button (click)="updateChannel(i)">update channel</button>
-    </div>
-    }
-    @empty {
-    <span>no channels</span>
-    }
-    @if(navigationService.ifMainMessageObjectIsChannel() && navigationService.chatViewPath) {
-    <hr>
-    <h1># {{getTitle(navigationService.chatViewObject)}}</h1>
-    <app-messageviewexample [messagesPath]="navigationService.chatViewPath"></app-messageviewexample>
-    }
-    @if(navigationService.threadViewObject) {
-    <hr>
-    <h1>{{ getTitle(navigationService.threadViewObject) }}</h1>
-    <app-messageviewexample [messagesPath]="navigationService.threadViewPath"></app-messageviewexample>
-    }
-</div>
-
-<!-- ##################################################################################################### -->
 
 <!-- Konto erstellen Button -->
 <button class="signup-btn" [routerLink]="['/signup']">Konto erstellen</button>
