@@ -3,10 +3,17 @@
   popovertarget="profile-popover"
   (click)="resetPopoverState()"
 >
-  <span class="username">Mangio Pane</span>
-  <div class="avatar">
+  <span class="username">{{ userservice.currentUser?.name }}</span>
+
+  <div
+    class="avatar"
+    [style]="{
+      '--status-color': onlineStatus === 'online' ? onlineColor : offlineColor
+    }"
+  >
     <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
   </div>
+
   <img class="icon" src="./assets/icons/modals/profile/expand.svg" alt="" />
 </button>
 
@@ -17,6 +24,7 @@
     <button>Logout</button>
   </div>
   } @else { @if (!editMode) {
+
   <div class="profile-details">
     <div class="top">
       <span class="modal-title">Profil</span>
@@ -24,25 +32,39 @@
         <img src="./assets/icons/chat/general/close.svg" alt="Close" />
       </div>
     </div>
+
     <div class="avatar">
       <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
     </div>
+
     <div class="edit-username">
-      <span class="username">Mangio Pane</span>
+      <span class="username">{{ userservice.currentUser?.name }}</span>
       <button class="edit" (click)="toggleEditMode()">Bearbeiten</button>
     </div>
+
     <div class="online-status">
-      <div class="online-status-indicator"></div>
+      <div
+        class="online-status-indicator"
+        [style]="{
+          '--status-color':
+            onlineStatus === 'online' ? onlineColor : offlineColor
+        }"
+      ></div>
+
       <span>Aktiv</span>
     </div>
+
     <div class="usermail">
       <img src="./assets/icons/start/mail.svg" alt="" />
       <div class="mail-adress">
         <span>Email-Adresse</span>
-        <a href="mailto: hard@coded.com">hard&#64;coded.com</a>
+        <a href="mailto: {{ userservice.currentUser?.email }}">{{
+          userservice.currentUser?.email
+        }}</a>
       </div>
     </div>
   </div>
+
   } @else {
   <div class="profile-edit">
     <div class="top">
@@ -82,4 +104,14 @@
     </div>
   </div>
   } }
+</div>
+
+<button class="hover-tryout" popovertarget="hover-box" id="trigger">
+  Hover Me!
+</button>
+
+<div id="hover-box" popover>
+  Works! <br />
+  Works! <br />
+  Works!
 </div>
