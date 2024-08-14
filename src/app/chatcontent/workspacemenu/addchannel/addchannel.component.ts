@@ -28,23 +28,10 @@ export class AddchannelComponent {
       this.description,
       this.userservice.getAllUserIDs()
     );
-    this.createChannellistElement(this.name);
   }
 
   setCurrentChannel(newChannel: Channel) {
     this.currentChannel = newChannel;
     this.currentMessagesPath = newChannel.channelMessagesPath;
-  }
-
-  createChannellistElement(name: string) {
-    const channellist = document.getElementsByClassName('channel-list')[0];
-    const newChannellistElement = document.createElement('li');
-    const hashtagDiv: HTMLDivElement = document.createElement('div');
-    hashtagDiv.className = 'hashtag';
-    const textSpan: HTMLSpanElement = document.createElement('span');
-    textSpan.textContent = name;
-    newChannellistElement.appendChild(hashtagDiv);
-    newChannellistElement.appendChild(textSpan);
-    channellist.appendChild(newChannellistElement);
   }
 }
