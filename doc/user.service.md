@@ -17,7 +17,7 @@ The current user logged in or undefined when no user is logged in
 
 ## Methods
 
-### `updateUserOnFirestore(userID: string, userChangeData: { name?: string, chatIDs?: string[], avatar?: number })`
+### `updateCurrentUserOnFirestore(userID: string, userChangeData: { name?: string, chatIDs?: string[], avatar?: number }))`
 
 Update data of the user on Firestore database
 

@@ -11,13 +11,10 @@ import { PopoverChannelMemberOverviewComponent } from './popover-chatview/popove
   standalone: true,
   imports: [CommonModule, MessageDateComponent, MessageComponent, MessageTextareaComponent, PopoverChannelEditorComponent, PopoverChannelMemberOverviewComponent  ],
   templateUrl: './chatview.component.html',
-  styleUrl: './chatview.component.scss'
+  styleUrl: './chatview.component.scss',
 })
 export class ChatviewComponent implements OnInit {
-
   messagefromUser = true;
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit(): void {}
 }

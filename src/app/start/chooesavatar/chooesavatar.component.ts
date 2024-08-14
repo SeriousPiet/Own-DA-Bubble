@@ -44,7 +44,7 @@ export class ChooesavatarComponent {
   submitChooseAvatar(event: Event) {
     event.preventDefault();
     if (this.userservice.currentUser) {
-      this.userservice.updateUserOnFirestore(this.userservice.currentUser.id, { avatar: this.selectedAvatar });
+      this.userservice.updateCurrentUserDataOnFirestore({ avatar: this.selectedAvatar });
       this.router.navigate(['/chatcontent']);
     }
   }

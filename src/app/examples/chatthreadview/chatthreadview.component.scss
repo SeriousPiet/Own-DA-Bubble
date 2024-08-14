@@ -1,0 +1,54 @@
+.service-debug {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 1rem;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+
+    .user {
+
+        .userchangebuttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.1rem;
+            width: 100%;
+        }
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+    }
+
+    hr {
+        width: 100%;
+    }
+
+    input {
+        border: 1px solid red;
+        width: 100%;
+    }
+
+    button {
+        border: 1px solid blue;
+    }
+
+    div {
+        align-self: stretch;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+
+        span {
+            align-self: flex-start;
+        }
+    }
+}

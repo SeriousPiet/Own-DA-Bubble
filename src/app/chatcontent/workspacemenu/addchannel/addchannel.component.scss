@@ -1,0 +1,64 @@
+@import "../../../../fonts.scss";
+
+.headline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  h2 {
+    margin: 0;
+  }
+}
+
+.close-addchannel {
+  all: unset;
+  overflow: visible;
+  background-image: url("../../../../assets/icons/chat/general/close.svg");
+  background-repeat: no-repeat;
+  background-size: center;
+  background-position: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 1.25rem;
+}
+
+.close-addchannel:hover {
+  cursor: pointer;
+  background-image: url("../../../../assets/icons/chat/general/close-hover.svg");
+  background-color: #eceefe;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  p {
+    margin: 0rem;
+  }
+  h3 {
+    margin: 0rem;
+  }
+  > div {
+    display: flex;
+    width: 49.5rem;
+  }
+}
+
+input {
+  width: 49.5rem;
+  height: 3.75rem;
+  border-radius: 2.5rem;
+  border: 0.0625rem solid #adb0d9;
+  padding: 1.125rem 1.25rem 1.125rem 1.25rem;
+  gap: 1.25rem;
+}
+
+button {
+  background-color: #444df2;
+  width: 7.8125rem;
+  height: 3.0625rem;
+  border-radius: 1.5625rem;
+  padding: 0.75rem 1.5625rem 0.75rem 1.5625rem;
+  color: #ffffff;
+}

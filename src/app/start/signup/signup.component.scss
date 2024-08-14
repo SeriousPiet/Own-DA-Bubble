@@ -1,112 +1,117 @@
 @import "../../../styles.scss";
 @import "../../../mixins.scss";
 
-form {
-    position: relative;
-
-    .return {
-        position: absolute;
-        top: 1rem;
-        left: 1rem;
-        @include iconBox;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    padding: 2rem;
+section {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: strech;
-    gap: 1rem;
-    height: fit-content;
-    width: fit-content;
-    background-color: white;
-    border-radius: 2rem;
-    box-shadow: 0px 2px 10px 0px #00000014;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100%;
 
-    .input-box {
-        @include inputBox;
-        background: $background;
+    form {
+        position: relative;
 
-        input {
-            position: relative;
-            @include input;
+        .return {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            @include iconBox;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-    }
 
-    .name::before {
-        background-image: url("../../../assets/icons/start/person.svg");
-    }
-
-    .mail::before {
-        background-image: url("../../../assets/icons/start/mail.svg");
-    }
-
-    .pw::before {
-        background-image: url("../../../assets/icons/start/lock.svg");
-    }
-
-    .headline {
-        text-align: center;
-    }
-
-    .info {
-        text-align: center;
-    }
-
-    .input-div {
-        background-color: #ECEEFE;
-        height: 3rem;
-        border-radius: 5000px;
-        border: 0.1rem solid transparent;
-        overflow: hidden;
-        width: 100%;
-
+        padding: 2rem;
         display: flex;
+        flex-direction: column;
         justify-content: flex-start;
-        align-items: center;
+        align-items: strech;
         gap: 1rem;
+        height: fit-content;
+        width: fit-content;
+        background-color: white;
+        border-radius: 2rem;
+        box-shadow: 0px 2px 10px 0px #00000014;
 
-        input {
-            outline: none;
-            border: none;
-            background-color: unset;
-            padding-left: 1rem;
+        .input-box {
+            @include inputBox;
+            background: $background;
+
+            input {
+                position: relative;
+                @include input;
+            }
         }
 
-        button {
-            outline: none;
-            border: none;
+        .name::before {
+            background-image: url("../../../assets/icons/start/person.svg");
+        }
+
+        .mail::before {
+            background-image: url("../../../assets/icons/start/mail.svg");
+        }
+
+        .pw::before {
+            background-image: url("../../../assets/icons/start/lock.svg");
+        }
+
+        .headline {
+            text-align: center;
+        }
+
+        .info {
+            text-align: center;
+        }
+
+        .input-div {
+            background-color: #ECEEFE;
+            height: 3rem;
+            border-radius: 5000px;
+            border: 0.1rem solid transparent;
+            overflow: hidden;
             width: 100%;
-            height: 100%;
-            background-color: transparent;
+
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+
+            input {
+                outline: none;
+                border: none;
+                background-color: unset;
+                padding-left: 1rem;
+            }
+
+            button {
+                outline: none;
+                border: none;
+                width: 100%;
+                height: 100%;
+                background-color: transparent;
+            }
+
+            &:hover {
+                border: 0.1rem solid black;
+            }
+
+            &:has(input:focus) {
+                border: 0.1rem solid #535AF1;
+            }
         }
 
-        &:hover {
-            border: 0.1rem solid black;
+        .action {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
         }
 
-        &:has(input:focus) {
-            border: 0.1rem solid #535AF1;
+        .blue-btn {
+            @include buttonFull;
+
+            &:disabled {
+                pointer-events: none;
+            }
         }
     }
-
-    .action {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-    }
-
-    .blue-btn {
-        @include buttonFull;
-
-        &:disabled {
-            pointer-events: none;
-        }
-    }
-
-
-
 }
