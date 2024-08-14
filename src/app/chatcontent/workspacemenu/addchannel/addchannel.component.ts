@@ -15,19 +15,19 @@ import { Channel } from '../../../shared/models/channel.class';
 export class AddchannelComponent {
   public channelservice = inject(ChannelService);
   public userservice = inject(UsersService);
-
   public currentChannel: Channel | undefined = undefined;
   public currentMessagesPath: string | undefined = undefined;
-
   public name: string = '';
   public description: string = '';
 
   addNewChannel() {
-    this.channelservice.addNewChannelToFirestore(
-      this.name,
-      this.description,
-      this.userservice.getAllUserIDs()
-    );
+    if (this.name !== '') {
+      this.channelservice.addNewChannelToFirestore(
+        this.name,
+        this.description,
+        this.userservice.getAllUserIDs()
+      );
+    }
   }
 
   setCurrentChannel(newChannel: Channel) {
