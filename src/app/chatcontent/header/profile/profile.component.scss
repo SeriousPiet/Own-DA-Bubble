@@ -1,13 +1,16 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
-#trigger:hover + #hover-box,
+#trigger {
+  pointer-events: none;
+}
+
+.hover-container:hover + #hover-box,
 #hover-box:hover {
   display: block;
   opacity: 1;
   transform: translatex(0);
-  transition: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
-    0.25s transform ease-out, width 0.25s ease-in-out, height 0.25s ease-in-out;
+  transition: $transition-popover;
 }
 
 #hover-box {
@@ -16,12 +19,11 @@
   box-shadow: $profile-box-shadow;
   opacity: 0;
   transform: translateX(-3rem);
-  transition: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
-    0.25s transform ease-out, width 0.25s ease-in-out, height 0.25s ease-in-out;
+  transition: $transition-popover;
 }
 
 @starting-style {
-  #trigger:hover + #hover-box,
+  .hover-container:hover + #hover-box,
   #hover-box:hover {
     display: block;
     opacity: 0;
@@ -124,7 +126,7 @@
       }
 
       span {
-        @include fontSizer(20, 600, $online);
+        @include fontSizer(20, 600);
       }
     }
 
@@ -165,7 +167,7 @@
         @include flex(flex-start, flex-start);
         flex-direction: column;
         width: 100%;
-        gap: 0.5rem;
+        gap: 0.325rem;
       }
 
       .input-label {
@@ -184,7 +186,8 @@
         input {
           @include input;
           @include fontSizer(18, 400, black);
-          padding: 0.875rem 0;
+          font-size: 1rem;
+          padding: 0.75rem 0;
         }
       }
     }
@@ -201,6 +204,25 @@
 
       button:last-of-type {
         @include buttonFull;
+      }
+    }
+
+    .error-message {
+      height: 0.875rem;
+      width: 100%;
+      color: $error;
+      font-weight: 300;
+      font-size: 0.875rem;
+      opacity: 1;
+      margin-top: -0.325rem;
+      // padding-left: 1.5rem;
+      text-align: center;
+      transition: 0.25s opacity ease-in-out;
+    }
+
+    @starting-style {
+      .error-message {
+        opacity: 0;
       }
     }
   }
