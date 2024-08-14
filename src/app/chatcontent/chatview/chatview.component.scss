@@ -5,6 +5,14 @@
   width: 100%;
 }
 
+::backdrop{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+::backdrop{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
 .chatview-main-ctn {
   background-color: white;
   border-radius: 1.875rem;
@@ -20,12 +28,27 @@
 
 .chatview-header {
   background-color: white;
-  box-shadow: 0 0.125rem 0.625rem 0 rgba($color: #000000, $alpha: 0.2);
+  // box-shadow: 0 0.125rem 0.625rem -0.5rem rgba($color: #000000, $alpha: 0.8);
   height: 6rem;
   border-radius: 1.875rem 1.875rem 0 0;
   @include flex(space-between, center);
   width: 100%;
   padding: 1.5625rem 2.8125rem;
+    gap: .625rem;
+
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 4px; // Adjust this to control the shadow height
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0, rgba(0,0,0,0) 100%);
+        pointer-events: none; // Ensures the pseudo-element doesn't interfere with interactions
+      }
+
 
   .chatview-chanel-name {
     cursor: pointer;
@@ -40,6 +63,11 @@
         filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg)
           brightness(94%) contrast(101%);
       }
+
+            >div{
+                @include flex(center, center);
+                gap: 0.9375rem;
+            }
     }
 
     &:hover {
@@ -62,9 +90,10 @@
     width: -webkit-fill-available;
     cursor: pointer;
 
-    > span {
-      font-weight: 600;
-    }
+        >span{
+            font-weight: 600;
+            font-size: large;
+        }
 
     &:hover {
       border-radius: 6.25rem;
@@ -77,15 +106,17 @@
     }
   }
 
-  > div {
-    .member-avatar {
-      margin-left: -0.75rem;
-      border-radius: 100%;
-      border: 2px solid #ffffff;
-      width: 2.5rem;
-      height: 2.5rem;
+
+
+    >button {
+        .member-avatar {
+            margin-left: -0.750rem;
+            border-radius: 100%;
+            border: 2px solid #FFFFFF;
+            width: 2.5rem;
+            height: 2.5rem;
+        }
     }
-  }
 
   .add-member-icon-ctn {
     @include flex(center, center);
