@@ -19,19 +19,23 @@
           </div>
           <button
             class="add-channel"
-            popoverTarget="addchannel"
+            popoverTarget="add-channel"
             popovertargetaction="show"
           ></button>
         </div>
       </summary>
       <ul class="channel-list">
-        <li class="blue" *ngFor="let channel of channelservice.channels">
+        <li
+          class="blue"
+          (click)="setCurrentChannel(channel)"
+          *ngFor="let channel of channelservice.channels"
+        >
           <div class="hashtag"></div>
           <h3 class="nunito-18-400">{{ channel.name }}</h3>
         </li>
       </ul>
       <button
-        popoverTarget="addchannel"
+        popoverTarget="add-channel"
         popovertargetaction="show"
         class="blue"
       >

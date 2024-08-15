@@ -1,7 +1,7 @@
 <section class="chatcontent">
-  <button class="hide_show_wsm blue">
-    <div class="wsm-close"></div>
-    <span class="nunito-20-500">Workspace-Menü schließen</span>
+  <button class="hide_show_wsm blue" (click)="toggleMenu()">
+    <div></div>
+    <span class="nunito-20-500">{{ buttonText }}</span>
   </button>
   <div class="top-bar">
     <app-header />
@@ -15,7 +15,10 @@
   <div class="threadview">
     <app-threadview />
   </div>
-  <div popover id="addchannel" class="addchannel">
+  <div popover id="add-channel" class="add-channel">
     <app-addchannel />
+  </div>
+  <div popover id="add-user-to-channel" class="add-user-to-channel">
+    <app-add-user-to-channel />
   </div>
 </section>
