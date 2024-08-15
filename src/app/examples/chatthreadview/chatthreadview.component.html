@@ -1,0 +1,53 @@
+<div class="service-debug">
+    <button [routerLink]="['/']">to Login</button>
+    @if(userservice.currentUser) {
+    <div class="user">
+        <h1>User:</h1>
+        <span>{{ userservice.currentUser.name }}</span>
+        <div class="userchangebuttons">
+            <div>
+                <input [(ngModel)]="newemail" type="text">
+                <button (click)="changeEmail($event)">change email</button>
+            </div>
+            <div>
+                <input [(ngModel)]="username" type="text">
+                <button (click)="changeName($event)">change name</button>
+            </div>
+        </div>
+    </div>
+    <h1>Channels erzeugen</h1>
+    <input [(ngModel)]="name" type="text" placeholder="name">
+    <input [(ngModel)]="description" type="text" placeholder="description">
+    <button (click)="addNewChannel()">channel create</button>
+    <hr>
+    <h1>Message hinzufügen</h1>
+    <input [(ngModel)]="messagecontent" type="text" placeholder="messagetext">
+    <hr>
+    <h2>Channels</h2>
+    @for (kanal of channelservice.channels; track channelservice.channels; let i = $index) {
+    <div>
+        <button (click)="setCurrentChannel(kanal)">{{kanal.name}} | {{kanal.description}}</button>
+        <div class="actions">
+            <button (click)="addMessageToChannel(i)">addmessage</button>
+            <button (click)="updateChannel(i)">update channel</button>
+        </div>
+    </div>
+    }
+    @empty {
+    <span>no channels</span>
+    }
+    @if(navigationService.ifMainMessageObjectIsChannel() && navigationService.chatViewPath) {
+    <hr>
+    <h1># {{getTitle(navigationService.chatViewObject)}}</h1>
+    <app-messageviewexample [messagesPath]="navigationService.chatViewPath"></app-messageviewexample>
+    }
+    @if(navigationService.threadViewObject) {
+    <hr>
+    <h1>{{ getTitle(navigationService.threadViewObject) }}</h1>
+    <app-messageviewexample [messagesPath]="navigationService.threadViewPath"></app-messageviewexample>
+    }
+    }
+    @else {
+    <h1>Not User signed in</h1>
+    }
+</div>

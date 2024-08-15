@@ -1,6 +1,38 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
+#trigger {
+  pointer-events: none;
+}
+
+.hover-container:hover + #hover-box,
+#hover-box:hover {
+  display: block;
+  opacity: 1;
+  transform: translatex(0);
+  transition: $transition-popover;
+}
+
+#hover-box {
+  position: relative;
+  display: none;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
+  transform: translateX(-3rem);
+  transition: $transition-popover;
+}
+
+@starting-style {
+  .hover-container:hover + #hover-box,
+  #hover-box:hover {
+    display: block;
+    opacity: 0;
+    transform: translateX(-3rem);
+  }
+}
+
+// ##############################
+
 .profile {
   @include flex(flex-end, center);
   width: fit-content;
@@ -25,7 +57,12 @@
   }
 
   .avatar {
-    @include avatarStatusThumbnail($online, 4.5rem, 1rem, $background);
+    @include avatarStatusThumbnail(
+      $status: var(--status-color),
+      $img_size: 4.5rem,
+      $status_size: 1rem,
+      $border_color: $background
+    );
   }
 }
 
@@ -85,11 +122,11 @@
         width: 1rem;
         height: 1rem;
         border-radius: 50%;
-        background-color: $online;
+        background-color: var(--status-color); // <--- dynamisch gesetzt
       }
 
       span {
-        @include fontSizer(20, 600, $online);
+        @include fontSizer(20, 600);
       }
     }
 
@@ -130,7 +167,7 @@
         @include flex(flex-start, flex-start);
         flex-direction: column;
         width: 100%;
-        gap: 0.5rem;
+        gap: 0.325rem;
       }
 
       .input-label {
@@ -149,7 +186,8 @@
         input {
           @include input;
           @include fontSizer(18, 400, black);
-          padding: 0.875rem 0;
+          font-size: 1rem;
+          padding: 0.75rem 0;
         }
       }
     }
@@ -166,6 +204,25 @@
 
       button:last-of-type {
         @include buttonFull;
+      }
+    }
+
+    .error-message {
+      height: 0.875rem;
+      width: 100%;
+      color: $error;
+      font-weight: 300;
+      font-size: 0.875rem;
+      opacity: 1;
+      margin-top: -0.325rem;
+      // padding-left: 1.5rem;
+      text-align: center;
+      transition: 0.25s opacity ease-in-out;
+    }
+
+    @starting-style {
+      .error-message {
+        opacity: 0;
       }
     }
   }

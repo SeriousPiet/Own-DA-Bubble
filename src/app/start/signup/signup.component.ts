@@ -45,16 +45,12 @@ export class SignupComponent {
     const name = this.signupForm.value.name || '';
     const email = this.signupForm.value.email || '';
     const password = this.signupForm.value.password || '';
-    this.userservice
-      .registerNewUser({ name: name, email: email, password: password })
-      .then(
-        (response) => {
-          this.router.navigate(['/chooseavatar']);
-        }
-      )
-      .catch(
-        (error) => {
-          console.error('Error registering user:', error);
-        });
+    const error = this.userservice.registerNewUser({ name: name, email: email, password: password });
+    if (error) {
+      console.error('Error registering user:', error);
+    }
+    else {
+      this.router.navigate(['/chooseavatar']);
+    }
   }
 }

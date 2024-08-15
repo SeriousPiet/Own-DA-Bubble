@@ -3,10 +3,19 @@
   popovertarget="profile-popover"
   (click)="resetPopoverState()"
 >
-  <span class="username">Mangio Pane</span>
-  <div class="avatar">
+  <span class="username">{{ userservice.currentUser?.name }}</span>
+
+  <div
+    class="avatar"
+    [style]="{
+      '--status-color': userservice.currentUser?.online
+        ? onlineColor
+        : offlineColor
+    }"
+  >
     <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
   </div>
+
   <img class="icon" src="./assets/icons/modals/profile/expand.svg" alt="" />
 </button>
 
@@ -14,9 +23,10 @@
   @if (!showProfileDetails) {
   <div class="choose-action">
     <button (click)="toggleProfileDetails()">Profil</button>
-    <button>Logout</button>
+    <button (click)="logoutUser()">Logout</button>
   </div>
   } @else { @if (!editMode) {
+
   <div class="profile-details">
     <div class="top">
       <span class="modal-title">Profil</span>
@@ -24,25 +34,46 @@
         <img src="./assets/icons/chat/general/close.svg" alt="Close" />
       </div>
     </div>
+
     <div class="avatar">
       <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
     </div>
+
     <div class="edit-username">
-      <span class="username">Mangio Pane</span>
+      <span class="username">{{ userservice.currentUser?.name }}</span>
       <button class="edit" (click)="toggleEditMode()">Bearbeiten</button>
     </div>
+
     <div class="online-status">
-      <div class="online-status-indicator"></div>
-      <span>Aktiv</span>
+      <div
+        class="online-status-indicator"
+        [style]="{
+          '--status-color': userservice.currentUser?.online
+            ? onlineColor
+            : offlineColor
+        }"
+      ></div>
+
+      <span
+        [style]="{
+          color: userservice.currentUser?.online ? onlineColor : offlineColor
+        }"
+      >
+        {{ userservice.currentUser?.online ? "Aktiv" : "Offline" }}
+      </span>
     </div>
+
     <div class="usermail">
       <img src="./assets/icons/start/mail.svg" alt="" />
       <div class="mail-adress">
         <span>Email-Adresse</span>
-        <a href="mailto: hard@coded.com">hard&#64;coded.com</a>
+        <a href="mailto: {{ userservice.currentUser?.email }}">{{
+          userservice.currentUser?.email
+        }}</a>
       </div>
     </div>
   </div>
+
   } @else {
   <div class="profile-edit">
     <div class="top">
@@ -55,31 +86,76 @@
     <div class="avatar">
       <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
     </div>
-    <div class="edit-box">
-      <div class="edit">
-        <div class="input-label">
-          <img src="./assets/icons/modals/profile/person_circle.svg" alt="" />
-          <span>Vollständiger Name</span>
-        </div>
-        <div class="input-box">
-          <input type="text" placeholder="Dein Name hier" />
-        </div>
-      </div>
 
-      <div class="edit">
-        <div class="input-label">
-          <img src="./assets/icons/modals/profile/mail.svg" alt="" />
-          <span>E-mail Adresse</span>
+    <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
+      <div class="edit-box">
+        <div class="edit">
+          <div class="input-label">
+            <img src="./assets/icons/modals/profile/person_circle.svg" alt="" />
+            <span>Vollständiger Name</span>
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Dein Name hier"
+            />
+          </div>
+          @if (profileForm.get('name')?.invalid &&
+          (profileForm.get('name')?.dirty || profileForm.get('name')?.touched))
+          {
+          <div class="error-message">
+            @if (profileForm.get('name')?.errors?.['required']) {
+            <span>Name ist erforderlich.</span>
+            } @else if (profileForm.get('name')?.errors?.['invalidName']) {
+            <span>Bitte gib deinen vollständigen Namen ein.</span>
+            }
+          </div>
+          }
         </div>
-        <div class="input-box">
-          <input type="mail" placeholder="Deine Mailadresse hier " />
+
+        <div class="edit">
+          <div class="input-label">
+            <img src="./assets/icons/modals/profile/mail.svg" alt="" />
+            <span>E-mail Adresse</span>
+          </div>
+          <div class="input-box">
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="Deine Mailadresse hier"
+            />
+          </div>
+          @if (profileForm.get('email')?.invalid &&
+          (profileForm.get('email')?.dirty ||
+          profileForm.get('email')?.touched)) {
+          <div class="error-message">
+            @if (profileForm.get('email')?.errors?.['required']) {
+            <span>E-Mail ist erforderlich.</span>
+            } @else if (profileForm.get('email')?.errors?.['invalidEmail']) {
+            <span>Bitte gib eine gültige E-Mail-Adresse ein.</span>
+            }
+          </div>
+          }
         </div>
       </div>
-    </div>
-    <div class="btn-box">
-      <button>Abbrechen</button>
-      <button>Speichern</button>
-    </div>
+      <div class="btn-box">
+        <button type="button" (click)="toggleEditMode()">Abbrechen</button>
+        <button type="submit" [disabled]="!profileForm.valid">Speichern</button>
+      </div>
+    </form>
   </div>
   } }
+</div>
+
+<div class="hover-container">
+  <button class="hover-tryout" popovertarget="hover-box" id="trigger">
+    Hover Me!
+  </button>
+</div>
+
+<div id="hover-box" popover>
+  Works! <br />
+  Works! <br />
+  Works!
 </div>

@@ -17,7 +17,7 @@ import { MessageService } from '../../utils/services/message.service';
   standalone: true,
   imports: [CommonModule, MessageDateComponent, MessageComponent, MessageTextareaComponent, PopoverChannelEditorComponent, PopoverChannelMemberOverviewComponent],
   templateUrl: './chatview.component.html',
-  styleUrl: './chatview.component.scss'
+  styleUrl: './chatview.component.scss',
 })
 export class ChatviewComponent {
 
