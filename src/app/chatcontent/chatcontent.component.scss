@@ -4,7 +4,7 @@
 section.chatcontent {
   width: 100%;
   max-width: 1920px;
-  max-height: 100vh;
+  height: 100vh;
   padding: 1.5rem 1.25rem 1.25rem;
   background-color: $background;
 
@@ -12,33 +12,75 @@ section.chatcontent {
   grid:
     "top-bar top-bar top-bar" auto
     "workspace-menu chatview threadview" 1fr
-    / 17.5% 1fr 20%;
+    / auto 1fr 20%;
+  grid-template-rows: fit-content auto;
   gap: 1.25rem;
+
+  transition: $transition-standard;
+
+  &.menu-hidden {
+    padding-left: 0;
+  }
 }
 
 .top-bar {
   grid-area: top-bar;
 }
+
+@keyframes slideIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 20rem;
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    width: 20rem;
+    opacity: 1;
+  }
+  to {
+    width: 0;
+    opacity: 0;
+  }
+}
+
 .workspace-menu {
   grid-area: workspace-menu;
-  padding: 1rem;
+  max-width: 20rem;
   border-radius: 1.875rem;
   background-color: #fff;
-  max-height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  transition: $transition-standard;
+
+  &.visible {
+    animation: slideIn 0.125s ease-out forwards;
+  }
+
+  &.hidden {
+    animation: slideOut 0.125s ease-out forwards;
+  }
 }
+
 .chatview {
   grid-area: chatview;
   border-radius: 1.875rem;
   background-color: #fff;
-  max-height: 100vh;
+  overflow-y: scroll;
+  transition: $transition-standard;
 }
 
 .threadview {
   grid-area: threadview;
-  padding: 1rem;
   border-radius: 1.875rem;
   background-color: #fff;
-  max-height: 100vh;
+  overflow-y: scroll;
+  transition: $transition-standard;
 }
 
 .addchannel {
@@ -52,31 +94,31 @@ section.chatcontent {
 }
 
 .addchannel::backdrop {
-  background: black;
-  opacity: 0.5;
+  background: #00000066;
 }
 
-.hidden {
-  visibility: hidden;
-}
+// .hidden {
+//   visibility: hidden;
+// }
 
 .hide_show_wsm {
   position: absolute;
   z-index: 2;
   left: 0rem;
-  top: 36.3125rem;
-  gap: 0.625rem;
+  bottom: 1.25rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 1.4375rem 0.875rem 1.4375rem 0.875rem;
-  background-color: #f8f8f8;
-  border-bottom: 0.0625rem solid #e0e0e0;
-  width: 3.75rem;
-  height: 21.6875rem;
+  width: fit-content;
+  height: fit-content;
+  gap: 0.625rem;
+  padding: 1.4375rem 0.75rem 1.4375rem 0.5rem;
+  background-color: #fff;
   border-radius: 0 1.875rem 1.875rem 0;
-  box-shadow: 0.25rem 0.25rem 0.4375rem rgba(0, 0, 0, 0.3);
+  box-shadow: $profile-box-shadow;
+  transition: $transition-standard;
+
   div {
     background-image: url("../../assets/icons/wsm/wsm-close.svg");
     background-repeat: no-repeat;
@@ -84,10 +126,13 @@ section.chatcontent {
     width: 1.5rem;
     height: 1.5rem;
   }
+
   span {
-    transform: rotate(-90deg);
     width: 100%;
+    text-align: left;
+    writing-mode: vertical-rl;
     text-wrap: nowrap;
+    transform: rotate(-180deg);
   }
 }
 
@@ -100,7 +145,7 @@ section.chatcontent {
 
 app-workspacemenu {
   display: flex;
-  height: 100vh;
+  height: 100%;
   border-radius: 1.875rem;
   background-color: white;
 }
