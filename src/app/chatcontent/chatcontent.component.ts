@@ -20,14 +20,27 @@ import { AddchannelComponent } from './workspacemenu/addchannel/addchannel.compo
   styleUrl: './chatcontent.component.scss',
 })
 export class ChatcontentComponent {
-  ngOnInit() {
-    document
-      .getElementsByClassName('hide_show_wsm')[0]
-      .addEventListener('click', () => this.wsmVisibility());
-  }
+  isWorkspaceMenuVisible = true;
 
-  wsmVisibility() {
-    const wsm = document.getElementsByClassName('workspace-menu');
-    wsm[0].classList.toggle('hidden');
+  toggleWorkspaceMenu() {
+    this.isWorkspaceMenuVisible = !this.isWorkspaceMenuVisible;
+    const chatContent = document.querySelector('.chatcontent') as HTMLElement;
+    const workspaceMenu = document.querySelector(
+      '.workspace-menu'
+    ) as HTMLElement;
+
+    if (this.isWorkspaceMenuVisible) {
+      chatContent.classList.remove('menu-hidden');
+      workspaceMenu.style.display = 'block';
+      workspaceMenu.classList.remove('hidden');
+      workspaceMenu.classList.add('visible');
+    } else {
+      chatContent.classList.add('menu-hidden');
+      workspaceMenu.classList.remove('visible');
+      workspaceMenu.classList.add('hidden');
+      setTimeout(() => {
+        workspaceMenu.style.display = 'none';
+      }, 125);
+    }
   }
 }

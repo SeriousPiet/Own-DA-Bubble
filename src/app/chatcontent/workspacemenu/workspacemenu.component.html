@@ -27,7 +27,7 @@
       <ul class="channel-list">
         <li class="blue" *ngFor="let channel of channelservice.channels">
           <div class="hashtag"></div>
-          <h3 class="nunito-18-400">{{ channel.name }}</h3>
+          <span class="nunito-18-400">{{ channel.name }}</span>
         </li>
       </ul>
       <button
@@ -47,9 +47,11 @@
         <h2 class="nunito-20-700">Direktnachrichten</h2>
       </summary>
       <ul>
-        <li class="blue" *ngFor="let user of userservice.users">
-          <div class="profil-image"></div>
-          <h3 class="nunito-18-400 blue">{{ user.name }}</h3>
+        <li class="dm-list-item" *ngFor="let user of userservice.users">
+          <div class="avatar">
+            <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
+          </div>
+          <span class="nunito-18-400 blue">{{ user.name }}</span>
         </li>
       </ul>
     </details>

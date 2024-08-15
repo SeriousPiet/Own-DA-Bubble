@@ -64,16 +64,17 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 0px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: $primary;
+  background-color: transparent;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #fff;
+  background-color: transparent;
   border: none;
 }
 
@@ -99,6 +100,13 @@ h2 {
 
 h3 {
   @extend .nunito-24-700;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
 }
 
 input {
