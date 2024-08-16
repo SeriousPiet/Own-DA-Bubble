@@ -10,6 +10,11 @@
 
     .user {
 
+        img {
+            width: 2rem;
+            border-radius: 5000px;
+        }
+
         .userchangebuttons {
             display: flex;
             flex-direction: column;

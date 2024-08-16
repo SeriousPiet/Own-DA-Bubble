@@ -58,6 +58,7 @@ export class UsersService implements OnDestroy {
     online?: boolean;
     chatIDs?: string[];
     avatar?: number;
+    pictureURL?: string;
   }) {
     if (this.currentUser) {
       updateDoc(
@@ -245,7 +246,7 @@ export class UsersService implements OnDestroy {
                   this.setOnlineStatus(this.currentUser.id, true);
                   console.warn(
                     'userservice/firestore: currentUser is ' +
-                      this.currentUser.email
+                    this.currentUser.email
                   );
                   console.log(
                     'Online-Status des aktuellen Users:',

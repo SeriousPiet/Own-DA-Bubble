@@ -17,6 +17,7 @@ export class User {
     get online(): boolean { return this._online; }
 
     readonly createdAt: Date;
+    readonly pictureURL: string | undefined;
 
     private _chatIDs: string[] = [];
     get chatIDs(): string[] { return this._chatIDs; }
@@ -32,6 +33,7 @@ export class User {
         this._avatar = userObj.avatar ? userObj.avatar : 1;
         this._online = userObj.online ? userObj.online : false;
         this.createdAt = userObj.createdAt ? (userObj.createdAt as any).toDate() : serverTimestamp();
+        this.pictureURL = userObj.pictureURL ? userObj.pictureURL : undefined;
         this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
         this._ifCurrentUser = currentUser;
     }

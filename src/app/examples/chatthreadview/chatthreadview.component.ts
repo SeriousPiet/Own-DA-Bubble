@@ -9,6 +9,7 @@ import { UsersService } from '../../utils/services/user.service';
 import { MessageviewexampleComponent } from '../messageviewexample/messageviewexample.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 
 @Component({
   selector: 'app-chatthreadview',
@@ -27,6 +28,7 @@ export class ChatthreadviewComponent {
   public messageservice = inject(MessageService);
   public userservice = inject(UsersService);
   public navigationService = inject(NavigationService);
+  private storage = getStorage();
 
   ngOnInit(): void {
     this.navigationService.change$.subscribe((change) => {
@@ -80,6 +82,32 @@ export class ChatthreadviewComponent {
   changeName(event: Event) {
     event.preventDefault();
     this.userservice.updateCurrentUserDataOnFirestore({ name: this.username });
+  }
+
+  public imgFile: File | null = null;
+
+
+  setPicture(event: Event) {
+    event.preventDefault();
+    const target = event.target as HTMLInputElement;
+    if (target.files) {
+      this.imgFile = target.files[0];
+    }
+  }
+
+  uploadPicture(event: Event) {
+    event.preventDefault();
+    if (this.imgFile) {
+      console.log('Uploading picture...' + this.imgFile.name);
+      const storageRef = ref(this.storage, 'profile-pictures/' + this.userservice.currentUser?.id + '/userpicture.' + this.imgFile.name.split('.').pop());
+      uploadBytes(storageRef, this.imgFile)
+        .then((snapshot) => {
+          getDownloadURL(snapshot.ref)
+            .then((url) => {
+              this.userservice.updateCurrentUserDataOnFirestore({ pictureURL: url });
+            });
+        });
+    }
   }
 
 }

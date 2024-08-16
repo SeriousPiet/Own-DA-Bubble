@@ -4,6 +4,9 @@
     <div class="user">
         <h1>User:</h1>
         <span>{{ userservice.currentUser.name }}</span>
+        @if(userservice.currentUser.pictureURL) {
+        <img src="{{userservice.currentUser.pictureURL}}" alt="">
+        }
         <div class="userchangebuttons">
             <div>
                 <input [(ngModel)]="newemail" type="text">
@@ -12,6 +15,10 @@
             <div>
                 <input [(ngModel)]="username" type="text">
                 <button (click)="changeName($event)">change name</button>
+            </div>
+            <div>
+                <input (change)="setPicture($event)" type="file">
+                <button (click)="uploadPicture($event)">upload image</button>
             </div>
         </div>
     </div>
