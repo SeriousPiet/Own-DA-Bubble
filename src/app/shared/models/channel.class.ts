@@ -2,28 +2,39 @@ import { Timestamp } from "@angular/fire/firestore";
 
 export class Channel {
 
-  id: string;
-  name: string; // unique!!!
-  description: string;
-  createdAt: Date;
-  creatorID: string; // User id
-  members: string[]; // User ids
+  readonly id: string;
+  private _name: string;
+  get name(): string { return this._name; }
+
+  private _description: string;
+  get description(): string { return this._description; }
+
+  private _members: string[]; // User ids
+  get members(): string[] { return this._members; }
+
+
+  readonly createdAt: Date;
+  readonly creatorID: string; // User id
+  readonly defaultChannel: boolean;
+
   get channelMessagesPath(): string {
+    if (this.id == '') return '';
     return `channels/${this.id}/messages/`;
   }
 
-  constructor(data: any, channelID: string) {
+  constructor(data: any, channelID: string = '') {
     this.id = channelID;
-    this.name = data.name ? data.name : 'New Channel';
-    this.description = data.description ? data.description : '';
+    this._name = data.name ? data.name : 'New Channel';
+    this._description = data.description ? data.description : '';
     this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
     this.creatorID = data.creatorID ? data.creatorID : '';
-    this.members = data.members ? data.members : [];
+    this._members = data.members ? data.members : [];
+    this.defaultChannel = data.defaultChannel ? data.defaultChannel : false;
   }
 
   update(data: any) {
-    if(data.name) this.name = data.name;
-    if(data.description) this.description = data.description;
-    if(data.members) this.members = data.members;
+    if (data.name) this._name = data.name;
+    if (data.description) this._description = data.description;
+    if (data.members) this._members = data.members;
   }
 }

@@ -12,6 +12,7 @@ import { BehaviorSubject } from 'rxjs';
  */
 export class NavigationService {
 
+  public defaultChannel: Channel = new Channel({ name: 'Willkommen', description: 'Defaultchannel', defaultChannel: true });
 
   /**
    * Observable that emits whenever a change occurs.
@@ -25,8 +26,9 @@ export class NavigationService {
    * The main message list object and the path to its messages.
    */
   private _chatViewObject: Channel | Chat | undefined;
-  get chatViewObject(): Channel | Chat | undefined {
-    return this._chatViewObject;
+  get chatViewObject(): Channel | Chat {
+    if (this._chatViewObject) return this._chatViewObject;
+    else return this.defaultChannel;
   }
   private _chatViewPath: string | undefined;
   get chatViewPath(): string | undefined {
