@@ -15,7 +15,7 @@ export class MessageService {
   constructor() { }
 
 
-  addNewMessageToChannel(channel: Channel, messageContent: string) {
+  private addNewMessageToChannel(channel: Channel, messageContent: string) {
     const channelMessagesRef = collection(this.firestore, channel.channelMessagesPath);
     if (!channelMessagesRef) throw new Error('MessageService: addNewMessageToChannel: path "channels/' + channel.id + '/messages/" is undefined');
     addDoc(channelMessagesRef, this.createNewMessageObject(messageContent, true))
@@ -24,6 +24,20 @@ export class MessageService {
           const newMessageRef = doc(channelMessagesRef, response.id);
           updateDoc(newMessageRef, { id: response.id });
           console.warn('MessageService: addNewMessageToChannel: message added');
+        }
+      )
+  }
+
+
+  addNewMessageToPath(messagePath: string, messageContent: string) {
+    const messageCollectionRef = collection(this.firestore, messagePath);
+    if (!messageCollectionRef) throw new Error('MessageService: addNewMessageToPath: path "' + messagePath + '" is undefined');
+    addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true))
+      .then(
+        (response) => {
+          const newMessageRef = doc(messageCollectionRef, response.id);
+          updateDoc(newMessageRef, { id: response.id });
+          console.warn('MessageService: addNewMessageToPath: message added');
         }
       )
   }
