@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
+import { emailValidator, nameValidator, passwordValidator } from '../../utils/form-validators';
 
 @Component({
   selector: 'app-signup',
@@ -22,16 +23,15 @@ export class SignupComponent {
   signupForm = new FormGroup({
     name: new FormControl('', [
       Validators.required,
-      Validators.maxLength(20),
+      nameValidator(),
     ]),
     email: new FormControl('', [
       Validators.required,
-      Validators.email,
+      emailValidator(),
     ]),
     password: new FormControl('', [
       Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(20),
+      passwordValidator(),
     ]),
     checkboxPP: new FormControl(false, [
       Validators.required,
