@@ -22,26 +22,27 @@ import { AddUserToChannelComponent } from './workspacemenu/addchannel/add-user-t
   styleUrl: './chatcontent.component.scss',
 })
 export class ChatcontentComponent {
-  ngOnInit() {
-    document
-      .getElementsByClassName('hide_show_wsm')[0]
-      .addEventListener('click', () => this.wsmVisibility());
-  }
+  isWorkspaceMenuVisible = true;
 
-  isMenuOpen = false;
+  toggleWorkspaceMenu() {
+    this.isWorkspaceMenuVisible = !this.isWorkspaceMenuVisible;
+    const chatContent = document.querySelector('.chatcontent') as HTMLElement;
+    const workspaceMenu = document.querySelector(
+      '.workspace-menu'
+    ) as HTMLElement;
 
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  get buttonText(): string {
-    return this.isMenuOpen
-      ? 'Workspace-Menü öffnen'
-      : 'Workspace-Menü schließen';
-  }
-
-  wsmVisibility() {
-    const wsm = document.getElementsByClassName('workspace-menu');
-    wsm[0].classList.toggle('hidden');
+    if (this.isWorkspaceMenuVisible) {
+      chatContent.classList.remove('menu-hidden');
+      workspaceMenu.style.display = 'block';
+      workspaceMenu.classList.remove('hidden');
+      workspaceMenu.classList.add('visible');
+    } else {
+      chatContent.classList.add('menu-hidden');
+      workspaceMenu.classList.remove('visible');
+      workspaceMenu.classList.add('hidden');
+      setTimeout(() => {
+        workspaceMenu.style.display = 'none';
+      }, 125);
+    }
   }
 }
