@@ -13,6 +13,7 @@ import { Message } from '../../../shared/models/message.class';
 })
 export class MessagesListViewComponent implements OnInit {
   messagefromUser = true;
+  messageWroteFromUser = false;
 
   private firestore = inject(Firestore);
   private unsubMessages: any = null;
@@ -23,9 +24,10 @@ export class MessagesListViewComponent implements OnInit {
   @Input()
   set messagesPath(value: string | undefined) {
     this.messages = [];
+    this.dates = [];
     this.subscribeMessages(value);
-
   }
+
 
 
   constructor(private _cdr: ChangeDetectorRef) { 
@@ -34,17 +36,6 @@ export class MessagesListViewComponent implements OnInit {
   ngOnInit(): void {
     
   }
-
-  // getAllMessagesDates() {
-  //   this.dates = [];
-  //   this.messages.forEach((message) => {
-  //     if (!this.dates.includes(message.createdAt)) {
-  //       this.dates.push(message.createdAt);
-  //     }
-  //   });
-  // }
-
-
 
 
   private subscribeMessages(messagesPath: string | undefined) {

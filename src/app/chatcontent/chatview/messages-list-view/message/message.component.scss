@@ -97,8 +97,7 @@
 
 }
 
-:host(.message-from-user) {
-    .message-ctn {
+.message-from-user{
         flex-direction: row-reverse;
         padding: .625rem 2.8125rem .625rem 0;
 
@@ -115,11 +114,7 @@
             .message-reactions {
                 @include flex(flex-end, normal);
             }
-
-            .message-info {
-                display: none;
-            }
         }
-    }
+    
 
 }

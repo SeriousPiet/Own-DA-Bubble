@@ -1,10 +1,10 @@
-    <main class="message-ctn">
+    <main class="message-ctn" [ngClass]="{'message-from-user': messagefromUser}">
         <div>
             <img src="assets/icons/start/choose-avatar/choose-avatar-3.svg" alt="">
         </div>
         <section>
-                <span>Frederick Kröger</span>
-                <p>Welche Version von Angular ist die aktuellste?</p>
+                <span>{{userService.getUserByID(messageData.creatorID)?.name}}</span>
+                <p>{{ messageData.content }}</p>
                 @if(hasRection){
                     <div class="message-reactions">
                         <div>
@@ -18,16 +18,19 @@
                         <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
                     </div>
                 }
-                <div class="message-info">
-                    <a>
-                        <span>2</span>
-                        <span>Antworten</span>
-                    </a>
-                    <div>
-                        <span>letzte Antwort</span>
-                        <span>14:56</span>
+                @if(messageData.answerCount > 0){
+                    <div class="message-info">
+                        <a>
+                            <span>{{ messageData.answerCount }}</span>
+                            <span>Antworten</span>
+                        </a>
+                        <div>
+                            <span>letzte Antwort</span>
+                            <span>14:56</span>
+                        </div>
                     </div>
-                </div>
+                }
+                
                 
         </section>
     </main>

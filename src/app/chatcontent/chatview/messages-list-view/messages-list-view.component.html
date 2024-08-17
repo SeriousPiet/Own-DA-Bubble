@@ -1,13 +1,6 @@
-@for (date of dates; track $index) {
-    <app-message-date [date]="date"></app-message-date>
+<!-- @for (date of dates; track $index) {
+    <app-message-date [date]="date"></app-message-date> -->
     @for (message of messages; track $index) {
-        <app-message></app-message>
-        <app-message [class.message-from-user]='messagefromUser'></app-message>
+        <app-message [messageWriter]="message.creatorID" [messageData]="message"></app-message>
     }
-}
-
-<!-- <div>
-    <app-message-date></app-message-date>
-    <app-message></app-message>
-    <app-message [class.message-from-user]='messagefromUser'></app-message>
-</div> -->
+<!-- } -->
