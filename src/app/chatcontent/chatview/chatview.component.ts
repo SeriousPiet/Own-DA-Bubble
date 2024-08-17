@@ -12,6 +12,7 @@ import { Message } from '../../shared/models/message.class';
 import { ChannelService } from '../../utils/services/channel.service';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { MessagesListViewComponent } from './messages-list-view/messages-list-view.component';
+import { UsersService } from '../../utils/services/user.service';
 
 
 @Component({
@@ -33,13 +34,14 @@ export class ChatviewComponent implements OnInit {
 
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
+  private userService = inject(UsersService)
 
 
   constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-   
+
   }
 
 
@@ -49,6 +51,32 @@ export class ChatviewComponent implements OnInit {
     // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
     return '';
   }
+
+  getNumberOfMembers(object: Channel | Chat | Message | undefined) {
+    if (object instanceof Channel) return object.members.length;
+    return
+  }
+
+  renderChannelMembersAvatar(object: Channel | Chat | Message | undefined) {
+    if (object instanceof Channel && object.members.length <= 3) {
+      object.members.forEach(memberID => {
+        return this.userService.getUserByID(memberID)?.avatar
+      });
+    }
+    else if (object instanceof Channel) {
+      this.renderOnlyFirstThreeAvatars(object)
+    }
+  }
+
+  renderOnlyFirstThreeAvatars(object: Channel) {
+    const maxAvatarsCount = 3;
+    const maxAvatars = object.members.slice(0, maxAvatarsCount)
+    maxAvatars.forEach(memberID => {
+      return this.userService.getUserByID(memberID)?.avatar
+    });
+  }
+
+
 
 
 }
