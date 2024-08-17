@@ -1,5 +1,5 @@
-@import "../../../../styles.scss";
-@import "../../../../mixins.scss";
+@import "../../../../../styles.scss";
+@import "../../../../../mixins.scss";
 
 .message-ctn {
     display: flex;
@@ -41,7 +41,7 @@
 
             >img {
                 &:hover {
-                    content: url(../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
+                    content: url(../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
                 }
             }
         }

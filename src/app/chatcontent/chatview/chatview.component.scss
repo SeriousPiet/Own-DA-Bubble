@@ -9,10 +9,6 @@
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-::backdrop{
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
 .chatview-main-ctn {
   background-color: white;
   border-radius: 1.875rem;
@@ -50,7 +46,7 @@
       }
 
 
-  .chatview-chanel-name {
+  .chatview-channel-name {
     cursor: pointer;
 
     > div {
@@ -161,13 +157,6 @@
     .chat-messages-wrapper {
       @include flex(flex-end, normal);
       flex-direction: column;
-
-      > div {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-        padding-top: 0.625rem;
-      }
     }
   }
 

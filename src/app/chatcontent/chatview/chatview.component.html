@@ -1,10 +1,11 @@
 <main class="chatview-main-ctn">
     <section class="chatview-header">
-        <button class="chatview-chanel-name" popovertarget="channel-editor-popover">
+        <button class="chatview-channel-name" popovertarget="channel-editor-popover">
             <div>
                 <div>
                     <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-                    <span>Entwicklerteam</span>
+                    <!-- <span>{{getTitle(navigationService.chatViewObject)}}</span> -->
+                    <span>{{getTitle(navigationService.chatViewObject)}}</span>
                 </div>
                 <img src="assets/icons/modals/expand-down.svg" alt="arrow-down">
             </div>
@@ -30,19 +31,7 @@
     <section class="chatview-content">
         <div class="chat-messages-content">
             <div class="chat-messages-wrapper">
-                <div>
-                    @for (dates of allMessagesDate; track $index) {
-                        <app-message-date></app-message-date>
-                        <app-message></app-message>
-                        <app-message [class.message-from-user]='messagefromUser'></app-message>
-                    }
-                    
-                </div>
-                <div>
-                    <app-message-date></app-message-date>
-                    <app-message></app-message>
-                    <app-message [class.message-from-user]='messagefromUser'></app-message>
-                </div>
+                <app-messages-list-view [messagesPath]="navigationService.chatViewPath"></app-messages-list-view>
             </div>
 
         </div>
@@ -50,6 +39,7 @@
     </section>
 
     <app-popover-channel-editor id="channel-editor-popover" popover></app-popover-channel-editor>
-    <app-popover-channel-member-overview id="channel-member-overview-popover" popover></app-popover-channel-member-overview>
+    <app-popover-channel-member-overview id="channel-member-overview-popover"
+        popover></app-popover-channel-member-overview>
 
 </main>
