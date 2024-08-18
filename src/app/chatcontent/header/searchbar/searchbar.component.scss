@@ -1,0 +1,116 @@
+@import "../../../../styles.scss";
+@import "../../../../mixins.scss";
+
+.searchbar {
+  position: absolute;
+  z-index: 15;
+  left: 50%;
+  top: -1.875rem;
+  transform: translateX(-50%);
+  width: 100%;
+
+  @include flex(flex-start, flex-start);
+  flex-direction: column;
+  padding: 1.125rem;
+  border: 1px solid $disabled;
+  border-radius: 1.875rem;
+  background-color: #fff;
+  box-shadow: $modal-box-shadow;
+  transition: $transition-standard;
+
+  input {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .search-blocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+
+    .search-block {
+      display: flex;
+      align-items: center;
+      background-color: $primary;
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.875rem;
+
+      button {
+        background: none;
+        border: none;
+        color: #fff;
+        margin-left: 0.25rem;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .autocomplete-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    background-color: #fff;
+    border: 1px solid $default-border;
+    border-radius: 0.25rem;
+    box-shadow: $box-shadow-45;
+    max-height: 200px;
+    overflow-y: auto;
+
+    div {
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: $transition-standard;
+
+      &:hover {
+        background-color: $hover-grey;
+      }
+    }
+  }
+
+  .dropdown {
+    width: 100%;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    z-index: 10; // Über anderen Elementen
+
+    .context-search {
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      transition: $transition-standard;
+
+      &:hover {
+        background-color: $error;
+      }
+    }
+
+    .recent-searches {
+      .category-header {
+        padding: 0.5rem;
+        font-weight: bold;
+      }
+
+      div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: $transition-standard;
+
+        &:hover {
+          background-color: $hover-grey;
+        }
+
+        button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: $error;
+        }
+      }
+    }
+  }
+}
