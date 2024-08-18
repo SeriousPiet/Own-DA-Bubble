@@ -24,6 +24,7 @@ export class MessageComponent {
   }
 
   messagefromUser = false;
+  isHovered = false;
 
   hasRection = true;
 

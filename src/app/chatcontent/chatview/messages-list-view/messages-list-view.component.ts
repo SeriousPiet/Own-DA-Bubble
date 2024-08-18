@@ -12,8 +12,9 @@ import { Message } from '../../../shared/models/message.class';
   styleUrl: './messages-list-view.component.scss'
 })
 export class MessagesListViewComponent implements OnInit {
-  messagefromUser = true;
-  messageWroteFromUser = false;
+  
+  // messagefromUser = true;
+  // messageWroteFromUser = false;
 
   private firestore = inject(Firestore);
   private unsubMessages: any = null;

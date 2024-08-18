@@ -5,6 +5,8 @@
     display: flex;
     padding: 0.625rem 0rem 0.625rem 2.8125rem;
     gap: 1.875rem;
+    position: relative;
+    transition: $transition-popover;
 
     >section {
         display: flex;
@@ -87,34 +89,88 @@
                 >div {
                     background-color: #FFFFFF;
 
-                    &:hover{
+                    &:hover {
                         border-color: $accent;
                     }
                 }
             }
         }
+
+        .message-ctn .message-from-user{
+            transition: $transition-popover;
+            transform: translatex(3rem);
+        }
     }
 
 }
 
-.message-from-user{
-        flex-direction: row-reverse;
-        padding: .625rem 2.8125rem .625rem 0;
+.message-from-user {
+    flex-direction: row-reverse;
+    padding: .625rem 2.8125rem .625rem 0;
 
-        >section {
+    >section {
 
-            >span {
-                text-align: end;
-            }
+        >span {
+            text-align: end;
+        }
 
-            >p {
-                border-radius: 1.875rem 0 1.875rem 1.875rem;
-            }
+        >p {
+            border-radius: 1.875rem 0 1.875rem 1.875rem;
+        }
 
-            .message-reactions {
-                @include flex(flex-end, normal);
+        .message-reactions {
+            @include flex(flex-end, normal);
+        }
+    }
+
+    .interact-ctn-popover {
+        left: 0.1875rem;
+        right: unset;
+
+        >section{
+            #edit-message-icon{
+                display: block;
             }
         }
-    
+    }
+}
 
+.interact-ctn-popover {
+    padding: .1875rem .9375rem .1875rem 1.25rem;
+    border-radius: 1.5625rem 1.5625rem 0 1.5625rem;
+    border: 1px solid #ADB0D9;
+    height: fit-content;
+    position: absolute;
+    top: -1.25rem;
+    right: 5.8125rem;
+    background-color: white;
+  
+
+    >section {
+        @include flex(normal, center);
+        gap: .3125rem;
+
+        >div {
+            @include flex(normal, center);
+            padding: 8px;
+            border-radius: 20px;
+        }
+
+        #edit-message-icon{
+            display: none;
+        }
+    }
+}
+
+.interact-ctn-popover-slide-out-animation{
+    transform: translateX(-3rem);
+    transition: $transition-popover;
+    opacity: 0;
+}
+
+.interact-ctn-popover-slide-in-animation{
+    transform: translateX(3rem);
+    transition: $transition-popover;
+    display: block;
+    opacity: 1;
 }
