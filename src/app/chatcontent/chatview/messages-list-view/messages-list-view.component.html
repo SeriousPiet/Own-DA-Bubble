@@ -1,6 +1,10 @@
-<!-- @for (date of dates; track $index) {
-    <app-message-date [date]="date"></app-message-date> -->
+@for (date of dates; track $index) {
     @for (message of messages; track $index) {
-        <app-message [messageWriter]="message.creatorID" [messageData]="message"></app-message>
+        @if(date == message.createdAt){
+            <section>
+                <app-message-date [date]="date"></app-message-date>
+                <app-message [messageWriter]="message.creatorID" [messageData]="message"></app-message>
+            </section>
+        }
     }
-<!-- } -->
+}

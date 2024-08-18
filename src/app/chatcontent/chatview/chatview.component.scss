@@ -152,11 +152,6 @@
     flex-direction: column;
     gap: 0.75rem;
     padding-bottom: 1.875rem;
-
-    .chat-messages-wrapper {
-      @include flex(flex-end, normal);
-      flex-direction: column;
-    }
   }
 
   ::-webkit-scrollbar {

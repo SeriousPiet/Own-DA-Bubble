@@ -11,15 +11,16 @@ export class MessageDateComponent {
 
   messageDate: Date | string = ''
 
-  @Input() set date(date: Date | string) {
+  @Input() set date(date: Date) {
     this.formatDate(date);
     console.log(date)
   };
 
-  formatDate(date: Date | string) {
-    if (date == this.isToday()) return this.messageDate = "Heute";
+  formatDate(date: Date) {
+    let formatedMessageDate = date.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (formatedMessageDate == this.isToday()) return this.messageDate = "Heute";
     else {
-      return this.messageDate = date.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+      return this.messageDate = formatedMessageDate;
     }
   }
 
@@ -27,7 +28,8 @@ export class MessageDateComponent {
 
   isToday() {
     const today = new Date();
-    return today
+    let formatedTodaysDate = today.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+    return formatedTodaysDate;
   }
 
 

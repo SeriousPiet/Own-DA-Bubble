@@ -38,6 +38,12 @@ export class MessagesListViewComponent implements OnInit {
   }
 
 
+  sortMessagesDate(messageCreationDate: Date){
+    this.dates.push(messageCreationDate);
+    this.dates.sort((a, b) => b.getTime() - a.getTime());
+  }
+
+
   private subscribeMessages(messagesPath: string | undefined) {
     if (this.unsubMessages) this.unsubMessages();
     if (messagesPath) {
@@ -46,7 +52,7 @@ export class MessagesListViewComponent implements OnInit {
           if (change.type === 'added') {
             let newMessage = new Message(change.doc.data(), messagesPath);
             this.messages.push(newMessage);
-            this.dates.push(newMessage.createdAt)
+            this.sortMessagesDate(newMessage.createdAt)
           }
           if (change.type === 'modified') {
             const message = this.messages.find((message) => message.id === change.doc.data()['id']);
@@ -56,7 +62,6 @@ export class MessagesListViewComponent implements OnInit {
             this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
           }
         });
-        this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
         this._cdr.detectChanges();
       })
     }

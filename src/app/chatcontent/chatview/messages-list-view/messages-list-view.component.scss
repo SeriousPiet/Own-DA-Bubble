@@ -1,9 +1,18 @@
+@import "../../../../styles.scss";
+@import "../../../../mixins.scss";
 
 
-
-:host{
+:host {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 1.25rem;
     padding-top: 0.625rem;
+    height: 100%;
+    overflow: scroll;
+}
+
+section {
+    @include flex(center, normal);
+    flex-direction: column;
+    gap: 1.5rem;
 }
