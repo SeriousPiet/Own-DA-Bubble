@@ -45,7 +45,9 @@ export class UsersService implements OnDestroy {
   }
 
   getAllUserIDs(): string[] {
-    return this.users.map((user) => user.id);
+    const userIDs = this.users.map((user) => user.name);
+    console.log('User IDs from UserService:', userIDs);
+    return userIDs;
   }
 
   getUserByID(id: string): User | undefined {
