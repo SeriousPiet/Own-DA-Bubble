@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Message } from '../../shared/models/message.class';
@@ -18,7 +18,17 @@ export class NavigationService {
     defaultChannel: true,
   });
 
-  constructor(private userService: UsersService) {}
+  constructor() {
+    // subscribe userservice.changeUserList$ to update the defaultChannel with all userids
+    this.userService.changeUserList$.subscribe(() => {
+      this.defaultChannel.update({ members: this.userService.getAllUserIDs() });
+    });
+  }
+
+  /**
+   * The user service for handling user-related operations.
+   */
+  private userService = inject(UsersService);
 
   /**
    * Observable that emits whenever a change occurs.

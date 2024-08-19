@@ -6,10 +6,6 @@ import {
   Firestore,
   onSnapshot,
   doc,
-  getDoc,
-  query,
-  getDocs,
-  where,
   serverTimestamp,
 } from '@angular/fire/firestore';
 import { User } from '../../shared/models/user.class';
@@ -25,6 +21,7 @@ import {
   updateProfile,
   user,
 } from '@angular/fire/auth';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +33,9 @@ export class UsersService implements OnDestroy {
   private user$: any = null;
   private currentUserSubscriber: any = null;
 
+  private changeUserListSubject = new BehaviorSubject<string>('');
+  public changeUserList$ = this.changeUserListSubject.asObservable();
+
   public users: User[] = [];
   public currentUser: User | undefined;
 
@@ -45,8 +45,7 @@ export class UsersService implements OnDestroy {
   }
 
   getAllUserIDs(): string[] {
-    const userIDs = this.users.map((user) => user.name);
-    console.log('User IDs from UserService:', userIDs);
+    const userIDs = this.users.map((user) => user.id);
     return userIDs;
   }
 
@@ -223,6 +222,7 @@ export class UsersService implements OnDestroy {
             );
           }
         });
+        this.changeUserListSubject.next('users');
       }
     );
   }
