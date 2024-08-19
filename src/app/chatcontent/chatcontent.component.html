@@ -14,7 +14,7 @@
     <app-workspacemenu />
   </div>
   <div class="chatview">
-    <app-chatview />
+    <app-chatview [currentChannel]="navigationService.chatViewObject" />
   </div>
   <div class="threadview">
     <app-threadview />

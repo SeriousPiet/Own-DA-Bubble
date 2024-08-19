@@ -10,22 +10,25 @@
                 <img src="assets/icons/modals/expand-down.svg" alt="arrow-down">
             </div>
         </button>
-        <div class="member-avatar-overview">
-            <button class="member-avatars-ctn" popovertarget="channel-member-overview-popover">
-                <div class="d-flex">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
-                        alt="member-avatar">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
-                        alt="member-avatar">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
-                        alt="member-avatar">
+        @if (!isDefaultChannel) {
+            <div class="member-avatar-overview">
+                <button class="member-avatars-ctn" popovertarget="channel-member-overview-popover">
+                    <div class="d-flex">
+                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
+                            alt="member-avatar">
+                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
+                            alt="member-avatar">
+                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
+                            alt="member-avatar">
+                    </div>
+                    <span>{{ getNumberOfMembers(navigationService.chatViewObject) }}</span>
+                </button>
+                <div class="add-member-icon-ctn">
+                    <img src="assets/icons/chat/general/add-to-channel.svg" alt="add-member-icon">
                 </div>
-                <span>{{ getNumberOfMembers(navigationService.chatViewObject) }}</span>
-            </button>
-            <div class="add-member-icon-ctn">
-                <img src="assets/icons/chat/general/add-to-channel.svg" alt="add-member-icon">
             </div>
-        </div>
+        }
+       
 
     </section>
     <section class="chatview-content">

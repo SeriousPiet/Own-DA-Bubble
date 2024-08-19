@@ -35,13 +35,26 @@ export class ChatviewComponent implements OnInit {
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
   private userService = inject(UsersService)
+  public isAChannel = false;
+  public isAChat = false;
+  public isDefaultChannel = true;
 
+
+  @Input() set currentChannel (object: Channel | Chat){
+    if (object instanceof Channel && !object.defaultChannel) this.isDefaultChannel = false;
+    if (object instanceof Channel) console.log(object.defaultChannel);
+  }
 
   constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
+    this.setObjectType();
+  }
 
+  setObjectType() {
+    if (this.currentChannel instanceof Channel) this.isAChannel = true;
+    if (this.currentChannel instanceof Chat) this.isAChat = true;
   }
 
 
