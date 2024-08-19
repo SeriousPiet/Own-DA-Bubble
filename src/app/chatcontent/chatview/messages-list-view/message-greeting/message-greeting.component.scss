@@ -1,0 +1,10 @@
+main{
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    >ul{
+        margin: 0;
+    }
+}

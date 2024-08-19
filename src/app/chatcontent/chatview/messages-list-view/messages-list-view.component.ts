@@ -3,16 +3,17 @@ import { MessageComponent } from './message/message.component';
 import { MessageDateComponent } from './message-date/message-date.component';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { Message } from '../../../shared/models/message.class';
+import { MessageGreetingComponent } from './message-greeting/message-greeting.component';
 
 @Component({
   selector: 'app-messages-list-view',
   standalone: true,
-  imports: [MessageComponent, MessageDateComponent],
+  imports: [MessageComponent, MessageDateComponent, MessageGreetingComponent],
   templateUrl: './messages-list-view.component.html',
   styleUrl: './messages-list-view.component.scss'
 })
 export class MessagesListViewComponent implements OnInit {
-  
+
   // messagefromUser = true;
   // messageWroteFromUser = false;
 
@@ -20,6 +21,8 @@ export class MessagesListViewComponent implements OnInit {
   private unsubMessages: any = null;
   public messages: Message[] = [];
   public dates: Date[] = [];
+
+  @Input() isDefaultChannel: boolean = false;
 
 
   @Input()
@@ -31,15 +34,15 @@ export class MessagesListViewComponent implements OnInit {
 
 
 
-  constructor(private _cdr: ChangeDetectorRef) { 
+  constructor(private _cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    
+
   }
 
 
-  sortMessagesDate(messageCreationDate: Date){
+  sortMessagesDate(messageCreationDate: Date) {
     this.dates.push(messageCreationDate);
     this.dates.sort((a, b) => b.getTime() - a.getTime());
   }

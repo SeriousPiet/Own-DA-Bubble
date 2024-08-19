@@ -31,11 +31,14 @@
        
 
     </section>
-    <section class="chatview-content">
+    <section class="chatview-content" [ngClass]="{'default-channel':isDefaultChannel}">
         <div class="chat-messages-content">
-            <app-messages-list-view [messagesPath]="navigationService.chatViewPath"></app-messages-list-view>
+            <app-messages-list-view [isDefaultChannel]="isDefaultChannel" [messagesPath]="navigationService.chatViewPath"></app-messages-list-view>
         </div>
-        <app-message-textarea></app-message-textarea>
+        @if (!isDefaultChannel) {
+            <app-message-textarea></app-message-textarea>
+        }
+        
     </section>
 
     <app-popover-channel-editor id="channel-editor-popover" popover></app-popover-channel-editor>
