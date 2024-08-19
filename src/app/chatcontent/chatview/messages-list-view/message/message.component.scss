@@ -12,6 +12,7 @@
         display: flex;
         flex-direction: column;
         gap: .5rem;
+        max-width: 70%;
 
         >span {
             font-size: 1.125rem;
@@ -129,7 +130,7 @@
 
         >section{
             #edit-message-icon{
-                display: block;
+                display: flex;
             }
         }
     }
@@ -151,7 +152,7 @@
         gap: .3125rem;
 
         >div {
-            @include flex(normal, center);
+            @include flex(center, center);
             padding: 8px;
             border-radius: 20px;
         }
@@ -173,4 +174,32 @@
     transition: $transition-popover;
     display: block;
     opacity: 1;
+}
+
+
+.button-ctn {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 100%;
+    transition: all .125s ease-in-out;
+
+    &:hover {
+        background-color: #ECEEFE;
+    }
+}
+
+#add-reaction-icon:hover{
+    content: url('../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg');
+}
+
+#comment-icon:hover{
+    content: url('../../../../../assets/icons/chat/message-hover-menu/comment-hover.svg');
+}
+
+#edit-message-icon:hover{
+    content: url('../../../../../assets/icons/chat/message-hover-menu/more-hover.svg');
 }

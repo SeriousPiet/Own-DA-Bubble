@@ -35,19 +35,19 @@
 
     <div [ngClass]="{ 'interact-ctn-popover-slide-out-animation': !isHovered, 'interact-ctn-popover-slide-in-animation': isHovered, 'interact-ctn-popover': true }">
         <section>
-            <div>
+            <div class="button-ctn">
                 <img src="./assets/icons/chat/emoji/check-green.svg" alt="">
             </div>
-            <div>
+            <div class="button-ctn">
                 <img src="./assets/icons/chat/emoji/celebration.svg" alt="">
             </div>
-            <div>
-                <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
+            <div class="button-ctn">
+                <img id="add-reaction-icon" src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
             </div>
-            <div>
-                <img src="./assets/icons/chat/message-hover-menu/comment.svg" alt="">
+            <div class="button-ctn">
+                <img id="comment-icon" src="./assets/icons/chat/message-hover-menu/comment.svg" alt="">
             </div>
-            <div id="edit-message-icon">
+            <div id="edit-message-icon" class="button-ctn" id="edit-message-icon">
                 <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="">
             </div>
         </section>
