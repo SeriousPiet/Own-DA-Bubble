@@ -33,7 +33,7 @@
     </section>
     <section class="chatview-content" [ngClass]="{'default-channel':isDefaultChannel}">
         <div class="chat-messages-content">
-            <app-messages-list-view [isDefaultChannel]="isDefaultChannel" [messagesPath]="navigationService.chatViewPath"></app-messages-list-view>
+            <app-messages-list-view [ngClass]="{'default-channel':isDefaultChannel}" [isDefaultChannel]="isDefaultChannel" [messagesPath]="navigationService.chatViewPath"></app-messages-list-view>
         </div>
         @if (!isDefaultChannel) {
             <app-message-textarea></app-message-textarea>
