@@ -61,7 +61,7 @@ export class ChatthreadviewComponent {
   public messagecontent = '';
 
   addMessageToChannel(channelNumber: number) {
-    this.messageservice.addNewMessageToChannel(this.channelservice.channels[channelNumber], this.messagecontent);
+    this.messageservice.addNewMessageToPath(this.channelservice.channels[channelNumber].channelMessagesPath, this.messagecontent);
   }
 
   updateChannel(channelNumber: number) {

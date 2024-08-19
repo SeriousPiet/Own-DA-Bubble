@@ -1,63 +1,66 @@
-<section class="try-outs">
-  <h1>Anmeldung</h1>
-  <h2>UserName</h2>
-  <h3>Entwicklerteam</h3>
-  <div class="edit-buttons">
-    <button>Bearbeiten</button>
-    <button>Speichern</button>
+<div class="searchbar">
+  <div class="search-blocks">
+    <span *ngIf="getActiveRestrictions().context" class="search-block">
+      {{ getActiveRestrictions().context }}
+      <button (click)="removeContextFromSearch()">x</button>
+    </span>
+    <span
+      *ngFor="let keyword of getActiveRestrictions().keywords"
+      class="search-block"
+    >
+      {{ keyword }}
+      <button (click)="removeKeyword(keyword)">x</button>
+    </span>
   </div>
-  <div class="input-elements">
-    <div class="input-box mail">
-      <input type="email" placeholder="email eintippern" />
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    (input)="onSearchInput()"
+    (focus)="onFocus()"
+    (blur)="onBlur()"
+    placeholder="Search..."
+  />
+
+  <div class="dropdown" *ngIf="isDropdownVisible">
+    <div class="context-search" (click)="addContextToSearch()">
+      {{ getCurrentContext() }} suchen
     </div>
-
-    <div class="input-box pw">
-      <input type="password" placeholder="pw eintippern" />
-    </div>
-  </div>
-
-  <div class="btn-elements">
-    <button>buttonFull</button>
-    <button>buttonEmpty</button>
-    <button>buttonNoBorder</button>
-    <button>buttonNoBg</button>
-    <button>buttonDisabled</button>
-    <button>
-      <img src="./assets/icons/start/google.svg" alt="google-logo" /> Login with
-      Google
-    </button>
-  </div>
-
-  <div class="checkbox-elements">
-    <div class="checkbox-box">
-      <input type="checkbox" id="square-checkbox" class="square-checkbox" />
-      <span>square Checkbox</span>
-    </div>
-
-    <div class="checkbox-box">
-      <input type="checkbox" id="round-checkbox" class="round-checkbox" />
-      <span>round Checkbox</span>
+    <div
+      class="autocomplete-suggestions"
+      *ngIf="(suggestions$ | async)?.length ?? 0 > 0"
+    >
+      <div
+        *ngFor="let suggestion of suggestions$ | async"
+        (click)="selectSuggestion(suggestion)"
+      >
+        {{ suggestion }}
+      </div>
     </div>
   </div>
 
-  <div class="online-status">
-    <div class="avatar">
-      <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
+  <div class="dropdown" *ngIf="isDropdownVisible">
+    <div
+      class="context-search"
+      *ngIf="navigationService.ifMainMessageObjectIsChat()"
+    >
+      <div (click)="addContextToSearch()">{{ getCurrentContext() }}</div>
+
+      <!-- Verwendung von currentContext -->
     </div>
-    <div class="avatar">
-      <img src="./assets/img/avatar-big/avatar-2.png" alt="" />
+    <div
+      class="context-search"
+      *ngIf="navigationService.ifMainMessageObjectIsChannel()"
+    >
+      <div (click)="addContextToSearch()">{{ getCurrentContext() }}</div>
+
+      <!-- Verwendung von currentContext -->
+    </div>
+    <div class="recent-searches">
+      <div class="category-header">Aktuelle Suchanfragen</div>
+      <div *ngFor="let search of recentSearches">
+        <span>{{ search }}</span>
+        <button (click)="removeSearchTerm(search)">x</button>
+      </div>
     </div>
   </div>
-  <div class="icon-elements">
-    <div class="icon-box">
-      <img class="icon write" src="./assets/icons/wsm/ws-write.svg" alt="" />
-    </div>
-    <div class="icon-box">
-      <img
-        class="icon add-channel"
-        src="./assets/icons/wsm/add-channel-2.svg"
-        alt=""
-      />
-    </div>
-  </div>
-</section>
+</div>

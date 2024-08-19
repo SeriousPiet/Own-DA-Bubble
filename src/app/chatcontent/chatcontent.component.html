@@ -1,8 +1,12 @@
 <section class="chatcontent">
-  <button class="hide_show_wsm blue" (click)="toggleMenu()">
-    <div></div>
-    <span class="nunito-20-500">{{ buttonText }}</span>
+  <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
+    <div class="wsm-close"></div>
+    <span class="nunito-20-500"
+      >Workspace-Menü
+      {{ isWorkspaceMenuVisible ? "öffnen" : "schließen" }}</span
+    >
   </button>
+
   <div class="top-bar">
     <app-header />
   </div>
