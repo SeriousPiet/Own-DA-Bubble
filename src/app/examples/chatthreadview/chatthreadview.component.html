@@ -20,6 +20,9 @@
                 <input (change)="setPicture($event)" type="file">
                 <button (click)="uploadPicture($event)">upload image</button>
             </div>
+            @for(user of userservice.users; track userservice.users; let i = $index) {
+            <button (click)="userChat(user)">{{user.name}} / {{ user.chatIDs.length }}</button>
+            }
         </div>
     </div>
     <h1>Channels erzeugen</h1>
@@ -29,6 +32,7 @@
     <hr>
     <h1>Message hinzufügen</h1>
     <input [(ngModel)]="messagecontent" type="text" placeholder="messagetext">
+    <button (click)="addMessageTopath()">addMessageToPath</button>
     <hr>
     <h2>Channels</h2>
     @for (kanal of channelservice.channels; track channelservice.channels; let i = $index) {

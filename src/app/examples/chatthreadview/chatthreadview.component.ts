@@ -10,6 +10,7 @@ import { MessageviewexampleComponent } from '../messageviewexample/messageviewex
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
+import { User } from '../../shared/models/user.class';
 
 @Component({
   selector: 'app-chatthreadview',
@@ -66,6 +67,12 @@ export class ChatthreadviewComponent {
     this.messageservice.addNewMessageToPath(this.channelservice.channels[channelNumber].channelMessagesPath, this.messagecontent);
   }
 
+  addMessageTopath() {
+    if (this.navigationService.chatViewPath) {
+      this.messageservice.addNewMessageToPath(this.navigationService.chatViewPath, this.messagecontent);
+    }
+  }
+
   updateChannel(channelNumber: number) {
     this.channelservice.updateChannelOnFirestore(this.channelservice.channels[channelNumber], { memberIDs: [this.userservice.getAllUserIDs()[0]], description: this.description, name: this.name });
   }
@@ -108,6 +115,10 @@ export class ChatthreadviewComponent {
             });
         });
     }
+  }
+
+  userChat(user: User) {
+    this.navigationService.setChatViewObject(user);
   }
 
 }

@@ -47,6 +47,7 @@ export class MessageviewexampleComponent implements OnDestroy {
 
   @Input()
   set messagesPath(value: string | undefined) {
+    console.log('MessageviewexampleComponent: messagesPath: ' + value);
     this.messages = [];
     this.subscribeMessages(value);
   }

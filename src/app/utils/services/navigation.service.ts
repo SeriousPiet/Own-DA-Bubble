@@ -4,6 +4,7 @@ import { Chat } from '../../shared/models/chat.class';
 import { Message } from '../../shared/models/message.class';
 import { BehaviorSubject } from 'rxjs';
 import { UsersService } from './user.service';
+import { User } from '../../shared/models/user.class';
 
 @Injectable({
   providedIn: 'root',
@@ -18,23 +19,26 @@ export class NavigationService {
     defaultChannel: true,
   });
 
+
   constructor() {
-    // subscribe userservice.changeUserList$ to update the defaultChannel with all userids
     this.userService.changeUserList$.subscribe(() => {
       this.defaultChannel.update({ members: this.userService.getAllUserIDs() });
     });
   }
+
 
   /**
    * The user service for handling user-related operations.
    */
   private userService = inject(UsersService);
 
+
   /**
    * Observable that emits whenever a change occurs.
    */
   private changeSubject = new BehaviorSubject<string>('');
   public change$ = this.changeSubject.asObservable();
+
 
   /**
    * For chatview.
@@ -50,6 +54,7 @@ export class NavigationService {
     return this._chatViewPath;
   }
 
+
   /**
    * For the threadview.
    * The path for message answers and the message object.
@@ -64,6 +69,7 @@ export class NavigationService {
     return this._threadViewPath;
   }
 
+
   /**
    * Sets the main message object and updates the main message list path.
    * To executed from WorkspacemenuComponent.
@@ -71,22 +77,23 @@ export class NavigationService {
    * @param object - The object to set as the main message object.
    * @returns void
    */
-  setChatViewObject(object: Channel | Chat): void {
-    this._chatViewObject = object;
+  async setChatViewObject(object: Channel | User): Promise<void> {
     if (object instanceof Channel) {
+      this._chatViewObject = object;
       this._chatViewPath = object.channelMessagesPath;
-      console.warn(
-        'Navigationservice: setChatViewObject: Channel ' + object.name
-      );
+      console.warn('Navigationservice: setChatViewObject: Channel ' + object.name + ' ' + this._chatViewPath);
     } else {
-      this._chatViewPath = object.chatMessagesPath;
-      console.warn(
-        'Navigationservice: setChatViewObject: Chat ' + object.memberIDs
-      );
+      const chat = await this.userService.getChatWithUserByID(object.id);
+      if (chat) {
+        this._chatViewObject = chat;
+        this._chatViewPath = chat.chatMessagesPath;
+        console.warn('Navigationservice: setChatViewObject: Chat with ' + object.name + ' ' + this._chatViewPath);
+      }
     }
     this.clearThread();
-    this.changeSubject.next('mainMessageList');
+    this.changeSubject.next('chatViewObjectSet');
   }
+
 
   /**
    * Checks if the main message object is an instance of the Channel class.
@@ -96,6 +103,7 @@ export class NavigationService {
     return this._chatViewObject instanceof Channel;
   }
 
+
   /**
    * Checks if the main message object is of type Chat.
    *
@@ -104,6 +112,7 @@ export class NavigationService {
   ifMainMessageObjectIsChat(): boolean {
     return this._chatViewObject instanceof Chat;
   }
+
 
   /**
    * Sets the thread message path and updates the current message.
@@ -120,6 +129,7 @@ export class NavigationService {
     );
   }
 
+
   /**
    * Clears the thread by resetting the messageAnswersPath and message properties.
    */
@@ -129,9 +139,11 @@ export class NavigationService {
     console.warn('Navigationservice: clearThread');
   }
 
+
   // ############################################################################################################
   // methodes for search-functionality
   // ############################################################################################################
+
 
   getSearchContext(): string {
     if (this.chatViewObject instanceof Chat) {
@@ -142,6 +154,7 @@ export class NavigationService {
     }
     return '';
   }
+
 
   private getChatPartnerName(): string | undefined {
     if (this.chatViewObject instanceof Chat) {
