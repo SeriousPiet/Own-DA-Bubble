@@ -15,36 +15,23 @@ import { Channel } from '../../../shared/models/channel.class';
 export class AddchannelComponent {
   public channelservice = inject(ChannelService);
   public userservice = inject(UsersService);
-
   public currentChannel: Channel | undefined = undefined;
   public currentMessagesPath: string | undefined = undefined;
-
   public name: string = '';
   public description: string = '';
 
   addNewChannel() {
-    this.channelservice.addNewChannelToFirestore(
-      this.name,
-      this.description,
-      this.userservice.getAllUserIDs()
-    );
-    this.createChannellistElement(this.name);
+    if (this.name !== '') {
+      this.channelservice.addNewChannelToFirestore(
+        this.name,
+        this.description,
+        this.userservice.getAllUserIDs()
+      );
+    }
   }
 
   setCurrentChannel(newChannel: Channel) {
     this.currentChannel = newChannel;
     this.currentMessagesPath = newChannel.channelMessagesPath;
-  }
-
-  createChannellistElement(name: string) {
-    const channellist = document.getElementsByClassName('channel-list')[0];
-    const newChannellistElement = document.createElement('li');
-    const hashtagDiv: HTMLDivElement = document.createElement('div');
-    hashtagDiv.className = 'hashtag';
-    const textSpan: HTMLSpanElement = document.createElement('span');
-    textSpan.textContent = name;
-    newChannellistElement.appendChild(hashtagDiv);
-    newChannellistElement.appendChild(textSpan);
-    channellist.appendChild(newChannellistElement);
   }
 }

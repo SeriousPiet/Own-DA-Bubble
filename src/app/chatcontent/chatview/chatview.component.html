@@ -1,54 +1,48 @@
 <main class="chatview-main-ctn">
     <section class="chatview-header">
-        <button class="chatview-chanel-name" popovertarget="channel-editor-popover">
+        <button class="chatview-channel-name" popovertarget="channel-editor-popover">
             <div>
                 <div>
                     <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-                    <span>Entwicklerteam</span>
+                    <!-- <span>{{getTitle(navigationService.chatViewObject)}}</span> -->
+                    <span>{{getTitle(navigationService.chatViewObject)}}</span>
                 </div>
                 <img src="assets/icons/modals/expand-down.svg" alt="arrow-down">
             </div>
         </button>
-        <div class="member-avatar-overview">
-            <button class="member-avatars-ctn" popovertarget="channel-member-overview-popover">
-                <div class="d-flex">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
-                        alt="member-avatar">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
-                        alt="member-avatar">
-                    <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
-                        alt="member-avatar">
+        @if (!isDefaultChannel) {
+            <div class="member-avatar-overview">
+                <button class="member-avatars-ctn" popovertarget="channel-member-overview-popover">
+                    <div class="d-flex">
+                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
+                            alt="member-avatar">
+                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
+                            alt="member-avatar">
+                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
+                            alt="member-avatar">
+                    </div>
+                    <span>{{ getNumberOfMembers(navigationService.chatViewObject) }}</span>
+                </button>
+                <div class="add-member-icon-ctn">
+                    <img src="assets/icons/chat/general/add-to-channel.svg" alt="add-member-icon">
                 </div>
-                <span>6</span>
-            </button>
-            <div class="add-member-icon-ctn">
-                <img src="assets/icons/chat/general/add-to-channel.svg" alt="add-member-icon">
             </div>
-        </div>
+        }
+       
 
     </section>
-    <section class="chatview-content">
+    <section class="chatview-content" [ngClass]="{'default-channel':isDefaultChannel}">
         <div class="chat-messages-content">
-            <!-- @for (item of [1,2]; track $index;) { -->
-            <div class="chat-messages-wrapper">
-                <div>
-                    <app-message-date></app-message-date>
-                    <app-message></app-message>
-                    <app-message [class.message-from-user]='messagefromUser'></app-message>
-                </div>
-                <div>
-                    <app-message-date></app-message-date>
-                    <app-message></app-message>
-                    <app-message [class.message-from-user]='messagefromUser'></app-message>
-                </div>
-            </div>
-
-            <!-- } -->
+            <app-messages-list-view [ngClass]="{'default-channel':isDefaultChannel}" [isDefaultChannel]="isDefaultChannel" [messagesPath]="navigationService.chatViewPath"></app-messages-list-view>
         </div>
-        <app-message-textarea></app-message-textarea>
+        @if (!isDefaultChannel) {
+            <app-message-textarea></app-message-textarea>
+        }
+        
     </section>
 
     <app-popover-channel-editor id="channel-editor-popover" popover></app-popover-channel-editor>
-    <app-popover-channel-member-overview id="channel-member-overview-popover" popover></app-popover-channel-member-overview>
+    <app-popover-channel-member-overview id="channel-member-overview-popover"
+        popover></app-popover-channel-member-overview>
 
 </main>

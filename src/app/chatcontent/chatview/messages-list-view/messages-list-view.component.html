@@ -1,0 +1,14 @@
+@if(!isDefaultChannel){
+@for (date of dates; track $index) {
+@for (message of messages; track $index) {
+@if(date == message.createdAt){
+<section>
+    <app-message-date [date]="date"></app-message-date>
+    <app-message [messageWriter]="message.creatorID" [messageData]="message"></app-message>
+</section>
+}
+}
+}
+}@else {
+<app-message-greeting></app-message-greeting>
+}

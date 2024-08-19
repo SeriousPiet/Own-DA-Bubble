@@ -1,0 +1,55 @@
+<main (mouseenter)="isHovered = true" (mouseleave)="isHovered = false"
+    [ngClass]="{'message-ctn':true, 'message-from-user': messagefromUser}">
+    <div>
+        <img src="assets/icons/start/choose-avatar/choose-avatar-3.svg" alt="">
+    </div>
+    <section>
+        <span>{{userService.getUserByID(messageData.creatorID)?.name}}</span>
+        <p>{{ messageData.content }}</p>
+        @if(hasRection){
+        <div class="message-reactions">
+            <div>
+                <img src="./assets/icons/chat/emoji/rocket.svg" alt="">
+                <span>1</span>
+            </div>
+            <div>
+                <img src="./assets/icons/chat/emoji/check-green.svg" alt="">
+                <span>1</span>
+            </div>
+            <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
+        </div>
+        }
+        @if(messageData.answerCount > 0){
+        <div class="message-info">
+            <a>
+                <span>{{ messageData.answerCount }}</span>
+                <span>Antworten</span>
+            </a>
+            <div>
+                <span>letzte Antwort</span>
+                <span>14:56</span>
+            </div>
+        </div>
+        }
+    </section>
+
+    <div [ngClass]="{ 'interact-ctn-popover-slide-out-animation': !isHovered, 'interact-ctn-popover-slide-in-animation': isHovered, 'interact-ctn-popover': true }">
+        <section>
+            <div class="button-ctn">
+                <img src="./assets/icons/chat/emoji/check-green.svg" alt="">
+            </div>
+            <div class="button-ctn">
+                <img src="./assets/icons/chat/emoji/celebration.svg" alt="">
+            </div>
+            <div class="button-ctn">
+                <img id="add-reaction-icon" src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
+            </div>
+            <div class="button-ctn">
+                <img id="comment-icon" src="./assets/icons/chat/message-hover-menu/comment.svg" alt="">
+            </div>
+            <div id="edit-message-icon" class="button-ctn" id="edit-message-icon">
+                <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="">
+            </div>
+        </section>
+    </div>
+</main>

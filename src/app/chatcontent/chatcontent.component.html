@@ -19,12 +19,15 @@
     <app-workspacemenu />
   </div>
   <div class="chatview">
-    <app-chatview />
+    <app-chatview [currentChannel]="navigationService.chatViewObject" />
   </div>
   <div class="threadview">
     <app-threadview />
   </div>
-  <div popover id="addchannel" class="addchannel">
+  <div popover id="add-channel" class="add-channel">
     <app-addchannel />
+  </div>
+  <div popover id="add-user-to-channel" class="add-user-to-channel">
+    <app-add-user-to-channel />
   </div>
 </section>

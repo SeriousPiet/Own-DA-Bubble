@@ -1,0 +1,205 @@
+@import "../../../../../styles.scss";
+@import "../../../../../mixins.scss";
+
+.message-ctn {
+    display: flex;
+    padding: 0.625rem 0rem 0.625rem 2.8125rem;
+    gap: 1.875rem;
+    position: relative;
+    transition: $transition-popover;
+
+    >section {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        max-width: 70%;
+
+        >span {
+            font-size: 1.125rem;
+            font-weight: 700;
+
+            &:hover {
+                color: $accent;
+            }
+        }
+
+        >p {
+            margin: 0;
+            padding: 15px;
+            border-radius: 0 1.875rem 1.875rem 1.875rem;
+            background-color: $background;
+        }
+
+        .message-reactions {
+            display: flex;
+            gap: 10px;
+
+            >div {
+                padding: 5px 10px;
+                @include flex(center, center);
+                gap: 10px;
+                border: $default-border;
+                border-radius: 20px;
+            }
+
+            >img {
+                &:hover {
+                    content: url(../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
+                }
+            }
+        }
+
+        >div {
+            display: flex;
+            gap: 1.25rem;
+
+            >a {
+                display: flex;
+                gap: 0.375rem;
+                font-size: 1.125rem;
+                color: $secondary;
+                min-width: 6.875rem;
+
+                &:hover {
+                    transition: all .100s ease-out;
+                    font-weight: 700;
+                    color: $accent;
+                }
+            }
+
+            >div {
+                >span {
+                    font-size: 0.875rem;
+                    font-weight: 400;
+                }
+            }
+        }
+    }
+
+    &:hover {
+        transition: all 100ms ease-out;
+        cursor: pointer;
+        background-color: $background;
+
+        >section {
+            >p {
+                background-color: #FFFFFF;
+            }
+
+            .message-reactions {
+                >div {
+                    background-color: #FFFFFF;
+
+                    &:hover {
+                        border-color: $accent;
+                    }
+                }
+            }
+        }
+
+        .message-ctn .message-from-user{
+            transition: $transition-popover;
+            transform: translatex(3rem);
+        }
+    }
+
+}
+
+.message-from-user {
+    flex-direction: row-reverse;
+    padding: .625rem 2.8125rem .625rem 0;
+
+    >section {
+
+        >span {
+            text-align: end;
+        }
+
+        >p {
+            border-radius: 1.875rem 0 1.875rem 1.875rem;
+        }
+
+        .message-reactions {
+            @include flex(flex-end, normal);
+        }
+    }
+
+    .interact-ctn-popover {
+        left: 0.1875rem;
+        right: unset;
+
+        >section{
+            #edit-message-icon{
+                display: flex;
+            }
+        }
+    }
+}
+
+.interact-ctn-popover {
+    padding: .1875rem .9375rem .1875rem 1.25rem;
+    border-radius: 1.5625rem 1.5625rem 0 1.5625rem;
+    border: 1px solid #ADB0D9;
+    height: fit-content;
+    position: absolute;
+    top: -1.25rem;
+    right: 5.8125rem;
+    background-color: white;
+  
+
+    >section {
+        @include flex(normal, center);
+        gap: .3125rem;
+
+        >div {
+            @include flex(center, center);
+            padding: 8px;
+            border-radius: 20px;
+        }
+
+        #edit-message-icon{
+            display: none;
+        }
+    }
+}
+
+.interact-ctn-popover-slide-out-animation{
+    transform: translateX(-3rem);
+    transition: $transition-popover;
+    opacity: 0;
+}
+
+.interact-ctn-popover-slide-in-animation{
+    transform: translateX(3rem);
+    transition: $transition-popover;
+    display: block;
+    opacity: 1;
+}
+
+
+.button-ctn {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 100%;
+    transition: all .125s ease-in-out;
+
+    &:hover {
+        background-color: #ECEEFE;
+    }
+}
+
+#add-reaction-icon:hover{
+    content: url('../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg');
+}
+
+#comment-icon:hover{
+    content: url('../../../../../assets/icons/chat/message-hover-menu/comment-hover.svg');
+}
+
+#edit-message-icon:hover{
+    content: url('../../../../../assets/icons/chat/message-hover-menu/more-hover.svg');
+}
