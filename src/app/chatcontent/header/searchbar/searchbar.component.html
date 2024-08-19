@@ -1,0 +1,66 @@
+<div class="searchbar">
+  <div class="search-blocks">
+    <span *ngIf="getActiveRestrictions().context" class="search-block">
+      {{ getActiveRestrictions().context }}
+      <button (click)="removeContextFromSearch()">x</button>
+    </span>
+    <span
+      *ngFor="let keyword of getActiveRestrictions().keywords"
+      class="search-block"
+    >
+      {{ keyword }}
+      <button (click)="removeKeyword(keyword)">x</button>
+    </span>
+  </div>
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    (input)="onSearchInput()"
+    (focus)="onFocus()"
+    (blur)="onBlur()"
+    placeholder="Search..."
+  />
+
+  <div class="dropdown" *ngIf="isDropdownVisible">
+    <div class="context-search" (click)="addContextToSearch()">
+      {{ getCurrentContext() }} suchen
+    </div>
+    <div
+      class="autocomplete-suggestions"
+      *ngIf="(suggestions$ | async)?.length ?? 0 > 0"
+    >
+      <div
+        *ngFor="let suggestion of suggestions$ | async"
+        (click)="selectSuggestion(suggestion)"
+      >
+        {{ suggestion }}
+      </div>
+    </div>
+  </div>
+
+  <div class="dropdown" *ngIf="isDropdownVisible">
+    <div
+      class="context-search"
+      *ngIf="navigationService.ifMainMessageObjectIsChat()"
+    >
+      <div (click)="addContextToSearch()">{{ getCurrentContext() }}</div>
+
+      <!-- Verwendung von currentContext -->
+    </div>
+    <div
+      class="context-search"
+      *ngIf="navigationService.ifMainMessageObjectIsChannel()"
+    >
+      <div (click)="addContextToSearch()">{{ getCurrentContext() }}</div>
+
+      <!-- Verwendung von currentContext -->
+    </div>
+    <div class="recent-searches">
+      <div class="category-header">Aktuelle Suchanfragen</div>
+      <div *ngFor="let search of recentSearches">
+        <span>{{ search }}</span>
+        <button (click)="removeSearchTerm(search)">x</button>
+      </div>
+    </div>
+  </div>
+</div>
