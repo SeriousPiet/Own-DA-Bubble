@@ -5,7 +5,7 @@
         src="../../../assets/icons/wsm/devspace-logo.svg"
         alt="devspace-logo.svg"
       />
-      <h1 class="nunito-24-700">Devspace</h1>
+      <span class="nunito-24-700">Devspace</span>
     </div>
     <div class="ws-write"></div>
   </div>
@@ -15,7 +15,7 @@
         <div>
           <div>
             <div class="ws-channels"></div>
-            <h2 class="nunito-20-700">Channels</h2>
+            <span class="nunito-20-700">Channels</span>
           </div>
           <button
             class="add-channel"
@@ -40,7 +40,7 @@
         class="blue"
       >
         <div class="add-channel-2 blue"></div>
-        <h3 class="nunito-18-400">Channel hinzufügen</h3>
+        <span class="nunito-18-400">Channel hinzufügen</span>
       </button>
     </details>
   </div>
@@ -48,11 +48,16 @@
     <details>
       <summary class="blue">
         <div class="dm-symbol"></div>
-        <h2 class="nunito-20-700">Direktnachrichten</h2>
+        <span class="nunito-20-700">Direktnachrichten</span>
       </summary>
       <ul>
         <li class="dm-list-item" *ngFor="let user of userservice.users">
-          <div class="avatar">
+          <div
+            class="avatar"
+            [style]="{
+              '--status-color': user.online ? onlineColor : offlineColor
+            }"
+          >
             <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
           </div>
           <span class="nunito-18-400 blue">{{ user.name }}</span>

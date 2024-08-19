@@ -6,10 +6,6 @@ import {
   Firestore,
   onSnapshot,
   doc,
-  getDoc,
-  query,
-  getDocs,
-  where,
   serverTimestamp,
 } from '@angular/fire/firestore';
 import { User } from '../../shared/models/user.class';
@@ -133,7 +129,7 @@ export class UsersService implements OnDestroy {
 
   loginUser(email: string, password: string): string | undefined {
     signInWithEmailAndPassword(this.firebaseauth, email, password)
-      .then((response) => {
+      .then(() => {
         return undefined;
       })
       .catch((error) => {

@@ -173,7 +173,6 @@ section {
     background-position: center;
     width: 1rem;
     height: 1rem;
-    // margin-right: 0.625rem;
     transition: transform 0.3s ease-in-out;
     transform: rotate(-90deg);
   }
@@ -212,10 +211,10 @@ section {
     .avatar {
       @include flex(center, center);
       @include avatarStatusThumbnail(
-        $status: $online,
-        $img_size: 2.5rem,
-        $status_size: 0.675rem,
-        $border_color: #fff
+        $status: var(--status-color),
+        $img_size: 4.5rem,
+        $status_size: 1rem,
+        $border_color: $background
       );
       width: auto;
       aspect-ratio: 1 / 1;
