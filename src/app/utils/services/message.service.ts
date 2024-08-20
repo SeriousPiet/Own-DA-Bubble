@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { addDoc, collection, doc, Firestore, serverTimestamp, updateDoc } from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, getDocs, serverTimestamp, updateDoc } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
 import { Message } from '../../shared/models/message.class';
-import { Channel } from '../../shared/models/channel.class';
 
 @Injectable({
   providedIn: 'root'
@@ -15,27 +14,27 @@ export class MessageService {
   constructor() { }
 
 
-  addNewMessageToPath(messagePath: string, messageContent: string) {
+  async addNewMessageToPath(messagePath: string, messageContent: string) {
     const messageCollectionRef = collection(this.firestore, messagePath);
     if (!messageCollectionRef) throw new Error('MessageService: addNewMessageToPath: path "' + messagePath + '" is undefined');
-    addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true))
-      .then(
-        (response) => {
-          const newMessageRef = doc(messageCollectionRef, response.id);
-          updateDoc(newMessageRef, { id: response.id });
-          console.warn('MessageService: addNewMessageToPath: message added');
-        }
-      )
+    try {
+      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true));
+      const newMessageRef = doc(messageCollectionRef, response.id);
+      await updateDoc(newMessageRef, { id: response.id });
+      console.warn('MessageService: addNewMessageToPath: message added');
+    } catch (error) {
+      console.error('MessageService: addNewMessageToPath: error adding message', error);
+    }
   }
 
 
-  updateMessage(message: Message, updateData: { content?: string, emojies?: string[] }) {
-    updateDoc(doc(this.firestore, message.messagePath), updateData)
-      .then(
-        () => {
-          console.warn('MessageService: updateMessage: message updated - id: ' + message.id);
-        }
-      );
+  async updateMessage(message: Message, updateData: { content?: string, emojies?: string[] }) {
+    try {
+      await updateDoc(doc(this.firestore, message.messagePath), updateData);
+      console.warn('MessageService: updateMessage: message updated - id: ' + message.id);
+    } catch (error) {
+      console.error('MessageService: updateMessage: error updating message', error);
+    }
   }
 
 
@@ -44,26 +43,18 @@ export class MessageService {
   }
 
 
-  addNewAnswerToMessage(message: Message, answerContent: string) {
-    const answerCollectionRef = collection(this.firestore, message.answerPath);
-    if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.answerPath + '" is undefined');
-    addDoc(answerCollectionRef, this.createNewMessageObject(answerContent, false))
-      .then(
-        (response) => {
-          const newMessageRef = doc(answerCollectionRef, response.id);
-          updateDoc(newMessageRef, { id: response.id })
-            .then(
-              () => {
-                updateDoc(doc(this.firestore, message.messagePath), { answerCount: message.answerCount + 1, lastAnswered: serverTimestamp() })
-                  .then(
-                    () => {
-                      console.warn('MessageService: addNewAnswerToMessage: answer added');
-                    },
-                  )
-              }
-            )
-        }
-      );
+  async addNewAnswerToMessage(message: Message, answerContent: string) {
+    try {
+      const answerCollectionRef = collection(this.firestore, message.answerPath);
+      if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.answerPath + '" is undefined');
+      const response = await addDoc(answerCollectionRef, this.createNewMessageObject(answerContent, false));
+      await updateDoc(doc(answerCollectionRef, response.id), { id: response.id });
+      const answerQuerySnapshot = await getDocs(answerCollectionRef);
+      await updateDoc(doc(this.firestore, message.messagePath), { answerCount: answerQuerySnapshot.size, lastAnswered: serverTimestamp() });
+      console.warn('MessageService: addNewAnswerToMessage: answer added');
+    } catch (error) {
+      console.error('MessageService: addNewAnswerToMessage: error adding answer', error);
+    }
   }
 
 
