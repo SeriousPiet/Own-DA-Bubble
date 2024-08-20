@@ -25,9 +25,8 @@ export class User {
     private _ifCurrentUser: boolean = false;
     get ifCurrentUser(): boolean { return this._ifCurrentUser; }
 
-    constructor(userObj: any, userID?: string, currentUser: boolean = false) {
-        if (userID) this.id = userID;
-        else this.id = userObj.id ? userObj.id : '';
+    constructor(userObj: any, userID: string, currentUser: boolean = false) {
+        this.id = userID;
         this._name = userObj.name ? userObj.name : '';
         this._email = userObj.email ? userObj.email : '';
         this._avatar = userObj.avatar ? userObj.avatar : 1;

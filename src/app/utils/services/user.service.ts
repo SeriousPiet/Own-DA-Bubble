@@ -5,6 +5,11 @@ import { Chat } from '../../shared/models/chat.class';
 import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp } from '@angular/fire/firestore';
 import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user } from '@angular/fire/auth';
 
+/**
+ * The UsersService class provides methods for managing users and chats in the application.
+ * It handles user authentication, user data retrieval, chat creation, and more.
+ * @class
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -15,12 +20,12 @@ export class UsersService implements OnDestroy {
   private unsubChats: any = null;
   private user$: any = null;
   private currentUserSubscriber: any = null;
+  private chats: Chat[] = [];
 
   private changeUserListSubject = new BehaviorSubject<string>('');
   public changeUserList$ = this.changeUserListSubject.asObservable();
 
   public users: User[] = [];
-  private chats: Chat[] = [];
   public currentUser: User | undefined;
 
 
@@ -47,6 +52,21 @@ export class UsersService implements OnDestroy {
   }
 
 
+  getChatPartner(chat: Chat): User | undefined {
+    if (this.currentUser) {
+      if (chat.memberIDs[0] === this.currentUser.id) return this.getUserByID(chat.memberIDs[1]);
+      else return this.getUserByID(chat.memberIDs[0]);
+    }
+    return undefined;
+  }
+
+
+  ifSelfChat(chat: Chat): boolean {
+    if (this.currentUser) return chat.memberIDs[0] === this.currentUser.id && chat.memberIDs[1] === this.currentUser.id;
+    return false;
+  }
+
+
   async getChatWithUserByID(userID: string, createChat: boolean = true): Promise<Chat | undefined> {
     if (this.currentUser) {
       let chat: Chat | undefined = undefined;
@@ -59,7 +79,7 @@ export class UsersService implements OnDestroy {
   }
 
 
-  async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
+  private async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
     try {
       const chatRef = collection(this.firestore, '/chats');
       const chatObj = {
@@ -144,30 +164,24 @@ export class UsersService implements OnDestroy {
         return undefined;
       })
       .catch((error) => {
-        console.error(
-          'userservice/auth: Error logging in user(',
-          error.message,
-          ')'
-        );
+        console.error('userservice/auth: Error logging in user(', error.message, ')');
         return error.message;
       });
     return undefined;
   }
 
-  registerNewUser(user: {
-    email: string;
-    password: string;
-    name: string;
-  }): string | undefined {
+
+  registerNewUser(user: { email: string; password: string; name: string; }): string | undefined {
     createUserWithEmailAndPassword(this.firebaseauth, user.email, user.password)
       .then((response) => {
         this.addUserToFirestore({
           name: user.name,
           email: response.user.email,
         }).then((userID) => {
-          updateProfile(response.user, { displayName: userID }).then(() => {
-            return undefined;
-          });
+          updateProfile(response.user, { displayName: userID })
+            .then(() => {
+              return undefined;
+            });
         });
       })
       .catch((error) => {
@@ -215,7 +229,7 @@ export class UsersService implements OnDestroy {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            this.users.push(new User(change.doc.data()));
+            this.users.push(new User(change.doc.data(), change.doc.id));
           }
           if (change.type === 'modified') {
             const user = this.users.find(
@@ -261,59 +275,38 @@ export class UsersService implements OnDestroy {
     this.user$ = user(this.firebaseauth).subscribe((user) => {
       this.unsubscribeFromCurrentUser();
       if (user) {
-        console.warn(
-          'userservice/auth: Authentication successful: ',
-          user.email
-        );
-        this.currentUserSubscriber = onSnapshot(
-          doc(this.firestore, '/users/' + user.displayName),
+        console.warn('userservice/auth: Authentication successful: ', user.email);
+        this.currentUserSubscriber = onSnapshot(doc(this.firestore, '/users/' + user.displayName),
           (snapshot) => {
             if (snapshot.exists()) {
-              if (
-                !this.currentUser ||
-                this.currentUser.id !== snapshot.data()['id']
-              ) {
-                this.currentUser = new User(snapshot.data());
+              if (!this.currentUser || this.currentUser.id !== snapshot.data()['id']) {
+                this.currentUser = new User(snapshot.data(), snapshot.id, true);
                 if (this.currentUser) {
-                  this.setOnlineStatus(this.currentUser.id, true);
-                  console.warn(
-                    'userservice/firestore: currentUser is ' +
-                    this.currentUser.email
-                  );
-                  console.log(
-                    'Online-Status des aktuellen Users:',
-                    this.currentUser.online
-                  );
+                  this.updateUserOnlineStatusOnFirestore(this.currentUser.id, true);
+                  console.warn('userservice/firestore: currentUser is ' + this.currentUser.email);
+                  console.log('Online-Status des aktuellen Users:', this.currentUser.online);
                 }
               } else {
                 this.currentUser?.update(snapshot.data());
-                console.warn(
-                  'userservice/firestore: user update ' + this.currentUser.email
-                );
-                console.log(
-                  'Online-Status des aktuellen Users:',
-                  this.currentUser.online
-                );
+                console.warn('userservice/firestore: user update ' + this.currentUser.email);
+                console.log('Online-Status des aktuellen Users:', this.currentUser.online);
               }
             }
           }
         );
       } else if (this.currentUser) {
         console.warn('user logout - ' + this.currentUser.email);
-        this.setOnlineStatus(this.currentUser.id, false);
+        this.updateUserOnlineStatusOnFirestore(this.currentUser.id, false);
         this.currentUser = undefined;
       }
     });
   }
 
-  private async setOnlineStatus(
-    userID: string,
-    online: boolean
-  ): Promise<void> {
-    await updateDoc(doc(this.firestore, '/users/' + userID), {
-      online: online,
-    });
+
+  private async updateUserOnlineStatusOnFirestore(userID: string, online: boolean): Promise<void> {
+    await updateDoc(doc(this.firestore, '/users/' + userID), { online: online, });
   }
+
 
   private async addUserToFirestore(user: any): Promise<string> {
     const userObj = {
