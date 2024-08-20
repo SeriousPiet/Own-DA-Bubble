@@ -23,8 +23,8 @@ export class Message {
 
   get answerPath(): string { return this.messagePath + '/answers/'; }
 
-  constructor(data: any, collectionPath: string) {
-    this.id = data.id ? data.id : '';
+  constructor(data: any, collectionPath: string, id: string) {
+    this.id = id;
     this.collectionPath = collectionPath;
     this.creatorID = data.creatorID ? data.creatorID : '';
     this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();

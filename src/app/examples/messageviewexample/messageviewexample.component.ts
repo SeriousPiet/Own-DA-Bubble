@@ -62,7 +62,7 @@ export class MessageviewexampleComponent implements OnDestroy {
       this.unsubMessages = onSnapshot(collection(this.firestore, newPath), (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            let newMessage = new Message(change.doc.data(), newPath);
+            let newMessage = new Message(change.doc.data(), newPath, change.doc.id);
             this.messages.push(newMessage);
           }
           if (change.type === 'modified') {

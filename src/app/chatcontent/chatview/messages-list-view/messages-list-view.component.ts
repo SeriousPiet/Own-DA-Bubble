@@ -54,7 +54,7 @@ export class MessagesListViewComponent implements OnInit {
       this.unsubMessages = onSnapshot(collection(this.firestore, messagesPath), (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            let newMessage = new Message(change.doc.data(), messagesPath);
+            let newMessage = new Message(change.doc.data(), messagesPath, change.doc.id);
             this.messages.push(newMessage);
             this.sortMessagesDate(newMessage.createdAt)
           }
