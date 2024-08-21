@@ -22,7 +22,6 @@ export class MessagesListViewComponent implements OnInit {
   private unsubMessages: any = null;
   public messages: Message[] = [];
   public messagesDates: Date[] = [];
-  public messagesTime: Date[] = [];
 
   @Input() isDefaultChannel: boolean = false;
 
@@ -31,7 +30,6 @@ export class MessagesListViewComponent implements OnInit {
   set messagesPath(value: string | undefined) {
     this.messages = [];
     this.messagesDates = [];
-    this.messagesTime = [];
     this.subscribeMessages(value);
   }
 
@@ -47,18 +45,14 @@ export class MessagesListViewComponent implements OnInit {
 
   sortMessagesDate(messageCreationDate: Date) {
     this.messagesDates.push(messageCreationDate);
+    this.messagesDates.sort((a, b) => a.getDate() - b.getDate());
     this.messagesDates = this.messagesDates.filter((date, index, array) => {
       return index === 0 || date.getDate() !== array[index - 1].getDate();
     });
-    this.messagesDates.sort((a, b) => a.getDate() - b.getDate());
 
     this.messages.sort((a, b)=>{
       return a.createdAt.getTime() - b.createdAt.getTime();
     })
-
-
-    // this.messagesTime.push(messageCreationDate);
-    // this.messagesTime.sort((a, b) => a.getTime() - b.getTime());
   }
 
 
