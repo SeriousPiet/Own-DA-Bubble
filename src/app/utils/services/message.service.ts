@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { addDoc, collection, doc, Firestore, getDocs, serverTimestamp, updateDoc } from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, getDoc, getDocs, serverTimestamp, updateDoc } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
 import { Message } from '../../shared/models/message.class';
 
@@ -54,6 +54,32 @@ export class MessageService {
       console.warn('MessageService: addNewAnswerToMessage: answer added');
     } catch (error) {
       console.error('MessageService: addNewAnswerToMessage: error adding answer', error);
+    }
+  }
+
+
+  async toggleReactionToMessage(message: Message, reaction: string) {
+    try {
+      const currentUserID = this.userservice.currentUser?.id ? this.userservice.currentUser.id : '';
+      let currentMesReactionArray = message.emojies;
+      let currentReaction = currentMesReactionArray.find(emoji => emoji.type === reaction);
+      if (currentReaction) {
+        if (currentReaction.userIDs.includes(currentUserID)) {
+          currentReaction.userIDs = currentReaction.userIDs.filter(userID => userID !== currentUserID);
+        }
+        else {
+          currentReaction.userIDs.push(currentUserID);
+        }
+      }
+      else {
+        currentMesReactionArray.push({ type: reaction, userIDs: [currentUserID] });
+      }
+      const newReactionArray = currentMesReactionArray.map(reaction => JSON.stringify(reaction));
+
+      await updateDoc(doc(this.firestore, message.messagePath), { emojies: newReactionArray });
+      console.warn('MessageService: toggleReactionToMessage: reaction toggled');
+    } catch (error) {
+      console.error('MessageService: toggleReactionToMessage: error toggling reaction', error);
     }
   }
 

@@ -80,6 +80,11 @@ export class MessageviewexampleComponent implements OnDestroy {
   }
 
 
+  toggleReaction(message: Message, reaction: string) {
+    this.messageservice.toggleReactionToMessage(message, reaction);
+  }
+
+
   ngOnDestroy(): void {
     if (this.unsubMessages) {
       this.unsubMessages();

@@ -1,5 +1,10 @@
 import { Timestamp } from "@angular/fire/firestore";
 
+export interface IReactions {
+  type: string;
+  userIDs: string[];
+}
+
 export class Message {
   readonly id: string;
   readonly collectionPath: string;
@@ -10,8 +15,8 @@ export class Message {
   private _content: string;
   get content(): string { return this._content; }
 
-  private _emojies: string[];
-  get emojies(): string[] { return this._emojies; }
+  private _emojies: IReactions[] = [];
+  get emojies(): IReactions[] { return this._emojies; }
 
   private _answerCount: number;
   get answerCount(): number { return this._answerCount; }
@@ -28,16 +33,28 @@ export class Message {
     this.collectionPath = collectionPath;
     this.creatorID = data.creatorID ? data.creatorID : '';
     this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
+    if (data.emojies) this.calculateReaction(data.emojies);
     this._content = data.content ? data.content : '';
-    this._emojies = data.emojies ? data.emojies : [];
     this.answerable = data.answerable;
     this._answerCount = data.answerCount ? data.answerCount : 0;
     this._lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : new Date();
   }
 
+
+  calculateReaction(reactionsArray: string[]) {
+    this._emojies = [];
+    if (reactionsArray) {
+      reactionsArray.forEach((reaction: string) => {
+        this.emojies.push(JSON.parse(reaction));
+      })
+    }
+    if (this.emojies.length > 0) console.log('Message: calculateReaction: reactionsArray: ', this.emojies);
+  }
+
+
   update(data: any): void {
     this._content = data.content ? data.content : this.content;
-    this._emojies = data.emojies ? data.emojies : this.emojies;
+    if (data.emojies) this.calculateReaction(data.emojies);
     this._answerCount = data.answerCount ? data.answerCount : this.answerCount;
     this._lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : this.lastAnswerAt;
   }
