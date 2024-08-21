@@ -123,9 +123,14 @@
     >section {
         align-items: flex-end;
 
-        >span {
-            text-align: end;
+        .message-header {
+            flex-direction: row-reverse;
+            >span {
+                text-align: end;
+            }
+
         }
+
 
         >p {
             border-radius: 1.875rem 0 1.875rem 1.875rem;

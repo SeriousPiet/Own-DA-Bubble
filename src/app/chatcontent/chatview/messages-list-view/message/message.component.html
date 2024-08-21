@@ -5,7 +5,7 @@
     </div>
     @if (!messageEditorModus) {
     <section>
-        <div class="message-header">
+        <div [ngClass]="{'message-header':true}">
             <span>{{userService.getUserByID(messageData.creatorID)?.name}}</span>
             <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
         </div>
