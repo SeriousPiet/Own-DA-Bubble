@@ -4,6 +4,7 @@ import { MessageDateComponent } from './message-date/message-date.component';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { Message } from '../../../shared/models/message.class';
 import { MessageGreetingComponent } from './message-greeting/message-greeting.component';
+import { Time } from '@angular/common';
 
 @Component({
   selector: 'app-messages-list-view',
@@ -20,7 +21,7 @@ export class MessagesListViewComponent implements OnInit {
   private firestore = inject(Firestore);
   private unsubMessages: any = null;
   public messages: Message[] = [];
-  public dates: Date[] = [];
+  public messagesDates: Date[] = [];
 
   @Input() isDefaultChannel: boolean = false;
 
@@ -28,7 +29,7 @@ export class MessagesListViewComponent implements OnInit {
   @Input()
   set messagesPath(value: string | undefined) {
     this.messages = [];
-    this.dates = [];
+    this.messagesDates = [];
     this.subscribeMessages(value);
   }
 
@@ -43,8 +44,15 @@ export class MessagesListViewComponent implements OnInit {
 
 
   sortMessagesDate(messageCreationDate: Date) {
-    this.dates.push(messageCreationDate);
-    this.dates.sort((a, b) => b.getTime() - a.getTime());
+    this.messagesDates.push(messageCreationDate);
+    this.messagesDates.sort((a, b) => a.getDate() - b.getDate());
+    this.messagesDates = this.messagesDates.filter((date, index, array) => {
+      return index === 0 || date.getDate() !== array[index - 1].getDate();
+    });
+
+    this.messages.sort((a, b)=>{
+      return a.createdAt.getTime() - b.createdAt.getTime();
+    })
   }
 
 
