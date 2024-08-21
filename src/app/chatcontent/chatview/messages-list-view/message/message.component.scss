@@ -14,12 +14,23 @@
         gap: .5rem;
         max-width: 70%;
 
-        >span {
-            font-size: 1.125rem;
-            font-weight: 700;
 
-            &:hover {
-                color: $accent;
+        .message-header {
+            @include flex(normal, center);
+
+            >:nth-child(1) {
+                font-size: 1.125rem;
+                font-weight: 700;
+
+                &:hover {
+                    color: $accent;
+                }
+            }
+
+            >:nth-child(2) {
+                font-size: .875rem;
+                font-weight: 400;
+                color: #686868;
             }
         }
 
@@ -111,6 +122,7 @@
 
     >section {
         align-items: flex-end;
+
         >span {
             text-align: end;
         }
@@ -271,7 +283,7 @@
 }
 
 
-.editor-modus-bg-color{
+.editor-modus-bg-color {
     background-color: $background;
 }
 

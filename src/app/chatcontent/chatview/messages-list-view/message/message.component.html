@@ -5,7 +5,10 @@
     </div>
     @if (!messageEditorModus) {
     <section>
-        <span>{{userService.getUserByID(messageData.creatorID)?.name}}</span>
+        <div class="message-header">
+            <span>{{userService.getUserByID(messageData.creatorID)?.name}}</span>
+            <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
+        </div>
         <p>{{ messageData.content }}</p>
         @if(hasRection){
         <div class="message-reactions">

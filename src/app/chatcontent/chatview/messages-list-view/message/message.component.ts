@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
-export class MessageComponent implements OnInit{
+export class MessageComponent implements OnInit {
 
   public userService = inject(UsersService);
   public navigationService = inject(NavigationService);
@@ -29,7 +29,7 @@ export class MessageComponent implements OnInit{
   isHovered = false;
   hasRection = true;
   showEditMessagePopup = false;
-  updatedMessage :  { content?:string, emojies?: string[]} = {};
+  updatedMessage: { content?: string, emojies?: string[] } = {};
 
   messageEditorModus = false;
   messagePath = '';
@@ -44,6 +44,12 @@ export class MessageComponent implements OnInit{
 
   constructor(private cdr: ChangeDetectorRef) {
   }
+
+  getFormatedMessageTime(messageTime: Date) {
+    let formatedMessageTime = messageTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    return `${formatedMessageTime} Uhr`;
+  }
+
 
 
   checkMessageWriterID(messageWriterID: string) {
@@ -61,7 +67,7 @@ export class MessageComponent implements OnInit{
     this.messageEditorModus = !this.messageEditorModus;
   }
 
-  editMessage(message: Message, updatedData: { content?: string, emojies?: string[] }){
+  editMessage(message: Message, updatedData: { content?: string, emojies?: string[] }) {
     this.messageService.updateMessage(message, updatedData);
     this.toggleMessageEditor();
   }
