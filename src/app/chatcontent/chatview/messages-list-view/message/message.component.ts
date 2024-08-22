@@ -27,7 +27,7 @@ export class MessageComponent implements OnInit {
 
   messagefromUser = false;
   isHovered = false;
-  hasRection = true;
+  hasRection = false;
   showEditMessagePopup = false;
   updatedMessage: { content?: string, emojies?: string[] } = {};
 
@@ -36,13 +36,23 @@ export class MessageComponent implements OnInit {
   message = '';
 
   ngOnInit(): void {
+    console.log(this.messageData)
     this.updatedMessage = {
       content: this.messageData.content,
       emojies: this.messageData.emojies || [],
     };
+    this.sortMessageReaction();
   }
 
   constructor(private cdr: ChangeDetectorRef) {
+  }
+
+
+  sortMessageReaction() {
+    if (this.messageData.emojies.length > 0) this.hasRection = true;
+   
+      
+
   }
 
   getFormatedMessageTime(messageTime: Date) {

@@ -12,14 +12,14 @@
         <p>{{ messageData.content }}</p>
         @if(hasRection){
         <div class="message-reactions">
-            <div>
-                <img src="./assets/icons/chat/emoji/rocket.svg" alt="">
-                <span>1</span>
-            </div>
-            <div>
-                <img src="./assets/icons/chat/emoji/check-green.svg" alt="">
-                <span>1</span>
-            </div>
+            @for (reaction of messageData.emojies; track $index) {
+                @if(reaction.userIDs.length != 0){
+                    <button (click)="messageService.toggleReactionToMessage(messageData, reaction.type)">
+                        <img src="./assets/icons/chat/emoji/check-green.svg" alt="">
+                        <span>{{ reaction.userIDs.length }}</span>
+                    </button>
+                } 
+            }
             <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
         </div>
         }
@@ -58,10 +58,10 @@
         'interact-ctn-popover-slide-in-animation': isHovered, 
         'interact-ctn-popover': true }">
         <section>
-            <div class="button-ctn">
+            <div (click)="messageService.toggleReactionToMessage(messageData, ':wink:')" class="button-ctn">
                 <img src="./assets/icons/chat/emoji/check-green.svg" alt="">
             </div>
-            <div class="button-ctn">
+            <div (click)="messageService.toggleReactionToMessage(messageData, ':thumpsup:')" class="button-ctn">
                 <img src="./assets/icons/chat/emoji/celebration.svg" alt="">
             </div>
             <div class="button-ctn">

@@ -45,7 +45,7 @@
             display: flex;
             gap: 10px;
 
-            >div {
+            >button {
                 padding: 5px 10px;
                 @include flex(center, center);
                 gap: 10px;
@@ -98,7 +98,7 @@
             }
 
             .message-reactions {
-                >div {
+                >button {
                     background-color: #FFFFFF;
 
                     &:hover {
