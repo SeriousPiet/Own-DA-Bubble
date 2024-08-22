@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SearchService } from '../../../utils/services/search.service';
 import { NavigationService } from '../../../utils/services/navigation.service';
+import { ChannelService } from '../../../utils/services/channel.service';
+import { UsersService } from '../../../utils/services/user.service';
 import { Channel } from '../../../shared/models/channel.class';
 import { Chat } from '../../../shared/models/chat.class';
 import { CommonModule } from '@angular/common';
@@ -21,92 +23,280 @@ export class SearchbarComponent implements OnInit {
     keywords: string[];
   }>;
   searchQuery: string = '';
-  suggestions$!: Observable<string[]>;
+  suggestions$!: Observable<{ text: string; type: string; hasChat: boolean }[]>;
   isDropdownVisible = false;
   recentSearches: string[] = [];
   currentContext: string = '';
 
+  // ############################################################################################################
   // Lifecycle Hooks
+  // ############################################################################################################
   constructor(
     private searchService: SearchService,
-    public navigationService: NavigationService
+    public navigationService: NavigationService,
+    private channelService: ChannelService,
+    private usersService: UsersService
   ) {}
 
+  /**
+   * Initializes the search suggestions, current search context, and recent searches.
+   * This method is called when the component is initialized.
+   */
   ngOnInit() {
-    this.suggestions$ = this.searchService.getSearchSuggestions();
     this.currentContext = this.searchService.getCurrentContext();
+    this.recentSearches = this.searchService.getRecentSearches();
   }
 
+  // ############################################################################################################
   // Event Handlers
+  // ############################################################################################################
+  /**
+   * Updates the search query, retrieves the latest search suggestions, and retrieves the recent searches.
+   * Also logs the current search context to the console.
+   */
   onSearchInput() {
     this.searchService.updateSearchQuery(this.searchQuery);
     this.suggestions$ = this.searchService.getSearchSuggestions();
-    console.log('Searching for:', this.searchQuery);
+    this.recentSearches = this.searchService.getRecentSearches();
+    console.log(
+      'Aktueller Suchkontext:',
+      this.navigationService.getSearchContext()
+    );
   }
 
+  /**
+   * Called when the search input field receives focus.
+   * Sets the current search context, makes the search dropdown visible,
+   * and triggers a search input event if the search query is not empty.
+   */
   onFocus() {
     this.currentContext = this.searchService.getCurrentContext();
-    this.isDropdownVisible = true;
+    console.log('Suchkontext bei Fokus:', this.currentContext);
 
-    const chatViewObject = this.navigationService.chatViewObject;
-    if (chatViewObject instanceof Channel) {
-      console.log('Current chatViewObject name:', chatViewObject.name);
-    } else if (chatViewObject instanceof Chat) {
-      console.log('Current chatViewObject is a Chat');
-    } else {
-      console.log('Current chatViewObject is undefined or unknown type');
+    this.isDropdownVisible = true;
+    if (this.searchQuery) {
+      this.onSearchInput();
     }
-    console.log('Current context:', this.getCurrentContext());
   }
 
+  /**
+   * Called when the search input field loses focus.
+   * Hides the search dropdown after a short delay, clears the search query,
+   * and updates the search service with an empty query.
+   */
   onBlur() {
     setTimeout(() => {
       this.isDropdownVisible = false;
+      this.searchQuery = '';
+      this.searchService.updateSearchQuery('');
     }, 200);
   }
 
+  // ############################################################################################################
   // UI Interaction Methods
-  selectSuggestion(suggestion: string) {
-    this.searchQuery = suggestion;
-    this.searchService.updateSearchQuery(suggestion);
+  // ############################################################################################################
+
+  get isContextSearchEnabled(): boolean {
+    return this.searchService.isContextSearchEnabled;
+  }
+
+  enableContextSearch() {
+    this.searchService.setContextSearchEnabled(true);
+    this.addContextToSearch();
+  }
+
+  /**
+   * Handles the selection of a recent search from the search dropdown.
+   * If the selected search starts with '@', it is treated as a user search and the corresponding user is set as the chat view object.
+   * If the selected search starts with '#', it is treated as a channel search and the corresponding channel is set as the chat view object.
+   * The search query is then updated with the selected search, and a search input event is triggered.
+   *
+   * @param search - The selected recent search string.
+   */
+  selectRecentSearch(search: string) {
+    if (search.startsWith('@')) {
+      const userName = search.slice(1);
+      const user = this.findUserByName(userName);
+      if (user) {
+        this.navigationService.setChatViewObject(user);
+      }
+    } else if (search.startsWith('#')) {
+      const channelName = search.slice(1);
+      const channel = this.channelService.channels.find(
+        (c) => c.name === channelName
+      );
+      if (channel) {
+        this.navigationService.setChatViewObject(channel);
+      }
+    }
+    this.removeContextFromSearch();
+    this.searchQuery = search;
+    this.onSearchInput();
+  }
+
+  /**
+   * Handles the selection of a search suggestion from the search dropdown.
+   * If the selected suggestion is for a user, it sets the corresponding user as the chat view object.
+   * If the selected suggestion is for a channel, it sets the corresponding channel as the chat view object.
+   * The search dropdown is then hidden.
+   *
+   * @param suggestion - The selected search suggestion, containing the text, type, and whether a chat exists for the selected entity.
+   */
+  selectSuggestion(suggestion: {
+    text: string;
+    type: string;
+    hasChat: boolean;
+  }) {
+    if (suggestion.type === 'user') {
+      const userName = suggestion.text.slice(1);
+      const user = this.findUserByName(userName);
+      if (user) {
+        suggestion.hasChat =
+          this.usersService.getChatWithUserByID(user.id, false) !== undefined;
+        this.navigationService.setChatViewObject(user);
+      }
+    } else if (suggestion.type === 'channel') {
+      const channelName = suggestion.text.slice(1);
+      const channel = this.channelService.channels.find(
+        (c: Channel) => c.name === channelName
+      );
+      if (channel) {
+        this.navigationService.setChatViewObject(channel);
+      }
+    }
+    this.removeContextFromSearch();
+    this.searchService.addRecentSearch(suggestion.text);
+    this.recentSearches = this.searchService.getRecentSearches();
     this.isDropdownVisible = false;
+  }
+
+  /**
+   * Finds a user by their name.
+   *
+   * @param name - The name of the user to find.
+   * @returns The user object if found, otherwise `undefined`.
+   */
+  private findUserByName(name: string) {
+    const userIds = this.usersService.getAllUserIDs();
+    for (const id of userIds) {
+      const user = this.usersService.getUserByID(id);
+      if (user && user.name === name) {
+        return user;
+      }
+    }
+    return undefined;
   }
 
   addContextToSearch() {
     const context = this.searchService.getCurrentContext();
+    console.log('Adding context:', context);
     if (context) {
       this.searchService.addContextRestriction(context);
+      const contextMembers = this.searchService.getContextMembers();
+      console.log('Context members IDs:', contextMembers);
+      const memberNames = this.searchService.getUserNames(contextMembers);
+      console.log('Context member names:', memberNames);
     }
   }
 
+  /**
+   * Removes the current context restriction from the search.
+   *
+   * This method calls the `removeContextRestriction()` method on the `searchService` to remove the current context restriction from the search.
+   *
+   * This can be useful when the user wants to search without any context-specific restrictions.
+   */
   removeContextFromSearch() {
     this.searchService.removeContextRestriction();
+    this.searchService.setContextSearchEnabled(false);
   }
 
-  addKeyword(keyword: string) {
-    this.searchService.addKeywordRestriction(keyword);
-  }
-
-  removeKeyword(keyword: string) {
-    this.searchService.removeKeywordRestriction(keyword);
-  }
-
+  // ############################################################################################################
   // Recent Searches Management
+  // ############################################################################################################
+
+  /**
+   * Adds a search term to the recent searches list.
+   *
+   * This method calls the `addRecentSearch()` method on the `searchService` to add the provided search term to the list of recent searches.
+   * It then updates the `recentSearches` property with the latest list of recent searches.
+   *
+   * @param term - The search term to add to the recent searches list.
+   */
   addSearchTerm(term: string) {
     this.searchService.addRecentSearch(term);
     this.recentSearches = this.searchService.getRecentSearches();
   }
 
+  /**
+   * Removes a search term from the recent searches list.
+   *
+   * This method calls the `removeRecentSearch()` method on the `searchService` to remove the provided search term from the list of recent searches.
+   * It then updates the `recentSearches` property with the latest list of recent searches.
+   *
+   * @param term - The search term to remove from the recent searches list.
+   */
   removeSearchTerm(term: string) {
     this.searchService.removeRecentSearch(term);
     this.recentSearches = this.searchService.getRecentSearches();
   }
+
+  // ############################################################################################################
   // Utility Methods
+  // ############################################################################################################
+
+  /**
+   * Gets the current search restrictions.
+   *
+   * This method returns the current search restrictions that have been added to the search service.
+   * The search restrictions can be used to filter the search results based on specific criteria.
+   *
+   * @returns The current search restrictions.
+   */
   getActiveRestrictions() {
     return this.searchService.getSearchRestrictions();
   }
 
+  /**
+   * Gets the current search context.
+   *
+   * This method returns the current search context that has been set in the search service.
+   * The search context can be used to filter the search results based on the current context.
+   *
+   * @returns The current search context.
+   */
   getCurrentContext(): string {
     return this.searchService.getCurrentContext();
+  }
+
+  /**
+   * Checks if the current user has an active chat with the specified user.
+   *
+   * @param userName - The name of the user to check the chat status for.
+   * @returns `true` if the current user has an active chat with the specified user, `false` otherwise.
+   */
+  getUserChatStatus(userName: string): boolean {
+    const user = this.findUserByName(userName);
+    return user
+      ? this.usersService.getChatWithUserByID(user.id, false) !== undefined
+      : false;
+  }
+
+  /**
+   * Checks if the current user is a member of the specified channel.
+   *
+   * This method finds the channel with the given name in the `channelService.channels` array,
+   * and then checks if the current user's ID is included in the `members` array of that channel.
+   *
+   * @param channelName - The name of the channel to check the membership for.
+   * @returns `true` if the current user is a member of the specified channel, `false` otherwise.
+   */
+  getChannelJoinStatus(channelName: string): boolean {
+    const channel = this.channelService.channels.find(
+      (c) => c.name === channelName
+    );
+    return channel
+      ? channel.members.includes(this.usersService.currentUser?.id || '')
+      : false;
   }
 }
