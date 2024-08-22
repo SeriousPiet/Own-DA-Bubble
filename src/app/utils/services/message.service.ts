@@ -20,7 +20,8 @@ export class MessageService {
     try {
       const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true));
       const newMessageRef = doc(messageCollectionRef, response.id);
-      await updateDoc(newMessageRef, { id: response.id });
+      // id is not saved in the document, so we become it when the messages subscribet over onSnapshot
+      // await updateDoc(newMessageRef, { id: response.id });
       console.warn('MessageService: addNewMessageToPath: message added');
     } catch (error) {
       console.error('MessageService: addNewMessageToPath: error adding message', error);
@@ -30,7 +31,7 @@ export class MessageService {
 
   async updateMessage(message: Message, updateData: { content?: string, edited?: boolean, editetAt?: any }) {
     try {
-      if (updateData.content != message.content) {
+      if (updateData.content && updateData.content != message.content) {
         updateData.edited = true;
         updateData.editetAt = serverTimestamp();
       }
@@ -52,7 +53,8 @@ export class MessageService {
       const answerCollectionRef = collection(this.firestore, message.answerPath);
       if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.answerPath + '" is undefined');
       const response = await addDoc(answerCollectionRef, this.createNewMessageObject(answerContent, false));
-      await updateDoc(doc(answerCollectionRef, response.id), { id: response.id });
+      // id is not saved in the document, so we become it when the messages subscribet over onSnapshot
+      // await updateDoc(doc(answerCollectionRef, response.id), { id: response.id });
       const answerQuerySnapshot = await getDocs(answerCollectionRef);
       await updateDoc(doc(this.firestore, message.messagePath), { answerCount: answerQuerySnapshot.size, lastAnswered: serverTimestamp() });
       console.warn('MessageService: addNewAnswerToMessage: answer added');

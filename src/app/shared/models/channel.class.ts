@@ -9,8 +9,10 @@ export class Channel {
   private _description: string;
   get description(): string { return this._description; }
 
-  private _members: string[]; // User ids
-  get members(): string[] { return this._members; }
+  private _memberIDs: string[]; // User ids
+  get members(): string[] { return this._memberIDs; }
+  // for compatibility with the old code
+  get memberIDs(): string[] { return this._memberIDs; }
 
 
   readonly createdAt: Date;
@@ -28,13 +30,13 @@ export class Channel {
     this._description = data.description ? data.description : '';
     this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
     this.creatorID = data.creatorID ? data.creatorID : '';
-    this._members = data.members ? data.members : [];
+    this._memberIDs = data.memberIDs ? data.memberIDs : [];
     this.defaultChannel = data.defaultChannel ? data.defaultChannel : false;
   }
 
   update(data: any) {
     if (data.name) this._name = data.name;
     if (data.description) this._description = data.description;
-    if (data.members) this._members = data.members;
+    if (data.memberIDs) this._memberIDs = data.memberIDs;
   }
 }
