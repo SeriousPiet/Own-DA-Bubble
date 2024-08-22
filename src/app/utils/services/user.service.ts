@@ -35,6 +35,10 @@ export class UsersService implements OnDestroy {
     this.initChatCollection();
   }
 
+  get currentUserID(): string {
+    return this.currentUser ? this.currentUser.id : 'no user loged in';
+  }
+
 
   getAllUserIDs(): string[] {
     const userIDs = this.users.map((user) => user.id);
@@ -54,7 +58,7 @@ export class UsersService implements OnDestroy {
 
   getChatPartner(chat: Chat): User | undefined {
     if (this.currentUser) {
-      if (chat.memberIDs[0] === this.currentUser.id) return this.getUserByID(chat.memberIDs[1]);
+      if (chat.memberIDs[0] === this.currentUserID) return this.getUserByID(chat.memberIDs[1]);
       else return this.getUserByID(chat.memberIDs[0]);
     }
     return undefined;
@@ -70,7 +74,7 @@ export class UsersService implements OnDestroy {
   async getChatWithUserByID(userID: string, createChat: boolean = true): Promise<Chat | undefined> {
     if (this.currentUser) {
       let chat: Chat | undefined = undefined;
-      if (this.currentUser.id === userID) chat = this.chats.find((chat) => chat.memberIDs[0] === userID && chat.memberIDs[1] === userID);
+      if (this.currentUserID === userID) chat = this.chats.find((chat) => chat.memberIDs[0] === userID && chat.memberIDs[1] === userID);
       else chat = this.chats.find((chat) => chat.memberIDs.includes(userID));
       if (chat) return chat;
       if (createChat) return await this.addChatWithUserOnFirestore(userID);
@@ -83,7 +87,7 @@ export class UsersService implements OnDestroy {
     try {
       const chatRef = collection(this.firestore, '/chats');
       const chatObj = {
-        memberIDs: [this.currentUser ? this.currentUser.id : '', userID],
+        memberIDs: [this.currentUserID, userID],
         createdAt: serverTimestamp(),
       };
 
@@ -92,7 +96,7 @@ export class UsersService implements OnDestroy {
       await updateDoc(doc(this.firestore, '/chats/' + chat.id), { id: chat.id });
 
       this.updateCurrentUserDataOnFirestore({ chatIDs: [...(this.currentUser?.chatIDs || []), chat.id] });
-      if (this.currentUser?.id !== userID) this.updateUserDataOnFirestoreByID(userID, { chatIDs: [...(this.getUserByID(userID)?.chatIDs || []), chat.id] });
+      if (this.currentUserID !== userID) this.updateUserDataOnFirestoreByID(userID, { chatIDs: [...(this.getUserByID(userID)?.chatIDs || []), chat.id] });
 
       console.warn('userservice/firestore: Chat added(' + chat.id + ')');
       return new Chat(chatObj.memberIDs, chat.id);
@@ -111,7 +115,7 @@ export class UsersService implements OnDestroy {
     pictureURL?: string;
   }) {
     if (this.currentUser) {
-      this.updateUserDataOnFirestoreByID(this.currentUser.id, userChangeData);
+      this.updateUserDataOnFirestoreByID(this.currentUserID, userChangeData);
     }
   }
 
@@ -124,7 +128,7 @@ export class UsersService implements OnDestroy {
     pictureURL?: string;
   }) {
     updateDoc(doc(this.firestore, '/users/' + id), userChangeData)
-      .then(() => { console.warn('userservice/firestore: User updated(', this.currentUser?.id, ') # ', userChangeData); })
+      .then(() => { console.warn('userservice/firestore: User updated(', this.currentUserID, ') # ', userChangeData); })
       .catch((error) => { console.error('userservice/firestore: Error updating user(', error.message, ')'); });
   }
 

@@ -24,6 +24,12 @@ export class Message {
   private _lastAnswerAt: Date;
   get lastAnswerAt(): Date { return this._lastAnswerAt; }
 
+  private _editetAt: Date | undefined;
+  get editetAt(): Date | undefined { return this._editetAt; }
+
+  private _edited: boolean;
+  get edited(): boolean { return this._edited; }
+
   get messagePath(): string { return this.collectionPath + this.id; }
 
   get answerPath(): string { return this.messagePath + '/answers/'; }
@@ -38,6 +44,8 @@ export class Message {
     this.answerable = data.answerable;
     this._answerCount = data.answerCount ? data.answerCount : 0;
     this._lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : new Date();
+    this._edited = data.edited ? data.edited : false;
+    this._editetAt = data.editetAt ? (data.editetAt as Timestamp).toDate() : undefined;
   }
 
 
@@ -48,15 +56,16 @@ export class Message {
         this.emojies.push(JSON.parse(reaction));
       })
     }
-    if (this.emojies.length > 0) console.log('Message: calculateReaction: reactionsArray: ', this.emojies);
   }
 
 
   update(data: any): void {
-    this._content = data.content ? data.content : this.content;
+    if (data.content) this._content = data.content;
     if (data.emojies) this.calculateReaction(data.emojies);
-    this._answerCount = data.answerCount ? data.answerCount : this.answerCount;
-    this._lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : this.lastAnswerAt;
+    if (data.answerCount) this._answerCount = data.answerCount;
+    if (data.lastAnswerAt) this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
+    if (data.edited) this._edited = data.edited;
+    if (data.editetAt) this._editetAt = (data.editetAt as Timestamp).toDate();
   }
 
 }
