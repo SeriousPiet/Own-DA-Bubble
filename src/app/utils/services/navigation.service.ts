@@ -1,10 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Message } from '../../shared/models/message.class';
 import { BehaviorSubject } from 'rxjs';
 import { UsersService } from './user.service';
 import { User } from '../../shared/models/user.class';
+import { ChannelService } from './channel.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,25 +14,14 @@ import { User } from '../../shared/models/user.class';
  * NavigationService class provides methods and properties for managing navigation within the application.
  */
 export class NavigationService {
-  public defaultChannel: Channel = new Channel({
-    name: 'Willkommen',
-    description: 'Defaultchannel',
-    defaultChannel: true,
-  });
-
-
-  constructor() {
-    this.userService.changeUserList$.subscribe(() => {
-      this.defaultChannel.update({ members: this.userService.getAllUserIDs() });
-    });
-  }
-
 
   /**
    * The user service for handling user-related operations.
    */
-  private userService = inject(UsersService);
+  private userService: UsersService = inject(UsersService);
 
+
+  private channelService: ChannelService = inject(ChannelService);
 
   /**
    * Observable that emits whenever a change occurs.
@@ -46,8 +36,8 @@ export class NavigationService {
    */
   private _chatViewObject: Channel | Chat | undefined;
   get chatViewObject(): Channel | Chat {
-    if (this._chatViewObject) return this._chatViewObject;
-    else return this.defaultChannel;
+    if (this._chatViewObject === undefined) return this.channelService.defaultChannel;
+    else return this._chatViewObject;
   }
   private _chatViewPath: string | undefined;
   get chatViewPath(): string | undefined {

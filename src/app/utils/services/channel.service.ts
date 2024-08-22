@@ -19,17 +19,25 @@ import { Channel } from '../../shared/models/channel.class';
 })
 export class ChannelService implements OnDestroy {
 
+  public defaultChannel: Channel = new Channel({
+    name: 'Willkommen',
+    description: 'Defaultchannel',
+    defaultChannel: true,
+  });
+
+  private subscribeUserListChange: any;
+
   /**
    * @description Firestore instance.
    * @type {Firestore}
    */
-  private firestore = inject(Firestore);
+  private firestore: Firestore = inject(Firestore);
 
   /**
    * @description Users service instance.
    * @type {UsersService}
    */
-  private userservice = inject(UsersService);
+  private userservice: UsersService = inject(UsersService);
 
   /**
    * @description Unsubscribe function for the channels subscription.
@@ -41,7 +49,7 @@ export class ChannelService implements OnDestroy {
    * @description List of channels.
    * @type {Channel[]}
    */
-  public channels: Channel[] = [];
+  public channels: Channel[] = [this.defaultChannel];
 
   /**
    * @constructor
@@ -61,6 +69,9 @@ export class ChannelService implements OnDestroy {
           this.channels = this.channels.filter((channel) => channel.id !== change.doc.data()['id']);
         }
       });
+    });
+    this.subscribeUserListChange = this.userservice.changeUserList$.subscribe(() => {
+      this.defaultChannel.update({ members: this.userservice.getAllUserIDs() });
     });
   }
 
@@ -108,6 +119,9 @@ export class ChannelService implements OnDestroy {
   ngOnDestroy(): void {
     if (this.unsubChannels) {
       this.unsubChannels();
+    }
+    if (this.subscribeUserListChange) {
+      this.subscribeUserListChange.unsubscribe();
     }
   }
 
