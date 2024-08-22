@@ -48,7 +48,6 @@ export class Message {
         this.emojies.push(JSON.parse(reaction));
       })
     }
-    if (this.emojies.length > 0) console.log('Message: calculateReaction: reactionsArray: ', this.emojies);
   }
 
 
