@@ -65,16 +65,11 @@ section {
         }
 
         .password-missed {
-            align-self: center;
-            padding: 0.3rem;
-            border-radius: 5000px;
-            height: 1rem;
-            color: #797EF3;
-
-            &:hover {
-                color: #444DF2;
-                background-color: #ECEEFE;
+            button {
+                @include buttonNoBorder;
             }
+
+            align-self: center;
         }
 
         .or-separator {

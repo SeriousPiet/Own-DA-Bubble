@@ -2,8 +2,8 @@
   <div class="headline">
     <h2 class="nunito-24-700">Channels erzeugen</h2>
     <button
-      class="close-addchannel"
-      popovertarget="addchannel"
+      class="close-add-channel"
+      popovertarget="add-channel"
       popovertargetaction="hide"
     ></button>
   </div>
@@ -30,6 +30,12 @@
     class="nunito-18-400"
   />
   <div style="justify-content: end" class="nunito-18-700">
-    <button (click)="addNewChannel()">Erstellen</button>
+    <button
+      popovertarget="add-user-to-channel"
+      popovertargetaction="show"
+      (click)="addNewChannel()"
+    >
+      Erstellen
+    </button>
   </div>
 </section>

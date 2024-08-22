@@ -27,28 +27,6 @@ section.chatcontent {
   grid-area: top-bar;
 }
 
-@keyframes slideIn {
-  from {
-    width: 0;
-    opacity: 0;
-  }
-  to {
-    width: 20rem;
-    opacity: 1;
-  }
-}
-
-@keyframes slideOut {
-  from {
-    width: 20rem;
-    opacity: 1;
-  }
-  to {
-    width: 0;
-    opacity: 0;
-  }
-}
-
 .workspace-menu {
   grid-area: workspace-menu;
   max-width: 20rem;
@@ -57,14 +35,6 @@ section.chatcontent {
   overflow-y: scroll;
   overflow-x: hidden;
   transition: $transition-standard;
-
-  &.visible {
-    animation: slideIn 0.125s ease-out forwards;
-  }
-
-  &.hidden {
-    animation: slideOut 0.125s ease-out forwards;
-  }
 }
 
 .chatview {
@@ -83,7 +53,7 @@ section.chatcontent {
   transition: $transition-standard;
 }
 
-.addchannel {
+.add-channel {
   width: 54.5rem;
   height: 33.6875rem;
   padding: 1rem;

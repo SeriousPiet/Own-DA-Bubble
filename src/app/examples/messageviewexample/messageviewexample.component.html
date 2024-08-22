@@ -12,6 +12,10 @@
         <button (click)="viewThread(message)">view thread</button>
         }
         <button (click)="changeMessageContent(message)">update message</button>
+        <div>
+            <button (click)="toggleReaction(message,':wink:')">:wink:</button>
+            <button (click)="toggleReaction(message,':thumpsup:')">:thumpsup:</button>
+        </div>
     </div>
 </div>
 }

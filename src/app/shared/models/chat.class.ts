@@ -1,13 +1,13 @@
 export class Chat {
   readonly id: string;
-  readonly memberIDs: string[];
+  readonly memberIDs: string[] = [];
 
   get chatMessagesPath(): string {
-    return `chats/${this.id}/messages`;
+    return `chats/${this.id}/messages/`;
   }
-  
-  constructor(obj?: any) {
-    this.id = obj && obj.id || null;
-    this.memberIDs = obj && obj.members || [];
+
+  constructor(memberIDs: string[], id: string) {
+    this.id = id;
+    this.memberIDs = memberIDs;
   }
 }
