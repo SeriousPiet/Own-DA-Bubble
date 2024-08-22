@@ -70,14 +70,14 @@ export class NavigationService {
   async setChatViewObject(object: Channel | User): Promise<void> {
     if (object instanceof Channel) {
       this._chatViewObject = object;
-      this._chatViewPath = object.channelMessagesPath;
-      console.warn('Navigationservice: setChatViewObject: Channel ' + object.name + ' ' + this._chatViewPath);
+      this._chatViewPath = object.channelMessagesPath == '' ? undefined : object.channelMessagesPath;
+      console.warn('Navigationservice: setChatViewObject: Channel ' + object.name);
     } else {
       const chat = await this.userService.getChatWithUserByID(object.id);
       if (chat) {
         this._chatViewObject = chat;
         this._chatViewPath = chat.chatMessagesPath;
-        console.warn('Navigationservice: setChatViewObject: Chat with ' + object.name + ' ' + this._chatViewPath);
+        console.warn('Navigationservice: setChatViewObject: Chat with ' + object.name);
       }
     }
     this.clearThread();
