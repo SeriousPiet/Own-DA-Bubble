@@ -14,12 +14,10 @@ import { ChannelService } from './channel.service';
  * NavigationService class provides methods and properties for managing navigation within the application.
  */
 export class NavigationService {
-
   /**
    * The user service for handling user-related operations.
    */
   private userService: UsersService = inject(UsersService);
-
 
   private channelService: ChannelService = inject(ChannelService);
 
@@ -29,21 +27,20 @@ export class NavigationService {
   private changeSubject = new BehaviorSubject<string>('');
   public change$ = this.changeSubject.asObservable();
 
-
   /**
    * For chatview.
    * The main message list object and the path to its messages.
    */
   private _chatViewObject: Channel | Chat | undefined;
   get chatViewObject(): Channel | Chat {
-    if (this._chatViewObject === undefined) return this.channelService.defaultChannel;
+    if (this._chatViewObject === undefined)
+      return this.channelService.defaultChannel;
     else return this._chatViewObject;
   }
   private _chatViewPath: string | undefined;
   get chatViewPath(): string | undefined {
     return this._chatViewPath;
   }
-
 
   /**
    * For the threadview.
@@ -59,7 +56,6 @@ export class NavigationService {
     return this._threadViewPath;
   }
 
-
   /**
    * Sets the main message object and updates the main message list path.
    * To executed from WorkspacemenuComponent.
@@ -70,20 +66,26 @@ export class NavigationService {
   async setChatViewObject(object: Channel | User): Promise<void> {
     if (object instanceof Channel) {
       this._chatViewObject = object;
-      this._chatViewPath = object.channelMessagesPath == '' ? undefined : object.channelMessagesPath;
-      console.warn('Navigationservice: setChatViewObject: Channel ' + object.name);
+      this._chatViewPath =
+        object.channelMessagesPath == ''
+          ? undefined
+          : object.channelMessagesPath;
+      console.warn(
+        'Navigationservice: setChatViewObject: Channel ' + object.name
+      );
     } else {
       const chat = await this.userService.getChatWithUserByID(object.id);
       if (chat) {
         this._chatViewObject = chat;
         this._chatViewPath = chat.chatMessagesPath;
-        console.warn('Navigationservice: setChatViewObject: Chat with ' + object.name);
+        console.warn(
+          'Navigationservice: setChatViewObject: Chat with ' + object.name
+        );
       }
     }
     this.clearThread();
     this.changeSubject.next('chatViewObjectSet');
   }
-
 
   /**
    * Checks if the main message object is an instance of the Channel class.
@@ -93,7 +95,6 @@ export class NavigationService {
     return this._chatViewObject instanceof Channel;
   }
 
-
   /**
    * Checks if the main message object is of type Chat.
    *
@@ -102,7 +103,6 @@ export class NavigationService {
   ifMainMessageObjectIsChat(): boolean {
     return this._chatViewObject instanceof Chat;
   }
-
 
   /**
    * Sets the thread message path and updates the current message.
@@ -119,7 +119,6 @@ export class NavigationService {
     );
   }
 
-
   /**
    * Clears the thread by resetting the messageAnswersPath and message properties.
    */
@@ -129,22 +128,33 @@ export class NavigationService {
     console.warn('Navigationservice: clearThread');
   }
 
-
   // ############################################################################################################
   // methodes for search-functionality
   // ############################################################################################################
 
-
   getSearchContext(): string {
     if (this.chatViewObject instanceof Chat) {
       const chatPartner = this.getChatPartnerName();
-      return chatPartner ? `in:@${chatPartner}` : '';
+
+      if (chatPartner) {
+        return `in:@${chatPartner}`;
+      } else if (this.isSelfChat()) {
+        return `in:@${this.userService.currentUser?.name}`;
+      }
     } else if (this.chatViewObject instanceof Channel) {
       return `in:#${this.chatViewObject.name}`;
     }
     return '';
   }
 
+  private isSelfChat(): boolean {
+    if (this.chatViewObject instanceof Chat && this.userService.currentUser) {
+      return this.chatViewObject.memberIDs.every(
+        (id) => id === this.userService.currentUser?.id
+      );
+    }
+    return false;
+  }
 
   private getChatPartnerName(): string | undefined {
     if (this.chatViewObject instanceof Chat) {
