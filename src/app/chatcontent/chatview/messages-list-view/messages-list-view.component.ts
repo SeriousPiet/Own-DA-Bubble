@@ -67,7 +67,7 @@ export class MessagesListViewComponent implements OnInit {
             this.sortMessagesDate(newMessage.createdAt)
           }
           if (change.type === 'modified') {
-            const message = this.messages.find((message) => message.id === change.doc.data()['id']);
+            const message = this.messages.find((message) => message.id === change.doc.id);
             if (message) message.update(change.doc.data());
           }
           if (change.type === 'removed') {
