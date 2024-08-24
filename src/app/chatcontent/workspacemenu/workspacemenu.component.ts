@@ -7,11 +7,18 @@ import { User } from '../../shared/models/user.class';
 import { ChannelService } from '../../utils/services/channel.service';
 import { Channel } from '../../shared/models/channel.class';
 import { NavigationService } from '../../utils/services/navigation.service';
+import { AvatarDirective } from '../../utils/directives/avatar.directive';
 
 @Component({
   selector: 'app-workspacemenu',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AvatarDirective,
+  ],
   templateUrl: './workspacemenu.component.html',
   styleUrl: './workspacemenu.component.scss',
 })
