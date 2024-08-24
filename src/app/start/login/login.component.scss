@@ -14,6 +14,12 @@
 }
 
 section {
+    width: 100%;
+    max-width: 1920px;
+    height: 100vh;
+    padding: 1.5rem 1.25rem 1.25rem;
+    background-color: $background;
+
     display: flex;
     justify-content: center;
     align-items: center;
