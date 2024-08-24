@@ -89,7 +89,7 @@
                     }
                 }
 
-                
+
                 >span {
                     font-size: 0.875rem;
                     font-weight: 400;
@@ -136,6 +136,7 @@
 
         .message-header {
             flex-direction: row-reverse;
+            gap: 1.25rem;
 
             >span {
                 text-align: end;
