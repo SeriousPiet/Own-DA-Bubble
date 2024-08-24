@@ -28,20 +28,20 @@ export class AvatarDirective implements OnInit {
 
   constructor(private el: ElementRef, private renderer: Renderer2) {}
 
-  ngOnInit() {
-    this.applyAvatarStyles();
+  async ngOnInit() {
+    await this.applyAvatarStyles();
   }
-  private applyAvatarStyles() {
+
+  private async applyAvatarStyles() {
     const styles = this.getStylesByContext();
 
     this.renderer.setStyle(this.el.nativeElement, 'position', 'relative');
     this.renderer.setStyle(this.el.nativeElement, 'width', styles.imgSize);
     this.renderer.setStyle(this.el.nativeElement, 'height', styles.imgSize);
 
+    const imgUrl = await this.getImageUrl();
+
     const img = this.renderer.createElement('img');
-    const imgUrl =
-      this.user.pictureURL ||
-      `./assets/img/avatar-big/avatar-${this.user.avatar}.png`;
     this.renderer.setAttribute(img, 'src', imgUrl);
     this.renderer.setStyle(img, 'width', '100%');
     this.renderer.setStyle(img, 'height', '100%');
@@ -53,6 +53,16 @@ export class AvatarDirective implements OnInit {
       const statusIndicator = this.addStatusIndicator(styles);
       this.setupHoverEffect(statusIndicator, styles);
     }
+  }
+
+  private async getImageUrl(): Promise<string> {
+    while (!this.user) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    return (
+      this.user.pictureURL ||
+      `./assets/img/avatar-big/avatar-${this.user.avatar}.png`
+    );
   }
 
   private addStatusIndicator(styles: any): HTMLElement {
@@ -173,8 +183,8 @@ export class AvatarDirective implements OnInit {
         return {
           imgSize: '4.5rem',
           statusSize: '1rem',
-          imgBorderColor: '#eceefe',
-          pseudoBorderColor: '#fff',
+          imgBorderColor: 'transparent',
+          pseudoBorderColor: '#eceefe',
           pseudoBackgroundColor: 'offline',
           hoverPseudoBorderColor: '#eceefe',
           showStatusIndicator: true,
