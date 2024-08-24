@@ -32,13 +32,14 @@ export class LoginComponent {
   });
 
 
-  submitLoginForm(event: Event) {
+  async submitLoginForm(event: Event) {
     event.preventDefault();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
-    const error = this.userservice.loginUser(email, password);
-    if (error) {
+    const error = await this.userservice.loginUser(email, password);
+    if (error != '') {
       console.error('Error logging in:', error);
+      // to be handled in the future:
       // auth/user-not-found
       // auth/wrong-password
     } else {

@@ -3,7 +3,7 @@ import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
 import { Chat } from '../../shared/models/chat.class';
 import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp } from '@angular/fire/firestore';
-import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user, UserCredential } from '@angular/fire/auth';
 
 /**
  * The UsersService class provides methods for managing users and chats in the application.
@@ -162,16 +162,39 @@ export class UsersService implements OnDestroy {
     }
   }
 
-  loginUser(email: string, password: string): string | undefined {
-    signInWithEmailAndPassword(this.firebaseauth, email, password)
-      .then((response) => {
-        return undefined;
-      })
-      .catch((error) => {
-        console.error('userservice/auth: Error logging in user(', error.message, ')');
-        return error.message;
-      });
-    return undefined;
+
+  async firebaseLogin(email: string, password: string): Promise<string> {
+    try {
+      await signInWithEmailAndPassword(this.firebaseauth, email, password);
+      return '';
+    } catch (error) {
+      console.error('userservice/login: Error logging in user(', error, ')');
+      return error as string;
+    }
+  }
+
+
+  async loginUser(email: string, password: string): Promise<string> {
+    try {
+      await signInWithEmailAndPassword(this.firebaseauth, email, password);
+      return '';
+    } catch (error) {
+      console.error('userservice/login: Error logging in user(', error, ')');
+      return error as string;
+    }
+  }
+
+
+  async firebaseSignup(email: string, password: string, name: string): Promise<string> {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(this.firebaseauth, email, password);
+      const userID = await this.addUserToFirestore({ name: name, email: email, });
+      await updateProfile(userCredential.user, { displayName: userID });
+      return '';
+    } catch (error) {
+      console.error('userservice/signup: Error signing up user(', error, ')');
+      return error as string;
+    }
   }
 
 
@@ -198,6 +221,24 @@ export class UsersService implements OnDestroy {
       });
     return undefined;
   }
+
+
+  private async addUserToFirestore(user: any): Promise<string> {
+    const userObj = {
+      name: user.name,
+      email: user.email,
+      online: false,
+      signupAt: serverTimestamp(),
+      avatar: 0,
+    };
+    let ref = collection(this.firestore, '/users');
+    let newUser = await addDoc(ref, userObj);
+    await updateDoc(doc(this.firestore, '/users/' + newUser.id), {
+      id: newUser.id,
+    });
+    return newUser.id;
+  }
+
 
   // ############################################################################################################
 
@@ -227,6 +268,7 @@ export class UsersService implements OnDestroy {
     }
   }
 
+
   private initUserCollection(): void {
     this.unsubUsers = onSnapshot(
       collection(this.firestore, '/users'),
@@ -236,15 +278,11 @@ export class UsersService implements OnDestroy {
             this.users.push(new User(change.doc.data(), change.doc.id));
           }
           if (change.type === 'modified') {
-            const user = this.users.find(
-              (user) => user.id === change.doc.id
-            );
+            const user = this.users.find((user) => user.id === change.doc.id);
             if (user) user.update(change.doc.data());
           }
           if (change.type === 'removed') {
-            this.users = this.users.filter(
-              (user) => user.email !== change.doc.data()['email']
-            );
+            this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
           }
         });
         this.changeUserListSubject.next('users');
@@ -311,22 +349,6 @@ export class UsersService implements OnDestroy {
     await updateDoc(doc(this.firestore, '/users/' + userID), { online: online, });
   }
 
-
-  private async addUserToFirestore(user: any): Promise<string> {
-    const userObj = {
-      name: user.name,
-      email: user.email,
-      online: false,
-      signupAt: serverTimestamp(),
-      avatar: 0,
-    };
-    let ref = collection(this.firestore, '/users');
-    let newUser = await addDoc(ref, userObj);
-    await updateDoc(doc(this.firestore, '/users/' + newUser.id), {
-      id: newUser.id,
-    });
-    return newUser.id;
-  }
 
   private unsubscribeFromCurrentUser(): void {
     if (this.currentUserSubscriber) {
