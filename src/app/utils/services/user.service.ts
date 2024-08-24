@@ -237,7 +237,7 @@ export class UsersService implements OnDestroy {
           }
           if (change.type === 'modified') {
             const user = this.users.find(
-              (user) => user.id === change.doc.data()['id']
+              (user) => user.id === change.doc.id
             );
             if (user) user.update(change.doc.data());
           }

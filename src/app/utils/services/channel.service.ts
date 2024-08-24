@@ -62,11 +62,11 @@ export class ChannelService implements OnDestroy {
           this.channels.push(new Channel(change.doc.data(), change.doc.id));
         }
         if (change.type === 'modified') {
-          const channel = this.channels.find((channel) => channel.id === change.doc.data()['id']);
+          const channel = this.channels.find((channel) => channel.id === change.doc.id);
           if (channel) channel.update(change.doc.data());
         }
         if (change.type === 'removed') {
-          this.channels = this.channels.filter((channel) => channel.id !== change.doc.data()['id']);
+          this.channels = this.channels.filter((channel) => channel.id !== change.doc.id);
         }
       });
     });
