@@ -62,7 +62,7 @@
         }
 
         >.message-info {
-            @include flex(space-between, center);
+            @include flex(flex-end, center);
             width: 100%;
             gap: 1.25rem;
 

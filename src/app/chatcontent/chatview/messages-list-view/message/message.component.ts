@@ -60,11 +60,10 @@ export class MessageComponent implements OnInit {
   }
 
 
-  getFormatedMessageTime(messageTime: Date) {
-    let formatedMessageTime = messageTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  getFormatedMessageTime(messageTime: Date | undefined) {
+    let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     return `${formatedMessageTime} Uhr`;
   }
-
 
 
   checkMessageWriterID(messageWriterID: string) {
@@ -84,6 +83,8 @@ export class MessageComponent implements OnInit {
 
   editMessage(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
     this.messageService.updateMessage(message, updatedData);
+    updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
+    updatedData.editedAt ? this.updatedMessage.editedAt = updatedData.editedAt : this.updatedMessage.editedAt = serverTimestamp();
     this.toggleMessageEditor();
   }
 
