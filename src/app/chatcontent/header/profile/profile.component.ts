@@ -10,11 +10,12 @@ import {
 import { nameValidator, emailValidator } from '../../../utils/form-validators';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AvatarDirective } from '../../../utils/directives/avatar.directive';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AvatarDirective],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })

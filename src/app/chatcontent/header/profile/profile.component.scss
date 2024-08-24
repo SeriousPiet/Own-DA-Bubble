@@ -26,14 +26,14 @@
     content: url("../../../../assets/icons/modals/expand-down-hover.svg");
   }
 
-  .avatar {
-    @include avatarStatusThumbnail(
-      $status: var(--status-color),
-      $img_size: 4.5rem,
-      $status_size: 1rem,
-      $border_color: $background
-    );
-  }
+  // .avatar {
+  //   @include avatarStatusThumbnail(
+  //     $status: var(--status-color),
+  //     $img_size: 4.5rem,
+  //     $status_size: 1rem,
+  //     $border_color: $background
+  //   );
+  // }
 }
 
 #profile-popover {
@@ -195,21 +195,21 @@
     }
   }
 
-  .avatar {
-    @include flex(center, center);
-    max-height: 8rem;
-    width: auto;
-    aspect-ratio: 1 / 1;
-    margin: 1.25rem 0;
+  // .avatar {
+  //   @include flex(center, center);
+  //   max-height: 8rem;
+  //   width: auto;
+  //   aspect-ratio: 1 / 1;
+  //   margin: 1.25rem 0;
 
-    img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
+  //   img {
+  //     width: 100%;
+  //     height: 100%;
+  //     border-radius: 50%;
 
-      object-fit: cover;
-    }
-  }
+  //     object-fit: cover;
+  //   }
+  // }
 
   .icon-box {
     @include iconBox;
