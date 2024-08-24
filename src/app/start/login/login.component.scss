@@ -42,6 +42,14 @@ section {
                 position: relative;
                 @include input;
             }
+
+            .errorspan {
+                @include nunito(14, 400);
+                position: absolute;
+                bottom: -1rem;
+                color: red;
+                font-size: 0.8rem;
+            }
         }
 
         .mail::before {

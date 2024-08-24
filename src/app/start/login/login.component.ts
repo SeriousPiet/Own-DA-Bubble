@@ -20,6 +20,9 @@ export class LoginComponent {
   public userservice = inject(UsersService);
   private router: Router = inject(Router);
 
+  public errorEmail = '';
+  public errorPassword = '';
+
   loginForm = new FormGroup({
     email: new FormControl('', [
       Validators.required,
@@ -34,17 +37,32 @@ export class LoginComponent {
 
   async submitLoginForm(event: Event) {
     event.preventDefault();
+    this.clearAllErrorSpans();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
     const error = await this.userservice.loginUser(email, password);
-    if (error != '') {
-      console.error('Error logging in:', error);
-      // to be handled in the future:
-      // auth/user-not-found
-      // auth/wrong-password
-    } else {
-      this.router.navigate(['/chatcontent']);
-    };
+    if (error != '') this.handleLoginErrors(error);
+    else this.handleLoginSuccess();
+  }
+
+
+  handleLoginSuccess() {
+    this.router.navigate(['/chatcontent']);
+  }
+
+
+  handleLoginErrors(error: string) {
+    if (error.includes('auth/user-not-found')) {
+      this.errorEmail = 'EMail nicht gefunden, bitte nochmal versuchen';
+    } else if (error.includes('auth/wrong-password')) {
+      this.errorPassword = 'Passwort falsch, bitte nochmal versuchen';
+    }
+  }
+
+
+  clearAllErrorSpans() {
+    this.errorEmail = '';
+    this.errorPassword = '';
   }
 
 }

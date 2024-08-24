@@ -163,24 +163,13 @@ export class UsersService implements OnDestroy {
   }
 
 
-  async firebaseLogin(email: string, password: string): Promise<string> {
-    try {
-      await signInWithEmailAndPassword(this.firebaseauth, email, password);
-      return '';
-    } catch (error) {
-      console.error('userservice/login: Error logging in user(', error, ')');
-      return error as string;
-    }
-  }
-
-
   async loginUser(email: string, password: string): Promise<string> {
     try {
       await signInWithEmailAndPassword(this.firebaseauth, email, password);
       return '';
     } catch (error) {
-      console.error('userservice/login: Error logging in user(', error, ')');
-      return error as string;
+      console.error('userservice/login:', (error as Error).message);
+      return (error as Error).message as string;
     }
   }
 
@@ -192,8 +181,8 @@ export class UsersService implements OnDestroy {
       await updateProfile(userCredential.user, { displayName: userID });
       return '';
     } catch (error) {
-      console.error('userservice/signup: Error signing up user(', error, ')');
-      return error as string;
+      console.error('userservice/signup:', (error as Error).message);
+      return (error as Error).message as string;
     }
   }
 
@@ -233,9 +222,7 @@ export class UsersService implements OnDestroy {
     };
     let ref = collection(this.firestore, '/users');
     let newUser = await addDoc(ref, userObj);
-    await updateDoc(doc(this.firestore, '/users/' + newUser.id), {
-      id: newUser.id,
-    });
+    await updateDoc(doc(this.firestore, '/users/' + newUser.id), { id: newUser.id });
     return newUser.id;
   }
 

@@ -18,18 +18,16 @@
       verwendest.
     </div>
     <div class="input-box mail">
-      <input
-        formControlName="email"
-        type="email"
-        placeholder="beispielname@email.com"
-      />
+      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
+      @if(errorEmail != '') {
+      <span class="errorspan">{{ errorEmail }}</span>
+      }
     </div>
     <div class="input-box pw">
-      <input
-        formControlName="password"
-        type="password"
-        placeholder="Passwort"
-      />
+      <input formControlName="password" type="password" placeholder="Passwort" />
+      @if(errorPassword != '') {
+      <span class="errorspan">{{ errorPassword }}</span>
+      }
     </div>
     <div class="password-missed">
       <button type="button">Passwort vergessen?</button>
