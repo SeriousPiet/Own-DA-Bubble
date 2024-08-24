@@ -44,8 +44,9 @@
         .message-reactions {
             display: flex;
             gap: 10px;
+            min-height: 2.25rem;
 
-            >div {
+            >button {
                 padding: 5px 10px;
                 @include flex(center, center);
                 gap: 10px;
@@ -60,25 +61,35 @@
             }
         }
 
-        >div {
-            display: flex;
+        >.message-info {
+            @include flex(flex-end, center);
+            width: 100%;
             gap: 1.25rem;
 
-            >a {
-                display: flex;
-                gap: 0.375rem;
-                font-size: 1.125rem;
-                color: $secondary;
-                min-width: 6.875rem;
-
-                &:hover {
-                    transition: all .100s ease-out;
-                    font-weight: 700;
-                    color: $accent;
-                }
+            >span {
+                font-size: 0.875rem;
+                font-weight: 400;
             }
 
-            >div {
+            div {
+                @include flex(normal, center);
+                gap: 1.25rem;
+
+                >a {
+                    display: flex;
+                    gap: 0.375rem;
+                    font-size: 1.125rem;
+                    color: $secondary;
+                    min-width: 6.875rem;
+
+                    &:hover {
+                        transition: all .100s ease-out;
+                        font-weight: 700;
+                        color: $accent;
+                    }
+                }
+
+                
                 >span {
                     font-size: 0.875rem;
                     font-weight: 400;
@@ -98,7 +109,7 @@
             }
 
             .message-reactions {
-                >div {
+                >button {
                     background-color: #FFFFFF;
 
                     &:hover {
@@ -125,6 +136,7 @@
 
         .message-header {
             flex-direction: row-reverse;
+
             >span {
                 text-align: end;
             }

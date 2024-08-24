@@ -37,6 +37,8 @@
         </div>
         @if (!isDefaultChannel && navigationService.chatViewPath) {
             <app-message-textarea [newMessagePath]="navigationService.chatViewPath"></app-message-textarea>
+        }@else {
+            <app-message-greeting></app-message-greeting>
         }
         
     </section>

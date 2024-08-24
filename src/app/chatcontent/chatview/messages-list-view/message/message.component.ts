@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
-import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
+import { collection, Firestore, onSnapshot, serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { Message } from '../../../../shared/models/message.class';
 import { MessageService } from '../../../../utils/services/message.service';
@@ -27,29 +27,43 @@ export class MessageComponent implements OnInit {
 
   messagefromUser = false;
   isHovered = false;
-  hasRection = true;
+  hasReaction = false;
   showEditMessagePopup = false;
-  updatedMessage: { content?: string, emojies?: string[] } = {};
+  updatedMessage: { content?: string, edited?: boolean, editedAt?: any } = {};
 
   messageEditorModus = false;
   messagePath = '';
   message = '';
 
   ngOnInit(): void {
+    console.log(this.messageData)
     this.updatedMessage = {
       content: this.messageData.content,
-      emojies: this.messageData.emojies || [],
+      edited: this.messageData.edited,
+      editedAt: this.messageData.editedAt
     };
+    this.sortMessageReaction();
   }
 
   constructor(private cdr: ChangeDetectorRef) {
   }
 
-  getFormatedMessageTime(messageTime: Date) {
-    let formatedMessageTime = messageTime.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    return `${formatedMessageTime} Uhr`;
+
+  sortMessageReaction() {
+    if (this.messageData.emojies.length > 0) this.hasReaction = true;
   }
 
+
+  checkForMessageReactions(){
+    if (this.messageData.emojies.length > 0) this.hasReaction = true;
+    else this.hasReaction = false;
+  }
+
+
+  getFormatedMessageTime(messageTime: Date | undefined) {
+    let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    return `${formatedMessageTime} Uhr`;
+  }
 
 
   checkMessageWriterID(messageWriterID: string) {
@@ -67,8 +81,10 @@ export class MessageComponent implements OnInit {
     this.messageEditorModus = !this.messageEditorModus;
   }
 
-  editMessage(message: Message, updatedData: { content?: string, emojies?: string[] }) {
+  editMessage(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
     this.messageService.updateMessage(message, updatedData);
+    updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
+    updatedData.editedAt ? this.updatedMessage.editedAt = updatedData.editedAt : this.updatedMessage.editedAt = serverTimestamp();
     this.toggleMessageEditor();
   }
 

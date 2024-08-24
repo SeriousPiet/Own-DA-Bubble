@@ -13,6 +13,7 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { MessagesListViewComponent } from './messages-list-view/messages-list-view.component';
 import { UsersService } from '../../utils/services/user.service';
+import { MessageGreetingComponent } from './messages-list-view/message-greeting/message-greeting.component';
 
 
 @Component({
@@ -25,6 +26,7 @@ import { UsersService } from '../../utils/services/user.service';
     PopoverChannelEditorComponent,
     PopoverChannelMemberOverviewComponent,
     MessagesListViewComponent,
+    MessageGreetingComponent
   ],
   templateUrl: './chatview.component.html',
   styleUrl: './chatview.component.scss',

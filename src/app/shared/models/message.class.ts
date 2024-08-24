@@ -24,8 +24,8 @@ export class Message {
   private _lastAnswerAt: Date;
   get lastAnswerAt(): Date { return this._lastAnswerAt; }
 
-  private _editetAt: Date | undefined;
-  get editetAt(): Date | undefined { return this._editetAt; }
+  private _editedAt: Date | undefined;
+  get editedAt(): Date | undefined { return this._editedAt; }
 
   private _edited: boolean;
   get edited(): boolean { return this._edited; }
@@ -45,7 +45,7 @@ export class Message {
     this._answerCount = data.answerCount ? data.answerCount : 0;
     this._lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : new Date();
     this._edited = data.edited ? data.edited : false;
-    this._editetAt = data.editetAt ? (data.editetAt as Timestamp).toDate() : undefined;
+    this._editedAt = data.editedAt ? (data.editedAt as Timestamp).toDate() : undefined;
   }
 
 
@@ -65,7 +65,7 @@ export class Message {
     if (data.answerCount) this._answerCount = data.answerCount;
     if (data.lastAnswerAt) this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
     if (data.edited) this._edited = data.edited;
-    if (data.editetAt) this._editetAt = (data.editetAt as Timestamp).toDate();
+    if (data.editedAt) this._editedAt = (data.editedAt as Timestamp).toDate();
   }
 
 }

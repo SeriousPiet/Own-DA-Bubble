@@ -1,19 +1,25 @@
-import { Timestamp } from "@angular/fire/firestore";
+import { Timestamp } from '@angular/fire/firestore';
 
 export class Channel {
-
   readonly id: string;
   private _name: string;
-  get name(): string { return this._name; }
+  get name(): string {
+    return this._name;
+  }
 
   private _description: string;
-  get description(): string { return this._description; }
+  get description(): string {
+    return this._description;
+  }
 
   private _memberIDs: string[]; // User ids
-  get members(): string[] { return this._memberIDs; }
+  get members(): string[] {
+    return this._memberIDs;
+  }
   // for compatibility with the old code
-  get memberIDs(): string[] { return this._memberIDs; }
-
+  get memberIDs(): string[] {
+    return this._memberIDs;
+  }
 
   readonly createdAt: Date;
   readonly creatorID: string; // User id
@@ -28,7 +34,9 @@ export class Channel {
     this.id = channelID;
     this._name = data.name ? data.name : 'New Channel';
     this._description = data.description ? data.description : '';
-    this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
+    this.createdAt = data.createdAt
+      ? (data.createdAt as Timestamp).toDate()
+      : new Date();
     this.creatorID = data.creatorID ? data.creatorID : '';
     this._memberIDs = data.memberIDs ? data.memberIDs : [];
     this.defaultChannel = data.defaultChannel ? data.defaultChannel : false;

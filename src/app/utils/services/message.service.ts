@@ -29,11 +29,11 @@ export class MessageService {
   }
 
 
-  async updateMessage(message: Message, updateData: { content?: string, edited?: boolean, editetAt?: any }) {
+  async updateMessage(message: Message, updateData: { content?: string, edited?: boolean, editedAt?: any }) {
     try {
       if (updateData.content && updateData.content != message.content) {
         updateData.edited = true;
-        updateData.editetAt = serverTimestamp();
+        updateData.editedAt = serverTimestamp();
       }
       await updateDoc(doc(this.firestore, message.messagePath), updateData);
       console.warn('MessageService: updateMessage: message updated - id: ' + message.id);
@@ -77,14 +77,21 @@ export class MessageService {
 
   private getModifiedReactionArray(reactionsArray: IReactions[], reaction: string) {
     const currentUserID = this.userservice.currentUser?.id ? this.userservice.currentUser.id : '';
-    let modifiedReactionsArray = reactionsArray;
-    let currentReaction = modifiedReactionsArray.find(emoji => emoji.type === reaction);
+    let currentReaction = reactionsArray.find(emoji => emoji.type === reaction);
     if (currentReaction) {
-      if (currentReaction.userIDs.includes(currentUserID)) currentReaction.userIDs = currentReaction.userIDs.filter(userID => userID !== currentUserID);
+      if (currentReaction.userIDs.includes(currentUserID)) {
+        currentReaction.userIDs = currentReaction.userIDs.filter(userID => userID !== currentUserID);
+        if(currentReaction.userIDs.length == 0){
+          const reactionIndex = reactionsArray.findIndex(currentReaction => currentReaction.type === reaction);
+          reactionsArray.splice(reactionIndex, 1);
+        }
+      }
       else currentReaction.userIDs.push(currentUserID);
     }
-    else modifiedReactionsArray.push({ type: reaction, userIDs: [currentUserID] });
-    return modifiedReactionsArray.map(reaction => JSON.stringify(reaction));
+    else {
+      reactionsArray.push({ type: reaction, userIDs: [currentUserID] });
+    };
+    return reactionsArray.map(reaction => JSON.stringify(reaction));
   }
 
 

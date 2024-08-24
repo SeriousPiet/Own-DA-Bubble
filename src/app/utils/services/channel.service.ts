@@ -5,7 +5,15 @@
  */
 
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { addDoc, collection, doc, Firestore, onSnapshot, serverTimestamp, updateDoc } from '@angular/fire/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  Firestore,
+  onSnapshot,
+  serverTimestamp,
+  updateDoc,
+} from '@angular/fire/firestore';
 import { UsersService } from './user.service';
 import { Channel } from '../../shared/models/channel.class';
 
@@ -15,10 +23,9 @@ import { Channel } from '../../shared/models/channel.class';
  * @author Bela Schramm
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChannelService implements OnDestroy {
-
   public defaultChannel: Channel = new Channel({
     name: 'Willkommen',
     description: 'Defaultchannel',
@@ -75,7 +82,6 @@ export class ChannelService implements OnDestroy {
     });
   }
 
-
   /**
    * @method addNewChannelToFirestore
    * @description Adds a new channel to the database.
@@ -83,7 +89,11 @@ export class ChannelService implements OnDestroy {
    * @param {string} description - The description of the channel.
    * @param {string[]} membersIDs - The ids of the members of the channel.
    */
-  async addNewChannelToFirestore(name: string, description: string, membersIDs: string[]) {
+  async addNewChannelToFirestore(
+    name: string,
+    description: string,
+    membersIDs: string[]
+  ) {
     const newchannel = {
       name: name,
       description: description,
@@ -94,12 +104,19 @@ export class ChannelService implements OnDestroy {
     const channelCollectionref = collection(this.firestore, '/channels');
     try {
       const docRef = await addDoc(channelCollectionref, newchannel);
-      console.warn('ChannelService: addNewChannelToFirestore: channel added - ' + newchannel.name);
+      console.warn(
+        'ChannelService: addNewChannelToFirestore: channel added - ' +
+          newchannel.name
+      );
     } catch (error) {
-      console.error('ChannelService: addNewChannelToFirestore: error adding channel' + newchannel.name + ' # ', error);
+      console.error(
+        'ChannelService: addNewChannelToFirestore: error adding channel' +
+          newchannel.name +
+          ' # ',
+        error
+      );
     }
   }
-
 
   /**
    * @method updateChannelOnFirestore
@@ -110,16 +127,24 @@ export class ChannelService implements OnDestroy {
    * @param {string} updateData.description - The new description of the channel.
    * @param {string[]} updateData.memberIDs - The new member IDs of the channel.
    */
-  async updateChannelOnFirestore(channel: Channel, updateData: { name?: string, description?: string, memberIDs?: string[] }) {
+  async updateChannelOnFirestore(
+    channel: Channel,
+    updateData: { name?: string; description?: string; memberIDs?: string[] }
+  ) {
     const channelDocRef = doc(this.firestore, '/channels', channel.id);
     try {
       await updateDoc(channelDocRef, updateData);
-      console.warn('ChannelService: updateChannelOnFirestore: channel updated ->', updateData);
+      console.warn(
+        'ChannelService: updateChannelOnFirestore: channel updated ->',
+        updateData
+      );
     } catch (error) {
-      console.error('ChannelService: updateChannelOnFirestore: error updating channel ->', error);
+      console.error(
+        'ChannelService: updateChannelOnFirestore: error updating channel ->',
+        error
+      );
     }
   }
-
 
   /**
    * Lifecycle hook that is called when the component is about to be destroyed.
@@ -127,7 +152,7 @@ export class ChannelService implements OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.unsubChannels) this.unsubChannels();
-    if (this.subscribeUserListChange) this.subscribeUserListChange.unsubscribe();
+    if (this.subscribeUserListChange)
+      this.subscribeUserListChange.unsubscribe();
   }
-
 }
