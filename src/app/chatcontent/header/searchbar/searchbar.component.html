@@ -37,6 +37,15 @@
         *ngFor="let suggestion of suggestions$ | async"
         (click)="selectSuggestion(suggestion)"
       >
+        <div
+          *ngIf="
+            suggestion.type === 'user' && getUserFromSuggestion(suggestion)
+          "
+          appAvatar
+          [user]="getUserFromSuggestion(suggestion)!"
+          context="search"
+        ></div>
+
         {{ suggestion.text }}
         <span class="item-action" *ngIf="suggestion.type === 'user'">
           {{ suggestion.hasChat ? "Chat betreten" : "Unterhaltung starten" }}
@@ -59,9 +68,19 @@
         (click)="selectRecentSearch(search)"
       >
         <img
+          class="search-history-icon"
           src="./assets/icons/modals/search-history.svg"
           alt="Search History"
         />
+
+        <div
+          class="avatar"
+          *ngIf="search.startsWith('@') && getUserFromSuggestion(search)"
+          appAvatar
+          [user]="getUserFromSuggestion(search)!"
+          context="search"
+        ></div>
+
         <span>{{ search }}</span>
         <span class="item-action" *ngIf="search.startsWith('@')">
           {{

@@ -4,15 +4,18 @@ import { SearchService } from '../../../utils/services/search.service';
 import { NavigationService } from '../../../utils/services/navigation.service';
 import { ChannelService } from '../../../utils/services/channel.service';
 import { UsersService } from '../../../utils/services/user.service';
+import { User } from '../../../shared/models/user.class';
 import { Channel } from '../../../shared/models/channel.class';
 import { Chat } from '../../../shared/models/chat.class';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { AvatarDirective } from '../../../utils/directives/avatar.directive';
+
 @Component({
   selector: 'app-searchbar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AvatarDirective],
   templateUrl: './searchbar.component.html',
   styleUrls: ['./searchbar.component.scss'],
 })
@@ -96,10 +99,18 @@ export class SearchbarComponent implements OnInit {
   // UI Interaction Methods
   // ############################################################################################################
 
+  /**
+   * Indicates whether context search is currently enabled.
+   * @returns {boolean} `true` if context search is enabled, `false` otherwise.
+   */
   get isContextSearchEnabled(): boolean {
     return this.searchService.isContextSearchEnabled;
   }
 
+  /**
+   * Enables context search and adds the current search context to the search query.
+   * This allows the user to search within the current context, such as a specific channel or user.
+   */
   enableContextSearch() {
     this.searchService.setContextSearchEnabled(true);
     this.addContextToSearch();
@@ -171,12 +182,32 @@ export class SearchbarComponent implements OnInit {
   }
 
   /**
+   * Retrieves the user object from a search suggestion.
+   *
+   * This method takes a search suggestion, which can be either a string or an object with properties `text`, `type`, and `hasChat`. If the suggestion is a string, it assumes the string represents a user name and returns the corresponding user object. If the suggestion is an object, it checks the `type` property to determine if the suggestion is for a user, and then extracts the user name from the `text` property.
+   *
+   * @param suggestion - The search suggestion, which can be either a string or an object with properties `text`, `type`, and `hasChat`.
+   * @returns The user object if found, otherwise `undefined`.
+   */
+  public getUserFromSuggestion(
+    suggestion: string | { text: string; type: string; hasChat: boolean }
+  ): User | undefined {
+    let userName: string;
+    if (typeof suggestion === 'string') {
+      userName = suggestion.startsWith('@') ? suggestion.slice(1) : suggestion;
+    } else {
+      userName = suggestion.type === 'user' ? suggestion.text.slice(1) : '';
+    }
+    return this.findUserByName(userName);
+  }
+
+  /**
    * Finds a user by their name.
    *
    * @param name - The name of the user to find.
    * @returns The user object if found, otherwise `undefined`.
    */
-  private findUserByName(name: string) {
+  public findUserByName(name: string) {
     const userIds = this.usersService.getAllUserIDs();
     for (const id of userIds) {
       const user = this.usersService.getUserByID(id);
@@ -187,6 +218,13 @@ export class SearchbarComponent implements OnInit {
     return undefined;
   }
 
+  /**
+   * Adds the current context restriction to the search.
+   *
+   * This method retrieves the current context from the `searchService`, adds it as a restriction to the search, and logs the context members and their names to the console.
+   *
+   * This can be useful when the user wants to search within a specific context, such as a channel or group.
+   */
   addContextToSearch() {
     const context = this.searchService.getCurrentContext();
     console.log('Adding context:', context);
