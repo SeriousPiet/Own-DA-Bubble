@@ -323,9 +323,9 @@ $offline: $disabled;
 
 // ########## FONT-STYLING
 
-@mixin nunito($size: 18, $weight: 700, $color: black) {
+@mixin nunito($size: 1, $weight: 700, $color: black) {
   font-family: Nunito, sans-serif;
-  font-size: $size + px;
+  font-size: $size + rem;
   font-weight: $weight;
   color: $color;
 }

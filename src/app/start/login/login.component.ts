@@ -53,9 +53,9 @@ export class LoginComponent {
 
   handleLoginErrors(error: string) {
     if (error.includes('auth/user-not-found')) {
-      this.errorEmail = 'EMail nicht gefunden, bitte nochmal versuchen';
+      this.errorEmail = 'Diese E-Mail-Adresse ist leider ungültig.';
     } else if (error.includes('auth/wrong-password')) {
-      this.errorPassword = 'Passwort falsch, bitte nochmal versuchen';
+      this.errorPassword = 'Falsches Passwort oder E-Mail. Bitte noch einmal versuchen.';
     }
   }
 

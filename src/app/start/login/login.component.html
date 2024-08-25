@@ -8,7 +8,10 @@
 </div>
 
 <!-- Konto erstellen Button -->
-<button class="signup-btn" [routerLink]="['/signup']">Konto erstellen</button>
+<div class="signup-btn">
+  <span>Neu bei DABubble?</span>
+  <button [routerLink]="['/signup']">Konto erstellen</button>
+</div>
 
 <section>
   <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
@@ -33,7 +36,9 @@
       <button type="button">Passwort vergessen?</button>
     </div>
     <div class="or-separator">
-      <span>oder</span>
+      <div></div>
+      <span>ODER</span>
+      <div></div>
     </div>
     <button class="login-with-google" type="button">
       <img src="../../../assets/icons/start/google.svg" alt="" />
