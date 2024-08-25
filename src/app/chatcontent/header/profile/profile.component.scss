@@ -74,11 +74,26 @@
       width: 100%;
 
       span.username {
+        container-type: inline-size;
         @include fontSizer(32, 700, black);
+        line-height: 100%;
+
+        @container (max-width: 65%) {
+          max-width: 50%;
+          text-wrap: balance;
+          padding: 0;
+          margin: 0;
+
+          .edit-username {
+            align-items: flex-start !important;
+          }
+        }
       }
 
       button.edit {
         @include buttonFontWeightOnly;
+        width: fit-content;
+        height: fit-content;
       }
     }
 
