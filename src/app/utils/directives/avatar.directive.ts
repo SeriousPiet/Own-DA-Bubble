@@ -39,12 +39,11 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
 
   async ngOnInit() {
-    await this.applyAvatarStyles();
+    this.applyAvatarStyles();
     this.userSubscription = this.user?.changeUser$.subscribe((user: User | null) => {
       if (user) {
         this.user = user;
-        this.renderer.setAttribute(this._img, 'src', this.user.pictureURL ||
-          `./assets/img/avatar-big/avatar-${this.user.avatar}.png`);
+        this.renderer.setAttribute(this._img, 'src', this.getAvatarUrl());
         this.setOnlineStatusIndicator(this.user.online);
       }
     });

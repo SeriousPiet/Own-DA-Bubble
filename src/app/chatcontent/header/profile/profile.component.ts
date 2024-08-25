@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../../../utils/services/user.service';
-import { NavigationService } from '../../../utils/services/navigation.service';
 import {
   FormBuilder,
   FormGroup,
@@ -30,7 +29,6 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     public userservice: UsersService,
-    private navigationService: NavigationService,
     private fb: FormBuilder,
     private router: Router
   ) {
@@ -39,8 +37,8 @@ export class ProfileComponent implements OnInit {
       email: ['', [Validators.required, emailValidator()]],
     });
 
-    this.navigationService.change$.subscribe(() => {
-      this.onlineStatus = this.userservice.currentUser?.online
+    this.userservice.currentUser?.changeUser$.subscribe((user) => {
+      this.onlineStatus = user?.online
         ? 'online'
         : 'offline';
     });

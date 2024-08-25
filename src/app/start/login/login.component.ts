@@ -38,7 +38,6 @@ export class LoginComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     if (this.userlogin) this.userlogin.unsubscribe();
-    console.log('LoginComponent destroyed');
   }
 
 
