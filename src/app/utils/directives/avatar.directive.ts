@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { User } from '../../shared/models/user.class';
 
 type AvatarContext =
@@ -19,29 +19,49 @@ type AvatarContext =
   selector: '[appAvatar]',
   standalone: true,
 })
-export class AvatarDirective implements OnInit {
-  @Input() user!: User;
+export class AvatarDirective implements OnInit, OnDestroy {
+  @Input() user: User | undefined;
   @Input() context: AvatarContext = 'chat-message';
+
+  private _img: HTMLImageElement | undefined;
+  private _statusIndicator: HTMLDivElement | undefined;
+  private userSubscription: any;
 
   private readonly online = '#92c83e';
   private readonly offline = '#686868';
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  constructor(private el: ElementRef, private renderer: Renderer2) { }
+
+
+  ngOnDestroy(): void {
+    if (this.userSubscription) this.userSubscription.unsubscribe();
+  }
+
 
   async ngOnInit() {
     await this.applyAvatarStyles();
+    this.userSubscription = this.user?.changeUser$.subscribe((user: User | null) => {
+      if (user) {
+        this.user = user;
+        this.renderer.setAttribute(this._img, 'src', this.user.pictureURL ||
+          `./assets/img/avatar-big/avatar-${this.user.avatar}.png`);
+        this.setOnlineStatusIndicator(this.user.online);
+      }
+    });
   }
 
-  private async applyAvatarStyles() {
+
+  private applyAvatarStyles() {
     const styles = this.getStylesByContext();
 
     this.renderer.setStyle(this.el.nativeElement, 'position', 'relative');
     this.renderer.setStyle(this.el.nativeElement, 'width', styles.imgSize);
     this.renderer.setStyle(this.el.nativeElement, 'height', styles.imgSize);
 
-    const imgUrl = await this.getImageUrl();
+    const imgUrl = this.getAvatarUrl();
 
     const img = this.renderer.createElement('img');
+    this._img = img;
     this.renderer.setAttribute(img, 'src', imgUrl);
     this.renderer.setStyle(img, 'width', '100%');
     this.renderer.setStyle(img, 'height', '100%');
@@ -55,18 +75,26 @@ export class AvatarDirective implements OnInit {
     }
   }
 
-  private async getImageUrl(): Promise<string> {
-    while (!this.user) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-    return (
-      this.user.pictureURL ||
-      `./assets/img/avatar-big/avatar-${this.user.avatar}.png`
+
+  private getAvatarUrl(): string {
+    return this.user?.pictureURL ||
+      `./assets/img/avatar-big/avatar-${this.user?.avatar}.png`;
+  }
+
+
+  private setOnlineStatusIndicator(online: boolean) {
+    if (!this._statusIndicator) return;
+    this.renderer.setStyle(
+      this._statusIndicator,
+      'background-color',
+      online ? this.online : this.offline
     );
   }
 
+
   private addStatusIndicator(styles: any): HTMLElement {
     const statusIndicator = this.renderer.createElement('div');
+    this._statusIndicator = statusIndicator;
     this.renderer.setStyle(statusIndicator, 'content', '""');
     this.renderer.setStyle(statusIndicator, 'position', 'absolute');
     this.renderer.setStyle(statusIndicator, 'bottom', '0');
@@ -77,7 +105,7 @@ export class AvatarDirective implements OnInit {
     this.renderer.setStyle(
       statusIndicator,
       'background-color',
-      this.user.online ? this.online : this.offline
+      this.user?.online ? this.online : this.offline
     );
     this.renderer.setStyle(
       statusIndicator,
@@ -87,6 +115,7 @@ export class AvatarDirective implements OnInit {
     this.renderer.appendChild(this.el.nativeElement, statusIndicator);
     return statusIndicator;
   }
+
 
   private setupHoverEffect(statusIndicator: HTMLElement, styles: any) {
     const hoverElement = this.findHoverElement(this.el.nativeElement);
@@ -108,6 +137,7 @@ export class AvatarDirective implements OnInit {
     }
   }
 
+
   private findHoverElement(element: HTMLElement): HTMLElement | null {
     let currentElement = element.parentElement;
     while (currentElement) {
@@ -118,6 +148,7 @@ export class AvatarDirective implements OnInit {
     }
     return null;
   }
+
 
   private getStylesByContext(): {
     imgSize: string;

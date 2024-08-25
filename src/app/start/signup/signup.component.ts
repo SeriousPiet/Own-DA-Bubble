@@ -20,6 +20,8 @@ export class SignupComponent {
   private userservice = inject(UsersService);
   private router: Router = inject(Router);
 
+  public errorEmailExists = '';
+
   signupForm = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -40,17 +42,30 @@ export class SignupComponent {
   })
 
 
-  submitSignUpForm(event: Event): void {
+  async submitSignUpForm(event: Event) {
     event.preventDefault();
+    this.clearAllErrorSpans();
     const name = this.signupForm.value.name || '';
     const email = this.signupForm.value.email || '';
     const password = this.signupForm.value.password || '';
-    const error = this.userservice.registerNewUser({ name: name, email: email, password: password });
-    if (error) {
-      console.error('Error registering user:', error);
+    const error = await this.userservice.registerNewUser(name, email, password);
+    if (error) this.handleSignupErrors(error);
+    else this.handleSignupSuccess();
+  }
+
+
+  handleSignupSuccess() {
+    this.router.navigate(['/chooseavatar']);
+  }
+
+
+  handleSignupErrors(error: string) {
+    if (error.includes('auth/email-already-in-use')) {
+      this.errorEmailExists = 'Diese E-Mail-Adresse ist bereits vergeben.';
     }
-    else {
-      this.router.navigate(['/chooseavatar']);
-    }
+  }
+
+  clearAllErrorSpans() {
+    this.errorEmailExists = '';
   }
 }

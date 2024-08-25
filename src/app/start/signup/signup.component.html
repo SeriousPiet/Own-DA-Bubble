@@ -10,14 +10,17 @@
         </div>
         <div class="input-box mail">
             <input formControlName="email" type="text" placeholder="beispielname@email.com">
-        </div>
+            @if(errorEmailExists != '') {
+                <span class="errorspan">{{ errorEmailExists }}</span>
+                }
+                  </div>
         <div class="input-box pw">
             <input formControlName="password" type="text" placeholder="password" minlength="6" max="20">
         </div>
         <div>
-            <label>
-                <input formControlName="checkboxPP" type="checkbox" name="" id="">
-                <span>Ich stimme der <a href="">Datenschutzerklärung</a> zu</span>
+            <label class="check-pp">
+                <input formControlName="checkboxPP" type="checkbox" name="" id="" class="square-checkbox">
+                <span>Ich stimme der <a href="#">Datenschutzerklärung</a> zu</span>
             </label>
         </div>
         <div class="action">

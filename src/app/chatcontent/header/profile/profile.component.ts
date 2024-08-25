@@ -43,7 +43,6 @@ export class ProfileComponent implements OnInit {
       this.onlineStatus = this.userservice.currentUser?.online
         ? 'online'
         : 'offline';
-      console.log('Online-Status:', this.onlineStatus);
     });
   }
 

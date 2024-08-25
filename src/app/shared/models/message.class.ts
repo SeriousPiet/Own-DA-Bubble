@@ -64,7 +64,7 @@ export class Message {
     if (data.emojies) this.calculateReaction(data.emojies);
     if (data.answerCount) this._answerCount = data.answerCount;
     if (data.lastAnswerAt) this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
-    if (data.edited) this._edited = data.edited;
+    if (data.edited !== undefined) this._edited = data.edited;
     if (data.editedAt) this._editedAt = (data.editedAt as Timestamp).toDate();
   }
 

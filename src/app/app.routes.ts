@@ -6,13 +6,16 @@ import { ChooesavatarComponent } from './start/chooesavatar/chooesavatar.compone
 import { WorkspacemenuComponent } from './chatcontent/workspacemenu/workspacemenu.component';
 import { ChatthreadviewComponent } from './examples/chatthreadview/chatthreadview.component';
 import { ShowcaseComponent } from './examples/showcase/showcase.component';
+import { currentUserExistsGuard } from './utils/guards/current-user-exists.guard';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'chatcontent', component: ChatcontentComponent },
+  { path: 'chatcontent', component: ChatcontentComponent, canActivate: [currentUserExistsGuard] },
   { path: 'workspaceMenu', component: WorkspacemenuComponent },
-  { path: 'chatthreadtest', component: ChatthreadviewComponent },
   { path: 'chooseavatar', component: ChooesavatarComponent },
+  // for debug only ----------------------------------------------
+  { path: 'chatthreadtest', component: ChatthreadviewComponent },
   { path: 'showcase', component: ShowcaseComponent },
+  // -----------------------------------------------------------
 ];

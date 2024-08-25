@@ -2,8 +2,9 @@ import { inject, Injectable, OnDestroy } from '@angular/core';
 import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
 import { Chat } from '../../shared/models/chat.class';
-import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp } from '@angular/fire/firestore';
+import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp, getDocs, where, query } from '@angular/fire/firestore';
 import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user, UserCredential } from '@angular/fire/auth';
+import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 
 /**
  * The UsersService class provides methods for managing users and chats in the application.
@@ -16,6 +17,7 @@ import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reaut
 export class UsersService implements OnDestroy {
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
+  private storage = getStorage();
   private unsubUsers: any = null;
   private unsubChats: any = null;
   private user$: any = null;
@@ -24,6 +26,9 @@ export class UsersService implements OnDestroy {
 
   private changeUserListSubject = new BehaviorSubject<string>('');
   public changeUserList$ = this.changeUserListSubject.asObservable();
+
+  private changeCurrentUserSubject = new BehaviorSubject<string>('');
+  public changeCurrentUser$ = this.changeCurrentUserSubject.asObservable();
 
   public users: User[] = [];
   public currentUser: User | undefined;
@@ -107,7 +112,7 @@ export class UsersService implements OnDestroy {
   }
 
 
-  updateCurrentUserDataOnFirestore(userChangeData: {
+  async updateCurrentUserDataOnFirestore(userChangeData: {
     name?: string;
     online?: boolean;
     chatIDs?: string[];
@@ -115,11 +120,11 @@ export class UsersService implements OnDestroy {
     pictureURL?: string;
   }) {
     if (this.currentUser) {
-      this.updateUserDataOnFirestoreByID(this.currentUserID, userChangeData);
+      await this.updateUserDataOnFirestoreByID(this.currentUserID, userChangeData);
     }
   }
 
-  private updateUserDataOnFirestoreByID(id: string, userChangeData: {
+  private async updateUserDataOnFirestoreByID(id: string, userChangeData: {
     email?: string;
     name?: string;
     online?: boolean;
@@ -127,9 +132,12 @@ export class UsersService implements OnDestroy {
     avatar?: number;
     pictureURL?: string;
   }) {
-    updateDoc(doc(this.firestore, '/users/' + id), userChangeData)
-      .then(() => { console.warn('userservice/firestore: User updated(', this.currentUserID, ') # ', userChangeData); })
-      .catch((error) => { console.error('userservice/firestore: Error updating user(', error.message, ')'); });
+    try {
+      await updateDoc(doc(this.firestore, '/users/' + id), userChangeData);
+      console.warn('userservice/firestore: User updated(', this.currentUserID, ') # ', userChangeData);
+    } catch (error) {
+      console.error('userservice/firestore: ', (error as Error).message);
+    }
   }
 
 
@@ -187,28 +195,30 @@ export class UsersService implements OnDestroy {
   }
 
 
-  registerNewUser(user: { email: string; password: string; name: string; }): string | undefined {
-    createUserWithEmailAndPassword(this.firebaseauth, user.email, user.password)
-      .then((response) => {
-        this.addUserToFirestore({
-          name: user.name,
-          email: response.user.email,
-        }).then((userID) => {
-          updateProfile(response.user, { displayName: userID })
-            .then(() => {
-              return undefined;
-            });
-        });
-      })
-      .catch((error) => {
-        console.error(
-          'userservice/auth: Error registering user(',
-          error.message,
-          ')'
-        );
-        return error.message;
-      });
-    return undefined;
+  async registerNewUser(name: string, email: string, password: string): Promise<string> {
+    try {
+      const response = await createUserWithEmailAndPassword(this.firebaseauth, email, password);
+      const userID = await this.addUserToFirestore({ name: name, email: email, });
+      await updateProfile(response.user, { displayName: userID });
+      return '';
+    } catch (error) {
+      console.error('userservice/auth: Error registering user(', (error as Error).message, ')');
+      return (error as Error).message;
+    }
+  }
+
+
+  async uploadUserPictureToFirestore(userID: string, file: any): Promise<string> {
+    const storageRef = ref(this.storage, 'profile-pictures/' + userID + '/userpicture.' + file.name.split('.').pop());
+    try {
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      await this.updateUserDataOnFirestoreByID(userID, { pictureURL: url });
+      return '';
+    } catch (error) {
+      console.error('userservice/storage: ', (error as Error).message);
+      return (error as Error).message;
+    }
   }
 
 
@@ -222,7 +232,6 @@ export class UsersService implements OnDestroy {
     };
     let ref = collection(this.firestore, '/users');
     let newUser = await addDoc(ref, userObj);
-    await updateDoc(doc(this.firestore, '/users/' + newUser.id), { id: newUser.id });
     return newUser.id;
   }
 
@@ -265,6 +274,7 @@ export class UsersService implements OnDestroy {
             this.users.push(new User(change.doc.data(), change.doc.id));
           }
           if (change.type === 'modified') {
+            console.log('userservice/firestore: User modified: ', change.doc.data());
             const user = this.users.find((user) => user.id === change.doc.id);
             if (user) user.update(change.doc.data());
           }
@@ -302,33 +312,43 @@ export class UsersService implements OnDestroy {
 
   private initUserWatchDog(): void {
     this.user$ = user(this.firebaseauth).subscribe((user) => {
-      this.unsubscribeFromCurrentUser();
       if (user) {
-        console.warn('userservice/auth: Authentication successful: ', user.email);
-        this.currentUserSubscriber = onSnapshot(doc(this.firestore, '/users/' + user.displayName),
-          (snapshot) => {
-            if (snapshot.exists()) {
-              if (!this.currentUser || this.currentUser.id !== snapshot.data()['id']) {
-                this.currentUser = new User(snapshot.data(), snapshot.id, true);
-                if (this.currentUser) {
-                  this.updateUserOnlineStatusOnFirestore(this.currentUser.id, true);
-                  console.warn('userservice/firestore: currentUser is ' + this.currentUser.email);
-                  console.log('Online-Status des aktuellen Users:', this.currentUser.online);
+        console.warn('userservice/auth: Authentication successful: ', user.displayName);
+        this.getUserIDByEmail(user.email)
+          .then((userID) => {
+            if (userID) {
+              this.unsubscribeFromCurrentUser();
+              this.currentUserSubscriber = onSnapshot(doc(this.firestore, '/users/' + userID), (doc) => {
+                if (doc.exists()) {
+                  this.updateUserOnlineStatusOnFirestore(userID, true);
+                  if (this.currentUserID != userID) this.currentUser = new User(doc.data(), userID);
+                  else this.currentUser?.update(doc.data());
+                  this.changeCurrentUserSubject.next('userlogin');
+                  console.warn('userservice: currentUser is ', userID);
                 }
-              } else {
-                this.currentUser?.update(snapshot.data());
-                console.warn('userservice/firestore: user update ' + this.currentUser.email);
-                console.log('Online-Status des aktuellen Users:', this.currentUser.online);
-              }
+              });
             }
           }
-        );
+          );
       } else if (this.currentUser) {
         console.warn('user logout - ' + this.currentUser.email);
+        this.unsubscribeFromCurrentUser();
         this.updateUserOnlineStatusOnFirestore(this.currentUser.id, false);
         this.currentUser = undefined;
       }
     });
+  }
+
+
+  private async getUserIDByEmail(email: string | null): Promise<string | undefined> {
+    const usersRef = collection(this.firestore, '/users');
+    const queryresponse = query(usersRef, where('email', '==', email));
+    const querySnapshot = await getDocs(queryresponse);
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      return userDoc.id;
+    }
+    return undefined;
   }
 
 
