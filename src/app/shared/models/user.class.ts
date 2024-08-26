@@ -48,7 +48,7 @@ export class User {
         if (data.avatar) this._avatar = data.avatar;
         if (data.online !== undefined) this._online = data.online;
         if (data.chatIDs) this._chatIDs = data.chatIDs;
-        if (data.pictureURL) this._pictureURL = data.pictureURL;
+        if (data.pictureURL !== undefined) this._pictureURL = data.pictureURL;
         this.changeUser.next(this);
     }
 }

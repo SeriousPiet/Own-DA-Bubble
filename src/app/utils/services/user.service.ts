@@ -329,7 +329,7 @@ export class UsersService implements OnDestroy {
                   else {
                     this.currentUser?.update(doc.data());
                     this.changeCurrentUserSubject.next('currentUserChanged');
-                    console.warn('userservice: currentUser changed data - ', doc.data()['email']);
+                    console.warn('userservice: currentUser changed data - ', doc.data());
                   }
                 }
               });

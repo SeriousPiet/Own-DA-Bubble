@@ -19,7 +19,10 @@
     </div>
     <div class="action">
         @if(uploading) {
-        <span class="infospan">Läd hoch ...</span>
+            <!-- loading spinner -->
+        }
+        @else if(picturePropertysError) {
+        <span class="errorspan">{{ picturePropertysError }}</span>
         }
         <button (click)="submitChooseAvatar($event)">Weiter</button>
     </div>

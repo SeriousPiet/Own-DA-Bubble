@@ -66,6 +66,7 @@ export class ChooesavatarComponent {
 
   public loadFileToViewInImg(event: any) {
     if (event.target.files && event.target.files[0]) {
+      this.picturePropertysError = '';
       const file = event.target.files[0];
       if (!this.validateFilePropertys(file)) return;
       const reader = new FileReader();
@@ -80,14 +81,12 @@ export class ChooesavatarComponent {
 
 
   private validateFilePropertys(file: any): boolean {
-    if (file.size > 1000000) {
+    if (file.size > 500000) {
       this.picturePropertysError = 'Datei ist zu groß';
-      console.error('File is too big');
       return false;
     }
     if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
       this.picturePropertysError = 'Datei ist kein PNG oder JPEG';
-      console.error('File is not an image');
       return false;
     }
     return true;
