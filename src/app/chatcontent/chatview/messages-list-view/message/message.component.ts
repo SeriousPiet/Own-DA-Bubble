@@ -27,7 +27,6 @@ export class MessageComponent implements OnInit {
   }
   @Input() messages: Message[] = [];
 
-  previousMessageFromSameUser = false;
   messagefromUser = false;
   isHovered = false;
   hasReaction = false;
@@ -46,7 +45,6 @@ export class MessageComponent implements OnInit {
       editedAt: this.messageData.editedAt
     };
     this.sortMessageReaction();
-    this.previousMessageFromSameUser = this.messageData.previousMessageFromSameUser;
     this.sortMessagesByUser();
   }
 
@@ -65,22 +63,25 @@ export class MessageComponent implements OnInit {
       this.messages.forEach((message, index) => {
         if (index === 0) {
           // Die erste Nachricht hat immer `previousMessageFromSameUser` auf `false`
-          this.previousMessageFromSameUser = false;
+          message.previousMessageFromSameUser = false;
         } else {
           const currentCreatorId = message.creatorID;
           const currentMessageDate = new Date(message.createdAt).toDateString();
 
           // Überprüfen, ob der Ersteller und das Datum gleich sind
           if (currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate) {
-            this.previousMessageFromSameUser = true;
+            message.previousMessageFromSameUser = true;
           } else {
-            this.previousMessageFromSameUser = false;
+            message.previousMessageFromSameUser = false;
           }
 
           // Update previous message details
           previousCreatorId = currentCreatorId;
           previousMessageDate = currentMessageDate;
         }
+
+        console.log(`Message index ${index}, previousMessageFromSameUser: ${message.previousMessageFromSameUser}`)
+
       });
 
       console.log(this.messages);
