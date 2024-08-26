@@ -1,6 +1,8 @@
-<main (mouseenter)="isHovered = true" (mouseleave)="isHovered = false; showEditMessagePopup = false"
-    [ngClass]="{'message-ctn':true, 'message-from-user': messagefromUser, 'editor-modus-bg-color':messageEditorModus}">
-    <div>
+<main (mouseenter)="isHovered = true" (mouseleave)="isHovered = false; showEditMessagePopup = false" [ngClass]="{'message-ctn':true, 
+    'message-from-user': messagefromUser, 
+    'editor-modus-bg-color':messageEditorModus, 
+    'message-from-same-user': messageData.previousMessageFromSameUser}">
+    <div class="message-creator-avatar">
         <img src="assets/icons/start/choose-avatar/choose-avatar-3.svg" alt="">
     </div>
     @if (!messageEditorModus) {
@@ -49,7 +51,6 @@
             <div class="message-editor-button">
                 <button class="abort-btn" (click)="toggleMessageEditor()">Abbrechen</button>
                 <button class="save-btn" (click)="editMessage(messageData, updatedMessage)">Speichern</button>
-                <!-- <button class="save-btn" (click)="editMessage(messageData, updatedMessage)">Speichern</button> -->
             </div>
         </div>
     </div>
