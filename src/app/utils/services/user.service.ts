@@ -324,12 +324,12 @@ export class UsersService implements OnDestroy {
                   if (this.currentUserID != userID) {
                     this.currentUser = new User(doc.data(), userID);
                     this.changeCurrentUserSubject.next('currentUserSignin');
-                    console.warn('userservice: currentUser signin - ', userID);
+                    console.warn('userservice: currentUser signin - ', doc.data()['email']);
                   }
                   else {
                     this.currentUser?.update(doc.data());
                     this.changeCurrentUserSubject.next('currentUserChanged');
-                    console.warn('userservice: currentUser changed data - ', userID);
+                    console.warn('userservice: currentUser changed data - ', doc.data()['email']);
                   }
                 }
               });

@@ -12,7 +12,6 @@ export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'chatcontent', component: ChatcontentComponent, canActivate: [currentUserExistsGuard] },
-  { path: 'workspaceMenu', component: WorkspacemenuComponent },
   { path: 'chooseavatar', component: ChooesavatarComponent },
   // for debug only ----------------------------------------------
   { path: 'chatthreadtest', component: ChatthreadviewComponent },

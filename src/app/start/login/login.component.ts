@@ -23,6 +23,7 @@ export class LoginComponent implements OnDestroy {
 
   public errorEmail = '';
   public errorPassword = '';
+  public logginIn = false;
 
   loginForm = new FormGroup({
     email: new FormControl('', [
@@ -43,10 +44,14 @@ export class LoginComponent implements OnDestroy {
 
   async submitLoginForm(event: Event) {
     event.preventDefault();
+    this.logginIn = true;
+    this.loginForm.disable();
     this.clearAllErrorSpans();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
     const error = await this.userservice.loginUser(email, password);
+    this.logginIn = false;
+    this.loginForm.enable();
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }

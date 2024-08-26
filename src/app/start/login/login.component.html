@@ -46,7 +46,11 @@
     </button>
     <div class="action-btns">
       <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">
+        @if(logginIn) {
+        Logging in ...
+        } @else {
         Anmelden
+        }
       </button>
       <button type="button" class="white-btn">Gäste-Login</button>
     </div>
