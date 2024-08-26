@@ -1,4 +1,9 @@
 <section>
+    <button (click)="showChooseAvatarMask = !showChooseAvatarMask">chooseavatar toggle</button>
+    @if(showChooseAvatarMask) {
+    <app-chooseavatar></app-chooseavatar>
+    }
+    @else {
     <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)">
         <button type="button" class="return" [routerLink]="['/']">
             <img src="../../../assets/icons/start/go-back.svg" alt="">
@@ -11,9 +16,9 @@
         <div class="input-box mail">
             <input formControlName="email" type="text" placeholder="beispielname@email.com">
             @if(errorEmailExists != '') {
-                <span class="errorspan">{{ errorEmailExists }}</span>
-                }
-                  </div>
+            <span class="errorspan">{{ errorEmailExists }}</span>
+            }
+        </div>
         <div class="input-box pw">
             <input formControlName="password" type="text" placeholder="password" minlength="6" max="20">
         </div>
@@ -27,4 +32,5 @@
             <button [disabled]="signupForm.invalid" type="submit" class="blue-btn">Weiter</button>
         </div>
     </form>
+    }
 </section>

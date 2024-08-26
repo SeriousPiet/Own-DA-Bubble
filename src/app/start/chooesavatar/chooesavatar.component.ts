@@ -4,7 +4,7 @@ import { RouterLink, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-chooesavatar',
+  selector: 'app-chooseavatar',
   standalone: true,
   imports: [
     RouterLink,
@@ -24,6 +24,7 @@ export class ChooesavatarComponent {
   public selectedAvatarPicture: any;
   private selectedAvatarNumber: number = 0;
   public pictureFile: any;
+  public picturePropertysError: string = '';
   public uploading: boolean = false;
 
   avatarList = [
@@ -65,15 +66,31 @@ export class ChooesavatarComponent {
 
   public loadFileToViewInImg(event: any) {
     if (event.target.files && event.target.files[0]) {
-
       const file = event.target.files[0];
+      if (!this.validateFilePropertys(file)) return;
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.selectedAvatarPicture = e.target.result;
       };
       reader.readAsDataURL(file);
+      console.log('filesize: ', file.size);
       this.pictureFile = file;
     }
+  }
+
+
+  private validateFilePropertys(file: any): boolean {
+    if (file.size > 1000000) {
+      this.picturePropertysError = 'Datei ist zu groß';
+      console.error('File is too big');
+      return false;
+    }
+    if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+      this.picturePropertysError = 'Datei ist kein PNG oder JPEG';
+      console.error('File is not an image');
+      return false;
+    }
+    return true;
   }
 
 

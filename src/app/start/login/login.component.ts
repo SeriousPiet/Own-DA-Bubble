@@ -58,8 +58,8 @@ export class LoginComponent implements OnDestroy {
 
 
   handleLoginSuccess() {
-    let userlogin = this.userservice.changeCurrentUser$.subscribe(() => {
-      this.router.navigate(['/chatcontent']);
+    this.userlogin = this.userservice.changeCurrentUser$.subscribe((change) => {
+      if (change == 'currentUserSignin') this.router.navigate(['/chatcontent']);
     });
   }
 
