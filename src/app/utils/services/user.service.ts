@@ -321,17 +321,23 @@ export class UsersService implements OnDestroy {
               this.currentUserSubscriber = onSnapshot(doc(this.firestore, '/users/' + userID), (doc) => {
                 if (doc.exists()) {
                   this.updateUserOnlineStatusOnFirestore(userID, true);
-                  if (this.currentUserID != userID) this.currentUser = new User(doc.data(), userID);
-                  else this.currentUser?.update(doc.data());
-                  this.changeCurrentUserSubject.next('userlogin');
-                  console.warn('userservice: currentUser is ', userID);
+                  if (this.currentUserID != userID) {
+                    this.currentUser = new User(doc.data(), userID);
+                    this.changeCurrentUserSubject.next('currentUserSignin');
+                    console.warn('userservice: currentUser signin - ', userID);
+                  }
+                  else {
+                    this.currentUser?.update(doc.data());
+                    this.changeCurrentUserSubject.next('currentUserChanged');
+                    console.warn('userservice: currentUser changed data - ', userID);
+                  }
                 }
               });
             }
           }
           );
       } else if (this.currentUser) {
-        console.warn('user logout - ' + this.currentUser.email);
+        console.warn('userservice: currentUser logout - ' + this.currentUser.email);
         this.unsubscribeFromCurrentUser();
         this.updateUserOnlineStatusOnFirestore(this.currentUser.id, false);
         this.currentUser = undefined;

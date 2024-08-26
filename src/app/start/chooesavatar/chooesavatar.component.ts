@@ -91,9 +91,7 @@ export class ChooesavatarComponent {
     event.preventDefault();
     if (this.pictureFile) await this.setAvatarPictureURLtoFirestore(this.pictureFile);
     else await this.userservice.updateCurrentUserDataOnFirestore({ avatar: this.selectedAvatarNumber, pictureURL: '' });
-    setTimeout(() => {
-      this.router.navigate(['/chatcontent']);
-    }, 3000);
+    this.router.navigate(['/chatcontent']);
   }
 
 }
