@@ -43,7 +43,7 @@ export class ChatviewComponent implements OnInit {
 
 
   @Input() set currentChannel (object: Channel | Chat){
-    if (object instanceof Channel && !object.defaultChannel) this.isDefaultChannel = false;
+    object instanceof Channel && object.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
     if (object instanceof Channel) console.log(object.defaultChannel);
   }
 

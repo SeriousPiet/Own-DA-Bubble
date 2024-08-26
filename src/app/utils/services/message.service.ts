@@ -81,7 +81,7 @@ export class MessageService {
     if (currentReaction) {
       if (currentReaction.userIDs.includes(currentUserID)) {
         currentReaction.userIDs = currentReaction.userIDs.filter(userID => userID !== currentUserID);
-        if(currentReaction.userIDs.length == 0){
+        if (currentReaction.userIDs.length == 0) {
           const reactionIndex = reactionsArray.findIndex(currentReaction => currentReaction.type === reaction);
           reactionsArray.splice(reactionIndex, 1);
         }

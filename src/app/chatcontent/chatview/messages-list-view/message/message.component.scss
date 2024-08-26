@@ -17,6 +17,8 @@
 
         .message-header {
             @include flex(normal, center);
+            gap: 1.25rem;
+
 
             >:nth-child(1) {
                 font-size: 1.125rem;
@@ -39,6 +41,7 @@
             padding: 15px;
             border-radius: 0 1.875rem 1.875rem 1.875rem;
             background-color: $background;
+            max-width: max-content;
         }
 
         .message-reactions {
@@ -89,7 +92,7 @@
                     }
                 }
 
-                
+
                 >span {
                     font-size: 0.875rem;
                     font-weight: 400;
@@ -98,7 +101,7 @@
         }
     }
 
-    &:hover {
+    &:not(.message-from-user):hover {
         transition: all 100ms ease-out;
         cursor: pointer;
         background-color: $background;
@@ -130,6 +133,7 @@
 .message-from-user {
     flex-direction: row-reverse;
     padding: .625rem 2.8125rem .625rem 0;
+    // cursor: default !important;
 
     >section {
         align-items: flex-end;
@@ -146,7 +150,8 @@
 
         >p {
             border-radius: 1.875rem 0 1.875rem 1.875rem;
-            max-width: max-content;
+            background-color: $primary;
+            color: white
         }
 
         .message-reactions {
@@ -163,6 +168,12 @@
                 display: flex;
             }
         }
+    }
+
+    &:hover{
+        transition: all 100ms ease-out;
+        cursor: default !important;
+        background-color: $background;
     }
 }
 
@@ -314,5 +325,18 @@
 
     .save-btn {
         @include buttonFull();
+    }
+}
+
+
+.message-from-same-user{
+    .message-creator-avatar{
+        display: none;
+    }
+
+    >section{
+        .message-header{
+            display: none;
+        }
     }
 }
