@@ -3,7 +3,6 @@ import { ChatcontentComponent } from './chatcontent/chatcontent.component';
 import { LoginComponent } from './start/login/login.component';
 import { SignupComponent } from './start/signup/signup.component';
 import { ChooesavatarComponent } from './start/chooesavatar/chooesavatar.component';
-import { WorkspacemenuComponent } from './chatcontent/workspacemenu/workspacemenu.component';
 import { ChatthreadviewComponent } from './examples/chatthreadview/chatthreadview.component';
 import { ShowcaseComponent } from './examples/showcase/showcase.component';
 import { currentUserExistsGuard } from './utils/guards/current-user-exists.guard';

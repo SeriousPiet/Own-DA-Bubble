@@ -45,13 +45,10 @@
       Anmelden mit Google
     </button>
     <div class="action-btns">
-      <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">
-        @if(logginIn) {
-        Logging in ...
-        } @else {
-        Anmelden
-        }
-      </button>
+      <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">Anmelden</button>
+      @if(logginIn) {
+      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
+      }
       <button type="button" class="white-btn">Gäste-Login</button>
     </div>
   </form>
