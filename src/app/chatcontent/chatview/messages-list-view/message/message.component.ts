@@ -23,8 +23,11 @@ export class MessageComponent implements OnInit {
   @Input() messageData: any;
   @Input() set messageWriter(messageWriterID: string) {
     this.checkMessageWriterID(messageWriterID);
-  }
 
+  }
+  @Input() messages: Message[] = [];
+
+  previousMessageFromSameUser = false;
   messagefromUser = false;
   isHovered = false;
   hasReaction = false;
@@ -36,17 +39,104 @@ export class MessageComponent implements OnInit {
   message = '';
 
   ngOnInit(): void {
-    console.log(this.messageData)
+    console.log(this)
     this.updatedMessage = {
       content: this.messageData.content,
       edited: this.messageData.edited,
       editedAt: this.messageData.editedAt
     };
     this.sortMessageReaction();
+    this.previousMessageFromSameUser = this.messageData.previousMessageFromSameUser;
+    this.sortMessagesByUser();
   }
 
   constructor(private cdr: ChangeDetectorRef) {
   }
+
+
+
+// this function still need to be refactored
+
+  sortMessagesByUser() {
+    if (this.messages.length > 0) {
+      let previousCreatorId = this.messages[0].creatorID;
+      let previousMessageDate = new Date(this.messages[0].createdAt).toDateString();
+
+      this.messages.forEach((message, index) => {
+        if (index === 0) {
+          // Die erste Nachricht hat immer `previousMessageFromSameUser` auf `false`
+          this.previousMessageFromSameUser = false;
+        } else {
+          const currentCreatorId = message.creatorID;
+          const currentMessageDate = new Date(message.createdAt).toDateString();
+
+          // Überprüfen, ob der Ersteller und das Datum gleich sind
+          if (currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate) {
+            this.previousMessageFromSameUser = true;
+          } else {
+            this.previousMessageFromSameUser = false;
+          }
+
+          // Update previous message details
+          previousCreatorId = currentCreatorId;
+          previousMessageDate = currentMessageDate;
+        }
+      });
+
+      console.log(this.messages);
+    }
+  }
+
+
+
+  // sortMessagesByUser() {
+  //   if (this.messages.length > 0) {
+  //     let previousCreatorId = this.messages[0].creatorID;
+  //     let previousMessageDate = new Date(this.messages[0].createdAt).toDateString(); // Get the date string for comparison
+
+  //     this.messages.forEach((message, index) => {
+  //       if (index === 0) {
+  //         // The first message should have previousMessageFromSameUser as false
+  //         this.previousMessageFromSameUser = false;
+  //       } else {
+  //         const currentCreatorId = message.creatorID;
+  //         const currentMessageDate = new Date(message.createdAt).toDateString(); // Convert current message date to date string
+
+  //         if (currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate) {
+  //           // Same user and same day
+  //           this.previousMessageFromSameUser = true;
+  //         } else {
+  //           // Different user or different day
+  //           this.previousMessageFromSameUser = false;
+  //         }
+
+  //         // Update previous variables for the next iteration
+  //         previousCreatorId = currentCreatorId;
+  //         previousMessageDate = currentMessageDate;
+  //       }
+
+  //       console.log(`Message index ${index}, previousMessageFromSameUser: ${this.previousMessageFromSameUser}`);
+  //     });
+  //   }
+  // }
+
+
+  // sortMessagesByUser() {
+
+  //   let previousCreatorId = this.messages[0].creatorID;
+  //   this.messages.forEach((message, index) => {
+  //     if (index === 0) this.previousMessageFromSameUser = false;
+  //     if (index > 0) {
+  //       if (previousCreatorId === message.creatorID) {
+  //         this.previousMessageFromSameUser = true;
+  //       } else {
+  //         this.previousMessageFromSameUser = false
+  //       }
+  //     }
+  //     previousCreatorId = message.creatorID;
+  //     console.log(this, index)
+  //   })
+  // }
 
 
   sortMessageReaction() {
@@ -54,7 +144,7 @@ export class MessageComponent implements OnInit {
   }
 
 
-  checkForMessageReactions(){
+  checkForMessageReactions() {
     if (this.messageData.emojies.length > 0) this.hasReaction = true;
     else this.hasReaction = false;
   }

@@ -5,7 +5,7 @@
 
     @for (message of messages; track $index) {
     @if(date.getDate() == message.createdAt.getDate()){
-    <app-message [messageWriter]="message.creatorID" [messageData]="message"></app-message>
+    <app-message [messages]="messages" [messageWriter]="message.creatorID" [messageData]="message"></app-message>
     }
     }
     }
