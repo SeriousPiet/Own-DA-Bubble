@@ -12,6 +12,8 @@ export class Message {
   readonly createdAt: Date;
   readonly answerable: boolean;
 
+  readonly previousMessageFromSameUser: boolean;
+
   private _content: string;
   get content(): string { return this._content; }
 
@@ -46,6 +48,7 @@ export class Message {
     this._lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : new Date();
     this._edited = data.edited ? data.edited : false;
     this._editedAt = data.editedAt ? (data.editedAt as Timestamp).toDate() : undefined;
+    this.previousMessageFromSameUser = data.previousMessageFromSameUser ? data.previousMessageFromSameUser : false;
   }
 
 
