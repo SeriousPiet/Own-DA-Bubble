@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { UsersService } from '../../utils/services/user.service';
-import { RouterLink, RouterModule, Router } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,8 +16,9 @@ import { CommonModule } from '@angular/common';
 })
 export class ChooesavatarComponent {
 
+  @Output() clickSuccess = new EventEmitter<void>();
+
   public userservice = inject(UsersService);
-  private router = inject(Router);
   private defaultAvatarPath: string = '../../../assets/icons/start/profile-big.svg';
   private avatarPath: string = '../../../assets/icons/start/choose-avatar/';
 
@@ -26,6 +27,7 @@ export class ChooesavatarComponent {
   public pictureFile: any;
   public picturePropertysError: string = '';
   public uploading: boolean = false;
+  public changedAvatar: boolean = false;
 
   avatarList = [
     { id: 0, img_name: this.defaultAvatarPath },
@@ -38,18 +40,25 @@ export class ChooesavatarComponent {
   ]
 
   constructor() {
-    this.userservice.changeCurrentUser$.subscribe(() => {
-      if (this.userservice.currentUser?.pictureURL) {
-        this.selectedAvatarPicture = this.userservice.currentUser?.pictureURL;
-      } else {
-        const avatarNumber = this.userservice.currentUser?.avatar || 0;
-        this.selectedAvatarPicture = this.avatarList[avatarNumber].img_name;
-      }
-    });
+    this.undoAvatarChange();
+  }
+
+
+  undoAvatarChange() {
+    this.changedAvatar = false;
+    this.pictureFile = null;
+    this.picturePropertysError = '';
+    if (this.userservice.currentUser?.pictureURL) {
+      this.selectedAvatarPicture = this.userservice.currentUser?.pictureURL;
+    } else {
+      const avatarNumber = this.userservice.currentUser?.avatar || 0;
+      this.selectedAvatarPicture = this.avatarList[avatarNumber].img_name;
+    }
   }
 
   setAvatar(avatar: number) {
     this.pictureFile = null;
+    this.changedAvatar = true;
     this.selectedAvatarNumber = avatar;
     this.selectedAvatarPicture = this.avatarList[avatar].img_name;
   }
@@ -69,12 +78,10 @@ export class ChooesavatarComponent {
       this.picturePropertysError = '';
       const file = event.target.files[0];
       if (!this.validateFilePropertys(file)) return;
+      this.changedAvatar = true;
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.selectedAvatarPicture = e.target.result;
-      };
+      reader.onload = (e: any) => { this.selectedAvatarPicture = e.target.result; };
       reader.readAsDataURL(file);
-      console.log('filesize: ', file.size);
       this.pictureFile = file;
     }
   }
@@ -82,11 +89,11 @@ export class ChooesavatarComponent {
 
   private validateFilePropertys(file: any): boolean {
     if (file.size > 500000) {
-      this.picturePropertysError = 'Datei ist zu groß';
+      this.picturePropertysError = 'Datei ist zu groß (max. 500 KB)';
       return false;
     }
     if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
-      this.picturePropertysError = 'Datei ist kein PNG oder JPEG';
+      this.picturePropertysError = 'Bitte nur PNG oder JPEG';
       return false;
     }
     return true;
@@ -104,10 +111,16 @@ export class ChooesavatarComponent {
 
 
   async submitChooseAvatar(event: Event) {
-    event.preventDefault();
-    if (this.pictureFile) await this.setAvatarPictureURLtoFirestore(this.pictureFile);
-    else await this.userservice.updateCurrentUserDataOnFirestore({ avatar: this.selectedAvatarNumber, pictureURL: '' });
-    this.router.navigate(['/chatcontent']);
+    try {
+      event.preventDefault();
+      if (this.changedAvatar) {
+        if (this.pictureFile) await this.setAvatarPictureURLtoFirestore(this.pictureFile);
+        else await this.userservice.updateCurrentUserDataOnFirestore({ avatar: this.selectedAvatarNumber, pictureURL: '' });
+      }
+      this.clickSuccess.emit();
+    } catch (error) {
+      console.error('Error submitting choose avatar:', error);
+    }
   }
 
 }

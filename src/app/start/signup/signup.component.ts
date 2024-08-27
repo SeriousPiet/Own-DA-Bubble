@@ -50,17 +50,22 @@ export class SignupComponent {
     event.preventDefault();
     this.clearAllErrorSpans();
     this.loggingIn = true;
+    this.signupForm.disable();
     const name = this.signupForm.value.name || '';
     const email = this.signupForm.value.email || '';
     const password = this.signupForm.value.password || '';
     const error = await this.userservice.registerNewUser(name, email, password);
     this.loggingIn = false;
+    this.signupForm.enable();
     if (error) this.handleSignupErrors(error);
     else this.handleSignupSuccess();
   }
 
-  // this.router.navigate(['/chooseavatar']);
-  // show chooseavatar component
+
+  successChooseAvatar() {
+    this.router.navigate(['/chatcontent']);
+  }
+
 
   handleSignupSuccess() {
     this.showChooseAvatarMask = true;
@@ -72,6 +77,7 @@ export class SignupComponent {
       this.errorEmailExists = 'Diese E-Mail-Adresse ist bereits vergeben.';
     }
   }
+
 
   clearAllErrorSpans() {
     this.errorEmailExists = '';

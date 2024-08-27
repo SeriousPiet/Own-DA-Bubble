@@ -1,7 +1,6 @@
 <section>
-    <button (click)="showChooseAvatarMask = !showChooseAvatarMask">chooseavatar toggle</button>
     @if(showChooseAvatarMask) {
-    <app-chooseavatar></app-chooseavatar>
+    <app-chooseavatar (clickSuccess)="successChooseAvatar()"></app-chooseavatar>
     }
     @else {
     <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)">
@@ -20,7 +19,7 @@
             }
         </div>
         <div class="input-box pw">
-            <input formControlName="password" type="text" placeholder="password" minlength="6" max="20">
+            <input formControlName="password" type="password" placeholder="password" minlength="6" max="20">
         </div>
         <div>
             <label class="check-pp">
@@ -29,6 +28,9 @@
             </label>
         </div>
         <div class="action">
+            @if(loggingIn) {
+            <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
+            }
             <button [disabled]="signupForm.invalid" type="submit" class="blue-btn">Weiter</button>
         </div>
     </form>

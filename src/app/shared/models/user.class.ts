@@ -36,7 +36,7 @@ export class User {
         this._email = userObj.email ? userObj.email : '';
         this._avatar = userObj.avatar ? userObj.avatar : 1;
         this._online = userObj.online ? userObj.online : false;
-        this.createdAt = userObj.createdAt ? (userObj.createdAt as any).toDate() : serverTimestamp();
+        this.createdAt = userObj.createdAt ? (userObj.createdAt as any).toDate() : new Date();
         this._pictureURL = userObj.pictureURL ? userObj.pictureURL : undefined;
         this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
         this._ifCurrentUser = currentUser;
