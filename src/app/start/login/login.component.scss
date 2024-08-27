@@ -1,43 +1,45 @@
 @import "../../../styles.scss";
 @import "../../../mixins.scss";
 
-.debug-btn {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-}
-
-.signup-btn {
-    position: absolute;
-    top: 4rem;
-    right: 4rem;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-end;
-    gap: 1rem;
-
-    span {
-        padding-right: 1.5rem;
-        @include nunito(1.2, 400);
-    }
-
-    button {
-        @include buttonNoBg;
-    }
-}
 
 section {
+    position: relative;
     width: 100%;
     max-width: 1920px;
     height: 100vh;
     padding: 1.5rem 1.25rem 1.25rem;
     background-color: $background;
-
+    
     display: flex;
     justify-content: center;
     align-items: center;
+    
+    .debug-btn {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+    }
+    
+    .signup-btn {
+        position: absolute;
+        top: 4rem;
+        right: 4rem;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-end;
+        gap: 1rem;
+
+        span {
+            padding-right: 1.5rem;
+            @include nunito(1.2, 400);
+        }
+
+        button {
+            @include buttonNoBg;
+        }
+    }
 
     form {
         padding: 2rem;
