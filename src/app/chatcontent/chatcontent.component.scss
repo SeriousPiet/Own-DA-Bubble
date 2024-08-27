@@ -83,20 +83,6 @@ section.chatcontent {
   transition: $transition-standard;
 }
 
-.add-channel {
-  width: 54.5rem;
-  height: 33.6875rem;
-  padding: 1rem;
-  border-radius: 1rem;
-  background-color: #fff;
-  border: 0.0625rem;
-  box-shadow: 0rem 0.375rem 0.625rem rgba(0, 0, 0, 0.2);
-}
-
-.addchannel::backdrop {
-  background: #00000066;
-}
-
 .hide_show_wsm {
   position: absolute;
   z-index: 2;

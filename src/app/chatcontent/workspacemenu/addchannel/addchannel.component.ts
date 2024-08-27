@@ -1,24 +1,45 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../../utils/services/user.service';
 import { ChannelService } from '../../../utils/services/channel.service';
-import { Channel } from '../../../shared/models/channel.class';
 
 @Component({
   selector: 'app-addchannel',
   standalone: true,
-  imports: [RouterModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './addchannel.component.html',
   styleUrl: './addchannel.component.scss',
 })
 export class AddchannelComponent {
+  addChannelId: HTMLElement | null = null;
+
+  ngAfterViewInit() {
+    this.addChannelId = document.getElementById('addChannelId');
+  }
+
+  addChannel = true;
+  addUserToChannel = false;
+  isUserSearchSelected = false;
   public channelservice = inject(ChannelService);
   public userservice = inject(UsersService);
-  public currentChannel: Channel | undefined = undefined;
-  public currentMessagesPath: string | undefined = undefined;
   public name: string = '';
   public description: string = '';
+
+  toggleAddChannel() {
+    this.addChannel = !this.addChannel;
+    if (this.addUserToChannel) {
+      this.addChannelId?.hidePopover();
+      this.resetAddChannel();
+    }
+    this.addUserToChannel = !this.addUserToChannel;
+  }
+
+  resetAddChannel() {
+    this.name = '';
+    this.description = '';
+  }
 
   addNewChannel() {
     if (this.name !== '') {
@@ -28,10 +49,5 @@ export class AddchannelComponent {
         this.userservice.getAllUserIDs()
       );
     }
-  }
-
-  setCurrentChannel(newChannel: Channel) {
-    this.currentChannel = newChannel;
-    this.currentMessagesPath = newChannel.channelMessagesPath;
   }
 }

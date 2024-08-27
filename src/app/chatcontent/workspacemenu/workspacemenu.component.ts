@@ -7,12 +7,12 @@ import { User } from '../../shared/models/user.class';
 import { ChannelService } from '../../utils/services/channel.service';
 import { Channel } from '../../shared/models/channel.class';
 import { NavigationService } from '../../utils/services/navigation.service';
-import { user } from '@angular/fire/auth';
+import { AddchannelComponent } from './addchannel/addchannel.component';
 
 @Component({
   selector: 'app-workspacemenu',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, AddchannelComponent],
   templateUrl: './workspacemenu.component.html',
   styleUrl: './workspacemenu.component.scss',
 })

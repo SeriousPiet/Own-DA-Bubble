@@ -3,8 +3,6 @@ import { HeaderComponent } from './header/header.component';
 import { WorkspacemenuComponent } from './workspacemenu/workspacemenu.component';
 import { ChatviewComponent } from './chatview/chatview.component';
 import { ThreadviewComponent } from './threadview/threadview.component';
-import { AddchannelComponent } from './workspacemenu/addchannel/addchannel.component';
-import { AddUserToChannelComponent } from './workspacemenu/addchannel/add-user-to-channel/add-user-to-channel.component';
 
 @Component({
   selector: 'app-chatcontent',
@@ -15,8 +13,6 @@ import { AddUserToChannelComponent } from './workspacemenu/addchannel/add-user-t
     ChatviewComponent,
     ThreadviewComponent,
     WorkspacemenuComponent,
-    AddchannelComponent,
-    AddUserToChannelComponent,
   ],
   templateUrl: './chatcontent.component.html',
   styleUrl: './chatcontent.component.scss',

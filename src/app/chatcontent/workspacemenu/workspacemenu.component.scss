@@ -103,7 +103,7 @@ section {
       }
     }
 
-    .add-channel {
+    .add-channel-btn {
       all: unset;
       background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
       @include background-properties;
@@ -114,7 +114,7 @@ section {
       border-radius: 1.25rem;
     }
 
-    .add-channel:hover {
+    .add-channel-btn:hover {
       cursor: pointer;
       background-image: url("../../../assets/icons/wsm/add-channel-1-hover.svg");
       background-color: #eceefe;
