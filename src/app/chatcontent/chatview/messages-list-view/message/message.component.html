@@ -2,8 +2,9 @@
     'message-from-user': messagefromUser, 
     'editor-modus-bg-color':messageEditorModus, 
     'message-from-same-user': messageData.previousMessageFromSameUser}">
-    <div class="message-creator-avatar">
-        <img src="assets/icons/start/choose-avatar/choose-avatar-3.svg" alt="">
+    <div class="message-avatar-ctn">
+        <div appAvatar context="thread-message" [user]="getMessageCreatorObject()!" class="message-creator-avatar"></div>
+        <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
     </div>
     @if (!messageEditorModus) {
     <section>
@@ -37,7 +38,7 @@
             </div>
             }
             @if(updatedMessage.edited){
-            <span> Bearbeitet at {{ getFormatedMessageTime(messageData.editedAt) }}</span>
+            <span>(Bearbeitet)</span>
             }
         </div>
     </section>
