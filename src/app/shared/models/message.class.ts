@@ -12,7 +12,7 @@ export class Message {
   readonly createdAt: Date;
   readonly answerable: boolean;
 
-  readonly previousMessageFromSameUser: boolean;
+  public previousMessageFromSameUser: boolean;
 
   private _content: string;
   get content(): string { return this._content; }

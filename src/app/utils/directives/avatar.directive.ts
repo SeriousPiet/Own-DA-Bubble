@@ -269,24 +269,24 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
       case 'chat-message':
         return {
-          imgSize: '2.5rem',
+          imgSize: '4.375rem',
           statusSize: '0.675rem',
           imgBorderColor: 'transparent',
           pseudoBorderColor: '#fff',
           pseudoBackgroundColor: 'offline',
           hoverPseudoBorderColor: '#eceefe',
-          showStatusIndicator: true,
+          showStatusIndicator: false,
         };
 
       case 'thread-message':
         return {
-          imgSize: '2.5rem',
+          imgSize: '4.375rem',
           statusSize: '0.675rem',
           imgBorderColor: 'transparent',
           pseudoBorderColor: '#fff',
           pseudoBackgroundColor: 'offline',
           hoverPseudoBorderColor: '#eceefe',
-          showStatusIndicator: true,
+          showStatusIndicator: false,
         };
       default:
         return {

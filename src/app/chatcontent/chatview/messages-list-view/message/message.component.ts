@@ -6,11 +6,13 @@ import { MessageService } from '../../../../utils/services/message.service';
 import { UsersService } from '../../../../utils/services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
+import { User } from '../../../../shared/models/user.class';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AvatarDirective],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
@@ -27,8 +29,8 @@ export class MessageComponent implements OnInit {
   }
   @Input() messages: Message[] = [];
 
-  previousMessageFromSameUser = false;
   messagefromUser = false;
+  messageCreator: User | undefined;
   isHovered = false;
   hasReaction = false;
   showEditMessagePopup = false;
@@ -39,23 +41,25 @@ export class MessageComponent implements OnInit {
   message = '';
 
   ngOnInit(): void {
-    console.log(this)
+    console.log(this);
     this.updatedMessage = {
       content: this.messageData.content,
       edited: this.messageData.edited,
       editedAt: this.messageData.editedAt
     };
     this.sortMessageReaction();
-    this.previousMessageFromSameUser = this.messageData.previousMessageFromSameUser;
     this.sortMessagesByUser();
+    this.getMessageCreatorObject();
   }
 
   constructor(private cdr: ChangeDetectorRef) {
   }
 
+  getMessageCreatorObject(){
+    return this.userService.getUserByID(this.messageData.creatorID);
+  }
 
-
-// this function still need to be refactored
+  // this function still need to be refactored
 
   sortMessagesByUser() {
     if (this.messages.length > 0) {
@@ -65,79 +69,30 @@ export class MessageComponent implements OnInit {
       this.messages.forEach((message, index) => {
         if (index === 0) {
           // Die erste Nachricht hat immer `previousMessageFromSameUser` auf `false`
-          this.previousMessageFromSameUser = false;
+          message.previousMessageFromSameUser = false;
         } else {
           const currentCreatorId = message.creatorID;
           const currentMessageDate = new Date(message.createdAt).toDateString();
 
           // Überprüfen, ob der Ersteller und das Datum gleich sind
           if (currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate) {
-            this.previousMessageFromSameUser = true;
+            message.previousMessageFromSameUser = true;
           } else {
-            this.previousMessageFromSameUser = false;
+            message.previousMessageFromSameUser = false;
           }
 
           // Update previous message details
           previousCreatorId = currentCreatorId;
           previousMessageDate = currentMessageDate;
         }
+
+        console.log(`Message index ${index}, previousMessageFromSameUser: ${message.previousMessageFromSameUser}`)
+
       });
 
       console.log(this.messages);
     }
   }
-
-
-
-  // sortMessagesByUser() {
-  //   if (this.messages.length > 0) {
-  //     let previousCreatorId = this.messages[0].creatorID;
-  //     let previousMessageDate = new Date(this.messages[0].createdAt).toDateString(); // Get the date string for comparison
-
-  //     this.messages.forEach((message, index) => {
-  //       if (index === 0) {
-  //         // The first message should have previousMessageFromSameUser as false
-  //         this.previousMessageFromSameUser = false;
-  //       } else {
-  //         const currentCreatorId = message.creatorID;
-  //         const currentMessageDate = new Date(message.createdAt).toDateString(); // Convert current message date to date string
-
-  //         if (currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate) {
-  //           // Same user and same day
-  //           this.previousMessageFromSameUser = true;
-  //         } else {
-  //           // Different user or different day
-  //           this.previousMessageFromSameUser = false;
-  //         }
-
-  //         // Update previous variables for the next iteration
-  //         previousCreatorId = currentCreatorId;
-  //         previousMessageDate = currentMessageDate;
-  //       }
-
-  //       console.log(`Message index ${index}, previousMessageFromSameUser: ${this.previousMessageFromSameUser}`);
-  //     });
-  //   }
-  // }
-
-
-  // sortMessagesByUser() {
-
-  //   let previousCreatorId = this.messages[0].creatorID;
-  //   this.messages.forEach((message, index) => {
-  //     if (index === 0) this.previousMessageFromSameUser = false;
-  //     if (index > 0) {
-  //       if (previousCreatorId === message.creatorID) {
-  //         this.previousMessageFromSameUser = true;
-  //       } else {
-  //         this.previousMessageFromSameUser = false
-  //       }
-  //     }
-  //     previousCreatorId = message.creatorID;
-  //     console.log(this, index)
-  //   })
-  // }
-
 
   sortMessageReaction() {
     if (this.messageData.emojies.length > 0) this.hasReaction = true;
