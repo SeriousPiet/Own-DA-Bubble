@@ -23,7 +23,7 @@ export class MessageTextareaComponent {
   @Input() newMessagePath: string = '';
 
   addNewMessage(newMessagePath:string, message:string){
-    this.messageService.addNewMessageToPath(newMessagePath, message );
+    if (message) this.messageService.addNewMessageToPath(newMessagePath, message );
     this.message = '';
   }
 }
