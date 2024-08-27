@@ -71,8 +71,16 @@ section.chatcontent {
   box-shadow: $profile-box-shadow;
   transition: $transition-standard;
 
-  div {
+  .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-close.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .wsm-open {
+    background-image: url("../../assets/icons/wsm/wsm-close-hover.svg");
     background-repeat: no-repeat;
     background-position: center;
     width: 1.5rem;
@@ -90,8 +98,11 @@ section.chatcontent {
 
 .hide_show_wsm:hover {
   cursor: pointer;
-  div {
+  .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-open.svg");
+  }
+  .wsm-open {
+    background-image: url("../../assets/icons/wsm/wsm-open-hover.svg");
   }
 }
 
