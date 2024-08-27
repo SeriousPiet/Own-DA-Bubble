@@ -217,28 +217,29 @@ section {
       );
       width: auto;
       aspect-ratio: 1 / 1;
-    // &:hover .avatar::after {
-    //   border-color: $background;
-    // }
+      &:hover .avatar::after {
+        border-color: $background;
+      }
 
-    // .avatar {
-    //   @include flex(center, center);
-    //   @include avatarStatusThumbnail(
-    //     $status: $online,
-    //     $img_size: 2.5rem,
-    //     $status_size: 0.675rem,
-    //     $border_color: #fff
-    //   );
-    //   width: auto;
-    //   aspect-ratio: 1 / 1;
+      .avatar {
+        @include flex(center, center);
+        @include avatarStatusThumbnail(
+          $status: $online,
+          $img_size: 2.5rem,
+          $status_size: 0.675rem,
+          $border_color: #fff
+        );
+        width: auto;
+        aspect-ratio: 1 / 1;
 
-    //   img {
-    //     width: 100%;
-    //     height: 100%;
-    //     border-radius: 50%;
+        img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
 
-    //     object-fit: cover;
-    //   }
-    // }
+          object-fit: cover;
+        }
+      }
+    }
   }
 }

@@ -8,6 +8,7 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { Channel } from '../../shared/models/channel.class';
 import { NavigationService } from '../../utils/services/navigation.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
+import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/addchannel.component';
 
 @Component({
   selector: 'app-workspacemenu',
@@ -18,6 +19,7 @@ import { AvatarDirective } from '../../utils/directives/avatar.directive';
     FormsModule,
     ReactiveFormsModule,
     AvatarDirective,
+    AddchannelComponent,
   ],
   templateUrl: './workspacemenu.component.html',
   styleUrl: './workspacemenu.component.scss',

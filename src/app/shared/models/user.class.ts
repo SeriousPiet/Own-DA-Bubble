@@ -33,8 +33,6 @@ export class User {
     return this._online;
   }
 
-  readonly createdAt: Date;
-
   private _chatIDs: string[] = [];
   get chatIDs(): string[] {
     return this._chatIDs;
