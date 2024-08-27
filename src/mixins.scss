@@ -1,11 +1,9 @@
 @import "./styles.scss";
 @import "./fonts.scss";
 
-$iconFilterGrey: invert(37%) sepia(0%) saturate(270%) hue-rotate(151deg)
-  brightness(106%) contrast(84%);
+$iconFilterGrey: invert(37%) sepia(0%) saturate(270%) hue-rotate(151deg) brightness(106%) contrast(84%);
 
-$iconFilterPurple: invert(24%) sepia(40%) saturate(5509%) hue-rotate(238deg)
-  brightness(91%) contrast(107%);
+$iconFilterPurple: invert(24%) sepia(40%) saturate(5509%) hue-rotate(238deg) brightness(91%) contrast(107%);
 
 $online: #92c83e;
 $offline: $disabled;
@@ -16,13 +14,11 @@ $offline: $disabled;
   align-items: $a_item;
 }
 
-@mixin inputBox(
-  $width: auto,
+@mixin inputBox($width: auto,
   $defBorderColor: transparent,
   $hoverBorderColor: $disabled,
   $focWiBorderColor: $secondary,
-  $includeBefore: true
-) {
+  $includeBefore: true) {
   position: relative;
   display: flex;
   align-items: center;
@@ -63,7 +59,7 @@ $offline: $disabled;
     }
 
     &:focus-within::before,
-    input:not(:placeholder-shown) + &::before,
+    input:not(:placeholder-shown)+&::before,
     &:has(input:not(:placeholder-shown))::before {
       filter: none;
     }
@@ -131,9 +127,11 @@ $offline: $disabled;
   &:hover {
     background-color: $primary;
   }
+
   &:active {
     background-color: $accent;
   }
+
   &:disabled {
     background-color: $disabled;
   }
@@ -150,10 +148,12 @@ $offline: $disabled;
     border-color: $primary;
     color: #fff;
   }
+
   &:active {
     background-color: $accent;
     border-color: $accent;
   }
+
   &:disabled {
     background-color: unset;
     border-color: $disabled;
@@ -171,6 +171,7 @@ $offline: $disabled;
     color: $accent;
     border: 1px solid $primary;
   }
+
   &:active {
     border: 1px solid $accent;
   }
@@ -188,6 +189,7 @@ $offline: $disabled;
     background-color: $background;
     font-weight: 700;
   }
+
   &:active {
     border: 1px solid $accent;
   }
@@ -208,6 +210,7 @@ $offline: $disabled;
     font-weight: 500;
     border-color: $accent;
   }
+
   &:active {
     font-weight: 700;
   }
@@ -286,12 +289,10 @@ $offline: $disabled;
   }
 }
 
-@mixin avatarStatusThumbnail(
-  $status: $online,
+@mixin avatarStatusThumbnail($status: $online,
   $img_size: 3rem,
   $status_size: 0.75rem,
-  $border_color: #fff
-) {
+  $border_color: #fff) {
   position: relative;
   width: $img_size;
   height: $img_size;
@@ -321,6 +322,13 @@ $offline: $disabled;
 }
 
 // ########## FONT-STYLING
+
+@mixin nunito($size: 1, $weight: 700, $color: black) {
+  font-family: Nunito, sans-serif;
+  font-size: $size + rem;
+  font-weight: $weight;
+  color: $color;
+}
 
 @mixin fontSizer($size: 18, $weight: 700, $color: black) {
   $class-name: "nunito-#{$size}-#{$weight}";

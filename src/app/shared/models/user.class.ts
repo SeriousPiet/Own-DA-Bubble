@@ -1,7 +1,17 @@
 import { serverTimestamp } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
 
 export class User {
+  private changeUser = new BehaviorSubject<User | null>(null);
+  public changeUser$ = this.changeUser.asObservable();
+
   readonly id: string;
+  readonly createdAt: Date;
+
+  private _pictureURL: string | undefined;
+  get pictureURL(): string | undefined {
+    return this._pictureURL;
+  }
 
   private _name: string;
   get name(): string {
@@ -35,9 +45,8 @@ export class User {
     return this._ifCurrentUser;
   }
 
-  constructor(userObj: any, userID?: string, currentUser: boolean = false) {
-    if (userID) this.id = userID;
-    else this.id = userObj.id ? userObj.id : '';
+  constructor(userObj: any, userID: string, currentUser: boolean = false) {
+    this.id = userID;
     this._name = userObj.name ? userObj.name : '';
     this._email = userObj.email ? userObj.email : '';
     this._avatar = userObj.avatar ? userObj.avatar : 1;
@@ -45,6 +54,7 @@ export class User {
     this.createdAt = userObj.createdAt
       ? (userObj.createdAt as any).toDate()
       : serverTimestamp();
+    this._pictureURL = userObj.pictureURL ? userObj.pictureURL : undefined;
     this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
     this._ifCurrentUser = currentUser;
   }
@@ -53,7 +63,9 @@ export class User {
     if (data.name) this._name = data.name;
     if (data.email) this._email = data.email;
     if (data.avatar) this._avatar = data.avatar;
-    if (data.online) this._online = data.online;
+    if (data.online !== undefined) this._online = data.online;
     if (data.chatIDs) this._chatIDs = data.chatIDs;
+    if (data.pictureURL) this._pictureURL = data.pictureURL;
+    this.changeUser.next(this);
   }
 }

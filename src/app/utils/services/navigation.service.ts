@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Message } from '../../shared/models/message.class';
 import { BehaviorSubject } from 'rxjs';
 import { UsersService } from './user.service';
+import { User } from '../../shared/models/user.class';
+import { ChannelService } from './channel.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,13 +14,12 @@ import { UsersService } from './user.service';
  * NavigationService class provides methods and properties for managing navigation within the application.
  */
 export class NavigationService {
-  public defaultChannel: Channel = new Channel({
-    name: 'Willkommen',
-    description: 'Defaultchannel',
-    defaultChannel: true,
-  });
+  /**
+   * The user service for handling user-related operations.
+   */
+  private userService: UsersService = inject(UsersService);
 
-  constructor(private userService: UsersService) {}
+  private channelService: ChannelService = inject(ChannelService);
 
   /**
    * Observable that emits whenever a change occurs.
@@ -32,8 +33,9 @@ export class NavigationService {
    */
   private _chatViewObject: Channel | Chat | undefined;
   get chatViewObject(): Channel | Chat {
-    if (this._chatViewObject) return this._chatViewObject;
-    else return this.defaultChannel;
+    if (this._chatViewObject === undefined)
+      return this.channelService.defaultChannel;
+    else return this._chatViewObject;
   }
   private _chatViewPath: string | undefined;
   get chatViewPath(): string | undefined {
@@ -61,21 +63,28 @@ export class NavigationService {
    * @param object - The object to set as the main message object.
    * @returns void
    */
-  setChatViewObject(object: Channel | Chat): void {
-    this._chatViewObject = object;
+  async setChatViewObject(object: Channel | User): Promise<void> {
     if (object instanceof Channel) {
-      this._chatViewPath = object.channelMessagesPath;
+      this._chatViewObject = object;
+      this._chatViewPath =
+        object.channelMessagesPath == ''
+          ? undefined
+          : object.channelMessagesPath;
       console.warn(
         'Navigationservice: setChatViewObject: Channel ' + object.name
       );
     } else {
-      this._chatViewPath = object.chatMessagesPath;
-      console.warn(
-        'Navigationservice: setChatViewObject: Chat ' + object.memberIDs
-      );
+      const chat = await this.userService.getChatWithUserByID(object.id);
+      if (chat) {
+        this._chatViewObject = chat;
+        this._chatViewPath = chat.chatMessagesPath;
+        console.warn(
+          'Navigationservice: setChatViewObject: Chat with ' + object.name
+        );
+      }
     }
     this.clearThread();
-    this.changeSubject.next('mainMessageList');
+    this.changeSubject.next('chatViewObjectSet');
   }
 
   /**
@@ -126,11 +135,25 @@ export class NavigationService {
   getSearchContext(): string {
     if (this.chatViewObject instanceof Chat) {
       const chatPartner = this.getChatPartnerName();
-      return chatPartner ? `in:@${chatPartner}` : '';
+
+      if (chatPartner) {
+        return `in:@${chatPartner}`;
+      } else if (this.isSelfChat()) {
+        return `in:@${this.userService.currentUser?.name}`;
+      }
     } else if (this.chatViewObject instanceof Channel) {
       return `in:#${this.chatViewObject.name}`;
     }
     return '';
+  }
+
+  private isSelfChat(): boolean {
+    if (this.chatViewObject instanceof Chat && this.userService.currentUser) {
+      return this.chatViewObject.memberIDs.every(
+        (id) => id === this.userService.currentUser?.id
+      );
+    }
+    return false;
   }
 
   private getChatPartnerName(): string | undefined {

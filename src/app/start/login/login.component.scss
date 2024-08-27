@@ -9,16 +9,35 @@
 
 .signup-btn {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 4rem;
+    right: 4rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 1rem;
+
+    span {
+        padding-right: 1.5rem;
+        @include nunito(1.2, 400);
+    }
+
+    button {
+        @include buttonNoBg;
+    }
 }
 
 section {
+    width: 100%;
+    max-width: 1920px;
+    height: 100vh;
+    padding: 1.5rem 1.25rem 1.25rem;
+    background-color: $background;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100dvh;
-    width: 100%;
 
     form {
         padding: 2rem;
@@ -26,7 +45,7 @@ section {
         flex-direction: column;
         justify-content: flex-start;
         align-items: stretch;
-        gap: 1rem;
+        gap: 2rem;
         height: fit-content;
         width: fit-content;
         max-width: 38rem;
@@ -41,6 +60,13 @@ section {
             input {
                 position: relative;
                 @include input;
+            }
+
+            .errorspan {
+                @include nunito(0.8, 400, #ED1E79);
+                position: absolute;
+                bottom: -1.2rem;
+                left: 0;
             }
         }
 
@@ -65,20 +91,27 @@ section {
         }
 
         .password-missed {
-            align-self: center;
-            padding: 0.3rem;
-            border-radius: 5000px;
-            height: 1rem;
-            color: #797EF3;
-
-            &:hover {
-                color: #444DF2;
-                background-color: #ECEEFE;
+            button {
+                @include buttonNoBorder;
             }
+
+            align-self: center;
         }
 
         .or-separator {
-            align-self: center;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            span {
+                @include nunito(1.2, 400);
+            }
+
+            >div {
+                height: 1px;
+                background-color: $vert-spacer;
+                flex-grow: 1;
+            }
         }
 
         .login-with-google {
@@ -93,10 +126,16 @@ section {
             justify-content: space-between;
             align-items: center;
             width: 80%;
-            gap: 1rem;
+
+            img {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+
         }
 
         .blue-btn {
+            display: flex;
             @include buttonFull;
 
             &:disabled {

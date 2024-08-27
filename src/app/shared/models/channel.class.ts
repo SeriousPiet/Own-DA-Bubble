@@ -1,17 +1,25 @@
-import { Timestamp } from "@angular/fire/firestore";
+import { Timestamp } from '@angular/fire/firestore';
 
 export class Channel {
-
   readonly id: string;
   private _name: string;
-  get name(): string { return this._name; }
+  get name(): string {
+    return this._name;
+  }
 
   private _description: string;
-  get description(): string { return this._description; }
+  get description(): string {
+    return this._description;
+  }
 
-  private _members: string[]; // User ids
-  get members(): string[] { return this._members; }
-
+  private _memberIDs: string[]; // User ids
+  get members(): string[] {
+    return this._memberIDs;
+  }
+  // for compatibility with the old code
+  get memberIDs(): string[] {
+    return this._memberIDs;
+  }
 
   readonly createdAt: Date;
   readonly creatorID: string; // User id
@@ -26,15 +34,17 @@ export class Channel {
     this.id = channelID;
     this._name = data.name ? data.name : 'New Channel';
     this._description = data.description ? data.description : '';
-    this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
+    this.createdAt = data.createdAt
+      ? (data.createdAt as Timestamp).toDate()
+      : new Date();
     this.creatorID = data.creatorID ? data.creatorID : '';
-    this._members = data.members ? data.members : [];
+    this._memberIDs = data.memberIDs ? data.memberIDs : [];
     this.defaultChannel = data.defaultChannel ? data.defaultChannel : false;
   }
 
   update(data: any) {
     if (data.name) this._name = data.name;
     if (data.description) this._description = data.description;
-    if (data.members) this._members = data.members;
+    if (data.memberIDs) this._memberIDs = data.memberIDs;
   }
 }

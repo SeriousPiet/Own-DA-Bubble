@@ -1,18 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { User } from '../../shared/models/user.class';
 import { ChannelService } from '../../utils/services/channel.service';
 import { Channel } from '../../shared/models/channel.class';
 import { NavigationService } from '../../utils/services/navigation.service';
-import { AddchannelComponent } from './addchannel/addchannel.component';
+import { AvatarDirective } from '../../utils/directives/avatar.directive';
 
 @Component({
   selector: 'app-workspacemenu',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, AddchannelComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AvatarDirective,
+  ],
   templateUrl: './workspacemenu.component.html',
   styleUrl: './workspacemenu.component.scss',
 })

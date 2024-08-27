@@ -1,20 +1,27 @@
-<section class="chatcontent">
+<section
+  class="chatcontent"
+  [ngClass]="!isWorkspaceMenuVisible ? 'menu-hidden' : ''"
+>
   <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
     <div class="wsm-close"></div>
     <span class="nunito-20-500"
       >Workspace-Menü
       {{ isWorkspaceMenuVisible ? "öffnen" : "schließen" }}</span
     >
+    >>>>>>>>> Temporary merge branch 2
   </button>
 
   <div class="top-bar">
     <app-header />
   </div>
-  <div class="workspace-menu">
+  <div
+    class="workspace-menu"
+    [@slideInOut]="isWorkspaceMenuVisible ? 'visible' : 'hidden'"
+  >
     <app-workspacemenu />
   </div>
   <div class="chatview">
-    <app-chatview />
+    <app-chatview [currentChannel]="navigationService.chatViewObject" />
   </div>
   <div class="threadview">
     <app-threadview />

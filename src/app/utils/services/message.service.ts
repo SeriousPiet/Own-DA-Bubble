@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { addDoc, collection, doc, Firestore, serverTimestamp, updateDoc } from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, getDoc, getDocs, serverTimestamp, updateDoc } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
-import { Message } from '../../shared/models/message.class';
-import { Channel } from '../../shared/models/channel.class';
+import { IReactions, Message } from '../../shared/models/message.class';
 
 @Injectable({
   providedIn: 'root'
@@ -15,41 +14,32 @@ export class MessageService {
   constructor() { }
 
 
-  private addNewMessageToChannel(channel: Channel, messageContent: string) {
-    const channelMessagesRef = collection(this.firestore, channel.channelMessagesPath);
-    if (!channelMessagesRef) throw new Error('MessageService: addNewMessageToChannel: path "channels/' + channel.id + '/messages/" is undefined');
-    addDoc(channelMessagesRef, this.createNewMessageObject(messageContent, true))
-      .then(
-        (response) => {
-          const newMessageRef = doc(channelMessagesRef, response.id);
-          updateDoc(newMessageRef, { id: response.id });
-          console.warn('MessageService: addNewMessageToChannel: message added');
-        }
-      )
-  }
-
-
-  addNewMessageToPath(messagePath: string, messageContent: string) {
+  async addNewMessageToPath(messagePath: string, messageContent: string) {
     const messageCollectionRef = collection(this.firestore, messagePath);
     if (!messageCollectionRef) throw new Error('MessageService: addNewMessageToPath: path "' + messagePath + '" is undefined');
-    addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true))
-      .then(
-        (response) => {
-          const newMessageRef = doc(messageCollectionRef, response.id);
-          updateDoc(newMessageRef, { id: response.id });
-          console.warn('MessageService: addNewMessageToPath: message added');
-        }
-      )
+    try {
+      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true));
+      const newMessageRef = doc(messageCollectionRef, response.id);
+      // id is not saved in the document, so we become it when the messages subscribet over onSnapshot
+      // await updateDoc(newMessageRef, { id: response.id });
+      console.warn('MessageService: addNewMessageToPath: message added');
+    } catch (error) {
+      console.error('MessageService: addNewMessageToPath: error adding message', error);
+    }
   }
 
 
-  updateMessage(message: Message, updateData: { content?: string, emojies?: string[] }) {
-    updateDoc(doc(this.firestore, message.messagePath), updateData)
-      .then(
-        () => {
-          console.warn('MessageService: updateMessage: message updated - id: ' + message.id);
-        }
-      );
+  async updateMessage(message: Message, updateData: { content?: string, edited?: boolean, editedAt?: any }) {
+    try {
+      if (updateData.content && updateData.content != message.content) {
+        updateData.edited = true;
+        updateData.editedAt = serverTimestamp();
+      }
+      await updateDoc(doc(this.firestore, message.messagePath), updateData);
+      console.warn('MessageService: updateMessage: message updated - id: ' + message.id);
+    } catch (error) {
+      console.error('MessageService: updateMessage: error updating message', error);
+    }
   }
 
 
@@ -58,26 +48,50 @@ export class MessageService {
   }
 
 
-  addNewAnswerToMessage(message: Message, answerContent: string) {
-    const answerCollectionRef = collection(this.firestore, message.answerPath);
-    if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.answerPath + '" is undefined');
-    addDoc(answerCollectionRef, this.createNewMessageObject(answerContent, false))
-      .then(
-        (response) => {
-          const newMessageRef = doc(answerCollectionRef, response.id);
-          updateDoc(newMessageRef, { id: response.id })
-            .then(
-              () => {
-                updateDoc(doc(this.firestore, message.messagePath), { answerCount: message.answerCount + 1, lastAnswered: serverTimestamp() })
-                  .then(
-                    () => {
-                      console.warn('MessageService: addNewAnswerToMessage: answer added');
-                    },
-                  )
-              }
-            )
+  async addNewAnswerToMessage(message: Message, answerContent: string) {
+    try {
+      const answerCollectionRef = collection(this.firestore, message.answerPath);
+      if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.answerPath + '" is undefined');
+      const response = await addDoc(answerCollectionRef, this.createNewMessageObject(answerContent, false));
+      // id is not saved in the document, so we become it when the messages subscribet over onSnapshot
+      // await updateDoc(doc(answerCollectionRef, response.id), { id: response.id });
+      const answerQuerySnapshot = await getDocs(answerCollectionRef);
+      await updateDoc(doc(this.firestore, message.messagePath), { answerCount: answerQuerySnapshot.size, lastAnswered: serverTimestamp() });
+      console.warn('MessageService: addNewAnswerToMessage: answer added');
+    } catch (error) {
+      console.error('MessageService: addNewAnswerToMessage: error adding answer', error);
+    }
+  }
+
+
+  async toggleReactionToMessage(message: Message, reaction: string) {
+    try {
+      const newReactionArray = this.getModifiedReactionArray(message.emojies, reaction);
+      await updateDoc(doc(this.firestore, message.messagePath), { emojies: newReactionArray });
+      console.warn('MessageService: toggleReactionToMessage: reaction toggled');
+    } catch (error) {
+      console.error('MessageService: toggleReactionToMessage: error toggling reaction', error);
+    }
+  }
+
+
+  private getModifiedReactionArray(reactionsArray: IReactions[], reaction: string) {
+    const currentUserID = this.userservice.currentUser?.id ? this.userservice.currentUser.id : '';
+    let currentReaction = reactionsArray.find(emoji => emoji.type === reaction);
+    if (currentReaction) {
+      if (currentReaction.userIDs.includes(currentUserID)) {
+        currentReaction.userIDs = currentReaction.userIDs.filter(userID => userID !== currentUserID);
+        if (currentReaction.userIDs.length == 0) {
+          const reactionIndex = reactionsArray.findIndex(currentReaction => currentReaction.type === reaction);
+          reactionsArray.splice(reactionIndex, 1);
         }
-      );
+      }
+      else currentReaction.userIDs.push(currentUserID);
+    }
+    else {
+      reactionsArray.push({ type: reaction, userIDs: [currentUserID] });
+    };
+    return reactionsArray.map(reaction => JSON.stringify(reaction));
   }
 
 

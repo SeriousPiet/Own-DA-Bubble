@@ -47,6 +47,7 @@ export class MessageviewexampleComponent implements OnDestroy {
 
   @Input()
   set messagesPath(value: string | undefined) {
+    console.log('MessageviewexampleComponent: messagesPath: ' + value);
     this.messages = [];
     this.subscribeMessages(value);
   }
@@ -61,7 +62,7 @@ export class MessageviewexampleComponent implements OnDestroy {
       this.unsubMessages = onSnapshot(collection(this.firestore, newPath), (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            let newMessage = new Message(change.doc.data(), newPath);
+            let newMessage = new Message(change.doc.data(), newPath, change.doc.id);
             this.messages.push(newMessage);
           }
           if (change.type === 'modified') {
@@ -76,6 +77,11 @@ export class MessageviewexampleComponent implements OnDestroy {
         this._cdr.detectChanges();
       })
     }
+  }
+
+
+  toggleReaction(message: Message, reaction: string) {
+    this.messageservice.toggleReactionToMessage(message, reaction);
   }
 
 

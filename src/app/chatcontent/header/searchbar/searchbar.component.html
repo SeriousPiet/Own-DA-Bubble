@@ -1,17 +1,4 @@
 <div class="searchbar">
-  <div class="search-blocks">
-    <span *ngIf="getActiveRestrictions().context" class="search-block">
-      {{ getActiveRestrictions().context }}
-      <button (click)="removeContextFromSearch()">x</button>
-    </span>
-    <span
-      *ngFor="let keyword of getActiveRestrictions().keywords"
-      class="search-block"
-    >
-      {{ keyword }}
-      <button (click)="removeKeyword(keyword)">x</button>
-    </span>
-  </div>
   <input
     type="text"
     [(ngModel)]="searchQuery"
@@ -20,46 +7,95 @@
     (blur)="onBlur()"
     placeholder="Search..."
   />
-
-  <div class="dropdown" *ngIf="isDropdownVisible">
-    <div class="context-search" (click)="addContextToSearch()">
-      {{ getCurrentContext() }} suchen
-    </div>
-    <div
-      class="autocomplete-suggestions"
-      *ngIf="(suggestions$ | async)?.length ?? 0 > 0"
-    >
-      <div
-        *ngFor="let suggestion of suggestions$ | async"
-        (click)="selectSuggestion(suggestion)"
-      >
-        {{ suggestion }}
-      </div>
-    </div>
+  <div
+    class="search-blocks"
+    [ngClass]="{ 'context-active': isContextSearchEnabled }"
+  >
+    <span *ngIf="getActiveRestrictions().context" class="search-block-item">
+      {{ getActiveRestrictions().context }}
+      <button class="remove-context" (click)="removeContextFromSearch()">
+        <img src="./assets/icons/modals/close-search-item.svg" alt="" />
+      </button>
+    </span>
   </div>
 
   <div class="dropdown" *ngIf="isDropdownVisible">
     <div
       class="context-search"
-      *ngIf="navigationService.ifMainMessageObjectIsChat()"
+      (click)="enableContextSearch()"
+      *ngIf="!isContextSearchEnabled"
     >
-      <div (click)="addContextToSearch()">{{ getCurrentContext() }}</div>
-
-      <!-- Verwendung von currentContext -->
+      {{ getCurrentContext() }} suchen
     </div>
+
     <div
-      class="context-search"
-      *ngIf="navigationService.ifMainMessageObjectIsChannel()"
+      class="autocomplete-suggestions"
+      *ngIf="(suggestions$ | async)?.length ?? 0 > 0"
     >
-      <div (click)="addContextToSearch()">{{ getCurrentContext() }}</div>
+      <div
+        class="suggestion-item"
+        *ngFor="let suggestion of suggestions$ | async"
+        (click)="selectSuggestion(suggestion)"
+      >
+        <div
+          *ngIf="
+            suggestion.type === 'user' && getUserFromSuggestion(suggestion)
+          "
+          appAvatar
+          [user]="getUserFromSuggestion(suggestion)!"
+          context="search"
+        ></div>
 
-      <!-- Verwendung von currentContext -->
+        {{ suggestion.text }}
+        <span class="item-action" *ngIf="suggestion.type === 'user'">
+          {{ suggestion.hasChat ? "Chat betreten" : "Unterhaltung starten" }}
+        </span>
+        <span class="item-action" *ngIf="suggestion.type === 'channel'">
+          {{
+            getChannelJoinStatus(suggestion.text.slice(1))
+              ? "Channel betreten"
+              : "Channel beitreten"
+          }}
+        </span>
+      </div>
     </div>
+
     <div class="recent-searches">
-      <div class="category-header">Aktuelle Suchanfragen</div>
-      <div *ngFor="let search of recentSearches">
+      <div class="category-header">Aktuelle Suchanfragen:</div>
+      <div
+        class="recent-search-items"
+        *ngFor="let search of recentSearches"
+        (click)="selectRecentSearch(search)"
+      >
+        <img
+          class="search-history-icon"
+          src="./assets/icons/modals/search-history.svg"
+          alt="Search History"
+        />
+
+        <div
+          class="avatar"
+          *ngIf="search.startsWith('@') && getUserFromSuggestion(search)"
+          appAvatar
+          [user]="getUserFromSuggestion(search)!"
+          context="search"
+        ></div>
+
         <span>{{ search }}</span>
-        <button (click)="removeSearchTerm(search)">x</button>
+        <span class="item-action" *ngIf="search.startsWith('@')">
+          {{
+            getUserChatStatus(search.slice(1))
+              ? "Chat betreten"
+              : "Unterhaltung starten"
+          }}
+        </span>
+        <span class="item-action" *ngIf="search.startsWith('#')">
+          {{
+            getChannelJoinStatus(search.slice(1))
+              ? "Channel betreten"
+              : "Channel beitreten"
+          }}
+        </span>
       </div>
     </div>
   </div>

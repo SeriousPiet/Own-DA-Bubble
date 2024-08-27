@@ -1,44 +1,34 @@
-# Message Service
+# MessageService Class API Documentation
 
-The `MessageService` is responsible for managing messages and their interactions in the application.
+## Public Methods
 
-## Dependencies
+### `addNewMessageToPath(messagePath: string, messageContent: string): Promise<void>`
 
-- `@angular/core`: Angular core module
-- `@angular/fire/firestore`: Angular Firestore module
-- `UsersService`: User service module
-- `Message`: Message model class
-- `Channel`: Channel model class
+- **Description:** Adds a new message to the specified Firestore path.
+- **Parameters:**
+  - `messagePath` - The Firestore path where the new message will be added.
+  - `messageContent` - The content of the message.
+- **Returns:** A promise that resolves when the message has been successfully added.
 
-## Class: MessageService
+### `updateMessage(message: Message, updateData: { content?: string, emojies?: string[] }): Promise<void>`
 
-### Methods
+- **Description:** Updates an existing message with new content or emojis.
+- **Parameters:**
+  - `message` - The message object to be updated.
+  - `updateData` - An object containing the new content and/or emojis to be applied to the message.
+- **Returns:** A promise that resolves when the message has been successfully updated.
 
-#### `addNewMessageToChannel(channel: Channel, message: string): void`
+### `ifMessageFromCurrentUser(message: Message): boolean`
 
-Adds a new message to the specified channel.
+- **Description:** Checks if the message was created by the current user.
+- **Parameters:**
+  - `message` - The message object to check.
+- **Returns:** `true` if the message was created by the current user, otherwise `false`.
 
-- `channel`: The channel to add the message to.
-- `message`: The content of the message.
+### `addNewAnswerToMessage(message: Message, answerContent: string): Promise<void>`
 
-Throws an error if the channel path is undefined.
-
-#### `addNewAnswerToMessage(message: Message, answerContent: string): void`
-
-Adds a new answer to the specified message.
-
-- `message`: The message to add the answer to.
-- `answerContent`: The content of the answer.
-
-Throws an error if the answer collection path is undefined.
-
-### Private Methods
-
-#### `createNewMessageObject(messageText: string, answerable: boolean): object`
-
-Creates a new message object.
-
-- `messageText`: The content of the message.
-- `answerable`: Indicates if the message is answerable.
-
-Returns the created message object.
+- **Description:** Adds a new answer to an existing message.
+- **Parameters:**
+  - `message` - The original message to which the answer will be added.
+  - `answerContent` - The content of the answer.
+- **Returns:** A promise that resolves when the answer has been successfully added.

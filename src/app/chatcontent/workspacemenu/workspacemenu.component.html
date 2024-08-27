@@ -51,15 +51,12 @@
         <span class="nunito-20-700">Direktnachrichten</span>
       </summary>
       <ul>
-        <li class="dm-list-item" *ngFor="let user of userservice.users">
-          <div
-            class="avatar"
-            [style]="{
-              '--status-color': user.online ? onlineColor : offlineColor
-            }"
-          >
-            <img src="./assets/img/avatar-big/avatar-1.png" alt="" />
-          </div>
+        <li
+          class="dm-list-item"
+          *ngFor="let user of userservice.users"
+          hoverElement
+        >
+          <div appAvatar [user]="user" context="wsm-list"></div>
           <span class="nunito-18-400 blue">{{ user.name }}</span>
         </li>
       </ul>

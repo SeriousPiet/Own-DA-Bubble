@@ -2,84 +2,99 @@
 @import "../../../mixins.scss";
 
 section {
-    position: relative;
+    width: 100%;
+    max-width: 1920px;
+    height: 100vh;
+    padding: 1.5rem 1.25rem 1.25rem;
+    background-color: $background;
+
+
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: stretch;
-    gap: 1rem;
-    width: 36rem;
-    height: fit-content;
-    padding: 2rem;
-    background-color: white;
-    border-radius: 2rem;
-    box-shadow: 0px 2px 10px 0px #00000014;
+    align-items: center;
 
-    .arrow-back {
-        @include iconBox;
-        position: absolute;
-        left: 2rem;
-        top: 2rem;
+
+    .choose-avatar-popup {
+        position: relative;
         display: flex;
+        flex-direction: column;
         justify-content: center;
-        align-items: center;
-    }
+        align-items: stretch;
+        gap: 2rem;
+        width: 36rem;
+        height: fit-content;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 2rem;
+        box-shadow: 0px 2px 10px 0px #00000014;
 
-    .title {
-        color: $accent;
-        text-align: center;
-    }
-
-    .avatar {
-        align-self: center;
-        width: 10rem;
-        height: 10rem;
-        border-radius: 50%;
-    }
-
-    .name {
-        color: black;
-        text-align: center;
-
-        font-size: 2rem;
-        font-family: Nunito;
-        font-weight: 700;
-    }
-
-    .choose-avatar {
-        font-family: Nunito;
-        font-size: 1.5rem;
-        font-weight: 400;
-    }
-
-    .avatar-list {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        gap: 1rem;
-        img {
-            cursor: pointer;
-            width: 4rem;
-            height: 4rem;
+        .arrow-back {
+            @include iconBox;
+            position: absolute;
+            left: 2rem;
+            top: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-    }
 
-    .choose-picture {
-
-        font-family: Nunito;
-        font-size: 1.5rem;
-        font-weight: 400;
-
-        button {
-            margin-left: 1rem;
-            @include buttonEmpty;
+        .title {
+            color: $accent;
+            text-align: center;
         }
-    }
 
-    .action {
-        align-self: flex-end;
-        button {
-            @include buttonFull;
+        .avatar {
+            align-self: center;
+            width: 10rem;
+            height: 10rem;
+            border-radius: 50%;
+        }
+
+        .name {
+            color: black;
+            text-align: center;
+
+            font-size: 2rem;
+            font-family: Nunito;
+            font-weight: 700;
+        }
+
+        .infospan {
+            @include nunito(1.5, 400);
+        }
+
+        .avatar-list {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 1rem;
+
+            img {
+                cursor: pointer;
+                width: 4rem;
+                height: 4rem;
+            }
+        }
+
+        .choose-picture {
+            @include nunito(1.5, 400);
+
+            input {
+                display: none;
+            }
+
+            .filerequest {
+                margin-left: 1rem;
+                @include buttonEmpty;
+            }
+        }
+
+        .action {
+            align-self: flex-end;
+
+            button {
+                @include buttonFull;
+            }
         }
     }
 }

@@ -8,7 +8,10 @@
 </div>
 
 <!-- Konto erstellen Button -->
-<button class="signup-btn" [routerLink]="['/signup']">Konto erstellen</button>
+<div class="signup-btn">
+  <span>Neu bei DABubble?</span>
+  <button [routerLink]="['/signup']">Konto erstellen</button>
+</div>
 
 <section>
   <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
@@ -18,33 +21,34 @@
       verwendest.
     </div>
     <div class="input-box mail">
-      <input
-        formControlName="email"
-        type="email"
-        placeholder="beispielname@email.com"
-      />
+      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
+      @if(errorEmail != '') {
+      <span class="errorspan">{{ errorEmail }}</span>
+      }
     </div>
     <div class="input-box pw">
-      <input
-        formControlName="password"
-        type="password"
-        placeholder="Passwort"
-      />
+      <input formControlName="password" type="password" placeholder="Passwort" />
+      @if(errorPassword != '') {
+      <span class="errorspan">{{ errorPassword }}</span>
+      }
     </div>
     <div class="password-missed">
       <button type="button">Passwort vergessen?</button>
     </div>
     <div class="or-separator">
-      <span>oder</span>
+      <div></div>
+      <span>ODER</span>
+      <div></div>
     </div>
     <button class="login-with-google" type="button">
       <img src="../../../assets/icons/start/google.svg" alt="" />
       Anmelden mit Google
     </button>
     <div class="action-btns">
-      <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">
-        Anmelden
-      </button>
+      <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">Anmelden</button>
+      @if(logginIn) {
+      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
+      }
       <button type="button" class="white-btn">Gäste-Login</button>
     </div>
   </form>

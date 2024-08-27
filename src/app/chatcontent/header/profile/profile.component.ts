@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../../../utils/services/user.service';
-import { NavigationService } from '../../../utils/services/navigation.service';
 import {
   FormBuilder,
   FormGroup,
@@ -10,11 +9,12 @@ import {
 import { nameValidator, emailValidator } from '../../../utils/form-validators';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AvatarDirective } from '../../../utils/directives/avatar.directive';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AvatarDirective],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
@@ -29,7 +29,6 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     public userservice: UsersService,
-    private navigationService: NavigationService,
     private fb: FormBuilder,
     private router: Router
   ) {
@@ -38,8 +37,8 @@ export class ProfileComponent implements OnInit {
       email: ['', [Validators.required, emailValidator()]],
     });
 
-    this.navigationService.change$.subscribe(() => {
-      this.onlineStatus = this.userservice.currentUser?.online
+    this.userservice.currentUser?.changeUser$.subscribe((user) => {
+      this.onlineStatus = user?.online
         ? 'online'
         : 'offline';
     });
