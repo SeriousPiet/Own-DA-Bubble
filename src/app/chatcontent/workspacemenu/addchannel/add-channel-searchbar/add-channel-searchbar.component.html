@@ -1,0 +1,32 @@
+<div class="searchbar">
+  <div class="search-blocks">
+    <div *ngFor="let user of selectedUsers" class="search-block-item">
+      <span>{{ user.name }}</span>
+      <button class="remove-context" (click)="removeUserFromSelection(user)">
+        <img
+          src="../../../../assets/icons/modals/close-search-item.svg"
+          alt="Remove"
+        />
+      </button>
+    </div>
+  </div>
+
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    (input)="onSearchInput()"
+    (focus)="onFocus()"
+    (blur)="onBlur()"
+    placeholder="Search users..."
+  />
+
+  <div *ngIf="isDropdownVisible" class="dropdown">
+    <div
+      *ngFor="let suggestion of suggestions$ | async"
+      class="suggestion-item"
+      (click)="selectSuggestion(suggestion)"
+    >
+      {{ suggestion.text }}
+    </div>
+  </div>
+</div>

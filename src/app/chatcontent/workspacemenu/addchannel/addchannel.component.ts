@@ -4,11 +4,18 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../../utils/services/user.service';
 import { ChannelService } from '../../../utils/services/channel.service';
+import { AddChannelSearchbarComponent } from './add-channel-searchbar/add-channel-searchbar.component';
 
 @Component({
   selector: 'app-addchannel',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AddChannelSearchbarComponent,
+  ],
   templateUrl: './addchannel.component.html',
   styleUrl: './addchannel.component.scss',
 })
