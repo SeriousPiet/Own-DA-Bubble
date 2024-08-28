@@ -1,4 +1,4 @@
-import { Component, inject, AfterViewInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,12 +15,7 @@ import { ChannelService } from '../../../utils/services/channel.service';
 export class AddchannelComponent {
   addChannelId: HTMLElement | null = null;
 
-  ngAfterViewInit() {
-    this.addChannelId = document.getElementById('addChannelId');
-  }
-
-  addChannel = true;
-  addUserToChannel = false;
+  toggleAddChannelPopover = true;
   isUserSearchSelected = false;
   public channelservice = inject(ChannelService);
   public userservice = inject(UsersService);
@@ -28,12 +23,14 @@ export class AddchannelComponent {
   public description: string = '';
 
   toggleAddChannel() {
-    this.addChannel = !this.addChannel;
-    if (this.addUserToChannel) {
+    this.addChannelId = document.getElementById('addChannelId');
+    if (!this.toggleAddChannelPopover) {
+      this.isUserSearchSelected = false;
+      this.addNewChannel();
       this.addChannelId?.hidePopover();
       this.resetAddChannel();
     }
-    this.addUserToChannel = !this.addUserToChannel;
+    this.toggleAddChannelPopover = !this.toggleAddChannelPopover;
   }
 
   resetAddChannel() {

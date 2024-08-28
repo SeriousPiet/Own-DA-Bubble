@@ -1,5 +1,5 @@
 <section popover="manual" id="addChannelId" class="add-channel">
-  @if (addChannel) {
+  @if (toggleAddChannelPopover) {
   <section class="addChannelSection">
     <div class="headline">
       <span class="nunito-24-700">Channels erzeugen</span>
@@ -37,7 +37,7 @@
       </button>
     </div>
   </section>
-  } @else { @if (addUserToChannel){
+  } @else { @if (!toggleAddChannelPopover){
   <section class="addUserToChannel">
     <div>
       <span class="nunito-24-700">Leute hinzufügen</span>
@@ -71,10 +71,7 @@
       </div>
     </div>
     <div style="justify-content: end">
-      <button
-        (click)="addNewChannel(); toggleAddChannel()"
-        class="button-ctn nunito-18-700"
-      >
+      <button (click)="toggleAddChannel()" class="button-ctn nunito-18-700">
         Erstellen
       </button>
     </div>
