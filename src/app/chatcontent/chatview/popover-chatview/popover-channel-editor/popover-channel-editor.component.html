@@ -2,7 +2,7 @@
     <div>
         <div>
             <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-            <span> Entwicklerteam</span>
+            <span> {{getTitle(navigationService.chatViewObject)}} </span>
         </div>
         <img src="" alt="">
     </div>
@@ -13,7 +13,7 @@
         </div>
         <div>
             <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-            <input type="text" placeholder="Entwicklerteam">
+            <input disabled type="text" placeholder="{{ getTitle(navigationService.chatViewObject) }} ">
         </div>
     </section>
     <section class="channel-description">
@@ -21,12 +21,12 @@
             <span>Beschreibung</span>
             <button>Bearbeiten</button>
         </div>
-        <textarea>Dieser Channel ist für alles rund um #dfsdf vorgesehen. Hier kannst du zusammen mit deinem Team Meetings abhalten, Dokumente teilen und Entscheidungen treffen.</textarea>
+        <textarea disabled>{{ getDescription(navigationService.chatViewObject) }}</textarea>
         <hr>
         <div>
             <span>Erstellt von</span>
-            <span>Noah Braun</span>
+            <span>{{ getChannelCreator(navigationService.chatViewObject) }}</span>
         </div>
     </section>
-    <button></button>
+    <button class="leave-channel-button">Channel Verlassen</button>
 </main>
