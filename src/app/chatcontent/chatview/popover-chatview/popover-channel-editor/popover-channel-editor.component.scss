@@ -72,12 +72,13 @@ main {
         @include flex(space-between, center);
     }
 
-    >textarea {
+    >textarea:disabled, textarea:enabled {
         width: 100%;
         resize: none;
         border: none;
         font-family: Nunito;
         outline: none;
+        background-color: white;
 
         &::-webkit-scrollbar {
             display: none;
@@ -100,4 +101,9 @@ main {
             color: $secondary;
         }
     }
+}
+
+.leave-channel-button {
+    align-self: flex-end;
+    @include buttonFull();
 }
