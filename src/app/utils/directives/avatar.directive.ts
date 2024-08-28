@@ -76,8 +76,11 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
 
   private getAvatarUrl(): string {
-    return this.user?.pictureURL ||
-      `./assets/img/avatar-big/avatar-${this.user?.avatar}.png`;
+    if (this.user) {
+      if (this.user.pictureURL && this.user.pictureURL != '') return this.user.pictureURL;
+      else return `./assets/img/avatar-big/avatar-${this.user?.avatar}.png`;
+    }
+    return './assets/icons/start/profile-big.svg';
   }
 
 

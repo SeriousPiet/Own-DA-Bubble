@@ -80,6 +80,7 @@ section {
         .check-pp {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             @include nunito(1, 400);
 
@@ -134,6 +135,7 @@ section {
             display: flex;
             justify-content: flex-end;
             align-items: center;
+            gap: 1rem;
         }
 
         .blue-btn {

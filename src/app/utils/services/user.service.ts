@@ -143,13 +143,11 @@ export class UsersService implements OnDestroy {
           chatIDs: [...(this.getUserByID(userID)?.chatIDs || []), chat.id],
         });
 
-      console.warn('userservice/firestore: Chat added(' + chat.id + ')');
+      console.warn('userservice/chat: Chat added(' + chat.id + ')');
       return new Chat(chatObj.memberIDs, chat.id);
     } catch (error) {
       console.error(
-        'userservice/firestore: Error adding chat(' +
-          (error as Error).message +
-          ')'
+        'userservice/chat: Error adding chat(' + (error as Error).message + ')'
       );
       return undefined;
     }
@@ -222,6 +220,28 @@ export class UsersService implements OnDestroy {
     return undefined;
   }
 
+  private async getUserIDByEmail(
+    email: string | null
+  ): Promise<string | undefined> {
+    const usersRef = collection(this.firestore, '/users');
+    const queryresponse = query(usersRef, where('email', '==', email));
+    const querySnapshot = await getDocs(queryresponse);
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      return userDoc.id;
+    }
+    return undefined;
+  }
+
+  private async updateUserOnlineStatusOnFirestore(
+    userID: string,
+    online: boolean
+  ): Promise<void> {
+    await updateDoc(doc(this.firestore, '/users/' + userID), {
+      online: online,
+    });
+  }
+
   // ############################################################################################################
   // methodes for login and logout and signup
   // ############################################################################################################
@@ -238,29 +258,6 @@ export class UsersService implements OnDestroy {
       return '';
     } catch (error) {
       console.error('userservice/login:', (error as Error).message);
-      return (error as Error).message as string;
-    }
-  }
-
-  async firebaseSignup(
-    email: string,
-    password: string,
-    name: string
-  ): Promise<string> {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        this.firebaseauth,
-        email,
-        password
-      );
-      const userID = await this.addUserToFirestore({
-        name: name,
-        email: email,
-      });
-      await updateProfile(userCredential.user, { displayName: userID });
-      return '';
-    } catch (error) {
-      console.error('userservice/signup:', (error as Error).message);
       return (error as Error).message as string;
     }
   }
@@ -327,8 +324,6 @@ export class UsersService implements OnDestroy {
     return newUser.id;
   }
 
-  // ############################################################################################################
-
   private async reauthenticate(currentPassword: string): Promise<void> {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -355,6 +350,10 @@ export class UsersService implements OnDestroy {
     }
   }
 
+  // ############################################################################################################
+  // Functions for subscribing to Firestore collections
+  // ############################################################################################################
+
   private initUserCollection(): void {
     this.unsubUsers = onSnapshot(
       collection(this.firestore, '/users'),
@@ -364,10 +363,6 @@ export class UsersService implements OnDestroy {
             this.users.push(new User(change.doc.data(), change.doc.id));
           }
           if (change.type === 'modified') {
-            console.log(
-              'userservice/firestore: User modified: ',
-              change.doc.data()
-            );
             const user = this.users.find((user) => user.id === change.doc.id);
             if (user) user.update(change.doc.data());
           }
@@ -434,7 +429,7 @@ export class UsersService implements OnDestroy {
                     this.changeCurrentUserSubject.next('currentUserChanged');
                     console.warn(
                       'userservice: currentUser changed data - ',
-                      doc.data()['email']
+                      doc.data()
                     );
                   }
                 }
@@ -453,27 +448,9 @@ export class UsersService implements OnDestroy {
     });
   }
 
-  private async getUserIDByEmail(
-    email: string | null
-  ): Promise<string | undefined> {
-    const usersRef = collection(this.firestore, '/users');
-    const queryresponse = query(usersRef, where('email', '==', email));
-    const querySnapshot = await getDocs(queryresponse);
-    if (!querySnapshot.empty) {
-      const userDoc = querySnapshot.docs[0];
-      return userDoc.id;
-    }
-    return undefined;
-  }
-
-  private async updateUserOnlineStatusOnFirestore(
-    userID: string,
-    online: boolean
-  ): Promise<void> {
-    await updateDoc(doc(this.firestore, '/users/' + userID), {
-      online: online,
-    });
-  }
+  // ############################################################################################################
+  // Functions for unsubscribing from Firestore collections
+  // ############################################################################################################
 
   private unsubscribeFromCurrentUser(): void {
     if (this.currentUserSubscriber) {
@@ -502,6 +479,10 @@ export class UsersService implements OnDestroy {
       this.unsubChats = null;
     }
   }
+
+  // ############################################################################################################
+  // Functions for cleaning up subscriptions
+  // ############################################################################################################
 
   ngOnDestroy(): void {
     this.unsubscribeFromCurrentUser();

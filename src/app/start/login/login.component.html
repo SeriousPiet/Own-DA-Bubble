@@ -1,19 +1,20 @@
-<div class="debug-btn">
-  <button [routerLink]="['/chatthreadtest']">DEBUG</button>
-  <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
-  @if(userservice.currentUser) { User: {{ userservice.currentUser.name }}
-  <button (click)="userservice.logoutUser()">logout</button>
-  }
-  <button [routerLink]="['/showcase']">Styling Showcase</button>
-</div>
-
-<!-- Konto erstellen Button -->
-<div class="signup-btn">
-  <span>Neu bei DABubble?</span>
-  <button [routerLink]="['/signup']">Konto erstellen</button>
-</div>
-
 <section>
+
+  <div class="debug-btn">
+    <button [routerLink]="['/chatthreadtest']">DEBUG</button>
+    <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
+    @if(userservice.currentUser) { User: {{ userservice.currentUser.name }}
+    <button (click)="userservice.logoutUser()">logout</button>
+    }
+    <button [routerLink]="['/showcase']">Styling Showcase</button>
+  </div>
+
+  <!-- Signup Button -->
+  <div class="signup-btn">
+    <span>Neu bei DABubble?</span>
+    <button [routerLink]="['/signup']">Konto erstellen</button>
+  </div>
+
   <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
     <span class="title nunito-46-700">Anmeldung</span>
     <div class="info nunito-20-400">
