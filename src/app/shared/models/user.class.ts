@@ -1,5 +1,6 @@
-import { serverTimestamp } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
+
+export type authProvider = 'google' | 'email';
 
 export class User {
   private changeUser = new BehaviorSubject<User | null>(null);
@@ -7,6 +8,7 @@ export class User {
 
   readonly id: string;
   readonly createdAt: Date;
+  readonly provider: authProvider;
 
   private _pictureURL: string | undefined;
   get pictureURL(): string | undefined {
@@ -55,6 +57,7 @@ export class User {
     this._pictureURL = userObj.pictureURL ? userObj.pictureURL : undefined;
     this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
     this._ifCurrentUser = currentUser;
+    this.provider = userObj.provider ? userObj.provider : 'email';
   }
 
   update(data: any): void {

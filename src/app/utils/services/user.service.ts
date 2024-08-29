@@ -131,7 +131,6 @@ export class UsersService implements OnDestroy {
         name: name,
         email: email,
       });
-      await updateProfile(response.user, { displayName: userID });
       return '';
     } catch (error) {
       console.error(
@@ -150,9 +149,9 @@ export class UsersService implements OnDestroy {
     const storageRef = ref(
       this.storage,
       'profile-pictures/' +
-        userID +
-        '/userpicture.' +
-        file.name.split('.').pop()
+      userID +
+      '/userpicture.' +
+      file.name.split('.').pop()
     );
     try {
       const snapshot = await uploadBytes(storageRef, file);
@@ -219,45 +218,38 @@ export class UsersService implements OnDestroy {
   }
 
 
+  public async subscribeCurrentUserByID(userID: string): Promise<void> {
+    if (userID == this.currentUserID) return;
+    this.unsubscribeFromCurrentUser();
+    this.currentUserSubscriber = onSnapshot(
+      doc(this.firestore, '/users/' + userID),
+      (doc) => {
+        if (doc.exists()) {
+          this.updateUserOnlineStatusOnFirestore(userID, true);
+          if (this.currentUserID != userID) {
+            this.currentUser = new User(doc.data(), userID);
+            this.changeCurrentUserSubject.next('currentUserSignin');
+            console.warn('userservice: currentUser signin - ', doc.data()['email']);
+          } else {
+            this.currentUser?.update(doc.data());
+            this.changeCurrentUserSubject.next('currentUserChanged');
+            console.warn('userservice: currentUser changed data - ', doc.data());
+          }
+        }
+      }
+    );
+  }
+
+
   private initUserWatchDog(): void {
     this.user$ = user(this.firebaseauth).subscribe((user) => {
       if (user) {
-        console.warn(
-          'userservice/auth: Authentication successful: ',
-          user.displayName
-        );
+        console.warn('userservice/auth: Authentication successful: ', user.displayName);
         this.getUserIDByEmail(user.email).then((userID) => {
-          if (userID) {
-            this.unsubscribeFromCurrentUser();
-            this.currentUserSubscriber = onSnapshot(
-              doc(this.firestore, '/users/' + userID),
-              (doc) => {
-                if (doc.exists()) {
-                  this.updateUserOnlineStatusOnFirestore(userID, true);
-                  if (this.currentUserID != userID) {
-                    this.currentUser = new User(doc.data(), userID);
-                    this.changeCurrentUserSubject.next('currentUserSignin');
-                    console.warn(
-                      'userservice: currentUser signin - ',
-                      doc.data()['email']
-                    );
-                  } else {
-                    this.currentUser?.update(doc.data());
-                    this.changeCurrentUserSubject.next('currentUserChanged');
-                    console.warn(
-                      'userservice: currentUser changed data - ',
-                      doc.data()
-                    );
-                  }
-                }
-              }
-            );
-          }
+          if (userID) this.subscribeCurrentUserByID(userID);
         });
       } else if (this.currentUser) {
-        console.warn(
-          'userservice: currentUser logout - ' + this.currentUser.email
-        );
+        console.warn('userservice: currentUser logout - ' + this.currentUser.email);
         this.unsubscribeFromCurrentUser();
         this.updateUserOnlineStatusOnFirestore(this.currentUser.id, false);
         this.currentUser = undefined;
