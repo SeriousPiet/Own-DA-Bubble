@@ -3,10 +3,15 @@
   [ngClass]="!isWorkspaceMenuVisible ? 'menu-hidden' : ''"
 >
   <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
+    @if (isWorkspaceMenuVisible) {
     <div class="wsm-close"></div>
-    <span class="nunito-20-500">
-      Workspace-Menü {{ isWorkspaceMenuVisible ? "schließen" : "öffnen" }}
-    </span>
+    } @else if (!isWorkspaceMenuVisible) {
+    <div class="wsm-open"></div>
+    }
+    <span class="nunito-20-500"
+      >Workspace-Menü
+      {{ isWorkspaceMenuVisible ? "öffnen" : "schließen" }}</span
+    >
   </button>
 
   <div class="top-bar">
@@ -23,11 +28,5 @@
   </div>
   <div class="threadview">
     <app-threadview />
-  </div>
-  <div popover id="add-channel" class="add-channel">
-    <app-addchannel />
-  </div>
-  <div popover id="add-user-to-channel" class="add-user-to-channel">
-    <app-add-user-to-channel />
   </div>
 </section>

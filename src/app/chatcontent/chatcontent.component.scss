@@ -53,24 +53,6 @@ section.chatcontent {
   transition: $transition-standard;
 }
 
-.add-channel {
-  width: 54.5rem;
-  height: 33.6875rem;
-  padding: 1rem;
-  border-radius: 1rem;
-  background-color: #fff;
-  border: 0.0625rem;
-  box-shadow: 0rem 0.375rem 0.625rem rgba(0, 0, 0, 0.2);
-}
-
-.addchannel::backdrop {
-  background: #00000066;
-}
-
-// .hidden {
-//   visibility: hidden;
-// }
-
 .hide_show_wsm {
   position: absolute;
   z-index: 2;
@@ -89,8 +71,16 @@ section.chatcontent {
   box-shadow: $profile-box-shadow;
   transition: $transition-standard;
 
-  div {
+  .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-close.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .wsm-open {
+    background-image: url("../../assets/icons/wsm/wsm-close-hover.svg");
     background-repeat: no-repeat;
     background-position: center;
     width: 1.5rem;
@@ -108,8 +98,11 @@ section.chatcontent {
 
 .hide_show_wsm:hover {
   cursor: pointer;
-  div {
+  .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-open.svg");
+  }
+  .wsm-open {
+    background-image: url("../../assets/icons/wsm/wsm-open-hover.svg");
   }
 }
 

@@ -1,41 +1,78 @@
-<section>
-  <div class="headline">
-    <h2 class="nunito-24-700">Channels erzeugen</h2>
-    <button
-      class="close-add-channel"
-      popovertarget="add-channel"
-      popovertargetaction="hide"
-    ></button>
-  </div>
-  <div>
-    <p class="nunito-18-400">
-      Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
-      themenbezogen sein #marketing zum Beispiel.
-    </p>
-  </div>
-  <div><h3 class="nunito-18-700">Channel-Name</h3></div>
-  <input
-    [(ngModel)]="name"
-    type="text"
-    placeholder="# z.B. Kooperationsprojekte"
-    class="nunito-18-400"
-  />
-  <div>
-    <h3 class="nunito-18-700">Beschreibung <span>(optional)</span></h3>
-  </div>
-  <input
-    [(ngModel)]="description"
-    type="text"
-    placeholder="Dein Text hier"
-    class="nunito-18-400"
-  />
-  <div style="justify-content: end" class="nunito-18-700">
-    <button
-      popovertarget="add-user-to-channel"
-      popovertargetaction="show"
-      (click)="addNewChannel()"
-    >
-      Erstellen
-    </button>
-  </div>
+<section popover="manual" id="addChannelId" class="add-channel">
+  @if (toggleAddChannelPopover) {
+  <section class="addChannelSection">
+    <div class="headline">
+      <span class="nunito-24-700">Channels erzeugen</span>
+      <button
+        class="close-add-channel"
+        popovertarget="addChannelId"
+        popovertargetaction="hide"
+      ></button>
+    </div>
+    <div>
+      <span class="nunito-18-400">
+        Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+        themenbezogen sein #marketing zum Beispiel.
+      </span>
+    </div>
+    <div><span class="nunito-18-700">Channel-Name</span></div>
+    <input
+      [(ngModel)]="name"
+      type="text"
+      placeholder="# z.B. Kooperationsprojekte"
+      class="nunito-18-400"
+    />
+    <div>
+      <span class="nunito-18-700">Beschreibung <span>(optional)</span></span>
+    </div>
+    <input
+      [(ngModel)]="description"
+      type="text"
+      placeholder="Dein Text hier"
+      class="nunito-18-400"
+    />
+    <div style="justify-content: end">
+      <button class="button-ctn nunito-18-700" (click)="toggleAddChannel()">
+        Erstellen
+      </button>
+    </div>
+  </section>
+  } @else { @if (!toggleAddChannelPopover){
+  <section class="addUserToChannel">
+    <div>
+      <span class="nunito-24-700">Leute hinzufügen</span>
+      <button (click)="toggleAddChannel()" class="close-add-user"></button>
+    </div>
+    <div>
+      <div>
+        <input
+          type="radio"
+          name="userOption"
+          (change)="isUserSearchSelected = false"
+        />Alle Mitglieder von OfficeTeam hinzufügen
+      </div>
+    </div>
+    <div style="flex-direction: column">
+      <div>
+        <input
+          class="select-user-search"
+          type="radio"
+          name="userOption"
+          (change)="isUserSearchSelected = true"
+        />Bestimmte Leute hinzufügen
+      </div>
+      <div>
+        <app-add-channel-searchbar
+          style="width: 100%"
+          *ngIf="isUserSearchSelected"
+        />
+      </div>
+    </div>
+    <div style="justify-content: end">
+      <button (click)="toggleAddChannel()" class="button-ctn nunito-18-700">
+        Erstellen
+      </button>
+    </div>
+  </section>
+  }}
 </section>

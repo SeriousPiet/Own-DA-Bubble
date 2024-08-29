@@ -103,7 +103,7 @@ section {
       }
     }
 
-    .add-channel {
+    .add-channel-btn {
       all: unset;
       background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
       @include background-properties;
@@ -114,7 +114,7 @@ section {
       border-radius: 1.25rem;
     }
 
-    .add-channel:hover {
+    .add-channel-btn:hover {
       cursor: pointer;
       background-image: url("../../../assets/icons/wsm/add-channel-1-hover.svg");
       background-color: #eceefe;
@@ -173,7 +173,6 @@ section {
     background-position: center;
     width: 1rem;
     height: 1rem;
-    // margin-right: 0.625rem;
     transition: transform 0.3s ease-in-out;
     transform: rotate(-90deg);
   }
@@ -208,28 +207,39 @@ section {
     @include buttonNoBorder;
     gap: 1.25rem;
 
-    // &:hover .avatar::after {
-    //   border-color: $background;
-    // }
+    .avatar {
+      @include flex(center, center);
+      @include avatarStatusThumbnail(
+        $status: var(--status-color),
+        $img_size: 4.5rem,
+        $status_size: 1rem,
+        $border_color: $background
+      );
+      width: auto;
+      aspect-ratio: 1 / 1;
+      &:hover .avatar::after {
+        border-color: $background;
+      }
 
-    // .avatar {
-    //   @include flex(center, center);
-    //   @include avatarStatusThumbnail(
-    //     $status: $online,
-    //     $img_size: 2.5rem,
-    //     $status_size: 0.675rem,
-    //     $border_color: #fff
-    //   );
-    //   width: auto;
-    //   aspect-ratio: 1 / 1;
+      .avatar {
+        @include flex(center, center);
+        @include avatarStatusThumbnail(
+          $status: $online,
+          $img_size: 2.5rem,
+          $status_size: 0.675rem,
+          $border_color: #fff
+        );
+        width: auto;
+        aspect-ratio: 1 / 1;
 
-    //   img {
-    //     width: 100%;
-    //     height: 100%;
-    //     border-radius: 50%;
+        img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
 
-    //     object-fit: cover;
-    //   }
-    // }
+          object-fit: cover;
+        }
+      }
+    }
   }
 }
