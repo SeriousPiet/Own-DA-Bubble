@@ -74,7 +74,7 @@ export class NavigationService {
         'Navigationservice: setChatViewObject: Channel ' + object.name
       );
     } else {
-      const chat = await this.userService.getChatWithUserByID(object.id);
+      const chat = await this.channelService.getChatWithUserByID(object.id);
       if (chat) {
         this._chatViewObject = chat;
         this._chatViewPath = chat.chatMessagesPath;

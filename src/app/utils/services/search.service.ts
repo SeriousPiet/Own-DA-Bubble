@@ -184,7 +184,7 @@ export class SearchService {
             text: `@${user?.name}`,
             type: 'user',
             hasChat:
-              this.usersService.getChatWithUserByID(userId, false) !==
+              this.channelService.getChatWithUserByID(userId, false) !==
               undefined,
           };
         });
@@ -230,7 +230,7 @@ export class SearchService {
                 text: `@${user?.name}`,
                 type: 'user',
                 hasChat:
-                  this.usersService.getChatWithUserByID(userId, false) !==
+                  this.channelService.getChatWithUserByID(userId, false) !==
                   undefined,
               };
             });

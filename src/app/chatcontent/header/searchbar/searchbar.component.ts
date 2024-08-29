@@ -39,7 +39,7 @@ export class SearchbarComponent implements OnInit {
     public navigationService: NavigationService,
     private channelService: ChannelService,
     private usersService: UsersService
-  ) {}
+  ) { }
 
   /**
    * Initializes the search suggestions, current search context, and recent searches.
@@ -163,7 +163,7 @@ export class SearchbarComponent implements OnInit {
       const user = this.findUserByName(userName);
       if (user) {
         suggestion.hasChat =
-          this.usersService.getChatWithUserByID(user.id, false) !== undefined;
+          this.channelService.getChatWithUserByID(user.id, false) !== undefined;
         this.navigationService.setChatViewObject(user);
       }
     } else if (suggestion.type === 'channel') {
@@ -316,7 +316,7 @@ export class SearchbarComponent implements OnInit {
   getUserChatStatus(userName: string): boolean {
     const user = this.findUserByName(userName);
     return user
-      ? this.usersService.getChatWithUserByID(user.id, false) !== undefined
+      ? this.channelService.getChatWithUserByID(user.id, false) !== undefined
       : false;
   }
 

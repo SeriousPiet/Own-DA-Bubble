@@ -21,7 +21,7 @@
                 <button (click)="uploadPicture($event)">upload image</button>
             </div>
             @for(user of userservice.users; track userservice.users; let i = $index) {
-            <button (click)="userChat(user)">{{user.name}} / {{ user.chatIDs.length }}</button>
+            <button (click)="userChat(user)">{{user.email}} / {{ user.chatIDs.length }}</button>
             }
         </div>
     </div>
