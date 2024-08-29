@@ -1,16 +1,10 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
-import { Chat } from '../../shared/models/chat.class';
 import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp, getDocs, where, query } from '@angular/fire/firestore';
-import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user, UserCredential } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user } from '@angular/fire/auth';
 import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 
-/**
- * The UsersService class provides methods for managing users and chats in the application.
- * It handles user authentication, user data retrieval, chat creation, and more.
- * @class
- */
 @Injectable({
   providedIn: 'root',
 })
@@ -19,10 +13,8 @@ export class UsersService implements OnDestroy {
   private firebaseauth = inject(Auth);
   private storage = getStorage();
   private unsubUsers: any = null;
-  private unsubChats: any = null;
   private user$: any = null;
   private currentUserSubscriber: any = null;
-  private chats: Chat[] = [];
 
   private changeUserListSubject = new BehaviorSubject<string>('');
   public changeUserList$ = this.changeUserListSubject.asObservable();
@@ -37,7 +29,6 @@ export class UsersService implements OnDestroy {
   constructor() {
     this.initUserCollection();
     this.initUserWatchDog();
-    this.initChatCollection();
   }
 
   get currentUserID(): string {
@@ -45,95 +36,13 @@ export class UsersService implements OnDestroy {
   }
 
 
-  getAllUserIDs(): string[] {
-    const userIDs = this.users.map((user) => user.id);
-    return userIDs;
-  }
+  getAllUserIDs(): string[] { const userIDs = this.users.map((user) => user.id); return userIDs; }
 
+  getUserByID(id: string): User | undefined { return this.users.find((user) => user.id === id); }
 
-  getUserByID(id: string): User | undefined {
-    return this.users.find((user) => user.id === id);
-  }
-
-
-  getChatByID(chatID: string): Chat | undefined {
-    return this.chats.find((chat) => chat.id === chatID);
-  }
-
-
-  getChatPartner(chat: Chat): User | undefined {
-    if (this.currentUser) {
-      if (chat.memberIDs[0] === this.currentUserID) return this.getUserByID(chat.memberIDs[1]);
-      else return this.getUserByID(chat.memberIDs[0]);
-    }
-    return undefined;
-  }
-
-
-  ifSelfChat(chat: Chat): boolean {
-    if (this.currentUser) return chat.memberIDs[0] === this.currentUser.id && chat.memberIDs[1] === this.currentUser.id;
-    return false;
-  }
-
-
-  async getChatWithUserByID(userID: string, createChat: boolean = true): Promise<Chat | undefined> {
-    if (this.currentUser) {
-      let chat: Chat | undefined = undefined;
-      if (this.currentUserID === userID) chat = this.chats.find((chat) => chat.memberIDs[0] === userID && chat.memberIDs[1] === userID);
-      else chat = this.chats.find((chat) => chat.memberIDs.includes(userID));
-      if (chat) return chat;
-      if (createChat) return await this.addChatWithUserOnFirestore(userID);
-    }
-    return undefined;
-  }
-
-
-  private async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
+  async updateCurrentUserDataOnFirestore(userChangeData: {}) {
     try {
-      const chatRef = collection(this.firestore, '/chats');
-      const chatObj = {
-        memberIDs: [this.currentUserID, userID],
-        createdAt: serverTimestamp(),
-      };
-
-      const chat = await addDoc(chatRef, chatObj);
-
-      await updateDoc(doc(this.firestore, '/chats/' + chat.id), { id: chat.id });
-
-      this.updateCurrentUserDataOnFirestore({ chatIDs: [...(this.currentUser?.chatIDs || []), chat.id] });
-      if (this.currentUserID !== userID) this.updateUserDataOnFirestoreByID(userID, { chatIDs: [...(this.getUserByID(userID)?.chatIDs || []), chat.id] });
-
-      console.warn('userservice/chat: Chat added(' + chat.id + ')');
-      return new Chat(chatObj.memberIDs, chat.id);
-    } catch (error) {
-      console.error('userservice/chat: Error adding chat(' + (error as Error).message + ')');
-      return undefined;
-    }
-  }
-
-
-  async updateCurrentUserDataOnFirestore(userChangeData: {
-    name?: string;
-    online?: boolean;
-    chatIDs?: string[];
-    avatar?: number;
-    pictureURL?: string;
-  }) {
-    if (this.currentUser) {
-      await this.updateUserDataOnFirestoreByID(this.currentUserID, userChangeData);
-    }
-  }
-
-  private async updateUserDataOnFirestoreByID(id: string, userChangeData: {
-    email?: string;
-    name?: string;
-    online?: boolean;
-    chatIDs?: string[];
-    avatar?: number;
-    pictureURL?: string;
-  }) {
-    try {
-      await updateDoc(doc(this.firestore, '/users/' + id), userChangeData);
+      await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), userChangeData);
       console.warn('userservice/firestore: User updated(', this.currentUserID, ') # ', userChangeData);
     } catch (error) {
       console.error('userservice/firestore: ', (error as Error).message);
@@ -149,7 +58,7 @@ export class UsersService implements OnDestroy {
         await updateEmail(auth.currentUser, newEmail);
         console.warn('userservice/auth: Email updated on Firebase/Auth');
         if (this.currentUser) {
-          this.updateUserDataOnFirestoreByID(this.currentUser.id, { email: newEmail });
+          this.updateCurrentUserDataOnFirestore({ email: newEmail });
         }
         return undefined;
       }
@@ -218,7 +127,7 @@ export class UsersService implements OnDestroy {
     try {
       const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
-      await this.updateUserDataOnFirestoreByID(userID, { pictureURL: url });
+      await this.updateCurrentUserDataOnFirestore({ pictureURL: url });
       return '';
     } catch (error) {
       console.error('userservice/storage: ', (error as Error).message);
@@ -242,25 +151,21 @@ export class UsersService implements OnDestroy {
 
 
   private async reauthenticate(currentPassword: string): Promise<void> {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (user && user.email) {
-      const credential = EmailAuthProvider.credential(
-        user.email,
-        currentPassword
-      );
-      return reauthenticateWithCredential(user, credential)
-        .then(() => {
-          console.warn('userservice/auth: Reauthentication successful');
-        })
-        .catch((error) => {
-          console.error('userservice/auth: Error during reauthentication:', error);
-          throw error;
-        });
-    } else {
-      return Promise.reject(
-        new Error('userservice/auth: No authenticated user found')
-      );
+    try {
+      const user = getAuth().currentUser;
+      if (user && user.email) {
+        const credential = EmailAuthProvider.credential(
+          user.email,
+          currentPassword
+        );
+        await reauthenticateWithCredential(user, credential);
+        console.warn('userservice/auth: Reauthentication successful');
+      } else {
+        throw new Error('userservice/auth: No authenticated user found');
+      }
+    } catch (error) {
+      console.error('userservice/auth: Error during reauthentication:', error);
+      throw error;
     }
   }
 
@@ -275,40 +180,14 @@ export class UsersService implements OnDestroy {
       collection(this.firestore, '/users'),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            this.users.push(new User(change.doc.data(), change.doc.id));
-          }
+          if (change.type === 'added') this.users.push(new User(change.doc.data(), change.doc.id));
           if (change.type === 'modified') {
             const user = this.users.find((user) => user.id === change.doc.id);
             if (user) user.update(change.doc.data());
           }
-          if (change.type === 'removed') {
-            this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
-          }
+          if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
         });
         this.changeUserListSubject.next('users');
-      }
-    );
-  }
-
-
-  private initChatCollection(): void {
-    this.unsubChats = onSnapshot(
-      collection(this.firestore, '/chats'),
-      (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            this.chats.push(new Chat(change.doc.data()['memberIDs'], change.doc.id));
-          }
-          if (change.type === 'modified') {
-            this.chats.push(new Chat(change.doc.data()['memberIDs'], change.doc.id));
-          }
-          if (change.type === 'removed') {
-            this.chats = this.chats.filter(
-              (chat) => chat.id !== change.doc.data()['id']
-            );
-          }
-        });
       }
     );
   }
@@ -354,7 +233,7 @@ export class UsersService implements OnDestroy {
   // Functions for unsubscribing from Firestore collections
   // ############################################################################################################
 
-  
+
   private unsubscribeFromCurrentUser(): void {
     if (this.currentUserSubscriber) {
       this.currentUserSubscriber();
@@ -376,13 +255,6 @@ export class UsersService implements OnDestroy {
     }
   }
 
-  private unsubscribeFromChats(): void {
-    if (this.unsubChats) {
-      this.unsubChats();
-      this.unsubChats = null;
-    }
-  }
-
 
   // ############################################################################################################
   // Functions for cleaning up subscriptions
@@ -392,6 +264,5 @@ export class UsersService implements OnDestroy {
     this.unsubscribeFromCurrentUser();
     this.unsubscribeFromUsers();
     this.unsubscribeFromAuthUser();
-    this.unsubscribeFromChats();
   }
 }
