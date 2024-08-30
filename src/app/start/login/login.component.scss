@@ -36,6 +36,13 @@
     }
 }
 
+.errorspan {
+    @include nunito(0.8, 400, #ED1E79);
+    position: absolute;
+    bottom: -1.2rem;
+    left: 0;
+}
+
 section {
     position: relative;
     width: 100%;
@@ -109,12 +116,10 @@ section {
                 @include input;
             }
 
-            .errorspan {
-                @include nunito(0.8, 400, #ED1E79);
-                position: absolute;
-                bottom: -1.2rem;
-                left: 0;
-            }
+        }
+
+        .button-box {
+            position: relative;
         }
 
         .mail::before {

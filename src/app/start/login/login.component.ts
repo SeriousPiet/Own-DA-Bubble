@@ -26,6 +26,8 @@ export class LoginComponent implements OnDestroy {
 
   public errorEmail = '';
   public errorPassword = '';
+  public errorGoogleSignin = '';
+  public logininfomessage = '';
   public showSpinner = false;
 
   public passwordResetFormShow = false;
@@ -106,6 +108,7 @@ export class LoginComponent implements OnDestroy {
 
   async signinWithGooglePopup(): Promise<string> {
     try {
+      this.clearAllErrorSpans();
       const provider = new GoogleAuthProvider();
       const auth = getAuth();
       auth.languageCode = 'de';
@@ -115,7 +118,6 @@ export class LoginComponent implements OnDestroy {
       }
       return '';
     } catch (error) {
-      console.error('googlesignin: ', (error as Error).message);
       return (error as Error).message;
     }
   }
@@ -131,13 +133,15 @@ export class LoginComponent implements OnDestroy {
       avatar: 0,
       pictureURL: pictureURL || null,
     };
+    console.log('userObj: ', userObj);
+    console.log('pictureURL: ', pictureURL);
     let ref = collection(this.firestore, '/users');
     let userID = await this.getUserIDByEmail(email);
     if (userID) return userID;
     let newUser = await addDoc(ref, userObj);
     setTimeout(() => {
       this.userservice.subscribeCurrentUserByID(newUser.id);
-    }, 500);
+    }, 1500);
     return newUser.id;
   }
 
@@ -166,6 +170,8 @@ export class LoginComponent implements OnDestroy {
       this.errorEmail = 'Diese E-Mail-Adresse ist leider ungültig.';
     } else if (error.includes('auth/wrong-password')) {
       this.errorPassword = 'Falsches Passwort oder E-Mail. Bitte noch einmal versuchen.';
+    } else if (error.includes('auth/popup-closed-by-user')) {
+      this.errorGoogleSignin = 'Googleanmeldung wurde durch Benutzer abgebrochen.';
     }
   }
 
@@ -173,6 +179,7 @@ export class LoginComponent implements OnDestroy {
   clearAllErrorSpans() {
     this.errorEmail = '';
     this.errorPassword = '';
+    this.errorGoogleSignin = '';
   }
 
 }

@@ -6,7 +6,7 @@
 </div>
 
 <div id="logininfo" class="popinfo" popover>
-    Anmelden
+  {{ logininfomessage }}
 </div>
 
 <section>
@@ -81,10 +81,15 @@
       <span>ODER</span>
       <div></div>
     </div>
-    <button class="login-with-google" (click)="signinWithGoogle()" type="button">
-      <img src="../../../assets/icons/start/google.svg" alt="" />
-      Anmelden mit Google
-    </button>
+    <div class="button-box">
+      <button class="login-with-google" (click)="signinWithGoogle()" type="button">
+        <img src="../../../assets/icons/start/google.svg" alt="" />
+        Anmelden mit Google
+      </button>
+      @if(errorGoogleSignin != '') {
+      <span class="errorspan">{{ errorGoogleSignin }}</span>
+      }
+    </div>
     <div class="action-btns">
       <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">Anmelden</button>
       @if(showSpinner) {
