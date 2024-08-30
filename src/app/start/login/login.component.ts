@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } 
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, passwordValidator } from '../../utils/form-validators';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
+import { getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithPopup } from '@angular/fire/auth';
 import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where } from '@angular/fire/firestore';
 
 @Component({
@@ -26,7 +26,16 @@ export class LoginComponent implements OnDestroy {
 
   public errorEmail = '';
   public errorPassword = '';
-  public logginIn = false;
+  public showSpinner = false;
+
+  public passwordResetFormShow = false;
+
+  passwordResetForm = new FormGroup({
+    email: new FormControl('', [
+      Validators.required,
+      emailValidator(),
+    ]),
+  });
 
   loginForm = new FormGroup({
     email: new FormControl('', [
@@ -45,25 +54,51 @@ export class LoginComponent implements OnDestroy {
   }
 
 
+  async submitPasswordResetForm(event: Event) {
+    event.preventDefault();
+    this.passwordResetForm.disable();
+    this.clearAllErrorSpans();
+    this.showSpinner = true;
+    const email = this.passwordResetForm.value.email || null;
+    const user = await this.getUserIDByEmail(email);
+    if (user && email) {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      console.log('passwortresetemail: ', user);
+      this.passwordResetForm.reset();
+      document.getElementById('pwresetsend')?.showPopover();
+      setTimeout(() => {
+        document.getElementById('pwresetsend')?.hidePopover();
+        this.passwordResetFormShow = false;
+      }, 3000);
+    } else {
+      this.errorEmail = 'Diese E-Mail-Adresse ist leider unbekannt.';
+    }
+    this.showSpinner = false;
+  }
+
+
   async submitLoginForm(event: Event) {
     event.preventDefault();
-    this.logginIn = true;
+    this.showSpinner = true;
+    document.getElementById('logininfo')?.showPopover();
     this.loginForm.disable();
     this.clearAllErrorSpans();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
     const error = await this.userservice.loginUser(email, password);
-    this.logginIn = false;
+    this.showSpinner = false;
     this.loginForm.enable();
+    document.getElementById('logininfo')?.hidePopover();
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }
 
 
   async signinWithGoogle() {
-    this.logginIn = true;
+    this.showSpinner = true;
     const error = await this.signinWithGooglePopup();
-    this.logginIn = false;
+    this.showSpinner = false;
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }
