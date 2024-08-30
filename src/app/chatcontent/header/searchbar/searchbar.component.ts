@@ -9,7 +9,6 @@ import { Channel } from '../../../shared/models/channel.class';
 import { Chat } from '../../../shared/models/chat.class';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { AvatarDirective } from '../../../utils/directives/avatar.directive';
 
 @Component({
@@ -39,7 +38,7 @@ export class SearchbarComponent implements OnInit {
     public navigationService: NavigationService,
     private channelService: ChannelService,
     private usersService: UsersService
-  ) { }
+  ) {}
 
   /**
    * Initializes the search suggestions, current search context, and recent searches.
