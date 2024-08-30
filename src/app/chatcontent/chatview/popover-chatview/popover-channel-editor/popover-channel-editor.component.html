@@ -18,12 +18,12 @@
                 @if (!channelNameEditor) {
                 <button (click)="showChannelNameEditor()">Bearbeiten</button>
                 }@else {
-                <button (click)="closeChannelInfoPopover()">Speichern</button>
+                <button (click)="saveEditedChannel()">Speichern</button>
                 }
             </div>
             <div class="channel-name-input">
                 <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-                <input [disabled]="!channelNameEditor" type="text"
+                <input [(ngModel)]="updateChannelData.name" [disabled]="!channelNameEditor" type="text"
                     placeholder="{{ getTitle(navigationService.chatViewObject) }} ">
             </div>
         </section>
@@ -33,7 +33,7 @@
                 @if (!channelDescriptionEditor) {
                 <button (click)="showChannelDescriptionEditor()">Bearbeiten</button>
                 }@else {
-                <button (click)="closeChannelInfoPopover()">Speichern</button>
+                <button (click)="saveEditedChannel()">Speichern</button>
                 }
             </div>
             <textarea [disabled]="!channelDescriptionEditor" [(ngModel)]="updateChannelData.description"></textarea>

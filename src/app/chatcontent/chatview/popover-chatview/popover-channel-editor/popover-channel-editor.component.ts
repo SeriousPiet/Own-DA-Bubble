@@ -73,8 +73,9 @@ export class PopoverChannelEditorComponent implements OnChanges {
     this.channelDescriptionEditor = true;
   }
 
-  saveEditedChannelName() {
+  saveEditedChannel() {
     this.channelNameEditor = false;
+    this.channelDescriptionEditor = false;
     if (this.navigationService.chatViewObject instanceof Channel) {
       this.channelService.updateChannelOnFirestore(this.navigationService.chatViewObject, this.updateChannelData);
     }
