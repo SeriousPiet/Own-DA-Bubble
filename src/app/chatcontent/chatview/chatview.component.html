@@ -1,6 +1,10 @@
 <main class="chatview-main-ctn">
     <section class="chatview-header">
-        <button class="chatview-channel-name" popovertarget="channel-editor-popover">
+        <button 
+        class="chatview-channel-name" 
+        popovertarget="channel-editor-popover"
+        (shown.bs.popover)="currentChannel"
+        >
             <div>
                 <div>
                     <img src="assets/icons/chat/general/hashtag.svg" alt="#">
@@ -42,7 +46,7 @@
         
     </section>
 
-    <app-popover-channel-editor id="channel-editor-popover" popover></app-popover-channel-editor>
+    <app-popover-channel-editor id="channel-editor-popover" popover [currentChannel]="navigationService.chatViewObject"></app-popover-channel-editor>
     <app-popover-channel-member-overview id="channel-member-overview-popover"
         popover></app-popover-channel-member-overview>
 

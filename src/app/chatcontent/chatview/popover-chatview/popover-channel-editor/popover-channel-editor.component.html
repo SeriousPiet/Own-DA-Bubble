@@ -1,32 +1,49 @@
-<main>
+<main [ngClass]="{'channel-name-editor': channelNameEditor, 'channel-description-editor': channelDescriptionEditor}">
     <div>
         <div>
             <img src="assets/icons/chat/general/hashtag.svg" alt="#">
             <span> {{getTitle(navigationService.chatViewObject)}} </span>
         </div>
-        <img src="" alt="">
+        <button (click)="closeChannelInfoPopover()" id="close-icon" popovertargetaction="hide"
+            popovertarget="channel-editor-popover">
+            <img src="assets\icons\chat\general\close.svg" alt="">
+        </button>
     </div>
-    <section class="channel-name">
-        <div>
-            <span>Channel Name</span>
-            <button>Bearbeiten</button>
-        </div>
-        <div>
-            <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-            <input disabled type="text" placeholder="{{ getTitle(navigationService.chatViewObject) }} ">
-        </div>
-    </section>
-    <section class="channel-description">
-        <div>
-            <span>Beschreibung</span>
-            <button>Bearbeiten</button>
-        </div>
-        <textarea disabled>{{ getDescription(navigationService.chatViewObject) }}</textarea>
-        <hr>
-        <div>
-            <span>Erstellt von</span>
-            <span>{{ getChannelCreator(navigationService.chatViewObject) }}</span>
-        </div>
-    </section>
-    <button class="leave-channel-button">Channel Verlassen</button>
+
+    <div class="channel-info-content">
+
+        <section class="channel-name">
+            <div>
+                <span>Channel Name</span>
+                @if (!channelNameEditor) {
+                <button (click)="showChannelNameEditor()">Bearbeiten</button>
+                }@else {
+                <button (click)="saveEditedChannel()">Speichern</button>
+                }
+            </div>
+            <div class="channel-name-input">
+                <img src="assets/icons/chat/general/hashtag.svg" alt="#">
+                <input [(ngModel)]="updateChannelData.name" [disabled]="!channelNameEditor" type="text"
+                    placeholder="{{ getTitle(navigationService.chatViewObject) }} ">
+            </div>
+        </section>
+        <section class="channel-description">
+            <div>
+                <span>Beschreibung</span>
+                @if (!channelDescriptionEditor) {
+                <button (click)="showChannelDescriptionEditor()">Bearbeiten</button>
+                }@else {
+                <button (click)="saveEditedChannel()">Speichern</button>
+                }
+            </div>
+            <textarea [disabled]="!channelDescriptionEditor" [(ngModel)]="updateChannelData.description"></textarea>
+            <hr>
+            <div>
+                <span>Erstellt von</span>
+                <span>{{ getChannelCreator(navigationService.chatViewObject) }}</span>
+            </div>
+        </section>
+        <button class="leave-channel-button">Channel Verlassen</button>
+    </div>
+
 </main>
