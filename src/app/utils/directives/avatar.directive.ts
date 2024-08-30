@@ -258,13 +258,13 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
       case 'chat-channel-members-big':
         return {
-          imgSize: '2.5rem',
-          statusSize: '0.675rem',
+          imgSize: '3.125rem',
+          statusSize: '1rem',
           imgBorderColor: 'transparent',
           pseudoBorderColor: '#fff',
           pseudoBackgroundColor: 'offline',
           hoverPseudoBorderColor: '#eceefe',
-          showStatusIndicator: false,
+          showStatusIndicator: true,
         };
 
       case 'chat-message':

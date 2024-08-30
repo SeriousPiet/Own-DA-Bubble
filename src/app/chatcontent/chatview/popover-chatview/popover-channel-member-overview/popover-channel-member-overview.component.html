@@ -1,29 +1,17 @@
 <main>
     <div>
         <h4>Mitglieder</h4>
-        <div popovertargetaction="hide">
+        <button popovertargetaction="hide" popovertarget="channel-member-overview-popover">
             <img src="assets\icons\chat\general\close.svg" alt="">
-        </div>
+        </button>
     </div>
     <section class="member-list">
-        <div class="member">
-            <div class="avatar">
-                <img class="avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg" alt="">
+        @for (member of currentChannel.memberIDs; track $index) {
+            <div class="member">
+                <div appAvatar [user]="userService.getUserByID(member)" context="chat-channel-members-big"></div>
+                <span>{{ getMemberName(member) }}</span>
             </div>
-            <span>Frederick beck (Du)</span>
-        </div>
-        <div class="member">
-            <div class="avatar">
-                <img class="avatar" src="assets/icons/start/choose-avatar/choose-avatar-2.svg" alt="">
-            </div>
-            <span>Sofia Müller</span>
-        </div>
-        <div class="member">
-            <div class="avatar">
-                <img class="avatar" src="assets/icons/start/choose-avatar/choose-avatar-3.svg" alt="">
-            </div>
-            <span>Noah Braun</span>
-        </div>
+        }
         <div class="add-member">
             <div>
                 <img src="assets/icons/chat/general/add-to-channel.svg" alt="">

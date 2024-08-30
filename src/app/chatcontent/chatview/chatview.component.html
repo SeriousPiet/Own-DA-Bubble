@@ -47,7 +47,6 @@
     </section>
 
     <app-popover-channel-editor id="channel-editor-popover" popover [currentChannel]="navigationService.chatViewObject"></app-popover-channel-editor>
-    <app-popover-channel-member-overview id="channel-member-overview-popover"
-        popover></app-popover-channel-member-overview>
+    <app-popover-channel-member-overview id="channel-member-overview-popover" popover [currentChannel]="navigationService.chatViewObject"></app-popover-channel-member-overview>
 
 </main>
