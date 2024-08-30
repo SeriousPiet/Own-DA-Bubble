@@ -19,6 +19,8 @@ import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where }
 })
 export class LoginComponent implements OnDestroy {
 
+  private readonly loginInfoStayTime = 2000;
+
   public userservice = inject(UsersService);
   private firestore = inject(Firestore);
   private userlogin: any;
@@ -158,14 +160,20 @@ export class LoginComponent implements OnDestroy {
 
   handleLoginSuccess() {
     this.showInfoMessage('Anmelden');
+    const showLoginInfo = new Date().getTime();
     if (this.userservice.currentUser) {
-      this.router.navigate(['/chatcontent']);
-      this.showInfoMessage('');
+      setTimeout(() => {
+        this.redirectToChatContent();
+      }, this.loginInfoStayTime);
     } else {
       this.userlogin = this.userservice.changeCurrentUser$.subscribe((change) => {
         if (change == 'currentUserSignin') {
-          this.showInfoMessage('');
-          this.router.navigate(['/chatcontent']);
+          if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
+            setTimeout(() => {
+              this.redirectToChatContent();
+            }, this.loginInfoStayTime - (new Date().getTime() - showLoginInfo));
+          else
+            this.redirectToChatContent();
         }
       });
     }
@@ -196,10 +204,16 @@ export class LoginComponent implements OnDestroy {
   }
 
 
+  redirectToChatContent() {
+    this.showInfoMessage('');
+    this.router.navigate(['/chatcontent']);
+  }
+
   clearAllErrorSpans() {
     this.errorEmail = '';
     this.errorPassword = '';
     this.errorGoogleSignin = '';
   }
+
 
 }
