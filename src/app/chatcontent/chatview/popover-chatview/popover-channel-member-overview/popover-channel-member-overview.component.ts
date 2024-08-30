@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { UsersService } from '../../../../utils/services/user.service';
@@ -18,21 +18,28 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   @Input() currentChannel!: Channel | Chat;
 
 
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentChannel']) {
       this.currentChannel = changes['currentChannel'].currentValue;
+      this.sortMembersArray();
     }
   }
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
 
   getMemberName(memberID: string) {
     const member = this.userService.getUserByID(memberID);
-    console.log(this.userService.currentUser?.id)
     return member?.id === this.userService.currentUser?.id ? `${member?.name} (Du)` : member?.name;
   }
 
-  // getUserByID(id: string): User | undefined { return this.users.find((user) => user.id === id); }
+  sortMembersArray() {
+    if (this.currentChannel instanceof Channel) {
+      let currentUserIndex = this.currentChannel.memberIDs.indexOf(this.userService.currentUser!.id);
+      this.currentChannel.memberIDs.splice(currentUserIndex, 1);
+      this.currentChannel.memberIDs.unshift(this.userService.currentUser!.id);
+    }
+  }
 
 
 

@@ -6,10 +6,10 @@
         </button>
     </div>
     <section class="member-list">
-        @for (member of currentChannel.memberIDs; track $index) {
+        @for (memberID of currentChannel.memberIDs; track $index) {
             <div class="member">
-                <div appAvatar [user]="userService.getUserByID(member)" context="chat-channel-members-big"></div>
-                <span>{{ getMemberName(member) }}</span>
+                <div appAvatar [user]="userService.getUserByID(memberID)" context="chat-channel-members-big"></div>
+                <span>{{ getMemberName(memberID) }}</span>
             </div>
         }
         <div class="add-member">
