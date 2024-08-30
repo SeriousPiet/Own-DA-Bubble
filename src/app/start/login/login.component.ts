@@ -102,7 +102,7 @@ export class LoginComponent implements OnDestroy {
     let newUser = await addDoc(ref, userObj);
     setTimeout(() => {
       this.userservice.subscribeCurrentUserByID(newUser.id);
-    }, 1000);
+    }, 500);
     return newUser.id;
   }
 
