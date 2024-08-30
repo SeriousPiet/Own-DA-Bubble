@@ -1,3 +1,14 @@
+<div id="pwresetsend" class="popinfo" popover>
+  <div>
+    <img src="./assets/icons/modals/send-white.svg" alt="">
+    E-Mail gesendet
+  </div>
+</div>
+
+<div id="logininfo" class="popinfo" popover>
+  {{ logininfomessage }}
+</div>
+
 <section>
 
   <div class="debug-btn">
@@ -15,9 +26,37 @@
     <button [routerLink]="['/signup']">Konto erstellen</button>
   </div>
 
+  @if(passwordResetFormShow) {
+  <form [formGroup]="passwordResetForm" (ngSubmit)="submitPasswordResetForm($event)">
+    <button type="button" class="return" (click)="passwordResetFormShow=false">
+      <img src="../../../assets/icons/start/go-back.svg" alt="">
+    </button>
+    <span class="title">Passwort zurücksetzen</span>
+    <div class="info">
+      Bitte gib deine E-Mail-Adresse ein.
+    </div>
+    <div class="input-box mail">
+      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
+      @if(errorEmail != '') {
+      <span class="errorspan">{{ errorEmail }}</span>
+      }
+    </div>
+    <div class="info-gray">
+      Wir senden dir einem Link, um dein Passwort zurückzusetzen.
+    </div>
+    <div class="action-btns-pwreset">
+      @if(showSpinner) {
+      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
+      }
+      <button [disabled]="passwordResetForm.invalid" type="submit" class="blue-btn">EMail abschicken</button>
+    </div>
+  </form>
+  }
+  @else {
+
   <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
-    <span class="title nunito-46-700">Anmeldung</span>
-    <div class="info nunito-20-400">
+    <span class="title">Anmeldung</span>
+    <div class="info">
       Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
       verwendest.
     </div>
@@ -34,23 +73,29 @@
       }
     </div>
     <div class="password-missed">
-      <button type="button">Passwort vergessen?</button>
+      <button type="button" (click)="passwordResetFormShow=true">Passwort vergessen?</button>
     </div>
     <div class="or-separator">
       <div></div>
       <span>ODER</span>
       <div></div>
     </div>
-    <button class="login-with-google" (click)="signinWithGoogle()" type="button">
-      <img src="../../../assets/icons/start/google.svg" alt="" />
-      Anmelden mit Google
-    </button>
+    <div class="button-box">
+      <button class="login-with-google" (click)="signinWithGoogle()" type="button">
+        <img src="../../../assets/icons/start/google.svg" alt="" />
+        Anmelden mit Google
+      </button>
+      @if(errorGoogleSignin != '') {
+      <span class="errorspan">{{ errorGoogleSignin }}</span>
+      }
+    </div>
     <div class="action-btns">
       <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">Anmelden</button>
-      @if(logginIn) {
+      @if(showSpinner) {
       <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
       }
       <button type="button" class="white-btn">Gäste-Login</button>
     </div>
   </form>
+  }
 </section>
