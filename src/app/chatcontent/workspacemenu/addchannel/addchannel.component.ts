@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -19,9 +19,8 @@ import { AddChannelSearchbarComponent } from './add-channel-searchbar/add-channe
   templateUrl: './addchannel.component.html',
   styleUrl: './addchannel.component.scss',
 })
-export class AddchannelComponent {
+export class AddchannelComponent implements AfterViewInit {
   addChannelId: HTMLElement | null = null;
-
   toggleAddChannelPopover = true;
   isUserSearchSelected = false;
   public channelservice = inject(ChannelService);
@@ -29,8 +28,27 @@ export class AddchannelComponent {
   public name: string = '';
   public description: string = '';
 
-  toggleAddChannel() {
+  ngAfterViewInit() {
     this.addChannelId = document.getElementById('addChannelId');
+    this.closeOnClick();
+  }
+
+  closeOnClick() {
+    document
+      .getElementById('addChannelId')
+      ?.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        if (target === this.addChannelId) {
+          this.resetAddChannel();
+          this.addChannelId?.hidePopover();
+          if (!this.toggleAddChannelPopover) {
+            this.toggleAddChannelPopover = !this.toggleAddChannelPopover;
+          }
+        }
+      });
+  }
+
+  toggleAddChannel() {
     if (!this.toggleAddChannelPopover) {
       this.isUserSearchSelected = false;
       this.addNewChannel();

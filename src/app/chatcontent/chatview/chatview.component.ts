@@ -52,6 +52,7 @@ export class ChatviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.setObjectType();
+    this.cdr.detectChanges();
   }
 
   setObjectType() {
@@ -91,7 +92,16 @@ export class ChatviewComponent implements OnInit {
     });
   }
 
-
+  // loadChannelData() {
+  //   // Logik zum Laden der Daten, wenn das Popover geöffnet wird
+  //   if(this.currentChannel instanceof Channel) {
+  //     this.currentChannel = this.currentChannel.find(
+  //       channel => channel.id === this.navigationService.chatViewObject.id
+  //     );
+  //   }
+    
+  // }
+  
 
 
 }

@@ -9,10 +9,13 @@
 }
 
 main {
-    @include flex(center, normal);
+    @include flex(normal, normal);
     flex-direction: column;
     gap: 1.25rem;
     padding: 2.5rem;
+    height: 36.3125rem;
+    min-height: 100%;
+    min-width: 100%;
 
     >div {
         @include flex(space-between, center);
@@ -23,34 +26,70 @@ main {
             font-weight: 700;
             gap: .9375rem
         }
+
+        >#close-icon {
+            @include flex(center, center);
+            height: 2.5rem;
+            width: 2.5rem;
+            border-radius: 100%;
+            transition: $transition-standard;
+
+
+
+            &:hover {
+                background-color: $background;
+                cursor: pointer;
+
+                >img {
+                    content: url('../../../../../assets/icons/chat/general/close-hover.svg');
+                }
+            }
+        }
+
     }
 
-    >section {
-        @include flex(space-between, center);
+    .channel-info-content {
+        @include flex(center, center);
         flex-direction: column;
-        gap: 0.625rem;
-        border: $default-border;
-        border-radius: 1.25rem;
-        padding: 1.25rem;
+        gap: 1.25rem;
+        height: 100%;
 
-        >div {
+        >section {
+            @include flex(space-between, center);
+            flex-direction: column;
+            gap: 0.625rem;
+            border: $default-border;
+            border-radius: 1.25rem;
+            padding: 1.25rem;
             width: 100%;
 
-            >span {
-                font-size: 1.125rem;
-                font-weight: 700;
+            .channel-name-input {
+                gap: .625rem;
             }
 
-            >button {
-                font-size: 1.125rem;
-                font-weight: 500;
-                color: $secondary;
-                width: 6.25rem;
-                transition: all 250ms ease-in-out;
+            >div {
+                width: 100%;
 
-                &:hover {
-                    font-weight: 600;
+                >span {
+                    font-size: 1.125rem;
+                    font-weight: 700;
+                }
+
+                >button {
+                    font-size: 1.125rem;
+                    font-weight: 500;
                     color: $secondary;
+                    width: 6.25rem;
+                    transition: all 250ms ease-in-out;
+                    width: 5.625rem;
+                    line-height: 1.5344rem;
+                    transition: $transition-standard;
+
+
+                    &:hover {
+                        font-weight: 600;
+                        color: $secondary;
+                    }
                 }
             }
         }
@@ -58,6 +97,8 @@ main {
 }
 
 .channel-name {
+    height: 7.125rem;
+
     >div {
         @include flex(space-between, center);
     }
@@ -68,15 +109,18 @@ main {
 }
 
 .channel-description {
+    height: 273px;
+
     >div {
         @include flex(space-between, center);
     }
 
-    >textarea:disabled, textarea:enabled {
+    >textarea:disabled,
+    textarea:enabled {
+        @include nunito(1.125, 400);
         width: 100%;
         resize: none;
         border: none;
-        font-family: Nunito;
         outline: none;
         background-color: white;
 
@@ -106,4 +150,34 @@ main {
 .leave-channel-button {
     align-self: flex-end;
     @include buttonFull();
+}
+
+.channel-name-editor {
+    .channel-name {
+        border: unset !important;
+        transition: $transition-standard;
+
+
+        .channel-name-input {
+            border: $default-border;
+            border-radius: 2.5rem;
+            padding: 1.125rem 1.25rem;
+        }
+    }
+}
+
+.channel-description-editor {
+    .channel-description {
+        border: unset !important;
+        transition: $transition-standard;
+
+
+        >textarea {
+            border: $default-border;
+            border-radius: 1.875rem;
+            padding: 1.125rem 1.25rem;
+        }
+    }
+
+
 }
