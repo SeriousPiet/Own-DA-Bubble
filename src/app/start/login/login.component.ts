@@ -83,7 +83,6 @@ export class LoginComponent implements OnDestroy {
   async submitLoginForm(event: Event) {
     event.preventDefault();
     this.showSpinner = true;
-    document.getElementById('logininfo')?.showPopover();
     this.loginForm.disable();
     this.clearAllErrorSpans();
     const email = this.loginForm.value.email || '';
@@ -91,7 +90,7 @@ export class LoginComponent implements OnDestroy {
     const error = await this.userservice.loginUser(email, password);
     this.showSpinner = false;
     this.loginForm.enable();
-    document.getElementById('logininfo')?.hidePopover();
+    this.showInfoMessage('');
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }
@@ -114,9 +113,11 @@ export class LoginComponent implements OnDestroy {
       auth.languageCode = 'de';
       const result = await signInWithPopup(auth, provider);
       if (result.user.displayName && result.user.email) {
-        this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
+        await this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
+        return '';
+      } else {
+        return 'auth/google-signin-error-name-email-missing';
       }
-      return '';
     } catch (error) {
       return (error as Error).message;
     }
@@ -156,10 +157,16 @@ export class LoginComponent implements OnDestroy {
 
 
   handleLoginSuccess() {
-    if (this.userservice.currentUser) this.router.navigate(['/chatcontent']);
-    else {
+    this.showInfoMessage('Anmelden');
+    if (this.userservice.currentUser) {
+      this.router.navigate(['/chatcontent']);
+      this.showInfoMessage('');
+    } else {
       this.userlogin = this.userservice.changeCurrentUser$.subscribe((change) => {
-        if (change == 'currentUserSignin') this.router.navigate(['/chatcontent']);
+        if (change == 'currentUserSignin') {
+          this.showInfoMessage('');
+          this.router.navigate(['/chatcontent']);
+        }
       });
     }
   }
@@ -172,6 +179,19 @@ export class LoginComponent implements OnDestroy {
       this.errorPassword = 'Falsches Passwort oder E-Mail. Bitte noch einmal versuchen.';
     } else if (error.includes('auth/popup-closed-by-user')) {
       this.errorGoogleSignin = 'Googleanmeldung wurde durch Benutzer abgebrochen.';
+    } else if (error.includes('auth/google-signin-error-name-email-missing')) {
+      this.errorGoogleSignin = 'Googleanmeldung fehlgeschlagen. Keine Name und keine EMail gefunden.';
+    }
+  }
+
+
+  showInfoMessage(message: string) {
+    if (message == '') {
+      document.getElementById('logininfo')?.hidePopover();
+      return;
+    } else {
+      this.logininfomessage = message;
+      document.getElementById('logininfo')?.showPopover();
     }
   }
 
