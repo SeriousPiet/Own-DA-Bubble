@@ -17,7 +17,6 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   @Input() currentChannel!: Channel | Chat;
 
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentChannel']) {
       this.currentChannel = changes['currentChannel'].currentValue;
@@ -25,7 +24,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     }
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
 
   getMemberName(memberID: string) {
@@ -34,12 +33,18 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   }
 
   sortMembersArray() {
-    if (this.currentChannel instanceof Channel) {
+    if (this.currentChannel instanceof Channel && this.currentUserIsChannelMember()) {
       let currentUserIndex = this.currentChannel.memberIDs.indexOf(this.userService.currentUser!.id);
       this.currentChannel.memberIDs.splice(currentUserIndex, 1);
       this.currentChannel.memberIDs.unshift(this.userService.currentUser!.id);
     }
   }
+
+
+  currentUserIsChannelMember() {
+    return this.currentChannel instanceof Channel && this.currentChannel.memberIDs.includes(this.userService.currentUser!.id);
+  }
+
 
 
 

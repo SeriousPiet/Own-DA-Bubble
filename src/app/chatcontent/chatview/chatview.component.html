@@ -16,7 +16,7 @@
             <div class="member-avatar-overview">
                 <button class="member-avatars-ctn" popovertarget="channel-member-overview-popover">
                     <div class="d-flex">
-                        @for (member of requiredAvatars; track $index) {
+                        @for (member of requiredAvatars; track member) {
                             <div appAvatar [user]="userService.getUserByID(member)" context="chat-channel-members-small" class="member-avatar"></div>
                         }
                     </div>
@@ -42,7 +42,7 @@
         
     </section>
 
-    <app-popover-channel-editor id="channel-editor-popover" popover [currentChannel]="navigationService.chatViewObject"></app-popover-channel-editor>
-    <app-popover-channel-member-overview id="channel-member-overview-popover" popover [currentChannel]="navigationService.chatViewObject"></app-popover-channel-member-overview>
+    <app-popover-channel-editor id="channel-editor-popover" popover [currentChannel]="currentChannel"></app-popover-channel-editor>
+    <app-popover-channel-member-overview id="channel-member-overview-popover" popover [currentChannel]="currentChannel"></app-popover-channel-member-overview>
 
 </main>
