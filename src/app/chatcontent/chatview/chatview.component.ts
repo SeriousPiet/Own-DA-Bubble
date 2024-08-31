@@ -53,6 +53,7 @@ export class ChatviewComponent implements OnChanges {
       this.currentChannel instanceof Channel && this.currentChannel.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
       this.setObjectType();
       this.getRequiredAvatars();
+      console.log(this.isDefaultChannel)
     }
   }
 
@@ -80,7 +81,6 @@ export class ChatviewComponent implements OnChanges {
 
   getRequiredAvatars() {
     if (this.currentChannel instanceof Channel) {
-      console.log('test')
       this.requiredAvatars = this.currentChannel.memberIDs.slice(0, 3);
     }
   }
