@@ -93,6 +93,15 @@
       display: flex;
       align-items: center;
       gap: 1.25rem;
+      > .select-user-search {
+        margin: 0;
+      }
+      > .select-user-search:hover {
+        cursor: pointer;
+      }
+    }
+    > div:hover {
+      cursor: pointer;
     }
   }
 

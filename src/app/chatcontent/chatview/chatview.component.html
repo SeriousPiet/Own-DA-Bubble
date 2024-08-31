@@ -1,53 +1,79 @@
 <main class="chatview-main-ctn">
-    <section class="chatview-header">
-        <button 
-        class="chatview-channel-name" 
-        popovertarget="channel-editor-popover"
-        (shown.bs.popover)="currentChannel"
-        >
-            <div>
-                <div>
-                    <img src="assets/icons/chat/general/hashtag.svg" alt="#">
-                    <span>{{getTitle(navigationService.chatViewObject)}}</span>
-                </div>
-                <img src="assets/icons/modals/expand-down.svg" alt="arrow-down">
-            </div>
-        </button>
-        @if (!isDefaultChannel) {
-            <div class="member-avatar-overview">
-                <button class="member-avatars-ctn" popovertarget="channel-member-overview-popover">
-                    <div class="d-flex">
-                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
-                            alt="member-avatar">
-                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
-                            alt="member-avatar">
-                        <img class="member-avatar" src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
-                            alt="member-avatar">
-                    </div>
-                    <span>{{ getNumberOfMembers(navigationService.chatViewObject) }}</span>
-                </button>
-                <div class="add-member-icon-ctn">
-                    <img src="assets/icons/chat/general/add-to-channel.svg" alt="add-member-icon">
-                </div>
-            </div>
-        }
-       
-
-    </section>
-    <section class="chatview-content" [ngClass]="{'default-channel':isDefaultChannel}">
-        @if (!isDefaultChannel && navigationService.chatViewPath) {
-        <div class="chat-messages-content">
-            <app-messages-list-view [ngClass]="{'default-channel':isDefaultChannel}" [isDefaultChannel]="isDefaultChannel" [messagesPath]="navigationService.chatViewPath"></app-messages-list-view>
+  <section class="chatview-header">
+    <button
+      class="chatview-channel-name"
+      popovertarget="channel-editor-popover"
+      (shown.bs.popover)="(currentChannel)"
+    >
+      <div>
+        <div>
+          <img src="assets/icons/chat/general/hashtag.svg" alt="#" />
+          <span>{{ getTitle(navigationService.chatViewObject) }}</span>
         </div>
-            <app-message-textarea [newMessagePath]="navigationService.chatViewPath"></app-message-textarea>
-        }@else {
-            <app-message-greeting></app-message-greeting>
-        }
-        
-    </section>
+        <img src="assets/icons/modals/expand-down.svg" alt="arrow-down" />
+      </div>
+    </button>
+    @if (!isDefaultChannel) {
+    <div class="member-avatar-overview">
+      <button
+        class="member-avatars-ctn"
+        popovertarget="channel-member-overview-popover"
+      >
+        <div class="d-flex">
+          <img
+            class="member-avatar"
+            src="assets/icons/start/choose-avatar/choose-avatar-1.svg"
+            alt="member-avatar"
+          />
+          <img
+            class="member-avatar"
+            src="assets/icons/start/choose-avatar/choose-avatar-2.svg"
+            alt="member-avatar"
+          />
+          <img
+            class="member-avatar"
+            src="assets/icons/start/choose-avatar/choose-avatar-5.svg"
+            alt="member-avatar"
+          />
+        </div>
+        <span>{{ getNumberOfMembers(navigationService.chatViewObject) }}</span>
+      </button>
+      <div class="add-member-icon-ctn">
+        <img
+          src="assets/icons/chat/general/add-to-channel.svg"
+          alt="add-member-icon"
+        />
+      </div>
+    </div>
+    }
+  </section>
+  <section
+    class="chatview-content"
+    [ngClass]="{ 'default-channel': isDefaultChannel }"
+  >
+    @if (!isDefaultChannel && navigationService.chatViewPath) {
+    <div class="chat-messages-content">
+      <app-messages-list-view
+        [ngClass]="{ 'default-channel': isDefaultChannel }"
+        [isDefaultChannel]="isDefaultChannel"
+        [messagesPath]="navigationService.chatViewPath"
+      ></app-messages-list-view>
+    </div>
+    <app-message-textarea
+      [newMessagePath]="navigationService.chatViewPath"
+    ></app-message-textarea>
+    }@else {
+    <app-message-greeting></app-message-greeting>
+    }
+  </section>
 
-    <app-popover-channel-editor id="channel-editor-popover" popover [currentChannel]="navigationService.chatViewObject"></app-popover-channel-editor>
-    <app-popover-channel-member-overview id="channel-member-overview-popover"
-        popover></app-popover-channel-member-overview>
-
+  <app-popover-channel-editor
+    id="channel-editor-popover"
+    popover
+    [currentChannel]="navigationService.chatViewObject"
+  />
+  <app-popover-channel-member-overview
+    id="channel-member-overview-popover"
+    popover
+  />
 </main>
