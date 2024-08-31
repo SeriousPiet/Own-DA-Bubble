@@ -41,7 +41,6 @@ export class MessageComponent implements OnInit {
   message = '';
 
   ngOnInit(): void {
-    console.log(this);
     this.updatedMessage = {
       content: this.messageData.content,
       edited: this.messageData.edited,
@@ -86,11 +85,11 @@ export class MessageComponent implements OnInit {
           previousMessageDate = currentMessageDate;
         }
 
-        console.log(`Message index ${index}, previousMessageFromSameUser: ${message.previousMessageFromSameUser}`)
+        // console.log(`Message index ${index}, previousMessageFromSameUser: ${message.previousMessageFromSameUser}`)
 
       });
 
-      console.log(this.messages);
+      // console.log(this.messages);
     }
   }
 
