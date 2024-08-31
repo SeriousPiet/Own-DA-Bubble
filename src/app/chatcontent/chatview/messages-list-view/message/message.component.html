@@ -50,7 +50,7 @@
                 <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+">
             </div>
             <div class="message-editor-button">
-                <button class="abort-btn" (click)="toggleMessageEditor()">Abbrechen</button>
+                <button class="abort-btn" (click)="discardChanges(messageData,updatedMessage)">Abbrechen</button>
                 <button class="save-btn" (click)="editMessage(messageData, updatedMessage)">Speichern</button>
             </div>
         </div>
