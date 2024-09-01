@@ -22,13 +22,17 @@
 section {
   display: flex;
   flex-direction: column;
-  padding: 2rem 1.875rem 2rem 1.875rem;
   gap: 1.5625rem;
   width: 100%;
-  z-index: 1;
 
   .workspace {
+    position: sticky;
+    top: 0;
+    padding: 2rem 1.875rem 0rem 1.875rem;
     overflow: visible;
+    background: #fff;
+    z-index: 1;
+    box-shadow: 0 0.125rem 0.625rem -0.5rem rgba($color: #000000, $alpha: 0.8);
     @include display-standard;
     justify-content: space-between;
     width: 100%;
@@ -39,7 +43,6 @@ section {
     .ws-write {
       padding: 0.5rem;
       gap: 0.625rem;
-      overflow: visible;
       background-image: url("../../../assets/icons/wsm/ws-write.svg");
       border-radius: 1.25rem;
       @include background-properties;
@@ -81,12 +84,17 @@ section {
     position: relative;
   }
 
+  .messagesChannels {
+    padding: 0rem 1.875rem 2rem 1.875rem;
+  }
+
   .channels {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    padding: 0rem 1.875rem 0rem 1.875rem;
 
     > details {
       width: 100%;
@@ -108,7 +116,6 @@ section {
       background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
       @include background-properties;
       @include display-standard;
-      z-index: 1;
       position: relative;
       min-width: 2.5rem;
       border-radius: 1.25rem;

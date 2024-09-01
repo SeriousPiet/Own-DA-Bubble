@@ -1,7 +1,7 @@
 @import "../../../../../styles.scss";
 @import "../../../../../mixins.scss";
 
-.searchbar {
+.addUserSearchbar {
   width: 100%;
   @include flex(flex-start, flex-start);
   flex-direction: column;
@@ -11,7 +11,6 @@
   background-color: #fff;
   transition: $transition-standard;
   gap: 0.5rem;
-
   &:focus-within {
     box-shadow: $profile-box-shadow;
   }
@@ -19,6 +18,10 @@
   input {
     width: 100%;
     font-size: 1rem;
+  }
+
+  input:hover {
+    cursor: pointer;
   }
 
   .search-blocks {
@@ -82,4 +85,8 @@
       border-radius: $circled-border-radius;
     }
   }
+}
+
+.addUserSearchbar:hover {
+  border-color: #535af1;
 }

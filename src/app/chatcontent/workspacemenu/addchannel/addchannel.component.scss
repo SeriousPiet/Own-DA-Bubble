@@ -1,4 +1,6 @@
 @import "../../../../fonts.scss";
+@import "../../../../mixins.scss";
+@import "../../../../styles.scss";
 
 .add-channel:popover-open {
   display: flex;
@@ -83,6 +85,14 @@
     border: 0.0625rem solid #adb0d9;
     padding: 1.125rem 1.25rem 1.125rem 1.25rem;
     gap: 1.25rem;
+    &:focus-within {
+      box-shadow: $profile-box-shadow;
+    }
+  }
+
+  input:hover {
+    cursor: pointer;
+    border-color: #535af1;
   }
 
   button {
