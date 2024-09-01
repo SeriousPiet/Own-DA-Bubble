@@ -7,6 +7,19 @@
     (blur)="onBlur()"
     placeholder="Search..."
   />
+
+  <button class="datepicker-icon" (click)="toggleDatepicker()">
+    <img src="./assets/icons/modals/calendar-search.svg" alt="Calendar Icon" />
+  </button>
+
+  <input
+    #dateInput
+    type="date"
+    class="datepicker"
+    (change)="onDateSelected($event)"
+    [class.d-none]="!isDatepickerVisible"
+  />
+
   <div
     class="search-blocks"
     [ngClass]="{ 'context-active': isContextSearchEnabled }"
