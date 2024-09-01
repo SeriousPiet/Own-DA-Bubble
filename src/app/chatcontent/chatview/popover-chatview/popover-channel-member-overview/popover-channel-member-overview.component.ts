@@ -3,11 +3,12 @@ import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { UsersService } from '../../../../utils/services/user.service';
 import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-popover-channel-member-overview',
   standalone: true,
-  imports: [AvatarDirective],
+  imports: [AvatarDirective, CommonModule],
   templateUrl: './popover-channel-member-overview.component.html',
   styleUrl: './popover-channel-member-overview.component.scss'
 })
@@ -16,6 +17,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   userService = inject(UsersService);
 
   @Input() currentChannel!: Channel | Chat;
+  @Input() isCurrentMember: boolean = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentChannel']) {
@@ -31,6 +33,8 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     const member = this.userService.getUserByID(memberID);
     return member?.id === this.userService.currentUser?.id ? `${member?.name} (Du)` : member?.name;
   }
+
+
 
   sortMembersArray() {
     if (this.currentChannel instanceof Channel && this.currentUserIsChannelMember()) {
