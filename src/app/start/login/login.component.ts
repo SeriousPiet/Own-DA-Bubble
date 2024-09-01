@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } 
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, passwordValidator } from '../../utils/form-validators';
-import { getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithPopup } from '@angular/fire/auth';
+import { Auth, getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
 import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where } from '@angular/fire/firestore';
 
 @Component({
@@ -23,6 +23,7 @@ export class LoginComponent implements OnDestroy {
 
   public userservice = inject(UsersService);
   private firestore = inject(Firestore);
+  private firebaseauth = inject(Auth);
   private userlogin: any;
   private router: Router = inject(Router);
 
@@ -89,12 +90,23 @@ export class LoginComponent implements OnDestroy {
     this.clearAllErrorSpans();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
-    const error = await this.userservice.loginUser(email, password);
+    const error = await this.loginUser(email, password);
     this.showSpinner = false;
     this.loginForm.enable();
     this.showInfoMessage('');
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
+  }
+
+
+  async loginUser(email: string, password: string): Promise<string> {
+    try {
+      await signInWithEmailAndPassword(this.firebaseauth, email, password);
+      return '';
+    } catch (error) {
+      console.error('userservice/login:', (error as Error).message);
+      return (error as Error).message as string;
+    }
   }
 
 

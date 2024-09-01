@@ -1,8 +1,8 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
-import { addDoc, updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp, getDocs, where, query } from '@angular/fire/firestore';
-import { Auth, createUserWithEmailAndPassword, EmailAuthProvider, getAuth, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateEmail, updateProfile, user } from '@angular/fire/auth';
+import { updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp, getDocs, where, query } from '@angular/fire/firestore';
+import { Auth, EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail, user } from '@angular/fire/auth';
 import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 
 @Injectable({
@@ -11,7 +11,6 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/stor
 export class UsersService implements OnDestroy {
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
-  private storage = getStorage();
   private unsubUsers: any = null;
   private user$: any = null;
   private currentUserSubscriber: any = null;
@@ -48,10 +47,7 @@ export class UsersService implements OnDestroy {
     }
   }
 
-  async updateCurrentUserEmail(
-    newEmail: string,
-    currentPassword: string
-  ): Promise<string | undefined> {
+  async updateCurrentUserEmail(newEmail: string, currentPassword: string): Promise<string | undefined> {
     try {
       await this.reauthenticate(currentPassword);
       const auth = getAuth();
@@ -64,90 +60,10 @@ export class UsersService implements OnDestroy {
         return undefined;
       }
     } catch (error) {
-      console.error(
-        'userservice/auth: Error updating email on Firebase/Auth(',
-        error,
-        ')'
-      );
+      console.error('userservice/auth: Error updating email on Firebase/Auth(', error, ')');
       return undefined;
     }
     return undefined;
-  }
-
-  
-  private async getUserIDByEmail(
-    email: string | null
-  ): Promise<string | undefined> {
-    const usersRef = collection(this.firestore, '/users');
-    const queryresponse = query(usersRef, where('email', '==', email));
-    const querySnapshot = await getDocs(queryresponse);
-    if (!querySnapshot.empty) {
-      const userDoc = querySnapshot.docs[0];
-      return userDoc.id;
-    }
-    return undefined;
-  }
-
-
-  private async updateUserOnlineStatusOnFirestore(userID: string, online: boolean): Promise<void> {
-    const updateData = online ? { online: online } : { online: online, lastLoginAt: serverTimestamp() };
-    await updateDoc(doc(this.firestore, '/users/' + userID), updateData);
-  }
-
-
-  // ############################################################################################################
-  // methodes for login and logout and signup
-  // ############################################################################################################
-
-  logoutUser(): void {
-    if (this.currentUser) {
-      signOut(this.firebaseauth);
-    }
-  }
-
-
-  async loginUser(email: string, password: string): Promise<string> {
-    try {
-      await signInWithEmailAndPassword(this.firebaseauth, email, password);
-      return '';
-    } catch (error) {
-      console.error('userservice/login:', (error as Error).message);
-      return (error as Error).message as string;
-    }
-  }
-
-
-  async registerNewUser(name: string, email: string, password: string): Promise<string> {
-    try {
-      await createUserWithEmailAndPassword(this.firebaseauth, email, password);
-      await addDoc(collection(this.firestore, '/users'),
-        {
-          name: name,
-          email: email,
-          online: false,
-          signupAt: serverTimestamp(),
-          avatar: 0,
-        });
-      console.warn('userservice/auth: User registered(', email, ')');
-      return '';
-    } catch (error) {
-      console.error('userservice/auth: Error registering user(', (error as Error).message, ')');
-      return (error as Error).message;
-    }
-  }
-
-
-  async uploadUserPictureToFirestore(userID: string, file: any): Promise<string> {
-    const storageRef = ref(this.storage, 'profile-pictures/' + userID + '/userpicture.' + file.name.split('.').pop());
-    try {
-      const snapshot = await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(snapshot.ref);
-      await this.updateCurrentUserDataOnFirestore({ pictureURL: url });
-      return '';
-    } catch (error) {
-      console.error('userservice/storage: ', (error as Error).message);
-      return (error as Error).message;
-    }
   }
 
 
@@ -166,6 +82,34 @@ export class UsersService implements OnDestroy {
       throw error;
     }
   }
+
+
+  private async getUserIDByEmail(
+    email: string | null
+  ): Promise<string | undefined> {
+    const usersRef = collection(this.firestore, '/users');
+    const queryresponse = query(usersRef, where('email', '==', email));
+    const querySnapshot = await getDocs(queryresponse);
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      return userDoc.id;
+    }
+    return undefined;
+  }
+
+
+  private async updateUserOnlineStatusOnFirestore(userID: string, online: boolean): Promise<void> {
+    const updateData = online ? { online: true, lastLoginAt: serverTimestamp() } : { online: false };
+    await updateDoc(doc(this.firestore, '/users/' + userID), updateData);
+  }
+
+
+  logoutUser(): void {
+    if (this.currentUser) {
+      signOut(this.firebaseauth);
+    }
+  }
+
 
   // ############################################################################################################
   // Functions for subscribing to Firestore collections
