@@ -41,7 +41,6 @@ export class MessageComponent implements OnInit {
   message = '';
 
   ngOnInit(): void {
-    console.log(this);
     this.updatedMessage = {
       content: this.messageData.content,
       edited: this.messageData.edited,
@@ -55,7 +54,7 @@ export class MessageComponent implements OnInit {
   constructor(private cdr: ChangeDetectorRef) {
   }
 
-  getMessageCreatorObject(){
+  getMessageCreatorObject() {
     return this.userService.getUserByID(this.messageData.creatorID);
   }
 
@@ -86,11 +85,11 @@ export class MessageComponent implements OnInit {
           previousMessageDate = currentMessageDate;
         }
 
-        console.log(`Message index ${index}, previousMessageFromSameUser: ${message.previousMessageFromSameUser}`)
+        // console.log(`Message index ${index}, previousMessageFromSameUser: ${message.previousMessageFromSameUser}`)
 
       });
 
-      console.log(this.messages);
+      // console.log(this.messages);
     }
   }
 
@@ -127,9 +126,18 @@ export class MessageComponent implements OnInit {
   }
 
   editMessage(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
-    this.messageService.updateMessage(message, updatedData);
+    if (updatedData.content) {
+      this.messageService.updateMessage(message, updatedData);
+      updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
+      updatedData.editedAt ? this.updatedMessage.editedAt = updatedData.editedAt : this.updatedMessage.editedAt = serverTimestamp();
+      this.toggleMessageEditor();
+    }
+  }
+
+  discardChanges(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }){
     updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
-    updatedData.editedAt ? this.updatedMessage.editedAt = updatedData.editedAt : this.updatedMessage.editedAt = serverTimestamp();
+    updatedData.content = message.content;
+    
     this.toggleMessageEditor();
   }
 

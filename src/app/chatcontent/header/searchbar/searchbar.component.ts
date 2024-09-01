@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation,
+} from '@angular/core';
 import { Observable } from 'rxjs';
 import { SearchService } from '../../../utils/services/search.service';
 import { NavigationService } from '../../../utils/services/navigation.service';
@@ -9,7 +15,6 @@ import { Channel } from '../../../shared/models/channel.class';
 import { Chat } from '../../../shared/models/chat.class';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { AvatarDirective } from '../../../utils/directives/avatar.directive';
 
 @Component({
@@ -18,6 +23,7 @@ import { AvatarDirective } from '../../../utils/directives/avatar.directive';
   imports: [CommonModule, FormsModule, AvatarDirective],
   templateUrl: './searchbar.component.html',
   styleUrls: ['./searchbar.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class SearchbarComponent implements OnInit {
   searchState$!: Observable<{
@@ -30,6 +36,7 @@ export class SearchbarComponent implements OnInit {
   isDropdownVisible = false;
   recentSearches: string[] = [];
   currentContext: string = '';
+  isDatepickerVisible = false;
 
   // ############################################################################################################
   // Lifecycle Hooks
@@ -39,7 +46,7 @@ export class SearchbarComponent implements OnInit {
     public navigationService: NavigationService,
     private channelService: ChannelService,
     private usersService: UsersService
-  ) { }
+  ) {}
 
   /**
    * Initializes the search suggestions, current search context, and recent searches.
@@ -48,6 +55,37 @@ export class SearchbarComponent implements OnInit {
   ngOnInit() {
     this.currentContext = this.searchService.getCurrentContext();
     this.recentSearches = this.searchService.getRecentSearches();
+  }
+
+  @ViewChild('dateInput') dateInput!: ElementRef<HTMLInputElement>;
+
+  /**
+   * Toggles the visibility of the date picker input field.
+   * If the date picker is made visible, it will automatically show the date picker UI.
+   */
+  toggleDatepicker() {
+    this.isDatepickerVisible = !this.isDatepickerVisible;
+    if (this.isDatepickerVisible) {
+      setTimeout(() => {
+        this.dateInput.nativeElement.showPicker();
+      });
+    }
+  }
+
+  /**
+   * Handles the date selection event from the date picker input field.
+   * When a date is selected, it searches for content by the selected date and
+   * hides the date picker input field.
+   *
+   * @param event - The event object containing the selected date.
+   */
+  async onDateSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const selectedDate = input.value;
+    if (selectedDate) {
+      await this.searchService.searchByDate(new Date(selectedDate));
+      this.isDatepickerVisible = false;
+    }
   }
 
   // ############################################################################################################

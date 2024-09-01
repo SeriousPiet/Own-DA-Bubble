@@ -78,6 +78,11 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
   border: none;
 }
 
+*::backdrop {
+  background-color: #00000066;
+  backdrop-filter: blur(3px);
+}
+
 html {
   font-size: 16px;
 
@@ -144,8 +149,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  &:has(*:popover-open) {
+    pointer-events: none;
+
+    *:popover-open {
+      pointer-events: auto !important;
+    }
+  }
+
   @media (width <= 1440px) {
     font-size: 16px;
   }
 }
-

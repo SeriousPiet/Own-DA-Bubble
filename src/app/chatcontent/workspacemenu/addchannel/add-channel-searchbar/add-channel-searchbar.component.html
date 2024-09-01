@@ -1,6 +1,8 @@
 <div class="searchbar">
+  @if (userSelected) {
   <div class="search-blocks">
     <div *ngFor="let user of selectedUsers" class="search-block-item">
+      <div appAvatar [user]="user" context="search"></div>
       <span>{{ user.name }}</span>
       <button class="remove-context" (click)="removeUserFromSelection(user)">
         <img
@@ -10,6 +12,7 @@
       </button>
     </div>
   </div>
+  }
 
   <input
     type="text"
@@ -20,13 +23,17 @@
     placeholder="Search users..."
   />
 
-  <div *ngIf="isDropdownVisible" class="dropdown">
+  <div
+    *ngFor="let suggestion of suggestions$ | async"
+    class="suggestion-item"
+    (click)="selectSuggestion(suggestion)"
+  >
     <div
-      *ngFor="let suggestion of suggestions$ | async"
-      class="suggestion-item"
-      (click)="selectSuggestion(suggestion)"
-    >
-      {{ suggestion.text }}
-    </div>
+      *ngIf="suggestion.type === 'user' && getUserFromSuggestion(suggestion)"
+      appAvatar
+      [user]="getUserFromSuggestion(suggestion)!"
+      context="search"
+    ></div>
+    <div>{{ suggestion.text }}</div>
   </div>
 </div>

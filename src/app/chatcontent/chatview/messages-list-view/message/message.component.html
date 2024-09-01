@@ -3,7 +3,7 @@
     'editor-modus-bg-color':messageEditorModus, 
     'message-from-same-user': messageData.previousMessageFromSameUser}">
     <div class="message-avatar-ctn">
-        <div appAvatar context="thread-message" [user]="getMessageCreatorObject()!" class="message-creator-avatar"></div>
+        <div appAvatar context="chat-message" [user]="getMessageCreatorObject()!" class="message-creator-avatar"></div>
         <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
     </div>
     @if (!messageEditorModus) {
@@ -50,7 +50,7 @@
                 <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+">
             </div>
             <div class="message-editor-button">
-                <button class="abort-btn" (click)="toggleMessageEditor()">Abbrechen</button>
+                <button class="abort-btn" (click)="discardChanges(messageData,updatedMessage)">Abbrechen</button>
                 <button class="save-btn" (click)="editMessage(messageData, updatedMessage)">Speichern</button>
             </div>
         </div>

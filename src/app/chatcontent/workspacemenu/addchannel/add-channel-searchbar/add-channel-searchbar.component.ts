@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { SearchService } from '../../../../utils/services/search.service';
 import { UsersService } from '../../../../utils/services/user.service';
 import { User } from '../../../../shared/models/user.class';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
+import { Component } from '@angular/core';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-add-channel-searchbar',
@@ -14,22 +14,39 @@ import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
   templateUrl: './add-channel-searchbar.component.html',
   styleUrl: './add-channel-searchbar.component.scss',
 })
-export class AddChannelSearchbarComponent implements OnInit {
+export class AddChannelSearchbarComponent {
+  userSelected = false;
   searchQuery: string = '';
   suggestions$!: Observable<{ text: string; type: string }[]>;
   isDropdownVisible = false;
   selectedUsers: User[] = [];
+
+  public getUserFromSuggestion(
+    suggestion: string | { text: string; type: string }
+  ): User | undefined {
+    let userName: string;
+    if (typeof suggestion === 'string') {
+      userName = suggestion.startsWith('@') ? suggestion.slice(1) : suggestion;
+    } else {
+      userName = suggestion.type === 'user' ? suggestion.text.slice(1) : '';
+    }
+    return this.findUserByName(userName);
+  }
 
   constructor(
     private searchService: SearchService,
     private usersService: UsersService
   ) {}
 
-  ngOnInit() {}
-
   onSearchInput() {
     this.searchService.updateSearchQuery(this.searchQuery);
-    this.suggestions$ = this.searchService.getSearchSuggestions();
+    this.suggestions$ = this.searchService
+      .getSearchSuggestions()
+      .pipe(
+        map((suggestions) =>
+          suggestions.filter((suggestion) => suggestion.type === 'user')
+        )
+      );
   }
 
   onFocus() {
@@ -57,6 +74,7 @@ export class AddChannelSearchbarComponent implements OnInit {
     }
     this.isDropdownVisible = false;
     this.searchService.addRecentSearch(suggestion.text);
+    this.userSelected = true;
   }
 
   public findUserByName(name: string): User | undefined {
@@ -78,5 +96,12 @@ export class AddChannelSearchbarComponent implements OnInit {
 
   removeUserFromSelection(user: User) {
     this.selectedUsers = this.selectedUsers.filter((u) => u.id !== user.id);
+    if (user.id!) {
+      this.userSelected = false;
+    }
+  }
+
+  submitSelectedUsers() {
+    return this.selectedUsers.map((u) => u.id);
   }
 }

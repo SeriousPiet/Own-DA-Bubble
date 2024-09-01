@@ -25,15 +25,14 @@ export class PopoverChannelEditorComponent implements OnChanges {
   channelNameEditor = false;
   channelDescriptionEditor = false;
 
-  updateChannelData: { name?: string, description?: string, membersIDs?: string[] } = {};
+  updateChannelData: { name?: string, description?: string, memberIDs?: string[] } = {};
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['currentChannel']) {
-      console.log(changes['currentChannel']);
       this.currentChannel = changes['currentChannel'].currentValue;
       this.updateChannelData.name = this.currentChannel.name;
       this.updateChannelData.description = this.currentChannel.description;
-      this.updateChannelData.membersIDs = this.currentChannel.memberIDs;
+      this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
     }
   }
 

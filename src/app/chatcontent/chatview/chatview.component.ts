@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChange, SimpleChanges } from '@angular/core';
 import { MessageDateComponent } from './messages-list-view/message-date/message-date.component';
 import { MessageTextareaComponent } from '../message-textarea/message-textarea.component';
 import { CommonModule } from '@angular/common';
@@ -14,6 +14,7 @@ import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { MessagesListViewComponent } from './messages-list-view/messages-list-view.component';
 import { UsersService } from '../../utils/services/user.service';
 import { MessageGreetingComponent } from './messages-list-view/message-greeting/message-greeting.component';
+import { AvatarDirective } from '../../utils/directives/avatar.directive';
 
 
 @Component({
@@ -26,33 +27,37 @@ import { MessageGreetingComponent } from './messages-list-view/message-greeting/
     PopoverChannelEditorComponent,
     PopoverChannelMemberOverviewComponent,
     MessagesListViewComponent,
-    MessageGreetingComponent
+    MessageGreetingComponent,
+    AvatarDirective
   ],
   templateUrl: './chatview.component.html',
   styleUrl: './chatview.component.scss',
 })
-export class ChatviewComponent implements OnInit {
+export class ChatviewComponent implements OnChanges {
 
 
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
-  private userService = inject(UsersService)
+  public userService = inject(UsersService)
   public isAChannel = false;
   public isAChat = false;
   public isDefaultChannel = true;
+  public requiredAvatars: string[] = []
+
+  @Input() currentChannel!: Channel | Chat;
 
 
-  @Input() set currentChannel (object: Channel | Chat){
-    object instanceof Channel && object.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
-    if (object instanceof Channel) console.log(object.defaultChannel);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentChannel']) {
+      this.currentChannel = changes['currentChannel'].currentValue;
+      this.currentChannel instanceof Channel && this.currentChannel.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
+      this.setObjectType();
+      this.getRequiredAvatars();
+      console.log(this.isDefaultChannel)
+    }
   }
 
   constructor(private cdr: ChangeDetectorRef) {
-  }
-
-  ngOnInit(): void {
-    this.setObjectType();
-    this.cdr.detectChanges();
   }
 
   setObjectType() {
@@ -68,9 +73,16 @@ export class ChatviewComponent implements OnInit {
     return '';
   }
 
-  getNumberOfMembers(object: Channel | Chat | Message | undefined) {
+  getNumberOfMembers(object: Channel | Chat) {
     if (object instanceof Channel) return object.members.length;
     return
+  }
+
+
+  getRequiredAvatars() {
+    if (this.currentChannel instanceof Channel) {
+      this.requiredAvatars = this.currentChannel.memberIDs.slice(0, 3);
+    }
   }
 
   renderChannelMembersAvatar(object: Channel | Chat | Message | undefined) {
@@ -91,17 +103,5 @@ export class ChatviewComponent implements OnInit {
       return this.userService.getUserByID(memberID)?.avatar
     });
   }
-
-  // loadChannelData() {
-  //   // Logik zum Laden der Daten, wenn das Popover geöffnet wird
-  //   if(this.currentChannel instanceof Channel) {
-  //     this.currentChannel = this.currentChannel.find(
-  //       channel => channel.id === this.navigationService.chatViewObject.id
-  //     );
-  //   }
-    
-  // }
-  
-
 
 }

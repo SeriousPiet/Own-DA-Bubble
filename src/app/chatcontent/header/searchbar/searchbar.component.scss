@@ -12,7 +12,7 @@
   @include flex(flex-start, flex-start);
   flex-direction: column;
   padding: 1.125rem;
-  border: 1px solid $disabled;
+  // border: 1px solid $disabled;
   border-radius: 1.875rem;
   background-color: #fff;
   transition: $transition-standard;
@@ -24,6 +24,45 @@
   input {
     width: 100%;
     font-size: 1rem;
+  }
+
+  .datepicker-icon {
+    position: absolute;
+    z-index: 20;
+    top: 0.75rem;
+    right: 0.75rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.125rem;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    transition: $transition-standard;
+
+    &:hover {
+      background-color: $background;
+    }
+
+    &:hover img {
+      content: url("../../../../assets/icons/modals/calendar-search-hover.svg");
+    }
+
+    img {
+      width: 1.5rem;
+      aspect-ratio: 1 / 1;
+    }
+  }
+
+  .datepicker {
+    position: relative;
+    top: 1.125rem;
+    left: 18rem;
+    width: 0;
+    height: 0;
   }
 
   .search-blocks {
@@ -181,5 +220,28 @@
         }
       }
     }
+  }
+
+  .date-picker::-webkit-calendar-picker-indicator {
+    // display: none;
+  }
+
+  ::-webkit-calendar-picker-indicator {
+    background: $background;
+    border-radius: 4px;
+    border: none;
+    font-family: "Nunito", sans-serif;
+
+    color: $primary;
+  }
+
+  .date-picker::-webkit-datetime-edit-fields-wrapper {
+    border-radius: 8px;
+    border: 1px solid #adb0d9;
+    font-family: "Nunito", sans-serif;
+  }
+
+  .date-picker::-webkit-datetime-edit {
+    display: none;
   }
 }
