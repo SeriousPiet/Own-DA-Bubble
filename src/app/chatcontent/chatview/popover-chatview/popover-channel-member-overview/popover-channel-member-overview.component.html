@@ -7,7 +7,7 @@
     </div>
     <section class="member-list">
         @for (memberID of currentChannel.memberIDs; track memberID) {
-            <div class="member">
+            <div class="member" [ngClass]="{'current-user':memberID === userService.currentUser?.id}">
                 <div appAvatar [user]="userService.getUserByID(memberID)" context="chat-channel-members-big"></div>
                 <span>{{ getMemberName(memberID) }}</span>
             </div>
