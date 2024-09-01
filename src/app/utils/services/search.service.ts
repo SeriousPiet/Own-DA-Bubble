@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import {
   map,
@@ -10,14 +10,23 @@ import {
 import { NavigationService } from './navigation.service';
 import { UsersService } from './user.service';
 import { ChannelService } from './channel.service';
+import { MessageService } from './message.service';
+import { Message } from '../../shared/models/message.class';
+import { Channel } from '../../shared/models/channel.class';
+import { Chat } from '../../shared/models/chat.class';
 
 import {
   Firestore,
   collection,
-  query as firestoreQuery,
+  query,
   where,
+  orderBy,
   limit,
+  getDocs,
+  startAt,
+  endAt,
 } from '@angular/fire/firestore';
+
 import { collectionData } from 'rxfire/firestore';
 
 @Injectable({
@@ -40,13 +49,15 @@ export class SearchService {
     context: null,
   });
 
+  public messageScrollRequested = new EventEmitter<Message>();
+
   searchState$ = this.searchStateSubject.asObservable();
 
   constructor(
     private navigationService: NavigationService,
-    private firestore: Firestore,
     private usersService: UsersService,
-    private channelService: ChannelService
+    private channelService: ChannelService,
+    private firestore: Firestore
   ) {
     console.log(
       'Verfügbare Channels im SearchService:',
@@ -103,6 +114,142 @@ export class SearchService {
   // ############################################################################################################
   // Search Methods
   // ############################################################################################################
+
+  /**
+   * Searches for the nearest message to the provided date.
+   *
+   * This method retrieves the collection path based on the current search context,
+   * and then finds the message that is nearest to the provided date. If a message
+   * is found, it emits an event to scroll to that message.
+   *
+   * @param date - The date to search for the nearest message.
+   * @returns A Promise that resolves when the search is complete.
+   */
+  async searchByDate(date: Date): Promise<void> {
+    const context = this.navigationService.getSearchContext();
+    const collectionPath = await this.getCollectionPath(context);
+
+    if (collectionPath) {
+      const message = await this.findNearestMessage(collectionPath, date);
+      if (message) {
+        this.scrollToMessage(message);
+      }
+    }
+  }
+
+  /**
+   * Emits an event to scroll the UI to the provided message.
+   *
+   * This method is used to notify the UI components that the user has
+   * requested to scroll to a specific message. The UI components can
+   * then handle the scrolling logic based on the provided message.
+   *
+   * @param message - The message to scroll to.
+   */
+  private scrollToMessage(message: Message): void {
+    this.messageScrollRequested.emit(message);
+
+    console.log('Scrolling to message:', message);
+  }
+
+  /**
+   * Retrieves the collection path based on the provided search context.
+   *
+   * This method handles two types of search contexts:
+   * 1. 'in:#channelName' - Retrieves the collection path for the messages in the specified channel.
+   * 2. 'in:@userName' - Retrieves the collection path for the messages in the chat with the specified user.
+   *
+   * If the search context does not match either of these patterns, or if the channel or user cannot be found, the method returns `null`.
+   *
+   * @param context - The search context to use for determining the collection path.
+   * @returns The collection path for the messages, or `null` if the context is not valid.
+   */
+  private async getCollectionPath(context: string): Promise<string | null> {
+    if (context.startsWith('in:#')) {
+      const channelName = context.slice(4);
+      const channel = this.channelService.channels.find(
+        (c) => c.name === channelName
+      );
+      return channel ? `channels/${channel.id}/messages` : null;
+    } else if (context.startsWith('in:@')) {
+      const userName = context.slice(4);
+      const user = this.usersService
+        .getAllUserIDs()
+        .find((id) => this.usersService.getUserByID(id)?.name === userName);
+      if (user) {
+        const chatId = await this.getChatIdWithUser(user);
+        return chatId ? `chats/${chatId}/messages` : null;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Retrieves the chat ID for the chat that includes the specified user.
+   *
+   * This method queries the 'chats' collection in Firestore to find the chat
+   * that contains the provided user ID in its 'memberIDs' array. If a matching
+   * chat is found, the method returns the ID of that chat. Otherwise, it returns
+   * `null`.
+   *
+   * @param userId - The ID of the user to find the chat for.
+   * @returns The ID of the chat that includes the specified user, or `null` if
+   * no such chat is found.
+   */
+  private async getChatIdWithUser(userId: string): Promise<string | null> {
+    const chatsRef = collection(this.firestore, 'chats');
+    const q = query(chatsRef, where('memberIDs', 'array-contains', userId));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].id;
+    }
+    return null;
+  }
+
+  /**
+   * Finds the nearest message to the specified target date in the given collection path.
+   *
+   * This method first searches for the message with the latest creation date that is before or equal to the target date, and returns it if found. If no such message is found, it then searches for the message with the earliest creation date that is after the target date, and returns it if found. If neither search is successful, the method returns `null`.
+   *
+   * @param collectionPath - The path to the collection containing the messages to search.
+   * @param targetDate - The target date to find the nearest message for.
+   * @returns The nearest message to the target date, or `null` if no such message is found.
+   */
+  private async findNearestMessage(
+    collectionPath: string,
+    targetDate: Date
+  ): Promise<Message | null> {
+    const messagesRef = collection(this.firestore, collectionPath);
+    const qBefore = query(
+      messagesRef,
+      orderBy('createdAt', 'desc'),
+      startAt(targetDate),
+      limit(1)
+    );
+    const querySnapshotBefore = await getDocs(qBefore);
+
+    if (!querySnapshotBefore.empty) {
+      return this.createMessageFromDoc(querySnapshotBefore.docs[0]);
+    }
+    const qAfter = query(
+      messagesRef,
+      orderBy('createdAt'),
+      startAt(targetDate),
+      limit(1)
+    );
+    const querySnapshotAfter = await getDocs(qAfter);
+
+    if (!querySnapshotAfter.empty) {
+      return this.createMessageFromDoc(querySnapshotAfter.docs[0]);
+    }
+
+    return null;
+  }
+
+  private createMessageFromDoc(doc: any): Message {
+    const data = doc.data();
+    return new Message(data, doc.ref.parent.path, doc.id);
+  }
 
   /**
    * Adds the provided search term to the list of recent searches.
@@ -264,6 +411,11 @@ export class SearchService {
   // Utility Methods
   // ############################################################################################################
 
+  /**
+   * Sets whether context search is enabled.
+   *
+   * @param enabled - A boolean indicating whether context search should be enabled or disabled.
+   */
   setContextSearchEnabled(enabled: boolean) {
     this._isContextSearchEnabled = enabled;
   }
