@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, nameValidator, passwordValidator } from '../../utils/form-validators';
 import { ChooesavatarComponent } from '../chooesavatar/chooesavatar.component';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { addDoc, collection, Firestore, serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-signup',
@@ -19,6 +21,8 @@ import { ChooesavatarComponent } from '../chooesavatar/chooesavatar.component';
 })
 export class SignupComponent {
 
+  private firestore = inject(Firestore);
+  private firebaseauth = inject(Auth);
   private userservice = inject(UsersService);
   private router: Router = inject(Router);
 
@@ -54,11 +58,31 @@ export class SignupComponent {
     const name = this.signupForm.value.name || '';
     const email = this.signupForm.value.email || '';
     const password = this.signupForm.value.password || '';
-    const error = await this.userservice.registerNewUser(name, email, password);
+    const error = await this.registerNewUser(name, email, password);
     this.loggingIn = false;
     this.signupForm.enable();
     if (error) this.handleSignupErrors(error);
     else this.handleSignupSuccess();
+  }
+
+
+  async registerNewUser(name: string, email: string, password: string): Promise<string> {
+    try {
+      await createUserWithEmailAndPassword(this.firebaseauth, email, password);
+      await addDoc(collection(this.firestore, '/users'),
+        {
+          name: name,
+          email: email,
+          online: false,
+          signupAt: serverTimestamp(),
+          avatar: 0,
+        });
+      console.warn('userservice/auth: User registered(', email, ')');
+      return '';
+    } catch (error) {
+      console.error('userservice/auth: Error registering user(', (error as Error).message, ')');
+      return (error as Error).message;
+    }
   }
 
 

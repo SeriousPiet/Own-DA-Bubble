@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } 
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, passwordValidator } from '../../utils/form-validators';
-import { getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithPopup } from '@angular/fire/auth';
+import { Auth, getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
 import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where } from '@angular/fire/firestore';
 
 @Component({
@@ -23,14 +23,17 @@ export class LoginComponent implements OnDestroy {
 
   public userservice = inject(UsersService);
   private firestore = inject(Firestore);
+  private firebaseauth = inject(Auth);
   private userlogin: any;
   private router: Router = inject(Router);
 
   public errorEmail = '';
   public errorPassword = '';
   public errorGoogleSignin = '';
-  public logininfomessage = '';
+  public logininfomessage = 'Anmelden';
   public showSpinner = false;
+
+  public showInfoModal = false;
 
   public passwordResetFormShow = false;
 
@@ -58,6 +61,14 @@ export class LoginComponent implements OnDestroy {
   }
 
 
+  debugOpenPopover() {
+    document.getElementById('pwresetsend')?.showPopover();
+    setTimeout(() => {
+      document.getElementById('pwresetsend')?.hidePopover();
+    }, 3000);
+}
+
+
   async submitPasswordResetForm(event: Event) {
     event.preventDefault();
     this.passwordResetForm.disable();
@@ -65,10 +76,10 @@ export class LoginComponent implements OnDestroy {
     this.showSpinner = true;
     const email = this.passwordResetForm.value.email || null;
     const user = await this.getUserIDByEmail(email);
-    if (user && email) {
-      const auth = getAuth();
-      await sendPasswordResetEmail(auth, email);
-      console.log('passwortresetemail: ', user);
+    if (true) {
+    // if (user && email) {
+      // const auth = getAuth();
+      // await sendPasswordResetEmail(auth, email);
       this.passwordResetForm.reset();
       document.getElementById('pwresetsend')?.showPopover();
       setTimeout(() => {
@@ -79,6 +90,7 @@ export class LoginComponent implements OnDestroy {
       this.errorEmail = 'Diese E-Mail-Adresse ist leider unbekannt.';
     }
     this.showSpinner = false;
+    this.passwordResetForm.enable();
   }
 
 
@@ -89,12 +101,22 @@ export class LoginComponent implements OnDestroy {
     this.clearAllErrorSpans();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
-    const error = await this.userservice.loginUser(email, password);
+    const error = await this.loginUser(email, password);
     this.showSpinner = false;
     this.loginForm.enable();
-    this.showInfoMessage('');
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
+  }
+
+
+  async loginUser(email: string, password: string): Promise<string> {
+    try {
+      await signInWithEmailAndPassword(this.firebaseauth, email, password);
+      return '';
+    } catch (error) {
+      console.error('userservice/login:', (error as Error).message);
+      return (error as Error).message as string;
+    }
   }
 
 
@@ -115,7 +137,12 @@ export class LoginComponent implements OnDestroy {
       auth.languageCode = 'de';
       const result = await signInWithPopup(auth, provider);
       if (result.user.displayName && result.user.email) {
-        await this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
+        let userID = await this.getUserIDByEmail(result.user.email);
+        if (userID) {
+
+        } else {
+          await this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
+        }
         return '';
       } else {
         return 'auth/google-signin-error-name-email-missing';
@@ -136,15 +163,8 @@ export class LoginComponent implements OnDestroy {
       avatar: 0,
       pictureURL: pictureURL || null,
     };
-    console.log('userObj: ', userObj);
-    console.log('pictureURL: ', pictureURL);
-    let ref = collection(this.firestore, '/users');
-    let userID = await this.getUserIDByEmail(email);
-    if (userID) return userID;
-    let newUser = await addDoc(ref, userObj);
-    setTimeout(() => {
-      this.userservice.subscribeCurrentUserByID(newUser.id);
-    }, 1500);
+    this.userservice.setCurrentUserByEMail(email);
+    let newUser = await addDoc(collection(this.firestore, '/users'), userObj);
     return newUser.id;
   }
 
@@ -162,12 +182,13 @@ export class LoginComponent implements OnDestroy {
     this.showInfoMessage('Anmelden');
     const showLoginInfo = new Date().getTime();
     if (this.userservice.currentUser) {
+      console.log('#######currentUserSignin: ', this.userservice.currentUser.email);
       setTimeout(() => {
         this.redirectToChatContent();
       }, this.loginInfoStayTime);
     } else {
       this.userlogin = this.userservice.changeCurrentUser$.subscribe((change) => {
-        if (change == 'currentUserSignin') {
+        if (change == 'userset') {
           if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
             setTimeout(() => {
               this.redirectToChatContent();
@@ -208,6 +229,7 @@ export class LoginComponent implements OnDestroy {
     this.showInfoMessage('');
     this.router.navigate(['/chatcontent']);
   }
+
 
   clearAllErrorSpans() {
     this.errorEmail = '';

@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { UsersService } from '../../utils/services/user.service';
 import { RouterLink, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 
 @Component({
   selector: 'app-chooseavatar',
@@ -19,6 +20,7 @@ export class ChooesavatarComponent {
   @Output() clickSuccess = new EventEmitter<void>();
 
   public userservice = inject(UsersService);
+  private storage = getStorage();
   private defaultAvatarPath: string = '../../../assets/icons/start/profile-big.svg';
   private avatarPath: string = '../../../assets/icons/start/choose-avatar/';
 
@@ -66,10 +68,24 @@ export class ChooesavatarComponent {
 
   async setAvatarPictureURLtoFirestore(pictureFile: any) {
     this.uploading = true;
-    const error = await this.userservice.uploadUserPictureToFirestore(this.userservice.currentUserID, pictureFile);
+    const error = await this.uploadUserPictureToFirestore(this.userservice.currentUserID, pictureFile);
     if (error) this.handleUploadErrors(error);
     else this.handleUploadSuccess();
     this.uploading = false;
+  }
+
+
+  async uploadUserPictureToFirestore(userID: string, file: any): Promise<string> {
+    const storageRef = ref(this.storage, 'profile-pictures/' + userID + '/userpicture.' + file.name.split('.').pop());
+    try {
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      await this.userservice.updateCurrentUserDataOnFirestore({ pictureURL: url });
+      return '';
+    } catch (error) {
+      console.error('userservice/storage: ', (error as Error).message);
+      return (error as Error).message;
+    }
   }
 
 

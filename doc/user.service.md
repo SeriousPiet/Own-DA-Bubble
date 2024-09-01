@@ -1,98 +1,55 @@
 # UsersService API Documentation
 
-# Public Properties
+## Public Properties
 
 ### `changeUserList$`
-
 - **Type:** `Observable<string>`
-- **Description:** Observable that emits when the user list changes.
+- **Description:** Observable for monitoring changes in the user list.
+
+### `changeCurrentUser$`
+- **Type:** `Observable<string>`
+- **Description:** Observable for monitoring changes to the current user.
 
 ### `users`
-
 - **Type:** `User[]`
-- **Description:** Array of all users in the system.
+- **Description:** List of all users fetched from Firestore.
 
 ### `currentUser`
-
 - **Type:** `User | undefined`
-- **Description:** The currently authenticated user, if any.
+- **Description:** Currently logged-in user object.
 
-# Public Methods
+## Public Methods
 
-## Functions for Information
+### `get currentUserID(): string`
+- **Description:** Returns the ID of the currently logged-in user or a default message if no user is logged in.
 
 ### `getAllUserIDs(): string[]`
-
-- **Description:** Retrieves all user IDs from the current user list.
-- **Returns:** An array of user IDs.
+- **Description:** Retrieves an array of all user IDs from the `users` list.
 
 ### `getUserByID(id: string): User | undefined`
-
-- **Description:** Retrieves a user by their ID.
+- **Description:** Finds a user by their ID from the `users` list.
 - **Parameters:**
-  - `id: string` - The ID of the user to retrieve.
-- **Returns:** The user object if found, otherwise `undefined`.
+  - `id` - The ID of the user to find.
 
-### `getChatByID(chatID: string): Chat | undefined`
-
-- **Description:** Retrieves a chat by its ID.
+### `async updateCurrentUserDataOnFirestore(userChangeData: {}): Promise<void>`
+- **Description:** Updates the data of the currently logged-in user in Firestore.
 - **Parameters:**
-  - `chatID: string` - The ID of the chat to retrieve.
-- **Returns:** The chat object if found, otherwise `undefined`.
+  - `userChangeData` - The data to update for the current user.
 
-### `getChatPartner(chat: Chat): User | undefined`
-
-- **Description:** Retrieves the chat partner for the given chat.
+### `async updateCurrentUserEmail(newEmail: string, currentPassword: string): Promise<string | undefined>`
+- **Description:** Updates the email of the currently logged-in user in Firebase Authentication and Firestore.
 - **Parameters:**
-  - `chat: Chat` - The chat object.
-- **Returns:** The chat partner if found, otherwise `undefined`.
-
-### `ifSelfChat(chat: Chat): boolean`
-
-- **Description:** Checks if the given chat is a self-chat (a chat with oneself).
-- **Parameters:**
-  - `chat: Chat` - The chat object.
-- **Returns:** `true` if the chat is a self-chat, otherwise `false`.
-
-## Functions for updating User on Firestore
-
-### `updateCurrentUserDataOnFirestore(userChangeData: { name?: string; online?: boolean; chatIDs?: string[]; avatar?: number; pictureURL?: string; }): void`
-
-- **Description:** Updates the current user's data on Firestore.
-- **Parameters:**
-  - `userChangeData: { name?: string; online?: boolean; chatIDs?: string[]; avatar?: number; pictureURL?: string; }` - An object containing the user data to update.
-
-### `updateCurrentUserEmail(newEmail: string, currentPassword: string): Promise<string | undefined>`
-
-- **Description:** Updates the current user's email address in Firebase Authentication and Firestore.
-- **Parameters:**
-  - `newEmail: string` - The new email address.
-  - `currentPassword: string` - The current password for reauthentication.
-- **Returns:** A promise that resolves to `undefined` if successful, or an error message if failed.
-
-## Functions for login and signup
+  - `newEmail` - The new email address to set for the current user.
+  - `currentPassword` - The current password of the user for reauthentication.
 
 ### `logoutUser(): void`
+- **Description:** Logs out the currently logged-in user from Firebase Authentication.
 
-- **Description:** Logs out the current user from Firebase Authentication.
-
-### `loginUser(email: string, password: string): string | undefined`
-
-- **Description:** Logs in a user using their email and password.
+### `async setCurrentUserByEMail(userEmail: string): Promise<void>`
+- **Description:** Sets the current user based on their email address and updates Firestore.
 - **Parameters:**
-  - `email: string` - The user's email address.
-  - `password: string` - The user's password.
-- **Returns:** `undefined` if successful, or an error message if failed.
-
-### `registerNewUser(user: { email: string; password: string; name: string; }): string | undefined`
-
-- **Description:** Registers a new user with the given email, password, and name.
-- **Parameters:**
-  - `user: { email: string; password: string; name: string; }` - The new user's information.
-- **Returns:** `undefined` if successful, or an error message if failed.
-
-## Utility Functions
+  - `userEmail` - The email address of the user to set as the current user.
 
 ### `ngOnDestroy(): void`
+- **Description:** Cleans up all subscriptions to Firestore and authentication listeners when the service is destroyed.
 
-- **Description:** Cleans up the service by unsubscribing from all active subscriptions when the service is destroyed.
