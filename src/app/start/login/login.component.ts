@@ -127,7 +127,12 @@ export class LoginComponent implements OnDestroy {
       auth.languageCode = 'de';
       const result = await signInWithPopup(auth, provider);
       if (result.user.displayName && result.user.email) {
-        await this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
+        let userID = await this.getUserIDByEmail(result.user.email);
+        if (userID) {
+
+        } else {
+          await this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
+        }
         return '';
       } else {
         return 'auth/google-signin-error-name-email-missing';
@@ -148,12 +153,7 @@ export class LoginComponent implements OnDestroy {
       avatar: 0,
       pictureURL: pictureURL || null,
     };
-    console.log('userObj: ', userObj);
-    console.log('pictureURL: ', pictureURL);
-    let ref = collection(this.firestore, '/users');
-    let userID = await this.getUserIDByEmail(email);
-    if (userID) return userID;
-    let newUser = await addDoc(ref, userObj);
+    let newUser = await addDoc(collection(this.firestore, '/users'), userObj);
     setTimeout(() => {
       this.userservice.subscribeCurrentUserByID(newUser.id);
     }, 1500);

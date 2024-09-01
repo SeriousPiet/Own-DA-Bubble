@@ -84,9 +84,7 @@ export class UsersService implements OnDestroy {
   }
 
 
-  private async getUserIDByEmail(
-    email: string | null
-  ): Promise<string | undefined> {
+  private async getUserIDByEmail(email: string | null): Promise<string | undefined> {
     const usersRef = collection(this.firestore, '/users');
     const queryresponse = query(usersRef, where('email', '==', email));
     const querySnapshot = await getDocs(queryresponse);
@@ -140,8 +138,8 @@ export class UsersService implements OnDestroy {
       doc(this.firestore, '/users/' + userID),
       (doc) => {
         if (doc.exists()) {
-          this.updateUserOnlineStatusOnFirestore(userID, true);
           if (this.currentUserID != userID) {
+            this.updateUserOnlineStatusOnFirestore(userID, true);
             this.currentUser = new User(doc.data(), userID);
             this.changeCurrentUserSubject.next('currentUserSignin');
             console.warn('userservice: currentUser signin - ', doc.data()['email']);
