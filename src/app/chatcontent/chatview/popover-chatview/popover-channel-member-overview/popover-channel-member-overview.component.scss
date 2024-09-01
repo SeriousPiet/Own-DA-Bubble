@@ -49,6 +49,14 @@ main {
         flex-direction: column;
         gap: .9375rem;
 
+        .current-user {
+            user-select: none;
+
+            &:hover {
+                cursor: default !important;
+            }
+        }
+
         >div {
             @include flex(normal, center);
             gap: .8125rem;
@@ -57,7 +65,7 @@ main {
 
         .member {
             padding: .25rem 1.25rem;
-            
+
             &:hover {
                 background-color: $background;
                 cursor: pointer;
