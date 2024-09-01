@@ -93,7 +93,6 @@ export class LoginComponent implements OnDestroy {
     const error = await this.loginUser(email, password);
     this.showSpinner = false;
     this.loginForm.enable();
-    this.showInfoMessage('');
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }
@@ -153,10 +152,8 @@ export class LoginComponent implements OnDestroy {
       avatar: 0,
       pictureURL: pictureURL || null,
     };
+    this.userservice.setCurrentUserByEMail(email);
     let newUser = await addDoc(collection(this.firestore, '/users'), userObj);
-    setTimeout(() => {
-      this.userservice.subscribeCurrentUserByID(newUser.id);
-    }, 1500);
     return newUser.id;
   }
 
@@ -174,12 +171,13 @@ export class LoginComponent implements OnDestroy {
     this.showInfoMessage('Anmelden');
     const showLoginInfo = new Date().getTime();
     if (this.userservice.currentUser) {
+      console.log('#######currentUserSignin: ', this.userservice.currentUser.email);
       setTimeout(() => {
         this.redirectToChatContent();
       }, this.loginInfoStayTime);
     } else {
       this.userlogin = this.userservice.changeCurrentUser$.subscribe((change) => {
-        if (change == 'currentUserSignin') {
+        if (change == 'userset') {
           if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
             setTimeout(() => {
               this.redirectToChatContent();
