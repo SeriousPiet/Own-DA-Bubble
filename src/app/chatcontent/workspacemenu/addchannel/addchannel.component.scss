@@ -2,10 +2,30 @@
 
 .add-channel:popover-open {
   display: flex;
+  transition-property: opacity, display;
+  transition-duration: 1s;
+  opacity: 1;
+  border: 0rem;
+  @starting-style {
+    opacity: 0;
+  }
+  animation-duration: 1s;
+  animation-name: slidein;
+}
+
+@keyframes slidein {
+  from {
+    translate: 0 -100%;
+  }
+
+  to {
+    translate: 0 0;
+  }
 }
 
 .add-channel::backdrop {
   background: #00000066;
+  backdrop-filter: blur(0.1875rem);
 }
 
 [popover] {
