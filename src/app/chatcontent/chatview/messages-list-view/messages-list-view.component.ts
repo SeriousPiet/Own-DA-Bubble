@@ -1,20 +1,27 @@
-import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { MessageComponent } from './message/message.component';
 import { MessageDateComponent } from './message-date/message-date.component';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { Message } from '../../../shared/models/message.class';
 import { MessageGreetingComponent } from './message-greeting/message-greeting.component';
 import { Time } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { SearchService } from '../../../utils/services/search.service';
 
 @Component({
   selector: 'app-messages-list-view',
   standalone: true,
   imports: [MessageComponent, MessageDateComponent, MessageGreetingComponent],
   templateUrl: './messages-list-view.component.html',
-  styleUrl: './messages-list-view.component.scss'
+  styleUrl: './messages-list-view.component.scss',
 })
 export class MessagesListViewComponent implements OnInit {
-
   // messagefromUser = true;
   // messageWroteFromUser = false;
 
@@ -25,7 +32,6 @@ export class MessagesListViewComponent implements OnInit {
 
   @Input() isDefaultChannel: boolean = false;
 
-
   @Input()
   set messagesPath(value: string | undefined) {
     this.messages = [];
@@ -33,15 +39,32 @@ export class MessagesListViewComponent implements OnInit {
     this.subscribeMessages(value);
   }
 
+  private messageScrollSubscription: Subscription | undefined;
 
-
-  constructor(private _cdr: ChangeDetectorRef) {
-  }
+  constructor(
+    private _cdr: ChangeDetectorRef,
+    private searchService: SearchService
+  ) {}
 
   ngOnInit(): void {
-
+    this.messageScrollSubscription =
+      this.searchService.messageScrollRequested.subscribe(
+        (message: Message) => {
+          this.scrollToMessageInView(message);
+        }
+      );
   }
 
+  private scrollToMessageInView(message: Message) {
+    const messageElement = document.getElementById(message.id);
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      messageElement.classList.add('color-change');
+      setTimeout(() => {
+        messageElement.classList.remove('color-change');
+      }, 1750);
+    }
+  }
 
   sortMessagesDate(messageCreationDate: Date) {
     this.messagesDates.push(messageCreationDate);
@@ -50,32 +73,42 @@ export class MessagesListViewComponent implements OnInit {
       return index === 0 || date.getDate() !== array[index - 1].getDate();
     });
 
-    this.messages.sort((a, b)=>{
+    this.messages.sort((a, b) => {
       return a.createdAt.getTime() - b.createdAt.getTime();
-    })
+    });
   }
-
 
   private subscribeMessages(messagesPath: string | undefined) {
     if (this.unsubMessages) this.unsubMessages();
     if (messagesPath) {
-      this.unsubMessages = onSnapshot(collection(this.firestore, messagesPath), (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            let newMessage = new Message(change.doc.data(), messagesPath, change.doc.id);
-            this.messages.push(newMessage);
-            this.sortMessagesDate(newMessage.createdAt)
-          }
-          if (change.type === 'modified') {
-            const message = this.messages.find((message) => message.id === change.doc.id);
-            if (message) message.update(change.doc.data());
-          }
-          if (change.type === 'removed') {
-            this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
-          }
-        });
-        this._cdr.detectChanges();
-      })
+      this.unsubMessages = onSnapshot(
+        collection(this.firestore, messagesPath),
+        (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+              let newMessage = new Message(
+                change.doc.data(),
+                messagesPath,
+                change.doc.id
+              );
+              this.messages.push(newMessage);
+              this.sortMessagesDate(newMessage.createdAt);
+            }
+            if (change.type === 'modified') {
+              const message = this.messages.find(
+                (message) => message.id === change.doc.id
+              );
+              if (message) message.update(change.doc.data());
+            }
+            if (change.type === 'removed') {
+              this.messages = this.messages.filter(
+                (message) => message.id !== change.doc.data()['id']
+              );
+            }
+          });
+          this._cdr.detectChanges();
+        }
+      );
     }
   }
 
@@ -83,7 +116,8 @@ export class MessagesListViewComponent implements OnInit {
     if (this.unsubMessages) {
       this.unsubMessages();
     }
+    if (this.messageScrollSubscription) {
+      this.messageScrollSubscription.unsubscribe();
+    }
   }
-
-
 }
