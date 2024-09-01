@@ -30,8 +30,10 @@ export class LoginComponent implements OnDestroy {
   public errorEmail = '';
   public errorPassword = '';
   public errorGoogleSignin = '';
-  public logininfomessage = '';
+  public logininfomessage = 'Anmelden';
   public showSpinner = false;
+
+  public showInfoModal = false;
 
   public passwordResetFormShow = false;
 
@@ -59,6 +61,14 @@ export class LoginComponent implements OnDestroy {
   }
 
 
+  debugOpenPopover() {
+    document.getElementById('pwresetsend')?.showPopover();
+    setTimeout(() => {
+      document.getElementById('pwresetsend')?.hidePopover();
+    }, 3000);
+}
+
+
   async submitPasswordResetForm(event: Event) {
     event.preventDefault();
     this.passwordResetForm.disable();
@@ -66,10 +76,10 @@ export class LoginComponent implements OnDestroy {
     this.showSpinner = true;
     const email = this.passwordResetForm.value.email || null;
     const user = await this.getUserIDByEmail(email);
-    if (user && email) {
-      const auth = getAuth();
-      await sendPasswordResetEmail(auth, email);
-      console.log('passwortresetemail: ', user);
+    if (true) {
+    // if (user && email) {
+      // const auth = getAuth();
+      // await sendPasswordResetEmail(auth, email);
       this.passwordResetForm.reset();
       document.getElementById('pwresetsend')?.showPopover();
       setTimeout(() => {
@@ -80,6 +90,7 @@ export class LoginComponent implements OnDestroy {
       this.errorEmail = 'Diese E-Mail-Adresse ist leider unbekannt.';
     }
     this.showSpinner = false;
+    this.passwordResetForm.enable();
   }
 
 
@@ -218,6 +229,7 @@ export class LoginComponent implements OnDestroy {
     this.showInfoMessage('');
     this.router.navigate(['/chatcontent']);
   }
+
 
   clearAllErrorSpans() {
     this.errorEmail = '';

@@ -1,14 +1,3 @@
-<div id="pwresetsend" class="popinfo" popover>
-  <div>
-    <img src="./assets/icons/modals/send-white.svg" alt="">
-    E-Mail gesendet
-  </div>
-</div>
-
-<div id="logininfo" class="popinfo" popover>
-  {{ logininfomessage }}
-</div>
-
 <section>
 
   <div class="debug-btn">
@@ -24,6 +13,17 @@
   <div class="signup-btn">
     <span>Neu bei DABubble?</span>
     <button [routerLink]="['/signup']">Konto erstellen</button>
+  </div>
+
+  <div id="pwresetsend" popover>
+    <div>
+      <img src="./assets/icons/modals/send-white.svg" alt="">
+      E-Mail gesendet
+    </div>
+  </div>
+
+  <div id="logininfo" class="popinfo" popover>
+    {{ logininfomessage }}
   </div>
 
   @if(passwordResetFormShow) {
@@ -94,7 +94,7 @@
       @if(showSpinner) {
       <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
       }
-      <button type="button" class="white-btn">Gäste-Login</button>
+      <button (click)="debugOpenPopover()" type="button" class="white-btn">Gäste-Login</button>
     </div>
   </form>
   }

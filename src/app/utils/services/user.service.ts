@@ -117,7 +117,7 @@ export class UsersService implements OnDestroy {
   private initUserWatchDog(): void {
     this.user$ = user(this.firebaseauth).subscribe((user) => {
       if (user) {
-        console.warn('userservice/auth: Authentication successful: ', user.displayName);
+        console.warn('userservice/auth: Authentication successful: ', user.email);
         if (user.email) this.setCurrentUserByEMail(user.email);
       } else if (this.currentUser) {
         console.warn('userservice: currentUser logout - ' + this.currentUser.email);
