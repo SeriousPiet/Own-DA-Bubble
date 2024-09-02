@@ -1,27 +1,26 @@
 @import "../../../../fonts.scss";
-@import "../../../../mixins.scss";
 @import "../../../../styles.scss";
+@import "../../../../mixins.scss";
 
-.add-channel:popover-open {
-  display: flex;
-  transition-property: opacity, display;
-  transition-duration: 1s;
-  opacity: 1;
+#addChannelId {
+  display: none;
   border: 0rem;
-  @starting-style {
-    opacity: 0;
-  }
-  animation-duration: 1s;
-  animation-name: slidein;
+  opacity: 0;
+  transform: translateY(3rem);
+
+  transition: $transition-popover;
 }
 
-@keyframes slidein {
-  from {
-    translate: 0 -100%;
-  }
+#addChannelId:popover-open {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0rem);
+}
 
-  to {
-    translate: 0 0;
+@starting-style {
+  #addChannelId:popover-open {
+    opacity: 0;
+    transform: translateY(-3rem);
   }
 }
 
@@ -96,12 +95,8 @@
   }
 
   button {
-    background-color: #444df2;
-    width: 7.8125rem;
-    height: 3.0625rem;
-    border-radius: 1.5625rem;
-    padding: 0.75rem 1.5625rem 0.75rem 1.5625rem;
-    color: #ffffff;
+    @include buttonFull(7.8125rem);
+    @include nunito(1, 700, #fff);
   }
 }
 
@@ -124,10 +119,8 @@
       align-items: center;
       gap: 1.25rem;
       > .select-user-search {
+        @include round-checkbox();
         margin: 0;
-      }
-      > .select-user-search:hover {
-        cursor: pointer;
       }
     }
     > div:hover {
@@ -162,12 +155,8 @@
     gap: 1.25rem;
   }
 
-  .button-ctn {
-    background-color: #444df2;
-    width: 7.8125rem;
-    height: 3.0625rem;
-    border-radius: 1.5625rem;
-    padding: 0.75rem 1.5625rem 0.75rem 1.5625rem;
-    color: #ffffff;
+  button {
+    @include buttonFull(7.8125rem);
+    @include nunito(1, 700, #fff);
   }
 }
