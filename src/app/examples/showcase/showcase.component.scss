@@ -74,6 +74,10 @@ section.try-outs {
     button:nth-of-type(6) {
       @include buttonGoogle;
     }
+
+    button:nth-of-type(7) {
+      @include buttonMandatory;
+    }
   }
 }
 .checkbox-elements {
