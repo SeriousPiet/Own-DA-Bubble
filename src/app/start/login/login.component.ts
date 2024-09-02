@@ -1,24 +1,40 @@
 import { Component, inject, OnDestroy } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, passwordValidator } from '../../utils/form-validators';
-import { Auth, getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
-import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where } from '@angular/fire/firestore';
+import {
+  Auth,
+  getAuth,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from '@angular/fire/auth';
+import {
+  addDoc,
+  collection,
+  Firestore,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
+} from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    RouterModule,
-    FormsModule,
-    ReactiveFormsModule
-  ],
+  imports: [RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent implements OnDestroy {
-
   private readonly loginInfoStayTime = 2000;
 
   public userservice = inject(UsersService);
@@ -38,36 +54,24 @@ export class LoginComponent implements OnDestroy {
   public passwordResetFormShow = false;
 
   passwordResetForm = new FormGroup({
-    email: new FormControl('', [
-      Validators.required,
-      emailValidator(),
-    ]),
+    email: new FormControl('', [Validators.required, emailValidator()]),
   });
 
   loginForm = new FormGroup({
-    email: new FormControl('', [
-      Validators.required,
-      emailValidator(),
-    ]),
-    password: new FormControl('', [
-      Validators.required,
-      passwordValidator(),
-    ]),
+    email: new FormControl('', [Validators.required, emailValidator()]),
+    password: new FormControl('', [Validators.required, passwordValidator()]),
   });
-
 
   ngOnDestroy(): void {
     if (this.userlogin) this.userlogin.unsubscribe();
   }
 
-
   debugOpenPopover() {
     document.getElementById('pwresetsend')?.showPopover();
     setTimeout(() => {
       document.getElementById('pwresetsend')?.hidePopover();
-    }, 3000);
-}
-
+    }, 10000);
+  }
 
   async submitPasswordResetForm(event: Event) {
     event.preventDefault();
@@ -77,7 +81,7 @@ export class LoginComponent implements OnDestroy {
     const email = this.passwordResetForm.value.email || null;
     const user = await this.getUserIDByEmail(email);
     if (true) {
-    // if (user && email) {
+      // if (user && email) {
       // const auth = getAuth();
       // await sendPasswordResetEmail(auth, email);
       this.passwordResetForm.reset();
@@ -93,7 +97,6 @@ export class LoginComponent implements OnDestroy {
     this.passwordResetForm.enable();
   }
 
-
   async submitLoginForm(event: Event) {
     event.preventDefault();
     this.showSpinner = true;
@@ -108,7 +111,6 @@ export class LoginComponent implements OnDestroy {
     else this.handleLoginSuccess();
   }
 
-
   async loginUser(email: string, password: string): Promise<string> {
     try {
       await signInWithEmailAndPassword(this.firebaseauth, email, password);
@@ -119,7 +121,6 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-
   async signinWithGoogle() {
     this.showSpinner = true;
     const error = await this.signinWithGooglePopup();
@@ -127,7 +128,6 @@ export class LoginComponent implements OnDestroy {
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }
-
 
   async signinWithGooglePopup(): Promise<string> {
     try {
@@ -139,9 +139,12 @@ export class LoginComponent implements OnDestroy {
       if (result.user.displayName && result.user.email) {
         let userID = await this.getUserIDByEmail(result.user.email);
         if (userID) {
-
         } else {
-          await this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
+          await this.addGoogleUserToFirestore(
+            result.user.displayName,
+            result.user.email,
+            result.user.photoURL
+          );
         }
         return '';
       } else {
@@ -152,8 +155,11 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-
-  private async addGoogleUserToFirestore(name: string, email: string, pictureURL: string | null): Promise<string> {
+  private async addGoogleUserToFirestore(
+    name: string,
+    email: string,
+    pictureURL: string | null
+  ): Promise<string> {
     const userObj = {
       name: name,
       email: email,
@@ -168,51 +174,59 @@ export class LoginComponent implements OnDestroy {
     return newUser.id;
   }
 
-
-  private async getUserIDByEmail(email: string | null): Promise<string | undefined> {
+  private async getUserIDByEmail(
+    email: string | null
+  ): Promise<string | undefined> {
     const usersRef = collection(this.firestore, '/users');
     const queryresponse = query(usersRef, where('email', '==', email));
     const querySnapshot = await getDocs(queryresponse);
-    if (!querySnapshot.empty) { const userDoc = querySnapshot.docs[0]; return userDoc.id; }
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      return userDoc.id;
+    }
     return undefined;
   }
-
 
   handleLoginSuccess() {
     this.showInfoMessage('Anmelden');
     const showLoginInfo = new Date().getTime();
     if (this.userservice.currentUser) {
-      console.log('#######currentUserSignin: ', this.userservice.currentUser.email);
+      console.log(
+        '#######currentUserSignin: ',
+        this.userservice.currentUser.email
+      );
       setTimeout(() => {
         this.redirectToChatContent();
       }, this.loginInfoStayTime);
     } else {
-      this.userlogin = this.userservice.changeCurrentUser$.subscribe((change) => {
-        if (change == 'userset') {
-          if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
-            setTimeout(() => {
-              this.redirectToChatContent();
-            }, this.loginInfoStayTime - (new Date().getTime() - showLoginInfo));
-          else
-            this.redirectToChatContent();
+      this.userlogin = this.userservice.changeCurrentUser$.subscribe(
+        (change) => {
+          if (change == 'userset') {
+            if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
+              setTimeout(() => {
+                this.redirectToChatContent();
+              }, this.loginInfoStayTime - (new Date().getTime() - showLoginInfo));
+            else this.redirectToChatContent();
+          }
         }
-      });
+      );
     }
   }
-
 
   handleLoginErrors(error: string) {
     if (error.includes('auth/user-not-found')) {
       this.errorEmail = 'Diese E-Mail-Adresse ist leider ungültig.';
     } else if (error.includes('auth/wrong-password')) {
-      this.errorPassword = 'Falsches Passwort oder E-Mail. Bitte noch einmal versuchen.';
+      this.errorPassword =
+        'Falsches Passwort oder E-Mail. Bitte noch einmal versuchen.';
     } else if (error.includes('auth/popup-closed-by-user')) {
-      this.errorGoogleSignin = 'Googleanmeldung wurde durch Benutzer abgebrochen.';
+      this.errorGoogleSignin =
+        'Googleanmeldung wurde durch Benutzer abgebrochen.';
     } else if (error.includes('auth/google-signin-error-name-email-missing')) {
-      this.errorGoogleSignin = 'Googleanmeldung fehlgeschlagen. Keine Name und keine EMail gefunden.';
+      this.errorGoogleSignin =
+        'Googleanmeldung fehlgeschlagen. Keine Name und keine EMail gefunden.';
     }
   }
-
 
   showInfoMessage(message: string) {
     if (message == '') {
@@ -224,18 +238,14 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-
   redirectToChatContent() {
     this.showInfoMessage('');
     this.router.navigate(['/chatcontent']);
   }
-
 
   clearAllErrorSpans() {
     this.errorEmail = '';
     this.errorPassword = '';
     this.errorGoogleSignin = '';
   }
-
-
 }

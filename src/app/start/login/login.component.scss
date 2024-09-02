@@ -1,229 +1,251 @@
 @import "../../../styles.scss";
 @import "../../../mixins.scss";
+@import "../../../fonts.scss";
 
 #pwresetsend {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
-    font-family: Nunito, sans-serif;
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: white;
-    padding: 2rem;
-    background-color: $accent;
-    border-radius: 2rem 2rem 0 2rem;
-    border: unset;
-    box-shadow: 0px 6px 10px 0px #00000033;
+  // bottom: 1.25rem;
+  margin: auto 1.25rem 1.25rem auto;
 
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: white;
+  padding: 2rem;
+  background-color: $accent;
+  border-radius: 2rem 2rem 0 2rem;
+  border: unset;
+  box-shadow: 0px 6px 10px 0px #00000033;
+
+  transform: translateX(100vw);
+  transition: $transition-popover;
+
+  > div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+#pwresetsend:popover-open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@starting-style {
+  #pwresetsend:popover-open {
+    opacity: 0;
     transform: translateX(100vw);
-    transition: $transition-popover;
-
-    &:popover-open {
-        position: absolute;
-        top: 2rem;
-        right: 2rem;
-        transform: translateX(0);
-        opacity: 1;
-
-        @starting-style {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            opacity: 0;
-            transform: translateX(100vw);
-        }
-    }
-
-    >div {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 1rem;
-    }
+  }
 }
 
 .errorspan {
-    @include nunito(0.8, 400, #ED1E79);
-    position: absolute;
-    bottom: -1.2rem;
-    left: 0;
+  @include nunito(0.8, 400, #ed1e79);
+  position: absolute;
+  bottom: -1.2rem;
+  left: 0;
 }
 
 section {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    max-width: 1920px;
-    padding: 1.5rem 1.25rem 1.25rem;
-    background-color: $background;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  max-width: 1920px;
+  padding: 1.5rem 1.25rem 1.25rem;
+  background-color: $background;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .debug-btn {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .bubble-logo {
+    position: absolute;
+    top: 4rem;
+    left: 4rem;
+    @include flex(center, center);
+    gap: 1rem;
+
+    img {
+      width: 3rem;
+      aspect-ratio: 1 / 1;
+    }
+
+    span {
+      @include nunito(2, 700, black);
+    }
+  }
+
+  .signup-btn {
+    position: absolute;
+    top: 4rem;
+    right: 4rem;
 
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 1rem;
 
-    .debug-btn {
-        position: absolute;
-        top: 1rem;
-        left: 1rem;
+    span {
+      padding-right: 1.5rem;
+      @include nunito(1.2, 400);
     }
 
-    .signup-btn {
-        position: absolute;
-        top: 4rem;
-        right: 4rem;
+    button {
+      @include buttonNoBg;
+    }
+  }
 
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-end;
-        gap: 1rem;
+  form {
+    position: relative;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 2rem;
+    height: fit-content;
+    width: fit-content;
+    max-width: 38rem;
+    background-color: white;
+    border-radius: 2rem;
+    box-shadow: 0px 2px 10px 0px #00000014;
 
-        span {
-            padding-right: 1.5rem;
-            @include nunito(1.2, 400);
-        }
-
-        button {
-            @include buttonNoBg;
-        }
+    .return {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      @include iconBox;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    form {
+    .input-box {
+      @include inputBox;
+      background: $background;
+
+      input {
         position: relative;
-        padding: 2rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: stretch;
-        gap: 2rem;
-        height: fit-content;
-        width: fit-content;
-        max-width: 38rem;
-        background-color: white;
-        border-radius: 2rem;
-        box-shadow: 0px 2px 10px 0px #00000014;
-
-        .return {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            @include iconBox;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .input-box {
-            @include inputBox;
-            background: $background;
-
-            input {
-                position: relative;
-                @include input;
-            }
-
-        }
-
-        .button-box {
-            position: relative;
-        }
-
-        .mail::before {
-            background-image: url("../../../assets/icons/start/mail.svg");
-        }
-
-        .pw::before {
-            background-image: url("../../../assets/icons/start/lock.svg");
-        }
-
-
-
-        .title {
-            @include nunito(2.5, 700, $accent);
-            text-align: center;
-        }
-
-        .info {
-            @include nunito(1.2, 400);
-            text-align: center;
-        }
-
-        .info-gray {
-            @include nunito(1.2, 400, #686868);
-            text-align: center;
-        }
-
-        .password-missed {
-            button {
-                @include buttonNoBorder;
-            }
-
-            align-self: center;
-        }
-
-        .or-separator {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-
-            span {
-                @include nunito(1.2, 400);
-            }
-
-            >div {
-                height: 1px;
-                background-color: $vert-spacer;
-                flex-grow: 1;
-            }
-        }
-
-        .login-with-google {
-            align-self: stretch;
-            @include buttonGoogle(100%);
-            align-self: center;
-        }
-
-        .action-btns {
-            align-self: center;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 80%;
-
-            img {
-                width: 2.5rem;
-                height: 2.5rem;
-            }
-
-        }
-
-        .action-btns-pwreset {
-            align-self: center;
-
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            width: 80%;
-
-            img {
-                width: 2.5rem;
-                height: 2.5rem;
-            }
-
-        }
-
-        .blue-btn {
-            display: flex;
-            @include buttonFull;
-
-            &:disabled {
-                pointer-events: none;
-            }
-        }
-
-        .white-btn {
-            @include buttonEmpty;
-        }
+        @include input;
+      }
     }
+
+    .button-box {
+      position: relative;
+    }
+
+    .mail::before {
+      background-image: url("../../../assets/icons/start/mail.svg");
+    }
+
+    .pw::before {
+      background-image: url("../../../assets/icons/start/lock.svg");
+    }
+
+    .title {
+      @include nunito(2.5, 700, $accent);
+      text-align: center;
+    }
+
+    .info {
+      @include nunito(1.2, 400);
+      text-align: center;
+    }
+
+    .info-gray {
+      @include nunito(1.2, 400, #686868);
+      text-align: center;
+    }
+
+    .password-missed {
+      button {
+        @include buttonNoBorder;
+      }
+
+      align-self: center;
+    }
+
+    .or-separator {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      span {
+        @include nunito(1.2, 400);
+      }
+
+      > div {
+        height: 1px;
+        background-color: $vert-spacer;
+        flex-grow: 1;
+      }
+    }
+
+    .login-with-google {
+      align-self: stretch;
+      @include buttonGoogle(100%);
+      align-self: center;
+    }
+
+    .action-btns {
+      align-self: center;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 80%;
+
+      img {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
+    .action-btns-pwreset {
+      align-self: center;
+
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      width: 80%;
+
+      img {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
+    .blue-btn {
+      display: flex;
+      @include buttonFull;
+
+      &:disabled {
+        pointer-events: none;
+      }
+    }
+
+    .white-btn {
+      @include buttonEmpty;
+    }
+  }
+
+  .mandatory-buttons {
+    position: absolute;
+    left: 50%;
+    bottom: 2.5rem;
+    transform: translateX(-50%);
+    width: fit-content;
+    @include flex(center, center);
+    gap: 4rem;
+
+    button {
+      @include buttonMandatory;
+    }
+  }
 }

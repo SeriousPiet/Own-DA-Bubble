@@ -1,5 +1,4 @@
 <section>
-
   <div class="debug-btn">
     <button [routerLink]="['/chatthreadtest']">DEBUG</button>
     <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
@@ -7,6 +6,11 @@
     <button (click)="userservice.logoutUser()">logout</button>
     }
     <button [routerLink]="['/showcase']">Styling Showcase</button>
+  </div>
+
+  <div class="bubble-logo">
+    <img src="./assets/img/start-logo.png" alt="DA-Bubble Logo" />
+    <span>DABubble</span>
   </div>
 
   <!-- Signup Button -->
@@ -17,7 +21,7 @@
 
   <div id="pwresetsend" popover>
     <div>
-      <img src="./assets/icons/modals/send-white.svg" alt="">
+      <img src="./assets/icons/modals/send-white.svg" alt="" />
       E-Mail gesendet
     </div>
   </div>
@@ -27,16 +31,25 @@
   </div>
 
   @if(passwordResetFormShow) {
-  <form [formGroup]="passwordResetForm" (ngSubmit)="submitPasswordResetForm($event)">
-    <button type="button" class="return" (click)="passwordResetFormShow=false">
-      <img src="../../../assets/icons/start/go-back.svg" alt="">
+  <form
+    [formGroup]="passwordResetForm"
+    (ngSubmit)="submitPasswordResetForm($event)"
+  >
+    <button
+      type="button"
+      class="return"
+      (click)="passwordResetFormShow = false"
+    >
+      <img src="../../../assets/icons/start/go-back.svg" alt="" />
     </button>
     <span class="title">Passwort zurücksetzen</span>
-    <div class="info">
-      Bitte gib deine E-Mail-Adresse ein.
-    </div>
+    <div class="info">Bitte gib deine E-Mail-Adresse ein.</div>
     <div class="input-box mail">
-      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
+      <input
+        formControlName="email"
+        type="email"
+        placeholder="beispielname@email.com"
+      />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
       }
@@ -46,13 +59,18 @@
     </div>
     <div class="action-btns-pwreset">
       @if(showSpinner) {
-      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
+      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
       }
-      <button [disabled]="passwordResetForm.invalid" type="submit" class="blue-btn">EMail abschicken</button>
+      <button
+        [disabled]="passwordResetForm.invalid"
+        type="submit"
+        class="blue-btn"
+      >
+        EMail abschicken
+      </button>
     </div>
   </form>
-  }
-  @else {
+  } @else {
 
   <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
     <span class="title">Anmeldung</span>
@@ -61,19 +79,29 @@
       verwendest.
     </div>
     <div class="input-box mail">
-      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
+      <input
+        formControlName="email"
+        type="email"
+        placeholder="beispielname@email.com"
+      />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
       }
     </div>
     <div class="input-box pw">
-      <input formControlName="password" type="password" placeholder="Passwort" />
+      <input
+        formControlName="password"
+        type="password"
+        placeholder="Passwort"
+      />
       @if(errorPassword != '') {
       <span class="errorspan">{{ errorPassword }}</span>
       }
     </div>
     <div class="password-missed">
-      <button type="button" (click)="passwordResetFormShow=true">Passwort vergessen?</button>
+      <button type="button" (click)="passwordResetFormShow = true">
+        Passwort vergessen?
+      </button>
     </div>
     <div class="or-separator">
       <div></div>
@@ -81,7 +109,11 @@
       <div></div>
     </div>
     <div class="button-box">
-      <button class="login-with-google" (click)="signinWithGoogle()" type="button">
+      <button
+        class="login-with-google"
+        (click)="signinWithGoogle()"
+        type="button"
+      >
         <img src="../../../assets/icons/start/google.svg" alt="" />
         Anmelden mit Google
       </button>
@@ -90,12 +122,20 @@
       }
     </div>
     <div class="action-btns">
-      <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">Anmelden</button>
+      <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">
+        Anmelden
+      </button>
       @if(showSpinner) {
-      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
+      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
       }
-      <button (click)="debugOpenPopover()" type="button" class="white-btn">Gäste-Login</button>
+      <button (click)="debugOpenPopover()" type="button" class="white-btn">
+        Gäste-Login
+      </button>
     </div>
   </form>
   }
+  <div class="mandatory-buttons">
+    <button [routerLink]="['/imprint']">Impressum</button>
+    <button [routerLink]="['/policy']">Datenschutz</button>
+  </div>
 </section>
