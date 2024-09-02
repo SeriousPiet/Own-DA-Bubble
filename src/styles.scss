@@ -42,8 +42,7 @@ $vert-spacer: #adb0d9;
 // transitions
 $transition-standard: all 0.125s ease-in-out;
 $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
-  0.25s overlay allow-discrete, 0.25s transform ease-out,
-  width 0.25s ease-in-out, height 0.25s ease-in-out;
+  0.25s overlay allow-discrete, 0.25s transform ease-out;
 
 @import "./fonts.scss";
 
@@ -143,6 +142,7 @@ body {
   max-width: 1920px;
   margin: 0 auto;
   padding: 0;
+  overflow: hidden;
 
   font-family: "Nunito", sans-serif;
   font-size: 18px;
