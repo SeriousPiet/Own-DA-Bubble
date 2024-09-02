@@ -46,7 +46,8 @@ export class LoginComponent implements OnDestroy {
   public errorEmail = '';
   public errorPassword = '';
   public errorGoogleSignin = '';
-  public logininfomessage = 'Anmelden';
+  public logininfomessage = '?';
+  public logininfoicon = false;
   public showSpinner = false;
 
   public showInfoModal = false;
@@ -67,9 +68,9 @@ export class LoginComponent implements OnDestroy {
   }
 
   debugOpenPopover() {
-    document.getElementById('pwresetsend')?.showPopover();
+    document.getElementById('infoPopover')?.showPopover();
     setTimeout(() => {
-      document.getElementById('pwresetsend')?.hidePopover();
+      document.getElementById('infoPopover')?.hidePopover();
     }, 10000);
   }
 
@@ -80,14 +81,14 @@ export class LoginComponent implements OnDestroy {
     this.showSpinner = true;
     const email = this.passwordResetForm.value.email || null;
     const user = await this.getUserIDByEmail(email);
-    if (true) {
-      // if (user && email) {
-      // const auth = getAuth();
-      // await sendPasswordResetEmail(auth, email);
+    if (user && email) {
+      this.showInfoMessage('EMail gesendet', true);
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
       this.passwordResetForm.reset();
-      document.getElementById('pwresetsend')?.showPopover();
+      document.getElementById('infoPopover')?.showPopover();
       setTimeout(() => {
-        document.getElementById('pwresetsend')?.hidePopover();
+        document.getElementById('infoPopover')?.hidePopover();
         this.passwordResetFormShow = false;
       }, 3000);
     } else {
@@ -188,7 +189,7 @@ export class LoginComponent implements OnDestroy {
   }
 
   handleLoginSuccess() {
-    this.showInfoMessage('Anmelden');
+    this.showInfoMessage('Anmelden', false);
     const showLoginInfo = new Date().getTime();
     if (this.userservice.currentUser) {
       console.log(
@@ -228,18 +229,20 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-  showInfoMessage(message: string) {
+  showInfoMessage(message: string, showImg: boolean) {
     if (message == '') {
-      document.getElementById('logininfo')?.hidePopover();
+      this.logininfoicon = false;
+      document.getElementById('infoPopover')?.hidePopover();
       return;
     } else {
+      this.logininfoicon = showImg;
       this.logininfomessage = message;
-      document.getElementById('logininfo')?.showPopover();
+      document.getElementById('infoPopover')?.showPopover();
     }
   }
 
   redirectToChatContent() {
-    this.showInfoMessage('');
+    this.showInfoMessage('', false);
     this.router.navigate(['/chatcontent']);
   }
 

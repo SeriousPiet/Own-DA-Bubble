@@ -2,7 +2,8 @@
   <div class="debug-btn">
     <button [routerLink]="['/chatthreadtest']">DEBUG</button>
     <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
-    @if(userservice.currentUser) { User: {{ userservice.currentUser.name }}
+    @if(userservice.currentUser) {
+    User: {{ userservice.currentUser.name }}
     <button (click)="userservice.logoutUser()">logout</button>
     }
     <button [routerLink]="['/showcase']">Styling Showcase</button>
@@ -19,39 +20,30 @@
     <button [routerLink]="['/signup']">Konto erstellen</button>
   </div>
 
-  <div id="pwresetsend" popover>
+  <div id="infoPopover" popover>
     <div>
-      <img src="./assets/icons/modals/send-white.svg" alt="" />
-      E-Mail gesendet
+      @if(logininfoicon) {
+        <img src="./assets/icons/modals/send-white.svg" alt="" />
+      }
+      {{ logininfomessage }}
     </div>
   </div>
 
-  <div id="logininfo" class="popinfo" popover>
-    {{ logininfomessage }}
-  </div>
-
   @if(passwordResetFormShow) {
-  <form
-    [formGroup]="passwordResetForm"
-    (ngSubmit)="submitPasswordResetForm($event)"
-  >
-    <button
-      type="button"
-      class="return"
-      (click)="passwordResetFormShow = false"
-    >
+  <form [formGroup]="passwordResetForm" (ngSubmit)="submitPasswordResetForm($event)">
+    <button type="button" class="return" (click)="passwordResetFormShow = false">
       <img src="../../../assets/icons/start/go-back.svg" alt="" />
     </button>
     <span class="title">Passwort zurücksetzen</span>
     <div class="info">Bitte gib deine E-Mail-Adresse ein.</div>
     <div class="input-box mail">
-      <input
-        formControlName="email"
-        type="email"
-        placeholder="beispielname@email.com"
-      />
+      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
+      }
+      @else if(passwordResetForm.get('email')?.invalid && (passwordResetForm.get('email')?.dirty ||
+      passwordResetForm.get('email')?.touched)) {
+      <span class="errorspan">Bitte eine korrekte Email eingeben</span>
       }
     </div>
     <div class="info-gray">
@@ -61,11 +53,7 @@
       @if(showSpinner) {
       <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
       }
-      <button
-        [disabled]="passwordResetForm.invalid"
-        type="submit"
-        class="blue-btn"
-      >
+      <button [disabled]="passwordResetForm.invalid" type="submit" class="blue-btn">
         EMail abschicken
       </button>
     </div>
@@ -79,23 +67,22 @@
       verwendest.
     </div>
     <div class="input-box mail">
-      <input
-        formControlName="email"
-        type="email"
-        placeholder="beispielname@email.com"
-      />
+      <input id="email" formControlName="email" type="email" placeholder="beispielname@email.com" />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
       }
+      @else if(loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)) {
+      <span class="errorspan">Bitte eine korrekte Email eingeben</span>
+      }
     </div>
     <div class="input-box pw">
-      <input
-        formControlName="password"
-        type="password"
-        placeholder="Passwort"
-      />
+      <input formControlName="password" type="password" placeholder="Passwort" />
       @if(errorPassword != '') {
       <span class="errorspan">{{ errorPassword }}</span>
+      }
+      @else if(loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty ||
+      loginForm.get('password')?.touched)) {
+      <span class="errorspan">Passwort muss mindesten 8 Zeichen lang sein.</span>
       }
     </div>
     <div class="password-missed">
@@ -109,11 +96,7 @@
       <div></div>
     </div>
     <div class="button-box">
-      <button
-        class="login-with-google"
-        (click)="signinWithGoogle()"
-        type="button"
-      >
+      <button class="login-with-google" (click)="signinWithGoogle()" type="button">
         <img src="../../../assets/icons/start/google.svg" alt="" />
         Anmelden mit Google
       </button>

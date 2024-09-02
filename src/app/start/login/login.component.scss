@@ -2,7 +2,7 @@
 @import "../../../mixins.scss";
 @import "../../../fonts.scss";
 
-#pwresetsend {
+#infoPopover {
   // bottom: 1.25rem;
   margin: auto 1.25rem 1.25rem auto;
 
@@ -26,13 +26,13 @@
   }
 }
 
-#pwresetsend:popover-open {
+#infoPopover:popover-open {
   transform: translateX(0);
   opacity: 1;
 }
 
 @starting-style {
-  #pwresetsend:popover-open {
+  #infoPopover:popover-open {
     opacity: 0;
     transform: translateX(100vw);
   }
