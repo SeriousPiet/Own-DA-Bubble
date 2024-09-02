@@ -67,11 +67,8 @@ export class LoginComponent implements OnDestroy {
     if (this.userlogin) this.userlogin.unsubscribe();
   }
 
-  debugOpenPopover() {
-    document.getElementById('infoPopover')?.showPopover();
-    setTimeout(() => {
-      document.getElementById('infoPopover')?.hidePopover();
-    }, 10000);
+  loginGuest() {
+    this.loginUser('unser@gast.de', 'qujnup-3xApfo-qengaq');
   }
 
   async submitPasswordResetForm(event: Event) {
@@ -100,23 +97,23 @@ export class LoginComponent implements OnDestroy {
 
   async submitLoginForm(event: Event) {
     event.preventDefault();
-    this.showSpinner = true;
-    this.loginForm.disable();
-    this.clearAllErrorSpans();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
     const error = await this.loginUser(email, password);
-    this.showSpinner = false;
-    this.loginForm.enable();
-    if (error != '') this.handleLoginErrors(error);
-    else this.handleLoginSuccess();
   }
 
   async loginUser(email: string, password: string): Promise<string> {
     try {
+      this.showSpinner = true;
+      this.loginForm.disable();
+      this.clearAllErrorSpans();
       await signInWithEmailAndPassword(this.firebaseauth, email, password);
+      this.showSpinner = false;
+      this.loginForm.enable();
+      this.handleLoginSuccess();
       return '';
     } catch (error) {
+      this.handleLoginErrors((error as Error).message as string);
       console.error('userservice/login:', (error as Error).message);
       return (error as Error).message as string;
     }

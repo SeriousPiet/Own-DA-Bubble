@@ -23,7 +23,6 @@ export class SignupComponent {
 
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
-  private userservice = inject(UsersService);
   private router: Router = inject(Router);
 
   public errorEmailExists = '';
@@ -60,7 +59,6 @@ export class SignupComponent {
     const password = this.signupForm.value.password || '';
     const error = await this.registerNewUser(name, email, password);
     this.loggingIn = false;
-    this.signupForm.enable();
     if (error) this.handleSignupErrors(error);
     else this.handleSignupSuccess();
   }
@@ -87,7 +85,10 @@ export class SignupComponent {
 
 
   successChooseAvatar() {
-    this.router.navigate(['/chatcontent']);
+    document.getElementById('infoPopover')?.showPopover();
+    setTimeout(() => {
+      this.router.navigate(['/chatcontent']); 
+    }, 2000);
   }
 
 
