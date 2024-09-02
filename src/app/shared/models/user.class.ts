@@ -9,6 +9,7 @@ export class User {
   readonly id: string;
   readonly createdAt: Date;
   readonly provider: authProvider;
+  readonly guest: boolean;
 
   private _pictureURL: string | undefined;
   get pictureURL(): string | undefined {
@@ -58,6 +59,7 @@ export class User {
     this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
     this._ifCurrentUser = currentUser;
     this.provider = userObj.provider ? userObj.provider : 'email';
+    this.guest = userObj.email == 'unser@gast.de' ? true : false;
   }
 
   update(data: any): void {
