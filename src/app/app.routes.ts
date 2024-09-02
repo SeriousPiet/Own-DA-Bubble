@@ -5,11 +5,19 @@ import { SignupComponent } from './start/signup/signup.component';
 import { ChatthreadviewComponent } from './examples/chatthreadview/chatthreadview.component';
 import { ShowcaseComponent } from './examples/showcase/showcase.component';
 import { currentUserExistsGuard } from './utils/guards/current-user-exists.guard';
+import { ImprintComponent } from './start/imprint/imprint.component';
+import { PolicyComponent } from './start/policy/policy.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'chatcontent', component: ChatcontentComponent, canActivate: [currentUserExistsGuard] },
+  { path: 'imprint', component: ImprintComponent },
+  { path: 'policy', component: PolicyComponent },
+  {
+    path: 'chatcontent',
+    component: ChatcontentComponent,
+    canActivate: [currentUserExistsGuard],
+  },
   // for debug only ----------------------------------------------
   { path: 'chatthreadtest', component: ChatthreadviewComponent },
   { path: 'showcase', component: ShowcaseComponent },
