@@ -32,7 +32,11 @@
       class="nunito-18-400"
     />
     <div style="justify-content: end">
-      <button class="button-ctn nunito-18-700" (click)="toggleAddChannel()">
+      <button
+        class="button-ctn nunito-18-700"
+        [disabled]="!name || name.trim().length === 0"
+        (click)="toggleAddChannel()"
+      >
         Erstellen
       </button>
     </div>
@@ -49,7 +53,7 @@
           class="select-user-search"
           type="radio"
           name="userOption"
-          (change)="isUserSearchSelected = false"
+          (change)="addOptionSelected(false)"
         />Alle Mitglieder von Devspace hinzufügen
       </div>
     </div>
@@ -59,18 +63,65 @@
           class="select-user-search"
           type="radio"
           name="userOption"
-          (change)="isUserSearchSelected = true"
+          (change)="addOptionSelected(true)"
         />Bestimmte Leute hinzufügen
       </div>
       <div>
-        <app-add-channel-searchbar
-          style="width: 100%"
-          *ngIf="isUserSearchSelected"
-        />
+        <div class="addUserSearchbar" *ngIf="isUserSearchSelected">
+          @if (userAmount > 0) {
+          <div class="search-blocks">
+            <div *ngFor="let user of selectedUsers" class="search-block-item">
+              <div appAvatar [user]="user" context="search"></div>
+              <span>{{ user.name }}</span>
+              <button
+                class="remove-context"
+                (click)="removeUserFromSelection(user)"
+              >
+                <img
+                  src="../../../../assets/icons/modals/close-search-item.svg"
+                  alt="Remove"
+                />
+              </button>
+            </div>
+          </div>
+          }
+
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (input)="onSearchInput()"
+            (focus)="onFocus()"
+            (blur)="onBlur()"
+            placeholder="Search users..."
+          />
+
+          <div
+            *ngFor="let suggestion of suggestions$ | async"
+            class="suggestion-item"
+            (click)="selectSuggestion(suggestion)"
+          >
+            <div
+              *ngIf="
+                suggestion.type === 'user' && getUserFromSuggestion(suggestion)
+              "
+              appAvatar
+              [user]="getUserFromSuggestion(suggestion)!"
+              context="search"
+            ></div>
+            <div>{{ suggestion.text }}</div>
+          </div>
+        </div>
       </div>
     </div>
     <div style="justify-content: end">
-      <button (click)="toggleAddChannel()" class="button-ctn nunito-18-700">
+      <button
+        (click)="toggleAddChannel(); addNewChannel()"
+        [disabled]="
+          isAnyOptionSelected === false ||
+          (isUserSearchSelected && userAmount === 0)
+        "
+        class="button-ctn nunito-18-700"
+      >
         Erstellen
       </button>
     </div>

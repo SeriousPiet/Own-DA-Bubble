@@ -23,30 +23,16 @@
 }
 
 .chatview-header {
-  background-color: white;
-  // box-shadow: 0 0.125rem 0.625rem -0.5rem rgba($color: #000000, $alpha: 0.8);
-  height: 6rem;
-  border-radius: 1.875rem 1.875rem 0 0;
+  position: relative;
+  z-index: 20;
   @include flex(space-between, center);
   width: 100%;
-  padding: 1.5625rem 2.8125rem;
+  height: 6rem;
+  border-radius: 1.875rem 1.875rem 0 0;
+  padding: 1.5rem 2.8125rem;
   gap: 0.625rem;
-  position: relative;
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 4px; // Adjust this to control the shadow height
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.2) 0,
-      rgba(0, 0, 0, 0) 100%
-    );
-    pointer-events: none; // Ensures the pseudo-element doesn't interfere with interactions
-  }
+  background-color: white;
+  box-shadow: $modal-box-shadow;
 
   .chatview-channel-name {
     cursor: pointer;
@@ -167,5 +153,19 @@
 
   .chat-messages-content {
     height: 100%;
+  }
+}
+
+#channel-member-overview-popover:popover-open,
+#channel-editor-popover:popover-open {
+  opacity: 1;
+  @include flex(center, center);
+  flex-direction: column;
+}
+
+@starting-style {
+  #channel-member-overview-popover:popover-open,
+  #channel-editor-popover:popover-open {
+    opacity: 0;
   }
 }

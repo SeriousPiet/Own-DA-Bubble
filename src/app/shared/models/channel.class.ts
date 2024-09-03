@@ -2,6 +2,7 @@ import { Timestamp } from '@angular/fire/firestore';
 
 export class Channel {
   readonly id: string;
+  public messagesCount: number = 0;
   private _name: string;
   get name(): string {
     return this._name;
@@ -40,11 +41,15 @@ export class Channel {
     this.creatorID = data.creatorID ? data.creatorID : '';
     this._memberIDs = data.memberIDs ? data.memberIDs : [];
     this.defaultChannel = data.defaultChannel ? data.defaultChannel : false;
+    this.messagesCount = data.messagesCount ? data.messagesCount : 0;
   }
 
   update(data: any) {
     if (data.name) this._name = data.name;
     if (data.description) this._description = data.description;
     if (data.memberIDs) this._memberIDs = data.memberIDs;
+    if (data.messagesCount) this.messagesCount = data.messagesCount;
   }
+
+
 }
