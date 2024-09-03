@@ -19,8 +19,7 @@
           </div>
           <button
             class="add-channel-btn"
-            popoverTarget="addChannelId"
-            popovertargetaction="show"
+            (click)="toggleAddChannelPopover()"
           ></button>
         </div>
       </summary>
@@ -34,11 +33,7 @@
           <span class="nunito-18-400">{{ channel.name }}</span>
         </li>
       </ul>
-      <button
-        popoverTarget="addChannelId"
-        popovertargetaction="show"
-        class="blue"
-      >
+      <button class="blue" (click)="toggleAddChannelPopover()">
         <div class="add-channel-2 blue"></div>
         <span class="nunito-18-400">Channel hinzufügen</span>
       </button>
