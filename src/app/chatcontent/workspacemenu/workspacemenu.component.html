@@ -48,8 +48,9 @@
       <ul>
         <li class="dm-list-item" *ngFor="let user of users" hoverElement>
           <div appAvatar [user]="user" context="wsm-list"></div>
-          <span class="nunito-18-400 blue">{{ user.name }} </span>
-          @if (users[0].name === user.name){<span>(Du)</span>}
+          <span style="width: fit-content"
+            >{{ user.name }} @if (users[0].name === user.name){(Du)}
+          </span>
         </li>
       </ul>
     </details>
