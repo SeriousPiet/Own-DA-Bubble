@@ -64,12 +64,12 @@ export class ChatthreadviewComponent {
   public messagecontent = '';
 
   addMessageToChannel(channelNumber: number) {
-    this.messageservice.addNewMessageToPath(this.channelservice.channels[channelNumber].channelMessagesPath, this.messagecontent);
+    this.messageservice.addNewMessageToCollection(this.channelservice.channels[channelNumber], this.messagecontent);
   }
 
   addMessageTopath() {
     if (this.navigationService.chatViewPath) {
-      this.messageservice.addNewMessageToPath(this.navigationService.chatViewPath, this.messagecontent);
+      this.messageservice.addNewMessageToCollection(this.navigationService.chatViewObject, this.messagecontent);
     }
   }
 

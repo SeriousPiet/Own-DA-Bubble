@@ -372,7 +372,7 @@ export class SearchbarComponent implements OnInit {
       (c) => c.name === channelName
     );
     return channel
-      ? channel.members.includes(this.usersService.currentUser?.id || '')
+      ? channel.memberIDs.includes(this.usersService.currentUser?.id || '')
       : false;
   }
 }

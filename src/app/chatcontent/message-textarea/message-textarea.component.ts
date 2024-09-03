@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { MessageService } from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
+import { Channel } from '../../shared/models/channel.class';
+import { Chat } from '../../shared/models/chat.class';
 
 @Component({
   selector: 'app-message-textarea',
@@ -20,10 +22,18 @@ export class MessageTextareaComponent {
   public messageService = inject(MessageService);
 
 
-  @Input() newMessagePath: string = '';
+  @Input() newMessageinChannel!: Channel | Chat;
 
-  addNewMessage(newMessagePath:string, message:string){
-    if (message) this.messageService.addNewMessageToPath(newMessagePath, message );
-    this.message = '';
+  // addNewMessage(newMessagePath:string, message:string){
+  //   if (message) this.messageService.addNewMessageToPath(newMessagePath, message );
+  //   this.message = '';
+  // }
+
+  addNewMessage(newMessagePath:Channel | Chat, message:string){
+    if(newMessagePath instanceof Channel){
+      if (message) this.messageService.addNewMessageToCollection(newMessagePath, message );
+      this.message = '';
+    }
+  
   }
 }

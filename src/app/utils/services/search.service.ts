@@ -371,7 +371,7 @@ export class SearchService {
           const channelName = context.slice(4);
           const channel = channels.find((c) => c.name === channelName);
           if (channel) {
-            return channel.members.map((userId) => {
+            return channel.memberIDs.map((userId) => {
               const user = this.usersService.getUserByID(userId);
               return {
                 text: `@${user?.name}`,
@@ -467,7 +467,7 @@ export class SearchService {
         (c) => c.name === channelName
       );
       console.log('Gefundener Channel:', channel);
-      return channel ? channel.members : [];
+      return channel ? channel.memberIDs : [];
     }
     return [];
   }
