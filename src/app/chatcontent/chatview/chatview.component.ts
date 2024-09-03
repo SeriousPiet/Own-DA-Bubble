@@ -53,6 +53,7 @@ export class ChatviewComponent implements OnChanges {
       this.currentChannel instanceof Channel && this.currentChannel.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
       this.setObjectType();
       this.getRequiredAvatars();
+      console.log(this.currentChannel)
     }
   }
 

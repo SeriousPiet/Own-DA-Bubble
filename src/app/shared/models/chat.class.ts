@@ -1,14 +1,18 @@
 export class Chat {
   readonly id: string;
   readonly memberIDs: string[] = [];
+  public messagesCount: number = 0;
+
 
   get chatMessagesPath(): string {
     return `chats/${this.id}/messages/`;
   }
 
-  constructor(memberIDs: string[], id: string) {
+  constructor(data: any, id: string) {
     this.id = id;
-    this.memberIDs = memberIDs;
+    this.memberIDs = data.memberIDs ? data.memberIDs : [];
+    this.messagesCount = data.messagesCount ? data.messagesCount : 0;
+
   }
 
   ifSelfChat(): boolean {

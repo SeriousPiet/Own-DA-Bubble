@@ -54,7 +54,7 @@
       ></app-messages-list-view>
     </div>
     <app-message-textarea
-      [newMessagePath]="navigationService.chatViewPath"
+      [newMessageinChannel]="navigationService.chatViewObject"
     ></app-message-textarea>
     }@else {
     <app-message-greeting></app-message-greeting>
