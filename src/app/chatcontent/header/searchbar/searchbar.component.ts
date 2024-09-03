@@ -37,16 +37,30 @@ export class SearchbarComponent implements OnInit {
   recentSearches: string[] = [];
   currentContext: string = '';
   isDatepickerVisible = false;
+  isWelcomeChannel: boolean = true;
 
   // ############################################################################################################
   // Lifecycle Hooks
   // ############################################################################################################
+
   constructor(
     private searchService: SearchService,
     public navigationService: NavigationService,
     private channelService: ChannelService,
     private usersService: UsersService
-  ) {}
+  ) {
+    this.navigationService.change$.subscribe((change: string) => {
+      if (change === 'chatViewObjectSet') {
+        this.updateWelcomeChannelStatus();
+      }
+    });
+  }
+
+  private updateWelcomeChannelStatus() {
+    const currentObject = this.navigationService.chatViewObject;
+    this.isWelcomeChannel =
+      currentObject instanceof Channel && currentObject.name === 'Willkommen';
+  }
 
   /**
    * Initializes the search suggestions, current search context, and recent searches.

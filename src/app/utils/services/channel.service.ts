@@ -39,7 +39,6 @@ export class ChannelService implements OnDestroy {
   private chats: Chat[] = [];
   private unsubChats: any = null;
 
-
   /**
    * @description Firestore instance.
    * @type {Firestore}
@@ -71,59 +70,84 @@ export class ChannelService implements OnDestroy {
   constructor() {
     this.initChannelCollection();
     this.initChatCollection();
-    this.subscribeUserListChange = this.userservice.changeUserList$.subscribe(() => {
-      this.defaultChannel.update({ members: this.userservice.getAllUserIDs() });
-    });
+    this.subscribeUserListChange = this.userservice.changeUserList$.subscribe(
+      () => {
+        this.defaultChannel.update({
+          members: this.userservice.getAllUserIDs(),
+        });
+      }
+    );
   }
-
 
   private initChannelCollection(): void {
-    this.unsubChannels = onSnapshot(collection(this.firestore, '/channels'), (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'added') {
-          this.channels.push(new Channel(change.doc.data(), change.doc.id));
-        }
-        if (change.type === 'modified') {
-          const channel = this.channels.find((channel) => channel.id === change.doc.id);
-          if (channel) channel.update(change.doc.data());
-        }
-        if (change.type === 'removed') {
-          this.channels = this.channels.filter((channel) => channel.id !== change.doc.id);
-        }
-      });
-    });
+    this.unsubChannels = onSnapshot(
+      collection(this.firestore, '/channels'),
+      (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
+            this.channels.push(new Channel(change.doc.data(), change.doc.id));
+          }
+          if (change.type === 'modified') {
+            const channel = this.channels.find(
+              (channel) => channel.id === change.doc.id
+            );
+            if (channel) channel.update(change.doc.data());
+          }
+          if (change.type === 'removed') {
+            this.channels = this.channels.filter(
+              (channel) => channel.id !== change.doc.id
+            );
+          }
+        });
+      }
+    );
   }
-
 
   private initChatCollection(): void {
     this.unsubChats = onSnapshot(
       collection(this.firestore, '/chats'),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') this.chats.push(new Chat(change.doc.data(), change.doc.id));
-          if (change.type === 'modified') this.chats.push(new Chat(change.doc.data(), change.doc.id));
-          if (change.type === 'removed') this.chats = this.chats.filter((chat) => chat.id !== change.doc.data()['id']);
+          if (change.type === 'added')
+            this.chats.push(
+              new Chat(change.doc.data()['memberIDs'], change.doc.id)
+            );
+          if (change.type === 'modified')
+            this.chats.push(
+              new Chat(change.doc.data()['memberIDs'], change.doc.id)
+            );
+          if (change.type === 'removed')
+            this.chats = this.chats.filter(
+              (chat) => chat.id !== change.doc.data()['id']
+            );
         });
       }
     );
   }
 
-
-  getChatByID(chatID: string): Chat | undefined { return this.chats.find((chat) => chat.id === chatID); }
+  getChatByID(chatID: string): Chat | undefined {
+    return this.chats.find((chat) => chat.id === chatID);
+  }
 
   getChatPartner(chat: Chat): User | undefined {
     if (this.userservice.currentUser) {
-      if (chat.memberIDs[0] === this.userservice.currentUserID) return this.userservice.getUserByID(chat.memberIDs[1]);
+      if (chat.memberIDs[0] === this.userservice.currentUserID)
+        return this.userservice.getUserByID(chat.memberIDs[1]);
       else return this.userservice.getUserByID(chat.memberIDs[0]);
     }
     return undefined;
   }
 
-
-  async getChatWithUserByID(userID: string, createChat: boolean = true): Promise<Chat | undefined> {
+  async getChatWithUserByID(
+    userID: string,
+    createChat: boolean = true
+  ): Promise<Chat | undefined> {
     if (this.userservice.currentUser) {
       let chat: Chat | undefined = undefined;
-      if (this.userservice.currentUserID === userID) chat = this.chats.find((chat) => chat.memberIDs[0] === userID && chat.memberIDs[1] === userID);
+      if (this.userservice.currentUserID === userID)
+        chat = this.chats.find(
+          (chat) => chat.memberIDs[0] === userID && chat.memberIDs[1] === userID
+        );
       else chat = this.chats.find((chat) => chat.memberIDs.includes(userID));
       if (chat) return chat;
       if (createChat) return await this.addChatWithUserOnFirestore(userID);
@@ -131,8 +155,7 @@ export class ChannelService implements OnDestroy {
     return undefined;
   }
 
-
-  private async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
+  async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
     try {
       const chatRef = collection(this.firestore, '/chats');
       const chatObj = {
@@ -140,17 +163,28 @@ export class ChannelService implements OnDestroy {
         createdAt: serverTimestamp(),
       };
       const chat = await addDoc(chatRef, chatObj);
-      await updateDoc(doc(this.firestore, '/chats/' + chat.id), { id: chat.id });
-      this.userservice.updateCurrentUserDataOnFirestore({ chatIDs: [...(this.userservice.currentUser?.chatIDs || []), chat.id] });
-      if (this.userservice.currentUserID !== userID) this.userservice.updateCurrentUserDataOnFirestore({ chatIDs: [...(this.userservice.getUserByID(userID)?.chatIDs || []), chat.id] });
+      await updateDoc(doc(this.firestore, '/chats/' + chat.id), {
+        id: chat.id,
+      });
+      this.userservice.updateCurrentUserDataOnFirestore({
+        chatIDs: [...(this.userservice.currentUser?.chatIDs || []), chat.id],
+      });
+      if (this.userservice.currentUserID !== userID)
+        this.userservice.updateCurrentUserDataOnFirestore({
+          chatIDs: [
+            ...(this.userservice.getUserByID(userID)?.chatIDs || []),
+            chat.id,
+          ],
+        });
       console.warn('userservice/chat: Chat added(' + chat.id + ')');
       return new Chat(chatObj.memberIDs, chat.id);
     } catch (error) {
-      console.error('userservice/chat: Error adding chat(' + (error as Error).message + ')');
+      console.error(
+        'userservice/chat: Error adding chat(' + (error as Error).message + ')'
+      );
       return undefined;
     }
   }
-
 
   /**
    * @method addNewChannelToFirestore
@@ -176,13 +210,13 @@ export class ChannelService implements OnDestroy {
       const docRef = await addDoc(channelCollectionref, newchannel);
       console.warn(
         'ChannelService: addNewChannelToFirestore: channel added - ' +
-        newchannel.name
+          newchannel.name
       );
     } catch (error) {
       console.error(
         'ChannelService: addNewChannelToFirestore: error adding channel' +
-        newchannel.name +
-        ' # ',
+          newchannel.name +
+          ' # ',
         error
       );
     }
