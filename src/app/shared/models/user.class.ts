@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-export type authProvider = 'google' | 'email';
+export type authProvider = 'google' | 'email' | 'guest';
 
 export class User {
   private changeUser = new BehaviorSubject<User | null>(null);
@@ -58,8 +58,13 @@ export class User {
     this._pictureURL = userObj.pictureURL ? userObj.pictureURL : undefined;
     this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
     this._ifCurrentUser = currentUser;
-    this.provider = userObj.provider ? userObj.provider : 'email';
-    this.guest = userObj.email == 'unser@gast.de' ? true : false;
+    if(userObj.guest) {
+      this.guest = true;
+      this.provider = 'guest';
+    } else {
+      this.guest = false;
+      this.provider = userObj.provider ? userObj.provider : 'email';
+    }
   }
 
   update(data: any): void {

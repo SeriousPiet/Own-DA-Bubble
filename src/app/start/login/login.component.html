@@ -4,7 +4,6 @@
     <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
     @if(userservice.currentUser) {
     User: {{ userservice.currentUser.name }}
-    <button (click)="userservice.logoutUser()">logout</button>
     }
     <button [routerLink]="['/showcase']">Styling Showcase</button>
   </div>

@@ -10,6 +10,7 @@ import { nameValidator, emailValidator } from '../../../utils/form-validators';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AvatarDirective } from '../../../utils/directives/avatar.directive';
+import { CleanupService } from '../../../utils/services/cleanup.service';
 
 @Component({
   selector: 'app-profile',
@@ -29,6 +30,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     public userservice: UsersService,
+    private cleanupservice: CleanupService,
     private fb: FormBuilder,
     private router: Router
   ) {
@@ -88,7 +90,7 @@ export class ProfileComponent implements OnInit {
   }
 
   logoutUser() {
-    this.userservice.logoutUser();
+    this.cleanupservice.logoutUser();
     this.router.navigate(['']);
   }
 }

@@ -67,9 +67,29 @@ export class LoginComponent implements OnDestroy {
     if (this.userlogin) this.userlogin.unsubscribe();
   }
 
-  loginGuest() {
-    this.loginUser('unser@gast.de', 'qujnup-3xApfo-qengaq');
+  async loginGuest() {
+    this.showSpinner = true;
+    this.loginForm.disable();
+    this.clearAllErrorSpans();
+    // create unique email for guest
+    const email = 'gast' + new Date().getTime() + '@gast.de';
+    await addDoc(collection(this.firestore, '/users'),
+      {
+        name: 'Gast',
+        email: email,
+        online: false,
+        signupAt: serverTimestamp(),
+        avatar: 0,
+        guest: true,
+      });
+    this.userservice.setCurrentUserByEMail(email);
+    localStorage.setItem('guestuseremail', email);
+    this.showSpinner = false;
+    this.loginForm.enable();
+    this.handleLoginSuccess(true);
+
   }
+
 
   async submitPasswordResetForm(event: Event) {
     event.preventDefault();
@@ -95,12 +115,14 @@ export class LoginComponent implements OnDestroy {
     this.passwordResetForm.enable();
   }
 
+
   async submitLoginForm(event: Event) {
     event.preventDefault();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
     const error = await this.loginUser(email, password);
   }
+
 
   async loginUser(email: string, password: string): Promise<string> {
     try {
@@ -119,6 +141,7 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
+
   async signinWithGoogle() {
     this.showSpinner = true;
     const error = await this.signinWithGooglePopup();
@@ -126,6 +149,7 @@ export class LoginComponent implements OnDestroy {
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }
+
 
   async signinWithGooglePopup(): Promise<string> {
     try {
@@ -153,11 +177,8 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-  private async addGoogleUserToFirestore(
-    name: string,
-    email: string,
-    pictureURL: string | null
-  ): Promise<string> {
+
+  private async addGoogleUserToFirestore(name: string, email: string, pictureURL: string | null): Promise<string> {
     const userObj = {
       name: name,
       email: email,
@@ -172,9 +193,7 @@ export class LoginComponent implements OnDestroy {
     return newUser.id;
   }
 
-  private async getUserIDByEmail(
-    email: string | null
-  ): Promise<string | undefined> {
+  private async getUserIDByEmail(email: string | null): Promise<string | undefined> {
     const usersRef = collection(this.firestore, '/users');
     const queryresponse = query(usersRef, where('email', '==', email));
     const querySnapshot = await getDocs(queryresponse);
@@ -185,8 +204,8 @@ export class LoginComponent implements OnDestroy {
     return undefined;
   }
 
-  handleLoginSuccess() {
-    this.showInfoMessage('Anmelden', false);
+  handleLoginSuccess(guestLogin: boolean = false) {
+    this.showInfoMessage('Anmelden' + (guestLogin ? ' als Gast' : ''), false);
     const showLoginInfo = new Date().getTime();
     if (this.userservice.currentUser) {
       console.log(

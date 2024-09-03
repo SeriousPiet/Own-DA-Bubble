@@ -22,20 +22,29 @@ export class UsersService implements OnDestroy {
   public users: User[] = [];
   private userEmailWaitForLogin: string | undefined;
   public currentUser: User | undefined;
+  public currentGuestUserID: string = '';
+  public guestUserIDWaitForLogin: string | undefined;
+
 
   constructor() {
     this.initUserCollection();
     this.initUserWatchDog();
+    const guestUserEmail = localStorage.getItem('guestuseremail');
+    if (guestUserEmail) this.setCurrentUserByEMail(guestUserEmail);
   }
 
-  get currentUserID(): string {
-    return this.currentUser ? this.currentUser.id : 'no user loged in';
-  }
 
+  get currentUserID(): string { return this.currentUser ? this.currentUser.id : 'no user logged in'; }
 
   getAllUserIDs(): string[] { const userIDs = this.users.map((user) => user.id); return userIDs; }
 
   getUserByID(id: string): User | undefined { return this.users.find((user) => user.id === id); }
+
+  ifValidUser(userID: string): boolean {
+    const user = this.users.find((user) => user.id === userID);
+    if(user && (!user.guest || user.id === this.currentGuestUserID)) return true;
+    return false;
+  }
 
   async updateCurrentUserDataOnFirestore(userChangeData: {}) {
     try {
@@ -83,13 +92,6 @@ export class UsersService implements OnDestroy {
   }
 
 
-  logoutUser(): void {
-    if (this.currentUser) {
-      signOut(this.firebaseauth);
-    }
-  }
-
-
   // ############################################################################################################
   // Functions for subscribing to Firestore collections
   // ############################################################################################################
@@ -133,18 +135,27 @@ export class UsersService implements OnDestroy {
       const user = this.users.find((user) => user.email === userEmail);
       if (user) {
         this.currentUser = user;
+        // store the guest user id in session storage
+        if (user.guest) this.currentGuestUserID = user.id;
         this.changeCurrentUserSubject.next('userset');
         await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), { online: true, lastLoginAt: serverTimestamp() });
       } else {
         this.userEmailWaitForLogin = userEmail;
       }
     } else {
-      await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), { online: false });
-      this.currentUser = undefined;
-      this.changeCurrentUserSubject.next('userdelete');
+      const userRef = doc(this.firestore, '/users/' + this.currentUserID);
+      if (userRef) await updateDoc(userRef, { online: false });
+      this.clearCurrentUser();
     }
   }
 
+
+  public clearCurrentUser(): void {
+    localStorage.removeItem('guestuserid');
+    this.currentUser = undefined;
+    this.currentGuestUserID = '';
+    this.changeCurrentUserSubject.next('userdelete');
+  }
 
   // ############################################################################################################
   // Functions for unsubscribing from Firestore collections

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { UsersService } from './utils/services/user.service';
@@ -16,7 +16,12 @@ import { UsersService } from './utils/services/user.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  @HostListener('window:beforeunload', ['$event'])
+  async unloadHandler(event: Event) {
+    if (this.userservice.currentUser) await this.userservice.updateCurrentUserDataOnFirestore({ online: false });
+  }
 
-  private userservice = inject(UsersService)
+  private userservice = inject(UsersService);
+
   title = 'dabubble303';
 }
