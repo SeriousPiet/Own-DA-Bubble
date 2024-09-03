@@ -13,7 +13,6 @@ export class MessageDateComponent {
 
   @Input() set date(date: Date) {
     this.formatDate(date);
-    console.log(date)
   };
 
   formatDate(date: Date) {

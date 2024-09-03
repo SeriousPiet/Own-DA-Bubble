@@ -44,7 +44,7 @@ export class MessagesListViewComponent implements OnInit {
   constructor(
     private _cdr: ChangeDetectorRef,
     private searchService: SearchService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.messageScrollSubscription =
@@ -68,7 +68,8 @@ export class MessagesListViewComponent implements OnInit {
 
   sortMessagesDate(messageCreationDate: Date) {
     this.messagesDates.push(messageCreationDate);
-    this.messagesDates.sort((a, b) => a.getDate() - b.getDate());
+    this.messagesDates.sort((a, b) => a.getMonth() - b.getMonth() || a.getDate() - b.getDate());
+    console.log(this.messagesDates);
     this.messagesDates = this.messagesDates.filter((date, index, array) => {
       return index === 0 || date.getDate() !== array[index - 1].getDate();
     });
