@@ -74,7 +74,7 @@ export class ChatviewComponent implements OnChanges {
   }
 
   getNumberOfMembers(object: Channel | Chat) {
-    if (object instanceof Channel) return object.members.length;
+    if (object instanceof Channel) return object.memberIDs.length;
     return
   }
 
@@ -86,8 +86,8 @@ export class ChatviewComponent implements OnChanges {
   }
 
   renderChannelMembersAvatar(object: Channel | Chat | Message | undefined) {
-    if (object instanceof Channel && object.members.length <= 3) {
-      object.members.forEach(memberID => {
+    if (object instanceof Channel && object.memberIDs.length <= 3) {
+      object.memberIDs.forEach(memberID => {
         return this.userService.getUserByID(memberID)?.avatar
       });
     }
@@ -98,7 +98,7 @@ export class ChatviewComponent implements OnChanges {
 
   renderOnlyFirstThreeAvatars(object: Channel) {
     const maxAvatarsCount = 3;
-    const maxAvatars = object.members.slice(0, maxAvatarsCount)
+    const maxAvatars = object.memberIDs.slice(0, maxAvatarsCount)
     maxAvatars.forEach(memberID => {
       return this.userService.getUserByID(memberID)?.avatar
     });

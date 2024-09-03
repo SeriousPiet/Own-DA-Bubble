@@ -31,7 +31,7 @@ export class MessageTextareaComponent {
 
   addNewMessage(newMessagePath:Channel | Chat, message:string){
     if(newMessagePath instanceof Channel){
-      if (message) this.messageService.addNewMessageToChannel(newMessagePath, message );
+      if (message) this.messageService.addNewMessageToCollection(newMessagePath, message );
       this.message = '';
     }
   
