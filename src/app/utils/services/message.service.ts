@@ -2,6 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { addDoc, collection, doc, Firestore, getDoc, getDocs, serverTimestamp, updateDoc } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
 import { IReactions, Message } from '../../shared/models/message.class';
+import { Channel } from '../../shared/models/channel.class';
+import { Chat } from '../../shared/models/chat.class';
 
 @Injectable({
   providedIn: 'root'
@@ -105,5 +107,26 @@ export class MessageService {
     };
   }
 
+
+
+
+  async addNewMessageToChannel(channel: Channel | Chat, messageContent: string) {
+    let messagePath = '';
+    if(channel instanceof Channel) {
+      messagePath = channel.channelMessagesPath;
+    } else {
+      messagePath = 'chat/' + channel.id;
+    }
+    const messageCollectionRef = collection(this.firestore, messagePath);
+    if (!messageCollectionRef) throw new Error('MessageService: addNewMessageToPath: path "' + messagePath + '" is undefined');
+    try {
+      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true));
+      const messagesQuerySnapshot = await getDocs(messageCollectionRef);
+      await updateDoc(doc(this.firestore, 'channels/' + channel.id), { messageCount: messagesQuerySnapshot.size });
+      console.warn('MessageService: addNewMessageToPath: message added');
+    } catch (error) {
+      console.error('MessageService: addNewMessageToPath: error adding message', error);
+    }
+  }
 
 }

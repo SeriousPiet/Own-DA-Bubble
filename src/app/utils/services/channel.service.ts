@@ -100,8 +100,8 @@ export class ChannelService implements OnDestroy {
       collection(this.firestore, '/chats'),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') this.chats.push(new Chat(change.doc.data()['memberIDs'], change.doc.id));
-          if (change.type === 'modified') this.chats.push(new Chat(change.doc.data()['memberIDs'], change.doc.id));
+          if (change.type === 'added') this.chats.push(new Chat(change.doc.data(), change.doc.id));
+          if (change.type === 'modified') this.chats.push(new Chat(change.doc.data(), change.doc.id));
           if (change.type === 'removed') this.chats = this.chats.filter((chat) => chat.id !== change.doc.data()['id']);
         });
       }
