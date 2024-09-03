@@ -51,15 +51,15 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 }
 
 .d-none {
-  display: none;
+  display: none !important;
 }
 
 .d-flex {
-  display: flex;
+  display: flex !important;
 }
 
 .d-block {
-  display: block;
+  display: block !important;
 }
 
 ::-webkit-scrollbar {
