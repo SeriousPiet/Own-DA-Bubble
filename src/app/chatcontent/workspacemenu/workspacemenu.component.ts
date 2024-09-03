@@ -26,6 +26,7 @@ import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/
 })
 export class WorkspacemenuComponent implements OnInit {
   addChannelId: HTMLElement | null = null;
+  userCount: number = 0;
   public userservice = inject(UsersService);
   public channelservice = inject(ChannelService);
   public users: User[] = [];
@@ -37,7 +38,23 @@ export class WorkspacemenuComponent implements OnInit {
 
   @ViewChild(AddchannelComponent) addChannelComponent!: AddchannelComponent;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.sortAndArrangeUsers();
+  }
+
+  sortAndArrangeUsers(): void {
+    const currentUserID = this.userservice.currentUserID;
+    const sortedUsers = this.userservice.users.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+    const currentUser = sortedUsers.find((user) => user.id === currentUserID);
+    const otherUsers = sortedUsers.filter((user) => user.id !== currentUserID);
+    if (currentUser) {
+      this.users = [currentUser, ...otherUsers];
+    } else {
+      this.users = otherUsers;
+    }
+  }
 
   toggleAddChannelPopover() {
     this.addChannelId = document.getElementById('addChannelId');
