@@ -2,182 +2,176 @@
 @import "../../../../../mixins.scss";
 
 :host {
-    border: none;
-    width: 50%;
-    border-radius: 0px 1.875rem 1.875rem 1.875rem;
-    top: -5.3125rem
+  border: none;
+  width: 50%;
+  border-radius: 0px 1.875rem 1.875rem 1.875rem;
+  top: -5.3125rem;
+  opacity: 0;
+  transition: $transition-popover;
 }
 
 main {
-    @include flex(normal, normal);
+  @include flex(normal, normal);
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2.5rem;
+  height: 36.3125rem;
+  min-height: 100%;
+  min-width: 100%;
+
+  > div {
+    @include flex(space-between, center);
+
+    > div {
+      @include flex(normal, center);
+      font-size: 1.5rem;
+      font-weight: 700;
+      gap: 0.9375rem;
+    }
+
+    > #close-icon {
+      @include flex(center, center);
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 100%;
+      transition: $transition-standard;
+
+      &:hover {
+        background-color: $background;
+        cursor: pointer;
+
+        > img {
+          content: url("../../../../../assets/icons/chat/general/close-hover.svg");
+        }
+      }
+    }
+  }
+
+  .channel-info-content {
+    @include flex(center, center);
     flex-direction: column;
     gap: 1.25rem;
-    padding: 2.5rem;
-    height: 36.3125rem;
-    min-height: 100%;
-    min-width: 100%;
+    height: 100%;
 
-    >div {
-        @include flex(space-between, center);
+    > section {
+      @include flex(space-between, center);
+      flex-direction: column;
+      gap: 0.625rem;
+      border: $default-border;
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      width: 100%;
 
-        >div {
-            @include flex(normal, center);
-            font-size: 1.5rem;
-            font-weight: 700;
-            gap: .9375rem
+      .channel-name-input {
+        gap: 0.625rem;
+      }
+
+      > div {
+        width: 100%;
+
+        > span {
+          font-size: 1.125rem;
+          font-weight: 700;
         }
 
-        >#close-icon {
-            @include flex(center, center);
-            height: 2.5rem;
-            width: 2.5rem;
-            border-radius: 100%;
-            transition: $transition-standard;
+        > button {
+          font-size: 1.125rem;
+          font-weight: 500;
+          color: $secondary;
+          width: 6.25rem;
+          transition: all 250ms ease-in-out;
+          width: 5.625rem;
+          line-height: 1.5344rem;
+          transition: $transition-standard;
 
-
-
-            &:hover {
-                background-color: $background;
-                cursor: pointer;
-
-                >img {
-                    content: url('../../../../../assets/icons/chat/general/close-hover.svg');
-                }
-            }
+          &:hover {
+            font-weight: 600;
+            color: $secondary;
+          }
         }
-
+      }
     }
-
-    .channel-info-content {
-        @include flex(center, center);
-        flex-direction: column;
-        gap: 1.25rem;
-        height: 100%;
-
-        >section {
-            @include flex(space-between, center);
-            flex-direction: column;
-            gap: 0.625rem;
-            border: $default-border;
-            border-radius: 1.25rem;
-            padding: 1.25rem;
-            width: 100%;
-
-            .channel-name-input {
-                gap: .625rem;
-            }
-
-            >div {
-                width: 100%;
-
-                >span {
-                    font-size: 1.125rem;
-                    font-weight: 700;
-                }
-
-                >button {
-                    font-size: 1.125rem;
-                    font-weight: 500;
-                    color: $secondary;
-                    width: 6.25rem;
-                    transition: all 250ms ease-in-out;
-                    width: 5.625rem;
-                    line-height: 1.5344rem;
-                    transition: $transition-standard;
-
-
-                    &:hover {
-                        font-weight: 600;
-                        color: $secondary;
-                    }
-                }
-            }
-        }
-    }
+  }
 }
 
 .channel-name {
-    height: 7.125rem;
+  height: 7.125rem;
 
-    >div {
-        @include flex(space-between, center);
-    }
+  > div {
+    @include flex(space-between, center);
+  }
 
-    :nth-child(2) {
-        @include flex(normal, center);
-    }
+  :nth-child(2) {
+    @include flex(normal, center);
+  }
 }
 
 .channel-description {
-    height: 273px;
+  height: 273px;
 
-    >div {
-        @include flex(space-between, center);
+  > div {
+    @include flex(space-between, center);
+  }
+
+  > textarea:disabled,
+  textarea:enabled {
+    @include nunito(1.125, 400);
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    background-color: white;
+
+    &::-webkit-scrollbar {
+      display: none;
     }
+  }
 
-    >textarea:disabled,
-    textarea:enabled {
-        @include nunito(1.125, 400);
-        width: 100%;
-        resize: none;
-        border: none;
-        outline: none;
-        background-color: white;
+  hr {
+    border: $default-border;
+    width: 100%;
+  }
 
-        &::-webkit-scrollbar {
-            display: none;
-        }
+  :nth-child(4) {
+    @include flex(normal, normal);
+    flex-direction: column;
+    gap: 1.25rem;
+
+    > :nth-child(2) {
+      font-weight: 400;
+      font-size: 1.5rem;
+      color: $secondary;
     }
-
-    hr {
-        border: $default-border;
-        width: 100%;
-    }
-
-    :nth-child(4) {
-        @include flex(normal, normal);
-        flex-direction: column;
-        gap: 1.25rem;
-
-        >:nth-child(2) {
-            font-weight: 400;
-            font-size: 1.5rem;
-            color: $secondary;
-        }
-    }
+  }
 }
 
 .leave-channel-button {
-    align-self: flex-end;
-    @include buttonFull();
+  align-self: flex-end;
+  @include buttonFull();
 }
 
 .channel-name-editor {
-    .channel-name {
-        border: unset !important;
-        transition: $transition-standard;
+  .channel-name {
+    border: unset !important;
+    transition: $transition-standard;
 
-
-        .channel-name-input {
-            border: $default-border;
-            border-radius: 2.5rem;
-            padding: 1.125rem 1.25rem;
-        }
+    .channel-name-input {
+      border: $default-border;
+      border-radius: 2.5rem;
+      padding: 1.125rem 1.25rem;
     }
+  }
 }
 
 .channel-description-editor {
-    .channel-description {
-        border: unset !important;
-        transition: $transition-standard;
+  .channel-description {
+    border: unset !important;
+    transition: $transition-standard;
 
-
-        >textarea {
-            border: $default-border;
-            border-radius: 1.875rem;
-            padding: 1.125rem 1.25rem;
-        }
+    > textarea {
+      border: $default-border;
+      border-radius: 1.875rem;
+      padding: 1.125rem 1.25rem;
     }
-
-
+  }
 }
