@@ -38,6 +38,7 @@
 
   <div class="dropdown" *ngIf="isDropdownVisible">
     <div
+      [class.d-none]="isWelcomeChannel"
       class="context-search"
       (click)="enableContextSearch()"
       *ngIf="!isContextSearchEnabled"
