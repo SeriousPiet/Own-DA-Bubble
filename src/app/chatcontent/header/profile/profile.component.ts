@@ -22,6 +22,8 @@ import { CleanupService } from '../../../utils/services/cleanup.service';
 export class ProfileComponent implements OnInit {
   showProfileDetails = false;
   editMode = false;
+  isGoogleAuth: boolean = false;
+
   profileForm: FormGroup;
 
   public onlineStatus: string = 'offline';
@@ -40,9 +42,11 @@ export class ProfileComponent implements OnInit {
     });
 
     this.userservice.currentUser?.changeUser$.subscribe((user) => {
-      this.onlineStatus = user?.online
-        ? 'online'
-        : 'offline';
+      this.onlineStatus = user?.online ? 'online' : 'offline';
+    });
+
+    this.userservice.changeCurrentUser$.subscribe(() => {
+      this.updateGoogleAuthStatus();
     });
   }
 
@@ -53,6 +57,11 @@ export class ProfileComponent implements OnInit {
         email: this.userservice.currentUser.email,
       });
     }
+    this.updateGoogleAuthStatus();
+  }
+
+  private updateGoogleAuthStatus() {
+    this.isGoogleAuth = this.userservice.currentUser?.provider === 'google';
   }
 
   resetPopoverState() {

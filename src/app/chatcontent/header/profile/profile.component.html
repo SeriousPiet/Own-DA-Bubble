@@ -66,7 +66,7 @@
       <img src="./assets/icons/start/mail.svg" alt="" />
       <div class="mail-adress">
         <span>Email-Adresse</span>
-        <a href="mailto: {{ userservice.currentUser?.email }}">{{
+        <a href=" {{ userservice.currentUser?.email }}">{{
           userservice.currentUser?.email
         }}</a>
       </div>
@@ -121,14 +121,21 @@
             <img src="./assets/icons/modals/profile/mail.svg" alt="" />
             <span>E-mail Adresse</span>
           </div>
-          <div class="input-box">
+          <div [class.google]="isGoogleAuth" class="input-box">
             <input
+              [class.google]="isGoogleAuth"
               type="email"
               formControlName="email"
               placeholder="Deine Mailadresse hier"
+              [readOnly]="isGoogleAuth"
             />
           </div>
-          @if (profileForm.get('email')?.invalid &&
+
+          @if (isGoogleAuth) {
+          <div class="google-info-message">
+            <span>GoogleMail-Adressen sind nicht editierbar.</span>
+          </div>
+          } @if (profileForm.get('email')?.invalid &&
           (profileForm.get('email')?.dirty ||
           profileForm.get('email')?.touched)) {
           <div class="error-message">

@@ -132,6 +132,10 @@
     flex-direction: column;
     min-width: 20rem;
 
+    form {
+      width: 100%;
+    }
+
     .edit-box {
       @include flex(flex-start, flex-start);
       flex-direction: column;
@@ -158,11 +162,24 @@
       .input-box {
         @include inputBox(100%, #adb0d9, $secondary, $secondary, false);
 
+        &.google {
+          border-color: $disabled !important;
+
+          &:hover {
+            border-color: $disabled !important;
+          }
+        }
+
         input {
           @include input;
           @include fontSizer(18, 400, black);
           font-size: 1rem;
           padding: 0.75rem 0;
+
+          &.google {
+            color: $disabled;
+            pointer-events: none;
+          }
         }
       }
     }
@@ -182,7 +199,8 @@
       }
     }
 
-    .error-message {
+    .error-message,
+    .google-info-message {
       @include fontSizer(14, 400, $error);
       height: 0.875rem;
       width: 100%;
