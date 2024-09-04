@@ -66,7 +66,7 @@ export class WorkspacemenuComponent implements OnInit {
     }
   }
 
-  setCurrentChannel(newChannel: Channel) {
-    this.navigationService.setChatViewObject(newChannel);
+  setChat(chat: any) {
+    this.navigationService.setChatViewObject(chat);
   }
 }

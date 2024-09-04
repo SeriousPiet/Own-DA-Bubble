@@ -222,7 +222,8 @@ section {
   .dm-list-item {
     @include flex(flex-start, center);
     @include buttonNoBorder;
-    width: fit-content !important;
+    @include fontSizer(18, 400, black);
+    width: fit-content;
     gap: 1.25rem;
     color: black !important;
 
@@ -270,5 +271,13 @@ section {
         }
       }
     }
+  }
+
+  .dm-list-item:hover {
+    @include fontSizer(18, 400, black);
+  }
+
+  .dm-list-item:active {
+    @include fontSizer(18, 700, #535af1);
   }
 }
