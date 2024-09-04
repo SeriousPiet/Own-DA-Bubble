@@ -25,7 +25,7 @@ export class MessageService {
     try {
       const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true));
       const messagesQuerySnapshot = await getDocs(messageCollectionRef);
-      await updateDoc(doc(this.firestore, 'channels/' + channel.id), { messageCount: messagesQuerySnapshot.size });
+      await updateDoc(doc(this.firestore, 'channels/' + channel.id), { messagesCount: messagesQuerySnapshot.size });
       console.warn('MessageService: message added to ' + messagePath);
     } catch (error) {
       console.error('MessageService: error adding message', error);
