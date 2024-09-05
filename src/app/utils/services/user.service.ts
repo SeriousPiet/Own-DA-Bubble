@@ -19,6 +19,10 @@ export class UsersService implements OnDestroy {
   private changeCurrentUserSubject = new BehaviorSubject<string>('');
   public changeCurrentUser$ = this.changeCurrentUserSubject.asObservable();
 
+  private selectedUserObjectSubject = new BehaviorSubject<User | undefined>(undefined);
+  public selectedUserObject$ = this.selectedUserObjectSubject.asObservable();
+  
+
   public users: User[] = [];
   private userEmailWaitForLogin: string | undefined;
   public currentUser: User | undefined;
@@ -174,6 +178,11 @@ export class UsersService implements OnDestroy {
       this.user$ = null;
     }
   }
+
+  updateSelectedUser(user: User | undefined) {
+    this.selectedUserObjectSubject.next(user);
+  }
+
 
 
   // ############################################################################################################

@@ -58,10 +58,14 @@ main {
       }
     }
 
-    > div {
+    > button {
       @include flex(normal, center);
       gap: 0.8125rem;
       width: 100%;
+
+      >span{
+        @include nunito(1.125, 400)
+      }
     }
 
     .member {

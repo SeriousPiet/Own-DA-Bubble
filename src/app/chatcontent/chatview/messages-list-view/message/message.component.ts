@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { collection, Firestore, onSnapshot, serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { Message } from '../../../../shared/models/message.class';
@@ -25,7 +25,6 @@ export class MessageComponent implements OnInit {
   @Input() messageData: any;
   @Input() set messageWriter(messageWriterID: string) {
     this.checkMessageWriterID(messageWriterID);
-
   }
   @Input() messages: Message[] = [];
 
@@ -84,12 +83,8 @@ export class MessageComponent implements OnInit {
           previousCreatorId = currentCreatorId;
           previousMessageDate = currentMessageDate;
         }
-
-        // console.log(`Message index ${index}, previousMessageFromSameUser: ${message.previousMessageFromSameUser}`)
-
       });
 
-      // console.log(this.messages);
     }
   }
 
@@ -134,15 +129,32 @@ export class MessageComponent implements OnInit {
     }
   }
 
-  discardChanges(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }){
+  discardChanges(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
     updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
     updatedData.content = message.content;
-    
+
     this.toggleMessageEditor();
   }
 
 
+  returnPopoverTarget(messageCreator: string) {
+    if (messageCreator === this.userService.currentUser?.id) {
+      return 'profile-popover'
+    } else {
+      return 'popover-member-profile'
+    }
+  }
 
+  setSelectedUserObject(messageCreatorID:string) {
+    console.log(messageCreatorID)
+    this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
+    // this.navigationService.comingFromOutside = true;
+    // setTimeout(() => {
+    //   this.navigationService.comingFromOutside = false;
+    // }, 1000);
+    // console.log(this.navigationService.comingFromOutside)
+    console.log(this.userService.selectedUserObject$) 
+  }
 
 
 

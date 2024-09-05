@@ -7,17 +7,17 @@
     </div>
     <section class="member-list">
         @for (memberID of currentChannel.memberIDs; track memberID) {
-            <div class="member" [ngClass]="{'current-user':memberID === userService.currentUser?.id}">
+            <button class="member" [ngClass]="{'current-user':memberID === userService.currentUser?.id}" (click)="setSelectedUserObject(memberID)" [attr.popovertarget]="returnPopoverTarget(memberID)">
                 <div appAvatar [user]="userService.getUserByID(memberID)" context="chat-channel-members-big"></div>
                 <span>{{ getMemberName(memberID) }}</span>
-            </div>
+            </button>
         }
-        <div class="add-member">
+        <button class="add-member">
             <div>
                 <img src="assets/icons/chat/general/add-to-channel.svg" alt="">
             </div>
             <span>Mitglieder hinzufügen</span>
-        </div>
+        </button>
     </section>
     
 </main>

@@ -37,7 +37,7 @@ export class MessagesListViewComponent implements OnInit {
   public messagesDates: Date[] = [];
   public noMessagesAvailable = true;
 
-  @Input() isDefaultChannel: boolean = true;
+  @Input() currentObject!: Channel | Chat;
 
   @Input()
   set messagesPath(value: string | undefined) {
