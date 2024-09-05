@@ -70,17 +70,11 @@ export class NavigationService {
         object.channelMessagesPath == ''
           ? undefined
           : object.channelMessagesPath;
-      console.warn(
-        'Navigationservice: setChatViewObject: Channel ' + object.name
-      );
     } else {
       const chat = await this.channelService.getChatWithUserByID(object.id);
       if (chat) {
         this._chatViewObject = chat;
         this._chatViewPath = chat.chatMessagesPath;
-        console.warn(
-          'Navigationservice: setChatViewObject: Chat with ' + object.name
-        );
       }
     }
     this.clearThread();
@@ -114,9 +108,6 @@ export class NavigationService {
     this._threadViewPath = message.answerPath;
     this._threadViewObject = message;
     this.changeSubject.next('message');
-    console.warn(
-      'Navigationservice: setThreadViewObject to ' + message.answerPath
-    );
   }
 
   /**
@@ -125,7 +116,6 @@ export class NavigationService {
   private clearThread(): void {
     this._threadViewPath = undefined;
     this._threadViewObject = undefined;
-    console.warn('Navigationservice: clearThread');
   }
 
   // ############################################################################################################

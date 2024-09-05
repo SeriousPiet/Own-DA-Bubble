@@ -176,7 +176,6 @@ export class ChannelService implements OnDestroy {
             chat.id,
           ],
         });
-      console.warn('userservice/chat: Chat added(' + chat.id + ')');
       return new Chat(chatObj.memberIDs, chat.id);
     } catch (error) {
       console.error(
@@ -208,17 +207,8 @@ export class ChannelService implements OnDestroy {
     const channelCollectionref = collection(this.firestore, '/channels');
     try {
       const docRef = await addDoc(channelCollectionref, newchannel);
-      console.warn(
-        'ChannelService: addNewChannelToFirestore: channel added - ' +
-          newchannel.name
-      );
     } catch (error) {
-      console.error(
-        'ChannelService: addNewChannelToFirestore: error adding channel' +
-          newchannel.name +
-          ' # ',
-        error
-      );
+      console.error('ChannelService: addNewChannelToFirestore: error adding channel' + newchannel.name + ' # ', error);
     }
   }
 
@@ -238,15 +228,8 @@ export class ChannelService implements OnDestroy {
     const channelDocRef = doc(this.firestore, '/channels', channel.id);
     try {
       await updateDoc(channelDocRef, updateData);
-      console.warn(
-        'ChannelService: updateChannelOnFirestore: channel updated ->',
-        updateData
-      );
     } catch (error) {
-      console.error(
-        'ChannelService: updateChannelOnFirestore: error updating channel ->',
-        error
-      );
+      console.error('ChannelService: updateChannelOnFirestore: error updating channel ->', error);
     }
   }
 

@@ -53,7 +53,6 @@ export class UsersService implements OnDestroy {
   async updateCurrentUserDataOnFirestore(userChangeData: {}) {
     try {
       await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), userChangeData);
-      console.warn('userservice/firestore: User updated(', this.currentUserID, ') # ', userChangeData);
     } catch (error) {
       console.error('userservice/firestore: ', (error as Error).message);
     }
@@ -102,7 +101,6 @@ export class UsersService implements OnDestroy {
       const user = this.users.find((user) => user.email === userEmail);
       if (user) {
         this.currentUser = user;
-        // store the guest user id in session storage
         if (user.guest) this.currentGuestUserID = user.id;
         this.changeCurrentUserSubject.next('userset');
         await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), { online: true, lastLoginAt: serverTimestamp() });

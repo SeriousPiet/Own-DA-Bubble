@@ -75,7 +75,6 @@ export class SignupComponent {
           signupAt: serverTimestamp(),
           avatar: 0,
         });
-      console.warn('userservice/auth: User registered(', email, ')');
       return '';
     } catch (error) {
       console.error('userservice/auth: Error registering user(', (error as Error).message, ')');
