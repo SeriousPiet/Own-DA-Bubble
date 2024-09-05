@@ -9,7 +9,8 @@
     @if (!messageEditorModus) {
     <section>
         <div [ngClass]="{'message-header':true}">
-            <span class="message-creator-name">{{userService.getUserByID(messageData.creatorID)?.name}}</span>
+            <button (click)="setSelectedUserObject(messageData.creatorID)" [attr.popovertarget]="returnPopoverTarget(messageData.creatorID)"
+                class="message-creator-name">{{userService.getUserByID(messageData.creatorID)?.name}}</button>
             <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
         </div>
         <p>{{ messageData.content }}</p>
