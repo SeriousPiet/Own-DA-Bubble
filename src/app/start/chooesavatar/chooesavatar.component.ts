@@ -59,6 +59,8 @@ export class ChooesavatarComponent {
   }
 
   setAvatar(avatar: number) {
+    if (this.userservice.currentUser?.avatar === avatar) return;
+    this.picturePropertysError = '';
     this.pictureFile = null;
     this.changedAvatar = true;
     this.selectedAvatarNumber = avatar;

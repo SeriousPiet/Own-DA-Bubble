@@ -2,7 +2,7 @@ import { inject, Injectable, OnDestroy } from '@angular/core';
 import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
 import { updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp, getDocs, where, query } from '@angular/fire/firestore';
-import { Auth, EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail, user } from '@angular/fire/auth';
+import { Auth, user } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,7 @@ export class UsersService implements OnDestroy {
 
   private selectedUserObjectSubject = new BehaviorSubject<User | undefined>(undefined);
   public selectedUserObject$ = this.selectedUserObjectSubject.asObservable();
-  
+
 
   public users: User[] = [];
   private userEmailWaitForLogin: string | undefined;
@@ -46,7 +46,7 @@ export class UsersService implements OnDestroy {
 
   ifValidUser(userID: string): boolean {
     const user = this.users.find((user) => user.id === userID);
-    if(user && (!user.guest || user.id === this.currentGuestUserID)) return true;
+    if (user && (!user.guest || user.id === this.currentGuestUserID)) return true;
     return false;
   }
 
@@ -58,43 +58,6 @@ export class UsersService implements OnDestroy {
       console.error('userservice/firestore: ', (error as Error).message);
     }
   }
-
-  async updateCurrentUserEmail(newEmail: string, currentPassword: string): Promise<string | undefined> {
-    try {
-      await this.reauthenticate(currentPassword);
-      const auth = getAuth();
-      if (auth.currentUser) {
-        await updateEmail(auth.currentUser, newEmail);
-        console.warn('userservice/auth: Email updated on Firebase/Auth');
-        if (this.currentUser) {
-          this.updateCurrentUserDataOnFirestore({ email: newEmail });
-        }
-        return undefined;
-      }
-    } catch (error) {
-      console.error('userservice/auth: Error updating email on Firebase/Auth(', error, ')');
-      return undefined;
-    }
-    return undefined;
-  }
-
-
-  private async reauthenticate(currentPassword: string): Promise<void> {
-    try {
-      const user = getAuth().currentUser;
-      if (user && user.email) {
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
-        await reauthenticateWithCredential(user, credential);
-        console.warn('userservice/auth: Reauthentication successful');
-      } else {
-        throw new Error('userservice/auth: No authenticated user found');
-      }
-    } catch (error) {
-      console.error('userservice/auth: Error during reauthentication:', error);
-      throw error;
-    }
-  }
-
 
   // ############################################################################################################
   // Functions for subscribing to Firestore collections

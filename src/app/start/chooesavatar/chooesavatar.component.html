@@ -1,5 +1,4 @@
 <section>
-    <span class="title nunito-46-700">Wähle deinen Avatar</span>
     <img class="avatar" src="{{ selectedAvatarPicture }}" alt="">
     <span class="name">{{ userservice.currentUser?.name}}</span>
     <span class="infospan">Avatar aus der Liste wählen</span>
@@ -18,7 +17,7 @@
     <div class="choose-picture">
         <span class="infospan">eigenes Bild verwenden</span>
         <label for="choosepicture">
-            <input (change)="loadFileToViewInImg($event)" type="file" name="choosepicture" id="choosepicture">
+            <input (change)="loadFileToViewInImg($event)" type="file" name="choosepicture" id="choosepicture" accept=".png, .jpeg, .jpg">
             <span class="filerequest">Bild wählen</span>
         </label>
     </div>
