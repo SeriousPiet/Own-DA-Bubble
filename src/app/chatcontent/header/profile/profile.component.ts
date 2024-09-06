@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../../../utils/services/user.service';
+import { User } from '../../../shared/models/user.class';
+
 import {
   FormBuilder,
   FormGroup,
@@ -7,13 +9,22 @@ import {
   ReactiveFormsModule,
   FormsModule,
 } from '@angular/forms';
-import { nameValidator, emailValidator, passwordValidator } from '../../../utils/form-validators';
+import {
+  nameValidator,
+  emailValidator,
+  passwordValidator,
+} from '../../../utils/form-validators';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AvatarDirective } from '../../../utils/directives/avatar.directive';
 import { CleanupService } from '../../../utils/services/cleanup.service';
 import { ChooesavatarComponent } from '../../../start/chooesavatar/chooesavatar.component';
-import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updateEmail } from '@angular/fire/auth';
+import {
+  EmailAuthProvider,
+  getAuth,
+  reauthenticateWithCredential,
+  updateEmail,
+} from '@angular/fire/auth';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +34,7 @@ import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updateEmail }
     ReactiveFormsModule,
     ChooesavatarComponent,
     FormsModule,
-    AvatarDirective
+    AvatarDirective,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
@@ -32,7 +43,8 @@ export class ProfileComponent implements OnInit {
   showProfileDetails = false;
   editMode = false;
   showChooseAvatarForm = false;
-  noEmailChange: boolean = false;
+  isGoogleAccount: boolean = false;
+  isGuestAccount: boolean = false;
   reauthpassword = '';
   reauthpasswordinfo = '';
 
@@ -71,18 +83,24 @@ export class ProfileComponent implements OnInit {
     }
     this.checkCanEmailChange();
     this.reauthpasswordInfoReset();
+    this.isGuestAccount = this.userservice.currentUser?.provider === 'guest';
   }
 
   private checkCanEmailChange() {
-    this.noEmailChange = this.userservice.currentUser?.provider !== 'email';
+    this.isGoogleAccount = this.userservice.currentUser?.provider !== 'email';
   }
 
   emailChanged(): boolean {
-    return this.profileForm.get('email')?.value !== this.userservice.currentUser?.email;
+    return (
+      this.profileForm.get('email')?.value !==
+      this.userservice.currentUser?.email
+    );
   }
 
   nameChanged(): boolean {
-    return this.profileForm.get('name')?.value !== this.userservice.currentUser?.name;
+    return (
+      this.profileForm.get('name')?.value !== this.userservice.currentUser?.name
+    );
   }
 
   passwordCheck(): boolean {
@@ -91,11 +109,13 @@ export class ProfileComponent implements OnInit {
   }
 
   reauthpasswordInfoReset() {
-    this.reauthpasswordinfo = 'Zum Ändern der EMail wird das Password benötigt';
+    this.reauthpasswordinfo = 'Mit aktuellem Password bestätigen!';
   }
 
   submitButtonDisable(): boolean {
-    return !this.passwordCheck() || (!this.emailChanged() && !this.nameChanged());
+    return (
+      !this.passwordCheck() || (!this.emailChanged() && !this.nameChanged())
+    );
   }
 
   resetPopoverState() {
@@ -108,7 +128,7 @@ export class ProfileComponent implements OnInit {
     this.showChooseAvatarForm = true;
   }
 
-  cloaseChooseAvatarComponent() {
+  closeChooseAvatarComponent() {
     this.showChooseAvatarForm = false;
   }
 
@@ -130,10 +150,15 @@ export class ProfileComponent implements OnInit {
   async saveChanges() {
     let saveChangesSuccess = true;
     if (this.nameChanged()) {
-      await this.userservice.updateCurrentUserDataOnFirestore({ name: this.profileForm.get('name')?.value });
+      await this.userservice.updateCurrentUserDataOnFirestore({
+        name: this.profileForm.get('name')?.value,
+      });
     }
     if (this.emailChanged()) {
-      const error = await this.updateCurrentUserEmail(this.profileForm.get('email')?.value, this.reauthpassword);
+      const error = await this.updateCurrentUserEmail(
+        this.profileForm.get('email')?.value,
+        this.reauthpassword
+      );
       if (error) {
         this.handleEmailChangeErrors(error);
         saveChangesSuccess = false;
@@ -148,19 +173,23 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-
   logoutUser() {
     this.cleanupservice.logoutUser();
     this.router.navigate(['']);
   }
 
-  async updateCurrentUserEmail(newEmail: string, currentPassword: string): Promise<string> {
+  async updateCurrentUserEmail(
+    newEmail: string,
+    currentPassword: string
+  ): Promise<string> {
     try {
       await this.reauthenticate(currentPassword);
       const auth = getAuth();
       if (auth.currentUser && this.userservice.currentUser) {
         await updateEmail(auth.currentUser, newEmail);
-        await this.userservice.updateCurrentUserDataOnFirestore({ email: newEmail });
+        await this.userservice.updateCurrentUserDataOnFirestore({
+          email: newEmail,
+        });
         return '';
       } else {
         return 'No user to authenticate found';
@@ -170,12 +199,14 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-
   private async reauthenticate(currentPassword: string): Promise<void> {
     try {
       const user = getAuth().currentUser;
       if (user && user.email) {
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        const credential = EmailAuthProvider.credential(
+          user.email,
+          currentPassword
+        );
         await reauthenticateWithCredential(user, credential);
       } else {
         throw new Error('profile/Edit: No authenticated user found');
