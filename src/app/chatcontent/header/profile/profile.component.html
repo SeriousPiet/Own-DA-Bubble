@@ -1,7 +1,16 @@
-<button class="profile" popovertarget="profile-popover" (click)="resetPopoverState()">
+<button
+  class="profile"
+  popovertarget="profile-popover"
+  (click)="resetPopoverState()"
+>
   <span class="username">{{ userservice.currentUser?.name }}</span>
 
-  <div class="avatar" appAvatar [user]="userservice.currentUser!" context="outer-profile"></div>
+  <div
+    class="avatar"
+    appAvatar
+    [user]="userservice.currentUser!"
+    context="outer-profile"
+  ></div>
 
   <img class="icon" src="./assets/icons/modals/profile/expand.svg" alt="" />
 </button>
@@ -22,7 +31,12 @@
       </div>
     </div>
 
-    <div class="avatar" appAvatar [user]="userservice.currentUser!" context="inner-profile"></div>
+    <div
+      class="avatar"
+      appAvatar
+      [user]="userservice.currentUser!"
+      context="inner-profile"
+    ></div>
 
     <div class="edit-username">
       <span class="username">{{ userservice.currentUser?.name }}</span>
@@ -30,15 +44,20 @@
     </div>
 
     <div class="online-status">
-      <div class="online-status-indicator" [style]="{
+      <div
+        class="online-status-indicator"
+        [style]="{
           '--status-color': userservice.currentUser?.online
             ? onlineColor
             : offlineColor
-        }"></div>
+        }"
+      ></div>
 
-      <span [style]="{
+      <span
+        [style]="{
           color: userservice.currentUser?.online ? onlineColor : offlineColor
-        }">
+        }"
+      >
         {{ userservice.currentUser?.online ? "Aktiv" : "Offline" }}
       </span>
     </div>
@@ -47,9 +66,11 @@
       <img src="./assets/icons/start/mail.svg" alt="" />
       <div class="mail-adress">
         <span>Email-Adresse</span>
-        <a href=" {{ userservice.currentUser?.email }}">{{
-          userservice.currentUser?.email
-          }}</a>
+        @if (!isGuestAccount) {
+        <span class="mail-span">{{ userservice.currentUser?.email }}</span>
+        } @else {
+        <span class="mail-span">gast&#64;da-bubble.de</span>
+        }
       </div>
     </div>
   </div>
@@ -58,7 +79,12 @@
   <div class="top">
     <span class="modal-title">Deinen Avatar bearbeiten</span>
   </div>
-  <app-chooseavatar (clickSuccess)="cloaseChooseAvatarComponent()"></app-chooseavatar>
+
+  <app-chooseavatar
+    id="choose-avatar"
+    (clickSuccess)="closeChooseAvatarComponent()"
+  ></app-chooseavatar>
+
   } @else {
   <div class="profile-edit">
     <div class="top">
@@ -67,9 +93,15 @@
         <img src="./assets/icons/chat/general/close.svg" alt="Close" />
       </div>
     </div>
-
-    <div class="avatar avatar-box" (click)="showChooseAvatarComponent()" appAvatar [user]="userservice.currentUser!"
-      context="inner-profile"></div>
+    <!-- todo: -->
+    <div
+      [class.google]="isGoogleAccount"
+      class="avatar"
+      (click)="!isGoogleAccount && showChooseAvatarComponent()"
+      appAvatar
+      [user]="userservice.currentUser!"
+      context="inner-profile"
+    ></div>
 
     <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
       <div class="edit-box">
@@ -79,7 +111,11 @@
             <span>Vollständiger Name</span>
           </div>
           <div class="input-box">
-            <input type="text" formControlName="name" placeholder="Dein Name hier" />
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Dein Name hier"
+            />
           </div>
           @if (profileForm.get('name')?.invalid &&
           (profileForm.get('name')?.dirty || profileForm.get('name')?.touched))
@@ -99,17 +135,21 @@
             <img src="./assets/icons/modals/profile/mail.svg" alt="" />
             <span>E-mail Adresse</span>
           </div>
-          <div [class.google]="noEmailChange" class="input-box">
-            <input [class.google]="noEmailChange" type="email" formControlName="email"
-              placeholder="Deine Mailadresse hier" [readOnly]="noEmailChange" />
+          <div [class.google]="isGoogleAccount" class="input-box">
+            <input
+              [class.google]="isGoogleAccount"
+              type="email"
+              formControlName="email"
+              placeholder="Deine Mailadresse hier"
+              [readOnly]="isGoogleAccount"
+            />
           </div>
 
-          @if (noEmailChange) {
+          @if (isGoogleAccount) {
           <div class="google-info-message">
             <span>Mail-Adresse nicht editierbar.</span>
           </div>
-          }
-          @if (profileForm.get('email')?.invalid &&
+          } @if (profileForm.get('email')?.invalid &&
           (profileForm.get('email')?.dirty ||
           profileForm.get('email')?.touched)) {
           <div class="error-message">
@@ -119,11 +159,14 @@
             <span>Bitte gib eine gültige E-Mail-Adresse ein.</span>
             }
           </div>
-          }
-          @if(emailChanged()) {
-          <div class="input-box">
-            <input [(ngModel)]="reauthpassword" [ngModelOptions]="{standalone: true}" type="password"
-              placeholder="Passwort">
+          } @if(emailChanged()) {
+          <div class="input-box verify-pw-change">
+            <input
+              [(ngModel)]="reauthpassword"
+              [ngModelOptions]="{ standalone: true }"
+              type="password"
+              placeholder="Passwort"
+            />
           </div>
           <span class="error-message">{{ reauthpasswordinfo }}</span>
           }
@@ -131,7 +174,9 @@
       </div>
       <div class="btn-box">
         <button type="button" (click)="toggleEditMode()">Abbrechen</button>
-        <button type="submit" [disabled]="submitButtonDisable()">Speichern</button>
+        <button type="submit" [disabled]="submitButtonDisable()">
+          Speichern
+        </button>
       </div>
     </form>
   </div>

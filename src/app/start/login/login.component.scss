@@ -3,25 +3,20 @@
 @import "../../../fonts.scss";
 
 #infoPopover {
-  // bottom: 1.25rem;
   margin: auto 1.25rem 1.25rem auto;
-
+  padding: 2rem;
+  background-color: $accent;
+  border: unset;
+  border-radius: 2rem 2rem 0 2rem;
   font-size: 2.25rem;
   font-weight: 700;
   color: white;
-  padding: 2rem;
-  background-color: $accent;
-  border-radius: 2rem 2rem 0 2rem;
-  border: unset;
   box-shadow: 0px 6px 10px 0px #00000033;
-
   transform: translateX(100vw);
   transition: $transition-popover;
 
   > div {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    @include flex(flex-start, center);
     gap: 1rem;
   }
 }
@@ -39,23 +34,20 @@
 }
 
 .errorspan {
-  @include nunito(0.8, 400, #ed1e79);
+  @include nunito(0.875, 400, $error);
   position: absolute;
-  bottom: -1.2rem;
-  left: 0;
+  bottom: -1.25rem;
+  left: 1.5rem;
 }
 
 section {
   position: relative;
+  @include flex(center, center);
   height: 100vh;
   width: 100%;
   max-width: 1920px;
   padding: 1.5rem 1.25rem 1.25rem;
   background-color: $background;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
   .debug-btn {
     position: absolute;
@@ -85,10 +77,8 @@ section {
     top: 4rem;
     right: 4rem;
 
-    display: flex;
+    @include flex(flex-start, flex-end);
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-end;
     gap: 1rem;
 
     span {
@@ -103,15 +93,13 @@ section {
 
   form {
     position: relative;
-    padding: 2rem;
-    display: flex;
+    @include flex(flex-start, stretch);
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
     gap: 2rem;
     height: fit-content;
     width: fit-content;
     max-width: 38rem;
+    padding: 2rem;
     background-color: white;
     border-radius: 2rem;
     box-shadow: 0px 2px 10px 0px #00000014;
@@ -121,9 +109,7 @@ section {
       top: 1rem;
       left: 1rem;
       @include iconBox;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      @include flex(center, center);
     }
 
     .input-box {
@@ -164,16 +150,15 @@ section {
     }
 
     .password-missed {
+      align-self: center;
+
       button {
         @include buttonNoBorder;
       }
-
-      align-self: center;
     }
 
     .or-separator {
-      display: flex;
-      align-items: center;
+      @include flex(center, center);
       gap: 1rem;
 
       span {
@@ -181,9 +166,9 @@ section {
       }
 
       > div {
+        flex-grow: 1;
         height: 1px;
         background-color: $vert-spacer;
-        flex-grow: 1;
       }
     }
 
@@ -196,9 +181,7 @@ section {
     .action-btns {
       align-self: center;
 
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      @include flex(space-between, center);
       width: 80%;
 
       img {
@@ -210,9 +193,7 @@ section {
     .action-btns-pwreset {
       align-self: center;
 
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
+      @include flex(flex-end, center);
       width: 80%;
 
       img {
@@ -240,9 +221,9 @@ section {
     left: 50%;
     bottom: 2.5rem;
     transform: translateX(-50%);
-    width: fit-content;
     @include flex(center, center);
     gap: 4rem;
+    width: fit-content;
 
     button {
       @include buttonMandatory;

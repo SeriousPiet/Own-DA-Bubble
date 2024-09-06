@@ -10,7 +10,7 @@
   cursor: pointer;
 
   span.username {
-    @include fontSizer(32, 700, black);
+    @include nunito(2, 700, black);
   }
 
   span,
@@ -30,11 +30,12 @@
 #profile-popover {
   display: none;
   top: 7.5rem;
-  margin: 0 1.25rem 0 auto;
   min-width: 15.5rem;
+  max-width: 29rem;
   width: fit-content;
   height: fit-content;
   max-height: 45rem;
+  margin: 0 1.25rem 0 auto;
   padding: 1.25rem;
   border: none;
   border-radius: 1.875rem 0 1.875rem 1.875rem;
@@ -50,7 +51,7 @@
 
     button {
       @include buttonNoBorder(100%);
-      @include fontSizer(24, 600, black);
+      @include nunito(1.5, 600, black);
     }
   }
 
@@ -65,14 +66,14 @@
 
       span.username {
         container-type: inline-size;
-        @include fontSizer(32, 700, black);
+        @include nunito(2, 700, black);
         line-height: 100%;
 
         @container (max-width: 65%) {
           max-width: 50%;
-          text-wrap: balance;
           padding: 0;
           margin: 0;
+          text-wrap: balance;
 
           .edit-username {
             align-items: flex-start !important;
@@ -89,39 +90,39 @@
 
     .online-status {
       @include flex(flex-start, center);
-      width: 100%;
       gap: 1rem;
+      width: 100%;
       margin: 1rem 0 2.5rem;
 
       .online-status-indicator {
         width: 1rem;
         height: 1rem;
-        border-radius: 50%;
         background-color: var(--status-color); // <--- dynamisch gesetzt
+        border-radius: 50%;
       }
 
       span {
-        @include fontSizer(20, 600);
+        @include nunito(1.25, 600);
       }
     }
 
     .usermail {
       @include flex(flex-start, flex-start);
-      width: 100%;
       gap: 1.25rem;
+      width: 100%;
 
       .mail-adress {
         @include flex(center, flex-start);
         flex-direction: column;
-        width: 100%;
         gap: 1rem;
+        width: 100%;
 
         span {
-          @include fontSizer(20, 700, black);
+          @include nunito(1.25, 700, black);
         }
 
-        a {
-          color: $mail;
+        .mail-span {
+          @include nunito(1.25, 400, $mail);
         }
       }
     }
@@ -132,6 +133,16 @@
     flex-direction: column;
     min-width: 20rem;
 
+    .avatar {
+      cursor: pointer;
+      transition: $transition-standard;
+
+      &.google:hover {
+        filter: grayscale(0.8);
+        cursor: not-allowed;
+      }
+    }
+
     form {
       width: 100%;
     }
@@ -139,23 +150,23 @@
     .edit-box {
       @include flex(flex-start, flex-start);
       flex-direction: column;
-      width: 100%;
       gap: 1.25rem;
+      width: 100%;
 
       .edit {
         @include flex(flex-start, flex-start);
         flex-direction: column;
-        width: 100%;
         gap: 0.325rem;
+        width: 100%;
       }
 
       .input-label {
         @include flex(flex-start, center);
-        width: 100%;
         gap: 1.25rem;
+        width: 100%;
 
         span {
-          @include fontSizer(20, 700, black);
+          @include nunito(1.25, 700, black);
         }
       }
 
@@ -172,9 +183,9 @@
 
         input {
           @include input;
-          @include fontSizer(18, 400, black);
-          font-size: 1rem;
+          @include nunito(1.125, 400, black);
           padding: 0.75rem 0;
+          font-size: 1rem;
 
           &.google {
             color: $disabled;
@@ -182,12 +193,16 @@
           }
         }
       }
+
+      .verify-pw-change {
+        margin-top: 0.5rem;
+      }
     }
 
     .btn-box {
       @include flex(center, center);
-      width: 100%;
       gap: 2rem;
+      width: 100%;
       margin-top: 1rem;
 
       button:first-of-type {
@@ -201,14 +216,13 @@
 
     .error-message,
     .google-info-message {
-      @include fontSizer(14, 400, $error);
+      @include nunito(0.875, 400, $error);
       height: 0.875rem;
       width: 100%;
-      opacity: 1;
       margin-top: -0.325rem;
-      // padding-left: 1.5rem;
-      text-align: center;
+      padding-left: 1.25rem;
       transition: 0.25s opacity ease-in-out;
+      opacity: 1;
     }
 
     @starting-style {
@@ -216,10 +230,9 @@
         opacity: 0;
       }
     }
-  }
 
-  .avatar-box {
-    cursor: pointer;
+    #choose-avatar {
+    }
   }
 
   .icon-box {
@@ -241,14 +254,9 @@
   }
 }
 
-::backdrop {
-  background-color: #00000066;
-}
-
 #profile-popover:popover-open {
+  display: block;
   opacity: 1;
-  @include flex(center, center);
-  flex-direction: column;
 }
 
 @starting-style {

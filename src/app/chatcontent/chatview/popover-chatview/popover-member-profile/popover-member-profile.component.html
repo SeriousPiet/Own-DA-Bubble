@@ -2,25 +2,39 @@
   <div class="profile-details">
     <div class="top">
       <span class="modal-title">Profil</span>
-      <button class="icon-box" popovertargetaction="hide" popovertarget="popover-member-profile">
+      <button
+        class="icon-box"
+        popovertargetaction="hide"
+        popovertarget="popover-member-profile"
+      >
         <img src="./assets/icons/chat/general/close.svg" alt="Close" />
       </button>
     </div>
 
-    <div class="avatar" appAvatar [user]="selectedUser" context="inner-profile"></div>
+    <div *ngIf="selectedUser">
+      <div
+        class="avatar"
+        appAvatar
+        [user]="selectedUser"
+        context="profile-card"
+      ></div>
+    </div>
 
     <div class="username-ctn">
       <span class="username">{{ selectedUser?.name }}</span>
       <div class="online-status">
-        <div class="online-status-indicator" [style]="{
-                '--status-color': selectedUser?.online
-                  ? onlineColor
-                  : offlineColor
-              }"></div>
-  
-        <span [style]="{
-                color: selectedUser?.online ? onlineColor : offlineColor
-              }">
+        <div
+          class="online-status-indicator"
+          [style]="{
+            '--status-color': selectedUser?.online ? onlineColor : offlineColor
+          }"
+        ></div>
+
+        <span
+          [style]="{
+            color: selectedUser?.online ? onlineColor : offlineColor
+          }"
+        >
           {{ selectedUser?.online ? "Aktiv" : "Offline" }}
         </span>
       </div>
@@ -32,10 +46,15 @@
         <span>Email-Adresse</span>
         <a href="mailto: {{ selectedUser?.email }}">{{
           selectedUser?.email
-          }}</a>
+        }}</a>
       </div>
     </div>
 
-      <button class="send-direct-message-btn"> <img src="./assets/icons/chat/general/dm-profile-enter-chat.svg" alt="">Nachricht</button>
+    <button class="send-direct-message-btn">
+      <img
+        src="./assets/icons/chat/general/dm-profile-enter-chat.svg"
+        alt=""
+      />Nachricht
+    </button>
   </div>
 </main>
