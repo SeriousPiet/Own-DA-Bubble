@@ -187,9 +187,8 @@ export class ProfileComponent implements OnInit {
       const auth = getAuth();
       if (auth.currentUser && this.userservice.currentUser) {
         await updateEmail(auth.currentUser, newEmail);
-        await this.userservice.updateCurrentUserDataOnFirestore({
-          email: newEmail,
-        });
+        await this.userservice.sendEmailVerificationLink();
+        await this.userservice.updateCurrentUserDataOnFirestore({ email: newEmail, emailVerified: false });
         return '';
       } else {
         return 'No user to authenticate found';

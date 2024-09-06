@@ -14,12 +14,13 @@ import {
   passwordValidator,
 } from '../../utils/form-validators';
 import { ChooesavatarComponent } from '../chooesavatar/chooesavatar.component';
-import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from '@angular/fire/auth';
 import {
   addDoc,
   collection,
   Firestore,
   serverTimestamp,
+  updateDoc,
 } from '@angular/fire/firestore';
 
 @Component({
@@ -37,6 +38,7 @@ import {
 export class SignupComponent {
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
+  private userservice = inject(UsersService);
   private router: Router = inject(Router);
 
   public errorEmailExists = '';
@@ -73,7 +75,8 @@ export class SignupComponent {
     password: string
   ): Promise<string> {
     try {
-      await createUserWithEmailAndPassword(this.firebaseauth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(this.firebaseauth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
       await addDoc(collection(this.firestore, '/users'), {
         name: name,
         email: email,
@@ -81,6 +84,7 @@ export class SignupComponent {
         signupAt: serverTimestamp(),
         avatar: 0,
       });
+      this.userservice.sendEmailVerificationLink();
       return '';
     } catch (error) {
       console.error(
