@@ -1,0 +1,71 @@
+@import "../../../../styles.scss";
+@import "../../../../mixins.scss";
+
+:host {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 1.25rem;
+  padding-top: 0.625rem;
+  height: 100%;
+  overflow: scroll;
+}
+
+section {
+  @include flex(center, normal);
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+:host(.default-channel) {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes color-change {
+  0% {
+    background: $primary;
+  }
+
+  100% {
+    background: #fff;
+  }
+}
+
+.color-change {
+  animation: color-change 1.5s linear alternate both;
+}
+
+
+.no-messages-ctn {
+  @include flex(center, normal);
+  flex-direction: column;
+  gap: .4375rem;
+  padding-left: 1.25rem;
+  width: 90%;
+
+  .channel-name {
+    @include flex(normal, center);
+    gap: .625rem;
+
+    >span {
+      @include nunito(1.5);
+    }
+  }
+
+  .channel-begin {
+    @include flex(normal, center);
+    flex-flow: wrap;
+    gap: .1875rem;
+    @include nunito(1.25, 400);
+
+    >span {
+      color: $secondary;
+    }
+  }
+}
+
+.no-messages{
+  align-items: center;
+  width: 90%;
+}

@@ -1,0 +1,266 @@
+@import "../../../../styles.scss";
+@import "../../../../mixins.scss";
+
+// ##############################
+
+.profile {
+  @include flex(flex-end, center);
+  width: fit-content;
+  gap: 1.25rem;
+  cursor: pointer;
+
+  span.username {
+    @include nunito(2, 700, black);
+  }
+
+  span,
+  img {
+    transition: $transition-standard;
+  }
+
+  &:hover span {
+    color: $primary;
+  }
+
+  &:hover img.icon {
+    content: url("../../../../assets/icons/modals/expand-down-hover.svg");
+  }
+}
+
+#profile-popover {
+  display: none;
+  top: 7.5rem;
+  min-width: 15.5rem;
+  max-width: 29rem;
+  width: fit-content;
+  height: fit-content;
+  max-height: 45rem;
+  margin: 0 1.25rem 0 auto;
+  padding: 1.25rem;
+  border: none;
+  border-radius: 1.875rem 0 1.875rem 1.875rem;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
+  transition: $transition-popover;
+
+  .choose-action {
+    @include flex(center, center);
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+
+    button {
+      @include buttonNoBorder(100%);
+      @include nunito(1.5, 600, black);
+    }
+  }
+
+  .profile-details {
+    @include flex(center, center);
+    flex-direction: column;
+    min-width: 20rem;
+
+    .edit-username {
+      @include flex(space-between, center);
+      width: 100%;
+
+      span.username {
+        container-type: inline-size;
+        @include nunito(2, 700, black);
+        line-height: 100%;
+
+        @container (max-width: 65%) {
+          max-width: 50%;
+          padding: 0;
+          margin: 0;
+          text-wrap: balance;
+
+          .edit-username {
+            align-items: flex-start !important;
+          }
+        }
+      }
+
+      button.edit {
+        @include buttonFontWeightOnly;
+        width: fit-content;
+        height: fit-content;
+      }
+    }
+
+    .online-status {
+      @include flex(flex-start, center);
+      gap: 1rem;
+      width: 100%;
+      margin: 1rem 0 2.5rem;
+
+      .online-status-indicator {
+        width: 1rem;
+        height: 1rem;
+        background-color: var(--status-color); // <--- dynamisch gesetzt
+        border-radius: 50%;
+      }
+
+      span {
+        @include nunito(1.25, 600);
+      }
+    }
+
+    .usermail {
+      @include flex(flex-start, flex-start);
+      gap: 1.25rem;
+      width: 100%;
+
+      .mail-adress {
+        @include flex(center, flex-start);
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+
+        span {
+          @include nunito(1.25, 700, black);
+        }
+
+        .mail-span {
+          @include nunito(1.25, 400, $mail);
+        }
+      }
+    }
+  }
+
+  .profile-edit {
+    @include flex(center, center);
+    flex-direction: column;
+    min-width: 20rem;
+
+    .avatar {
+      cursor: pointer;
+      transition: $transition-standard;
+
+      &.google:hover {
+        filter: grayscale(0.8);
+        cursor: not-allowed;
+      }
+    }
+
+    form {
+      width: 100%;
+    }
+
+    .edit-box {
+      @include flex(flex-start, flex-start);
+      flex-direction: column;
+      gap: 1.25rem;
+      width: 100%;
+
+      .edit {
+        @include flex(flex-start, flex-start);
+        flex-direction: column;
+        gap: 0.325rem;
+        width: 100%;
+      }
+
+      .input-label {
+        @include flex(flex-start, center);
+        gap: 1.25rem;
+        width: 100%;
+
+        span {
+          @include nunito(1.25, 700, black);
+        }
+      }
+
+      .input-box {
+        @include inputBox(100%, #adb0d9, $secondary, $secondary, false);
+
+        &.google {
+          border-color: $disabled !important;
+
+          &:hover {
+            border-color: $disabled !important;
+          }
+        }
+
+        input {
+          @include input;
+          @include nunito(1.125, 400, black);
+          padding: 0.75rem 0;
+          font-size: 1rem;
+
+          &.google {
+            color: $disabled;
+            pointer-events: none;
+          }
+        }
+      }
+
+      .verify-pw-change {
+        margin-top: 0.5rem;
+      }
+    }
+
+    .btn-box {
+      @include flex(center, center);
+      gap: 2rem;
+      width: 100%;
+      margin-top: 1rem;
+
+      button:first-of-type {
+        @include buttonEmpty;
+      }
+
+      button:last-of-type {
+        @include buttonFull;
+      }
+    }
+
+    .error-message,
+    .google-info-message {
+      @include nunito(0.875, 400, $error);
+      height: 0.875rem;
+      width: 100%;
+      margin-top: -0.325rem;
+      padding-left: 1.25rem;
+      transition: 0.25s opacity ease-in-out;
+      opacity: 1;
+    }
+
+    @starting-style {
+      .error-message {
+        opacity: 0;
+      }
+    }
+
+    #choose-avatar {
+    }
+  }
+
+  .icon-box {
+    @include iconBox;
+
+    &:hover img {
+      content: url("../../../../assets/icons/chat/general/close-hover.svg");
+    }
+  }
+
+  .top {
+    @include flex(space-between, center);
+    width: 100%;
+    height: fit-content;
+
+    .modal-title {
+      @include fontSizer(24, 700, black);
+    }
+  }
+}
+
+#profile-popover:popover-open {
+  display: block;
+  opacity: 1;
+}
+
+@starting-style {
+  #profile-popover:popover-open {
+    opacity: 0;
+  }
+}

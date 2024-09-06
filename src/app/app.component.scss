@@ -1,0 +1,8 @@
+@import "../mixins.scss";
+
+.start-page {
+  @include flex(center, center);
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #eceefe;
+}

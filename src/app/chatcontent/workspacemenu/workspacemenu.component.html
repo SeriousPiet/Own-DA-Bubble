@@ -1,1 +1,64 @@
-<p>workspacemenu works!</p>
+<section>
+  <div class="workspace">
+    <div>
+      <img
+        src="../../../assets/icons/wsm/devspace-logo.svg"
+        alt="devspace-logo.svg"
+      />
+      <span class="nunito-24-700">Devspace</span>
+    </div>
+    <div class="ws-write"></div>
+  </div>
+  <div class="channels">
+    <details>
+      <summary class="blue">
+        <div>
+          <div>
+            <div class="ws-channels"></div>
+            <span class="nunito-20-700">Channels</span>
+          </div>
+          <button
+            class="add-channel-btn"
+            (click)="toggleAddChannelPopover()"
+          ></button>
+        </div>
+      </summary>
+      <ul class="channel-list">
+        <li
+          class="blue"
+          (click)="setChat(channel)"
+          *ngFor="let channel of channelservice.channels"
+        >
+          <div class="hashtag"></div>
+          <span class="nunito-18-400">{{ channel.name }}</span>
+        </li>
+      </ul>
+      <button class="blue" (click)="toggleAddChannelPopover()">
+        <div class="add-channel-2 blue"></div>
+        <span class="nunito-18-400">Channel hinzufügen</span>
+      </button>
+    </details>
+  </div>
+  <div class="messagesChannels">
+    <details>
+      <summary class="blue">
+        <div class="dm-symbol"></div>
+        <span class="nunito-20-700">Direktnachrichten</span>
+      </summary>
+      <ul>
+        <li
+          class="dm-list-item"
+          *ngFor="let user of users"
+          hoverElement
+          (click)="setChat(user)"
+        >
+          <div appAvatar [user]="user" context="wsm-list"></div>
+          <span style="width: fit-content"
+            >{{ user.name }} @if (users[0].name === user.name){(Du)}
+          </span>
+        </li>
+      </ul>
+    </details>
+  </div>
+  <app-addchannel />
+</section>

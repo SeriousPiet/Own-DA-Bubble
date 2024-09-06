@@ -1,0 +1,171 @@
+@import "../../../mixins.scss";
+
+section.try-outs {
+  @include flex(center, center);
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background-color: #fff;
+  transform: scale(1);
+
+  h1,
+  h2,
+  h3 {
+    margin: 0.5rem;
+  }
+
+  .edit-buttons > button {
+    @include buttonFontWeightOnly;
+  }
+
+  .input-elements {
+    @include flex(flex-start, flex-start);
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .input-box {
+      @include inputBox;
+      background: $background;
+
+      input {
+        position: relative;
+        @include input;
+      }
+    }
+
+    .mail::before {
+      background-image: url("../../../assets/icons/start/mail.svg");
+    }
+
+    .pw::before {
+      background-image: url("../../../assets/icons/start/lock.svg");
+    }
+  }
+
+  .btn-elements {
+    @include flex(center, center);
+    flex-wrap: wrap;
+
+    button {
+      margin: 0.5rem 0.25rem;
+    }
+
+    button:nth-of-type(1) {
+      @include buttonFull;
+    }
+
+    button:nth-of-type(2) {
+      @include buttonEmpty;
+    }
+
+    button:nth-of-type(3) {
+      @include buttonNoBorder;
+    }
+
+    button:nth-of-type(4) {
+      @include buttonNoBg;
+    }
+
+    button:nth-of-type(5) {
+      @include buttonDisabled;
+    }
+
+    button:nth-of-type(6) {
+      @include buttonGoogle;
+    }
+
+    button:nth-of-type(7) {
+      @include buttonMandatory;
+    }
+  }
+}
+.checkbox-elements {
+  @include flex(center, center);
+  gap: 2rem;
+  width: 100%;
+  height: fit-content;
+
+  .checkbox-box {
+    @include flex(center, center);
+    gap: 0.5rem;
+  }
+
+  .square-checkbox {
+    @include square-checkbox();
+    align-self: center;
+  }
+
+  .round-checkbox {
+    @include round-checkbox();
+  }
+}
+
+.online-status {
+  @include flex(center, center);
+  gap: 2rem;
+
+  .avatar {
+    @include avatarStatusThumbnail($online);
+  }
+}
+
+.icon-elements {
+  @include flex(center, center);
+  gap: 1rem;
+  border: 1px solid $disabled;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.875rem;
+
+  .icon-box {
+    @include iconBox;
+
+    .write:hover {
+      content: url("../../../assets/icons/wsm/ws-write-hover.svg");
+    }
+
+    .add-channel:hover {
+      content: url("../../../assets/icons/wsm/add-channel-1-hover.svg");
+    }
+  }
+}
+#trigger {
+  pointer-events: none;
+  padding: 0.5rem 1rem;
+  background-color: $background;
+  border: $default-border;
+  border-radius: $circled-border-radius;
+  font-size: 1.5rem;
+  font-weight: 700;
+  transition: $transition-standard;
+}
+
+.hover-container:hover #trigger {
+  border: $hover-border;
+  color: $accent;
+}
+
+.hover-container:hover + #hover-box,
+#hover-box:hover {
+  display: block;
+  opacity: 1;
+  transform: translatex(0);
+  transition: $transition-popover;
+}
+
+#hover-box {
+  position: relative;
+  display: none;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
+  transform: translateX(-3rem);
+  transition: $transition-popover;
+}
+
+@starting-style {
+  .hover-container:hover + #hover-box,
+  #hover-box:hover {
+    display: block;
+    opacity: 0;
+    transform: translateX(-3rem);
+  }
+}

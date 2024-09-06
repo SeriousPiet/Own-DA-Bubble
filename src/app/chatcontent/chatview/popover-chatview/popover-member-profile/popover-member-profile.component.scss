@@ -1,0 +1,147 @@
+@import "../../../../../styles.scss";
+@import "../../../../../mixins.scss";
+
+// ##############################
+
+.profile {
+  @include flex(flex-end, center);
+  width: fit-content;
+  gap: 1.25rem;
+  cursor: pointer;
+
+  span.username {
+    @include fontSizer(32, 700, black);
+  }
+
+  span,
+  img {
+    transition: $transition-standard;
+  }
+
+  &:hover span {
+    color: $primary;
+  }
+
+  &:hover img.icon {
+    content: url("../../../../../assets/icons/modals/expand-down-hover.svg");
+  }
+}
+
+#popover-member-profile {
+  display: none;
+  height: 80%;
+  max-height: 40rem;
+  padding: 1.25rem;
+  border: none;
+  border-radius: 1.875rem;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
+  transition: $transition-popover;
+
+  .profile-details {
+    @include flex(space-between, center);
+    flex-direction: column;
+    min-width: 20rem;
+    height: 100%;
+
+    gap: 0.75rem;
+
+    .username-ctn {
+      @include flex(normal, start);
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+
+      span.username {
+        align-self: flex-start;
+        @include fontSizer(32, 700, black);
+        line-height: 100%;
+        text-wrap: balance;
+        padding: 0;
+        margin: 0;
+
+        .edit-username {
+          align-items: flex-start !important;
+        }
+      }
+    }
+  }
+
+  .online-status {
+    @include flex(flex-start, center);
+    width: 100%;
+    gap: 1rem;
+
+    .online-status-indicator {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      background-color: var(--status-color); // <--- dynamisch gesetzt
+    }
+
+    span {
+      @include fontSizer(20, 600);
+    }
+  }
+
+  .usermail {
+    @include flex(flex-start, flex-start);
+    width: 100%;
+    gap: 1.25rem;
+
+    .mail-adress {
+      @include flex(center, flex-start);
+      flex-direction: column;
+      width: 100%;
+      gap: 1rem;
+
+      span {
+        @include fontSizer(20, 700, black);
+      }
+
+      a {
+        color: $mail;
+      }
+    }
+  }
+
+  .send-direct-message-btn {
+    @include buttonFull();
+    @include flex(center, center);
+    gap: 0.625rem;
+  }
+
+  .icon-box {
+    @include iconBox;
+
+    &:hover img {
+      content: url("../../../../../assets/icons/chat/general/close-hover.svg");
+    }
+  }
+
+  .top {
+    @include flex(space-between, center);
+    width: 100%;
+    height: fit-content;
+
+    .modal-title {
+      @include fontSizer(24, 700, black);
+    }
+  }
+}
+
+::backdrop {
+  background-color: #00000066;
+}
+
+#popover-member-profile:popover-open {
+  opacity: 1;
+  @include flex(center center);
+  flex-direction: column;
+}
+
+@starting-style {
+  #popover-member-profile:popover-open {
+    opacity: 0;
+  }
+}

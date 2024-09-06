@@ -1,0 +1,232 @@
+@import "../../../styles.scss";
+@import "../../../mixins.scss";
+@import "../../../fonts.scss";
+
+#infoPopover {
+  margin: auto 1.25rem 1.25rem auto;
+  padding: 2rem;
+  background-color: $accent;
+  border: unset;
+  border-radius: 2rem 2rem 0 2rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0px 6px 10px 0px #00000033;
+  transform: translateX(100vw);
+  transition: $transition-popover;
+
+  > div {
+    @include flex(flex-start, center);
+    gap: 1rem;
+  }
+}
+
+#infoPopover:popover-open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@starting-style {
+  #infoPopover:popover-open {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+}
+
+.errorspan {
+  @include nunito(0.875, 400, $error);
+  position: absolute;
+  bottom: -1.25rem;
+  left: 1.5rem;
+}
+
+section {
+  position: relative;
+  @include flex(center, center);
+  height: 100vh;
+  width: 100%;
+  max-width: 1920px;
+  padding: 1.5rem 1.25rem 1.25rem;
+  background-color: $background;
+
+  .debug-btn {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .bubble-logo {
+    position: absolute;
+    top: 4rem;
+    left: 4rem;
+    @include flex(center, center);
+    gap: 1rem;
+
+    img {
+      width: 3rem;
+      aspect-ratio: 1 / 1;
+    }
+
+    span {
+      @include nunito(2, 700, black);
+    }
+  }
+
+  .signup-btn {
+    position: absolute;
+    top: 4rem;
+    right: 4rem;
+
+    @include flex(flex-start, flex-end);
+    flex-direction: column;
+    gap: 1rem;
+
+    span {
+      padding-right: 1.5rem;
+      @include nunito(1.2, 400);
+    }
+
+    button {
+      @include buttonNoBg;
+    }
+  }
+
+  form {
+    position: relative;
+    @include flex(flex-start, stretch);
+    flex-direction: column;
+    gap: 2rem;
+    height: fit-content;
+    width: fit-content;
+    max-width: 38rem;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 2rem;
+    box-shadow: 0px 2px 10px 0px #00000014;
+
+    .return {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      @include iconBox;
+      @include flex(center, center);
+    }
+
+    .input-box {
+      @include inputBox;
+      background: $background;
+
+      input {
+        position: relative;
+        @include input;
+      }
+    }
+
+    .button-box {
+      position: relative;
+    }
+
+    .mail::before {
+      background-image: url("../../../assets/icons/start/mail.svg");
+    }
+
+    .pw::before {
+      background-image: url("../../../assets/icons/start/lock.svg");
+    }
+
+    .title {
+      @include nunito(2.5, 700, $accent);
+      text-align: center;
+    }
+
+    .info {
+      @include nunito(1.2, 400);
+      text-align: center;
+    }
+
+    .info-gray {
+      @include nunito(1.2, 400, #686868);
+      text-align: center;
+    }
+
+    .password-missed {
+      align-self: center;
+
+      button {
+        @include buttonNoBorder;
+      }
+    }
+
+    .or-separator {
+      @include flex(center, center);
+      gap: 1rem;
+
+      span {
+        @include nunito(1.2, 400);
+      }
+
+      > div {
+        flex-grow: 1;
+        height: 1px;
+        background-color: $vert-spacer;
+      }
+    }
+
+    .login-with-google {
+      align-self: stretch;
+      @include buttonGoogle(100%);
+      align-self: center;
+    }
+
+    .action-btns {
+      align-self: center;
+
+      @include flex(space-between, center);
+      width: 80%;
+
+      img {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
+    .action-btns-pwreset {
+      align-self: center;
+
+      @include flex(flex-end, center);
+      width: 80%;
+
+      img {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
+    .blue-btn {
+      display: flex;
+      @include buttonFull;
+
+      &:disabled {
+        pointer-events: none;
+      }
+    }
+
+    .white-btn {
+      @include buttonEmpty;
+    }
+  }
+
+  .mandatory-buttons {
+    position: absolute;
+    left: 50%;
+    bottom: 2.5rem;
+    transform: translateX(-50%);
+    @include flex(center, center);
+    gap: 4rem;
+    width: fit-content;
+
+    button {
+      @include buttonMandatory;
+    }
+  }
+}

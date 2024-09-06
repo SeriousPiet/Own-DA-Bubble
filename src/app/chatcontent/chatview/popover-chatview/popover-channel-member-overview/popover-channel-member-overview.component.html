@@ -1,0 +1,23 @@
+<main>
+    <div>
+        <h4>Mitglieder</h4>
+        <button popovertargetaction="hide" popovertarget="channel-member-overview-popover">
+            <img src="assets\icons\chat\general\close.svg" alt="">
+        </button>
+    </div>
+    <section class="member-list">
+        @for (memberID of currentChannel.memberIDs; track memberID) {
+            <button class="member" [ngClass]="{'current-user':memberID === userService.currentUser?.id}" (click)="setSelectedUserObject(memberID)" [attr.popovertarget]="returnPopoverTarget(memberID)">
+                <div appAvatar [user]="userService.getUserByID(memberID)" context="chat-channel-members-big"></div>
+                <span>{{ getMemberName(memberID) }}</span>
+            </button>
+        }
+        <button class="add-member">
+            <div>
+                <img src="assets/icons/chat/general/add-to-channel.svg" alt="">
+            </div>
+            <span>Mitglieder hinzufügen</span>
+        </button>
+    </section>
+    
+</main>
