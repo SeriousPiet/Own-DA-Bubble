@@ -2,9 +2,14 @@
     Konto erfolgreich erstellt!
 </div>
 
+<button (click)="showChooseAvatarMask=!showChooseAvatarMask">chooseavatar</button>
+
 <section>
     @if(showChooseAvatarMask) {
-    <app-chooseavatar (clickSuccess)="successChooseAvatar()"></app-chooseavatar>
+    <div class="mask-div">
+        <span class="headline">Wähle deinen Avatar</span>
+        <app-chooseavatar (clickSuccess)="successChooseAvatar()"></app-chooseavatar>
+    </div>
     }
     @else {
     <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)">
