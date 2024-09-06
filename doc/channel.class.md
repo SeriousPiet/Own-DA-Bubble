@@ -12,12 +12,17 @@
 - **Type:** `string`
 - **Description:** The name of the channel.
 
+### `messagesCount`
+
+- **Type:** `number`
+- **Description:** The Count of the messages in the Channel.
+
 ### `description`
 
 - **Type:** `string`
 - **Description:** The description of the channel.
 
-### `members`
+### `memberIDs`
 
 - **Type:** `string[]`
 - **Description:** An array of user IDs representing the members of the channel.

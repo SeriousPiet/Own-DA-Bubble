@@ -138,10 +138,8 @@ export class ChannelService implements OnDestroy {
     return undefined;
   }
 
-  async getChatWithUserByID(
-    userID: string,
-    createChat: boolean = true
-  ): Promise<Chat | undefined> {
+
+  async getChatWithUserByID(userID: string, createChat: boolean = true): Promise<Chat | undefined> {
     if (this.userservice.currentUser) {
       let chat: Chat | undefined = undefined;
       if (this.userservice.currentUserID === userID)
@@ -155,7 +153,8 @@ export class ChannelService implements OnDestroy {
     return undefined;
   }
 
-  async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
+
+  private async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
     try {
       const chatRef = collection(this.firestore, '/chats');
       const chatObj = {

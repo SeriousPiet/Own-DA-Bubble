@@ -1,6 +1,15 @@
 # User Class API Documentation
 
+## Type
+
+### `authProvider = 'google' | 'email' | 'guest'`
+
 ## Public Properties
+
+### `public changeUser$ = this.changeUser.asObservable()`
+
+- **Type:** `Observable<User | null>`
+- **Description:** Observable to subscript to handle when the user is changed.
 
 ### `id`
 
@@ -11,6 +20,16 @@
 
 - **Type:** `string`
 - **Description:** The name of the user. This property is read-only.
+
+### `guest`
+
+- **Type:** `boolean`
+- **Description:** Indicates whether the user is logged in as a guest.
+
+### `provider`
+
+- **Type:** `authProvider`
+- **Description:** the Auth Type of the User.
 
 ### `email`
 
@@ -46,3 +65,9 @@
 
 - **Type:** `boolean`
 - **Description:** Indicates whether this user instance represents the currently authenticated user. This property is read-only.
+
+### `emailVerified`
+
+- **Type:** `boolean`
+- **Description:** Indicates whether the user has the email verified.
+
