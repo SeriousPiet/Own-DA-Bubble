@@ -41,12 +41,12 @@ export class User {
     return this._chatIDs;
   }
 
-  private _ifCurrentUser: boolean = false;
-  get ifCurrentUser(): boolean {
-    return this._ifCurrentUser;
+  private _emailVerified: boolean;
+  get emailVerified(): boolean {
+    return this._emailVerified;
   }
 
-  constructor(userObj: any, userID: string, currentUser: boolean = false) {
+  constructor(userObj: any, userID: string) {
     this.id = userID;
     this._name = userObj.name ? userObj.name : '';
     this._email = userObj.email ? userObj.email : '';
@@ -57,8 +57,8 @@ export class User {
       : new Date();
     this._pictureURL = userObj.pictureURL ? userObj.pictureURL : undefined;
     this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
-    this._ifCurrentUser = currentUser;
-    if(userObj.guest) {
+    this._emailVerified = userObj.emailVerified ? userObj.emailVerified : false;
+    if (userObj.guest) {
       this.guest = true;
       this.provider = 'guest';
     } else {
@@ -74,6 +74,7 @@ export class User {
     if (data.online !== undefined) this._online = data.online;
     if (data.chatIDs) this._chatIDs = data.chatIDs;
     if (data.pictureURL !== undefined) this._pictureURL = data.pictureURL;
+    if (data.emailVerified !== undefined) this._emailVerified = data.emailVerified;
     this.changeUser.next(this);
   }
 }

@@ -81,44 +81,7 @@ export class ChatthreadviewComponent {
     this.navigationService.setChatViewObject(newChannel);
   }
 
-  changeEmail(event: Event) {
-    event.preventDefault();
-    this.userservice.updateCurrentUserEmail(this.newemail, '12345678');
-  }
-
-  changeName(event: Event) {
-    event.preventDefault();
-    this.userservice.updateCurrentUserDataOnFirestore({ name: this.username });
-  }
-
   public imgFile: File | null = null;
 
-
-  setPicture(event: Event) {
-    event.preventDefault();
-    const target = event.target as HTMLInputElement;
-    if (target.files) {
-      this.imgFile = target.files[0];
-    }
-  }
-
-  uploadPicture(event: Event) {
-    event.preventDefault();
-    if (this.imgFile) {
-      console.log('Uploading picture...' + this.imgFile.name);
-      const storageRef = ref(this.storage, 'profile-pictures/' + this.userservice.currentUser?.id + '/userpicture.' + this.imgFile.name.split('.').pop());
-      uploadBytes(storageRef, this.imgFile)
-        .then((snapshot) => {
-          getDownloadURL(snapshot.ref)
-            .then((url) => {
-              this.userservice.updateCurrentUserDataOnFirestore({ pictureURL: url });
-            });
-        });
-    }
-  }
-
-  userChat(user: User) {
-    this.navigationService.setChatViewObject(user);
-  }
 
 }

@@ -1,4 +1,12 @@
-import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  SimpleChanges,
+} from '@angular/core';
 import { User } from '../../shared/models/user.class';
 
 type AvatarContext =
@@ -9,6 +17,7 @@ type AvatarContext =
   | 'search'
   | 'outer-profile'
   | 'inner-profile'
+  | 'profile-card'
   | 'chat-dm-header'
   | 'chat-channel-members-small'
   | 'chat-channel-members-big'
@@ -30,25 +39,39 @@ export class AvatarDirective implements OnInit, OnDestroy {
   private readonly online = '#92c83e';
   private readonly offline = '#686868';
 
-  constructor(private el: ElementRef, private renderer: Renderer2) { }
+  constructor(private el: ElementRef, private renderer: Renderer2) {}
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['user'] && !changes['user'].firstChange) {
+      this.updateAvatar();
+    }
+  }
+
+  private updateAvatar() {
+    if (this._img) {
+      this.renderer.setAttribute(this._img, 'src', this.getAvatarUrl());
+    }
+    if (this._statusIndicator) {
+      this.setOnlineStatusIndicator(this.user?.online || false);
+    }
+  }
 
   ngOnDestroy(): void {
     if (this.userSubscription) this.userSubscription.unsubscribe();
   }
 
-
   async ngOnInit() {
     this.applyAvatarStyles();
-    this.userSubscription = this.user?.changeUser$.subscribe((user: User | null) => {
-      if (user) {
-        this.user = user;
-        this.renderer.setAttribute(this._img, 'src', this.getAvatarUrl());
-        this.setOnlineStatusIndicator(this.user.online);
+    this.userSubscription = this.user?.changeUser$.subscribe(
+      (user: User | null) => {
+        if (user) {
+          this.user = user;
+          this.renderer.setAttribute(this._img, 'src', this.getAvatarUrl());
+          this.setOnlineStatusIndicator(this.user.online);
+        }
       }
-    });
+    );
   }
-
 
   private applyAvatarStyles() {
     const styles = this.getStylesByContext();
@@ -74,15 +97,14 @@ export class AvatarDirective implements OnInit, OnDestroy {
     }
   }
 
-
   private getAvatarUrl(): string {
     if (this.user) {
-      if (this.user.pictureURL && this.user.pictureURL != '') return this.user.pictureURL;
+      if (this.user.pictureURL && this.user.pictureURL != '')
+        return this.user.pictureURL;
       else return `./assets/img/avatar-big/avatar-${this.user?.avatar}.png`;
     }
     return './assets/icons/start/profile-big.svg';
   }
-
 
   private setOnlineStatusIndicator(online: boolean) {
     if (!this._statusIndicator) return;
@@ -92,7 +114,6 @@ export class AvatarDirective implements OnInit, OnDestroy {
       online ? this.online : this.offline
     );
   }
-
 
   private addStatusIndicator(styles: any): HTMLElement {
     const statusIndicator = this.renderer.createElement('div');
@@ -118,7 +139,6 @@ export class AvatarDirective implements OnInit, OnDestroy {
     return statusIndicator;
   }
 
-
   private setupHoverEffect(statusIndicator: HTMLElement, styles: any) {
     const hoverElement = this.findHoverElement(this.el.nativeElement);
     if (hoverElement) {
@@ -139,7 +159,6 @@ export class AvatarDirective implements OnInit, OnDestroy {
     }
   }
 
-
   private findHoverElement(element: HTMLElement): HTMLElement | null {
     let currentElement = element.parentElement;
     while (currentElement) {
@@ -150,7 +169,6 @@ export class AvatarDirective implements OnInit, OnDestroy {
     }
     return null;
   }
-
 
   private getStylesByContext(): {
     imgSize: string;
@@ -225,7 +243,18 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
       case 'inner-profile':
         return {
-          imgSize: '8rem',
+          imgSize: '7rem',
+          statusSize: '0',
+          imgBorderColor: 'transparent',
+          pseudoBorderColor: '#fff',
+          pseudoBackgroundColor: 'offline',
+          hoverPseudoBorderColor: 'transparent',
+          showStatusIndicator: false,
+        };
+
+      case 'profile-card':
+        return {
+          imgSize: '10rem',
           statusSize: '0',
           imgBorderColor: 'transparent',
           pseudoBorderColor: '#fff',

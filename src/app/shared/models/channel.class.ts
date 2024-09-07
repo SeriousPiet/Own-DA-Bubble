@@ -9,7 +9,7 @@ export class Channel {
   }
 
   private _messagesCount: number;
-  get messageCount(): number {
+  get messagesCount(): number {
     return this._messagesCount;
   }
 

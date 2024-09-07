@@ -24,6 +24,8 @@ import { MessagesListViewComponent } from './messages-list-view/messages-list-vi
 import { UsersService } from '../../utils/services/user.service';
 import { MessageGreetingComponent } from './messages-list-view/message-greeting/message-greeting.component';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
+import { PopoverMemberProfileComponent } from './popover-chatview/popover-member-profile/popover-member-profile.component';
+import { User } from '../../shared/models/user.class';
 
 @Component({
   selector: 'app-chatview',
@@ -35,9 +37,11 @@ import { AvatarDirective } from '../../utils/directives/avatar.directive';
     MessageTextareaComponent,
     PopoverChannelEditorComponent,
     PopoverChannelMemberOverviewComponent,
+    PopoverChannelMemberOverviewComponent,
     MessagesListViewComponent,
     MessageGreetingComponent,
     AvatarDirective,
+    PopoverMemberProfileComponent,
   ],
   templateUrl: './chatview.component.html',
   styleUrl: './chatview.component.scss',

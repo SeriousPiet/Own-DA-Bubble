@@ -66,12 +66,24 @@
       <img src="./assets/icons/start/mail.svg" alt="" />
       <div class="mail-adress">
         <span>Email-Adresse</span>
-        <a href="mailto: {{ userservice.currentUser?.email }}">{{
-          userservice.currentUser?.email
-        }}</a>
+        @if (!isGuestAccount) {
+        <span class="mail-span">{{ userservice.currentUser?.email }}</span>
+        } @else {
+        <span class="mail-span">gast&#64;da-bubble.de</span>
+        }
       </div>
     </div>
   </div>
+
+  } @else if (showChooseAvatarForm) {
+  <div class="top">
+    <span class="modal-title">Deinen Avatar bearbeiten</span>
+  </div>
+
+  <app-chooseavatar
+    id="choose-avatar"
+    (clickSuccess)="closeChooseAvatarComponent()"
+  ></app-chooseavatar>
 
   } @else {
   <div class="profile-edit">
@@ -81,9 +93,11 @@
         <img src="./assets/icons/chat/general/close.svg" alt="Close" />
       </div>
     </div>
-
+    <!-- todo: -->
     <div
+      [class.google]="isGoogleAccount"
       class="avatar"
+      (click)="!isGoogleAccount && showChooseAvatarComponent()"
       appAvatar
       [user]="userservice.currentUser!"
       context="inner-profile"
@@ -121,14 +135,21 @@
             <img src="./assets/icons/modals/profile/mail.svg" alt="" />
             <span>E-mail Adresse</span>
           </div>
-          <div class="input-box">
+          <div [class.google]="isGoogleAccount" class="input-box">
             <input
+              [class.google]="isGoogleAccount"
               type="email"
               formControlName="email"
               placeholder="Deine Mailadresse hier"
+              [readOnly]="isGoogleAccount"
             />
           </div>
-          @if (profileForm.get('email')?.invalid &&
+
+          @if (isGoogleAccount) {
+          <div class="google-info-message">
+            <span>Mail-Adresse nicht editierbar.</span>
+          </div>
+          } @if (profileForm.get('email')?.invalid &&
           (profileForm.get('email')?.dirty ||
           profileForm.get('email')?.touched)) {
           <div class="error-message">
@@ -138,12 +159,24 @@
             <span>Bitte gib eine gültige E-Mail-Adresse ein.</span>
             }
           </div>
+          } @if(emailChanged()) {
+          <div class="input-box verify-pw-change">
+            <input
+              [(ngModel)]="reauthpassword"
+              [ngModelOptions]="{ standalone: true }"
+              type="password"
+              placeholder="Passwort"
+            />
+          </div>
+          <span class="error-message">{{ reauthpasswordinfo }}</span>
           }
         </div>
       </div>
       <div class="btn-box">
         <button type="button" (click)="toggleEditMode()">Abbrechen</button>
-        <button type="submit" [disabled]="!profileForm.valid">Speichern</button>
+        <button type="submit" [disabled]="submitButtonDisable()">
+          Speichern
+        </button>
       </div>
     </form>
   </div>

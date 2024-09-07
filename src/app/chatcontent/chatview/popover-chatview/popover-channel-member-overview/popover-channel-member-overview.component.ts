@@ -49,6 +49,25 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     return this.currentChannel instanceof Channel && this.currentChannel.memberIDs.includes(this.userService.currentUser!.id);
   }
 
+  returnPopoverTarget(messageCreator: string) {
+    if (messageCreator === this.userService.currentUser?.id) {
+      return 'profile-popover'
+    } else {
+      return 'popover-member-profile'
+    }
+  }
+
+  setSelectedUserObject(messageCreatorID:string) {
+    console.log(messageCreatorID)
+    this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
+    // this.navigationService.comingFromOutside = true;
+    // setTimeout(() => {
+    //   this.navigationService.comingFromOutside = false;
+    // }, 1000);
+    // console.log(this.navigationService.comingFromOutside)
+    console.log(this.userService.selectedUserObject$) 
+  }
+
 
 
 

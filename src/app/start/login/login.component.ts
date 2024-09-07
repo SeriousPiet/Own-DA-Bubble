@@ -81,6 +81,7 @@ export class LoginComponent implements OnDestroy {
         signupAt: serverTimestamp(),
         avatar: 0,
         guest: true,
+        emailVerified: true
       });
     this.userservice.setCurrentUserByEMail(email);
     localStorage.setItem('guestuseremail', email);
@@ -120,23 +121,22 @@ export class LoginComponent implements OnDestroy {
     event.preventDefault();
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
-    const error = await this.loginUser(email, password);
+    this.clearAllErrorSpans();
+    this.showSpinner = true;
+    this.loginForm.disable();
+    await this.loginUser(email, password);
+    this.showSpinner = false;
+    this.loginForm.enable();
   }
 
 
   async loginUser(email: string, password: string): Promise<string> {
     try {
-      this.showSpinner = true;
-      this.loginForm.disable();
-      this.clearAllErrorSpans();
       await signInWithEmailAndPassword(this.firebaseauth, email, password);
-      this.showSpinner = false;
-      this.loginForm.enable();
       this.handleLoginSuccess();
       return '';
     } catch (error) {
       this.handleLoginErrors((error as Error).message as string);
-      console.error('userservice/login:', (error as Error).message);
       return (error as Error).message as string;
     }
   }

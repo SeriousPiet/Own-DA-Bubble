@@ -49,8 +49,8 @@
     <div class="chat-messages-content">
       <app-messages-list-view
         [ngClass]="{ 'default-channel': isDefaultChannel }"
-        [isDefaultChannel]="isDefaultChannel"
         [messagesPath]="navigationService.chatViewPath"
+        [currentObject]="currentChannel"
       ></app-messages-list-view>
     </div>
     <app-message-textarea
@@ -66,9 +66,12 @@
     popover
     [currentChannel]="currentChannel"
   ></app-popover-channel-editor>
+
   <app-popover-channel-member-overview
     id="channel-member-overview-popover"
     popover
     [currentChannel]="currentChannel"
   ></app-popover-channel-member-overview>
+
+  <app-popover-member-profile></app-popover-member-profile>
 </main>

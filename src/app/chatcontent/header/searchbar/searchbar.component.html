@@ -8,7 +8,11 @@
     placeholder="Search..."
   />
 
-  <button class="datepicker-icon" (click)="toggleDatepicker()">
+  <button
+    [class.d-none]="isWelcomeChannel"
+    class="datepicker-icon"
+    (click)="toggleDatepicker()"
+  >
     <img src="./assets/icons/modals/calendar-search.svg" alt="Calendar Icon" />
   </button>
 
@@ -34,6 +38,7 @@
 
   <div class="dropdown" *ngIf="isDropdownVisible">
     <div
+      [class.d-none]="isWelcomeChannel"
       class="context-search"
       (click)="enableContextSearch()"
       *ngIf="!isContextSearchEnabled"

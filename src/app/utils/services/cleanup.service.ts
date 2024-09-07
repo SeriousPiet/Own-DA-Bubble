@@ -48,17 +48,12 @@ export class CleanupService {
       const channel = this.channelservice.channels[i];
       if (channel.defaultChannel) continue;
       if (channel.creatorID === guestID) {
-        // delete channel that the user has created
         this.clearAndDeleteChannel(channel);
       } else {
-        // delete all messages in the channel that the user has written
         await this.deleteAllMessagesFromChannel(channel, guestID);
       }
     }
-    // delete all chats with the guest user
     await this.deleteAllChatsWithGuest(guestID);
-    // delete the guest user
-    // this.docsToDelete.push('/users/' + guestID);
     console.warn('cleanupservice: All guest content deleted (' + guestID + ')');
     await deleteDoc(doc(this.firestore, '/users/' + guestID));
     await this.deleteAllDocs();
@@ -120,8 +115,6 @@ export class CleanupService {
 
 
   private async deleteAllDocs() {
-    // const dtd = this.docsToDelete;
-    // console.log('docsToDelete: ', dtd);
     for (let i = 0; i < this.docsToDelete.length; i++) {
       await deleteDoc(doc(this.firestore, this.docsToDelete[i]));
     }

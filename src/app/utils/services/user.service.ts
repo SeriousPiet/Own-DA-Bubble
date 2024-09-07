@@ -2,7 +2,7 @@ import { inject, Injectable, OnDestroy } from '@angular/core';
 import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
 import { updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp, getDocs, where, query } from '@angular/fire/firestore';
-import { Auth, EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail, user } from '@angular/fire/auth';
+import { Auth, sendEmailVerification, user } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -12,12 +12,18 @@ export class UsersService implements OnDestroy {
   private firebaseauth = inject(Auth);
   private unsubUsers: any = null;
   private user$: any = null;
+  private currentAuthUser: any = undefined;
+  private emailVerificationInterval: any = 0;
 
   private changeUserListSubject = new BehaviorSubject<string>('');
   public changeUserList$ = this.changeUserListSubject.asObservable();
 
   private changeCurrentUserSubject = new BehaviorSubject<string>('');
   public changeCurrentUser$ = this.changeCurrentUserSubject.asObservable();
+
+  private selectedUserObjectSubject = new BehaviorSubject<User | undefined>(undefined);
+  public selectedUserObject$ = this.selectedUserObjectSubject.asObservable();
+
 
   public users: User[] = [];
   private userEmailWaitForLogin: string | undefined;
@@ -40,57 +46,21 @@ export class UsersService implements OnDestroy {
 
   getUserByID(id: string): User | undefined { return this.users.find((user) => user.id === id); }
 
+  ifCurrentUserEmailVerified(): boolean { return this.currentUser ? this.currentUser.emailVerified : false; }
+
   ifValidUser(userID: string): boolean {
     const user = this.users.find((user) => user.id === userID);
-    if(user && (!user.guest || user.id === this.currentGuestUserID)) return true;
+    if (user && (!user.guest || user.id === this.currentGuestUserID)) return true;
     return false;
   }
 
   async updateCurrentUserDataOnFirestore(userChangeData: {}) {
     try {
       await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), userChangeData);
-      console.warn('userservice/firestore: User updated(', this.currentUserID, ') # ', userChangeData);
     } catch (error) {
       console.error('userservice/firestore: ', (error as Error).message);
     }
   }
-
-  async updateCurrentUserEmail(newEmail: string, currentPassword: string): Promise<string | undefined> {
-    try {
-      await this.reauthenticate(currentPassword);
-      const auth = getAuth();
-      if (auth.currentUser) {
-        await updateEmail(auth.currentUser, newEmail);
-        console.warn('userservice/auth: Email updated on Firebase/Auth');
-        if (this.currentUser) {
-          this.updateCurrentUserDataOnFirestore({ email: newEmail });
-        }
-        return undefined;
-      }
-    } catch (error) {
-      console.error('userservice/auth: Error updating email on Firebase/Auth(', error, ')');
-      return undefined;
-    }
-    return undefined;
-  }
-
-
-  private async reauthenticate(currentPassword: string): Promise<void> {
-    try {
-      const user = getAuth().currentUser;
-      if (user && user.email) {
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
-        await reauthenticateWithCredential(user, credential);
-        console.warn('userservice/auth: Reauthentication successful');
-      } else {
-        throw new Error('userservice/auth: No authenticated user found');
-      }
-    } catch (error) {
-      console.error('userservice/auth: Error during reauthentication:', error);
-      throw error;
-    }
-  }
-
 
   // ############################################################################################################
   // Functions for subscribing to Firestore collections
@@ -119,7 +89,13 @@ export class UsersService implements OnDestroy {
   private initUserWatchDog(): void {
     this.user$ = user(this.firebaseauth).subscribe((user) => {
       if (user) {
+        if (user === this.currentAuthUser) return;
+        this.currentAuthUser = user;
         console.warn('userservice/auth: Authentication successful: ', user.email);
+        if (!user.emailVerified) {
+          this.initEmailVerificationWatchDog();
+          console.warn('userservice/auth: Email not verified');
+        }
         if (user.email) this.setCurrentUserByEMail(user.email);
       } else if (this.currentUser) {
         console.warn('userservice: currentUser logout - ' + this.currentUser.email);
@@ -129,13 +105,44 @@ export class UsersService implements OnDestroy {
   }
 
 
+  private initEmailVerificationWatchDog(): void {
+    if (this.emailVerificationInterval !== 0) return;
+    const user = this.firebaseauth.currentUser;
+    if (user) {
+      this.emailVerificationInterval = setInterval(async () => {
+        await user.reload();
+        console.warn('userservice/auth: Checking email verification');
+        if (user.emailVerified) {
+          clearInterval(this.emailVerificationInterval);
+          console.warn('userservice/auth: Email verified');
+          await this.updateCurrentUserDataOnFirestore({ emailVerified: true });
+        }
+      }, 10000);
+    }
+  }
+
+
+  public async sendEmailVerificationLink(): Promise<void> {
+    try {
+      const user = this.firebaseauth.currentUser;
+      if (user) {
+        console.warn('userservice/auth: Sending email verification to: ', user.email);
+        await sendEmailVerification(user);
+        this.initEmailVerificationWatchDog();
+      }
+    } catch (error) {
+      console.error('userservice/auth: ', (error as Error).message);
+    }
+  }
+
+
   public async setCurrentUserByEMail(userEmail: string): Promise<void> {
     this.userEmailWaitForLogin = undefined;
     if (userEmail !== '') {
       const user = this.users.find((user) => user.email === userEmail);
       if (user) {
+        if (this.currentUser && this.currentUser.id === user.id) return;
         this.currentUser = user;
-        // store the guest user id in session storage
         if (user.guest) this.currentGuestUserID = user.id;
         this.changeCurrentUserSubject.next('userset');
         await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), { online: true, lastLoginAt: serverTimestamp() });
@@ -174,6 +181,11 @@ export class UsersService implements OnDestroy {
       this.user$ = null;
     }
   }
+
+  updateSelectedUser(user: User | undefined) {
+    this.selectedUserObjectSubject.next(user);
+  }
+
 
 
   // ############################################################################################################

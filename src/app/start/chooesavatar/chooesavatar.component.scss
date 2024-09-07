@@ -2,108 +2,93 @@
 @import "../../../mixins.scss";
 
 section {
+  @include flex(center, stretch);
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 29rem;
+  overflow: hidden;
+
+  .avatar {
+    align-self: center;
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+  }
+
+  .name {
+    @include nunito(1.5, 700);
+    color: black;
+    text-align: center;
+  }
+
+  .infospan {
+    @include nunito(1, 400);
+    max-width: 22ch;
+  }
+
+  .avatar-list {
+    @include flex(center, center);
+    gap: 0.325rem;
+
+    img {
+      width: 4rem;
+      height: 4rem;
+      cursor: pointer;
+    }
+  }
+
+  .or-separator {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
-    gap: 1.5rem;
-    width: 38rem;
-    height: fit-content;
-    padding: 2rem;
-    background-color: white;
-    border-radius: 2rem;
-    box-shadow: 0px 2px 10px 0px #00000014;
+    align-items: center;
+    gap: 1rem;
 
-    .title {
-        color: $accent;
-        text-align: center;
+    span {
+      @include nunito(1.2, 400);
     }
 
-    .avatar {
-        align-self: center;
-        width: 10rem;
-        height: 10rem;
-        border-radius: 50%;
+    > div {
+      flex-grow: 1;
+      height: 1px;
+      background-color: $vert-spacer;
+    }
+  }
+
+  .choose-picture {
+    @include flex(space-between, center);
+    @include nunito(1.5, 400);
+
+    input {
+      display: none;
     }
 
-    .name {
-        color: black;
-        text-align: center;
+    .filerequest {
+      @include buttonEmpty;
+      margin-left: 1rem;
+    }
+  }
 
-        font-size: 2rem;
-        font-family: Nunito;
-        font-weight: 700;
+  .action {
+    @include flex(space-between, center);
+    align-self: flex-end;
+    height: 3rem;
+    gap: 1rem;
+
+    img {
+      align-self: center;
     }
 
-    .infospan {
-        @include nunito(1.5, 400);
+    .errorspan {
+      flex-grow: 1;
+      @include nunito(1, 400, $error);
+      text-align: left;
     }
 
-    .avatar-list {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        gap: 1rem;
-
-        img {
-            cursor: pointer;
-            width: 4rem;
-            height: 4rem;
-        }
+    .success {
+      @include buttonFull;
     }
 
-    .or-separator {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-
-        span {
-            @include nunito(1.2, 400);
-        }
-
-        >div {
-            height: 1px;
-            background-color: $vert-spacer;
-            flex-grow: 1;
-        }
+    .undo {
+      @include buttonNoBg;
     }
-
-    .choose-picture {
-        @include nunito(1.5, 400);
-
-        input {
-            display: none;
-        }
-
-        .filerequest {
-            margin-left: 1rem;
-            @include buttonEmpty;
-        }
-    }
-
-    .action {
-        display: flex;
-        justify-content: flex-end;
-        align-items: flex-end;
-        gap: 1rem;
-
-        img {
-            align-self: center;
-        }
-
-        .errorspan {
-            flex-grow: 1;
-            text-align: left;
-            @include nunito(1, 400, #ED1E79);
-        }
-
-        .success {
-            @include buttonFull;
-        }
-
-        .undo {
-            @include buttonNoBg;
-        }
-    }
-
+  }
 }
