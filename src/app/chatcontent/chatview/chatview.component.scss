@@ -37,7 +37,7 @@
   .chatview-channel-name {
     cursor: pointer;
 
-    > div {
+    >div {
       @include flex(center, center);
       font-size: 1.5rem;
       font-weight: 700;
@@ -45,11 +45,10 @@
       white-space: nowrap;
 
       &:hover {
-        filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg)
-          brightness(94%) contrast(101%);
+        filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg) brightness(94%) contrast(101%);
       }
 
-      > div {
+      >div {
         @include flex(center, center);
         gap: 0.9375rem;
       }
@@ -75,7 +74,7 @@
     width: -webkit-fill-available;
     cursor: pointer;
 
-    > span {
+    >span {
       font-weight: 600;
       font-size: large;
     }
@@ -84,14 +83,14 @@
       border-radius: 6.25rem;
       background-color: $background;
 
-      > span {
+      >span {
         color: $secondary;
         font-weight: 700;
       }
     }
   }
 
-  > button {
+  >button {
     .member-avatar {
       margin-left: -0.75rem;
       border-radius: 100%;
@@ -110,13 +109,12 @@
     border-radius: 100%;
     cursor: pointer;
 
-    > img {
+    >img {
       width: 1.5rem;
       height: 1.5rem;
 
       &:hover {
-        filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg)
-          brightness(94%) contrast(101%);
+        filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg) brightness(94%) contrast(101%);
         transform: scale(1.1);
         transition: all 0.125sec ease-in-out;
       }
@@ -156,6 +154,37 @@
   }
 }
 
+
+.no-messages-ctn {
+  display: flex;
+  flex-direction: column;
+  gap: .4375rem;
+  padding-left: 1.25rem;
+
+  .channel-name {
+    @include flex(normal, center);
+    gap: .625rem;
+
+    >span {
+      @include nunito(1.5);
+    }
+  }
+
+  .channel-begin {
+    @include nunito(1.25, 400);
+
+    >span {
+      color: $secondary;
+    }
+  }
+}
+
+.no-messages {
+@include flex(flex-end, center);
+  align-items: center;
+  width: 90% !important;
+}
+
 #channel-member-overview-popover:popover-open,
 #channel-editor-popover:popover-open {
   opacity: 1;
@@ -164,6 +193,7 @@
 }
 
 @starting-style {
+
   #channel-member-overview-popover:popover-open,
   #channel-editor-popover:popover-open {
     opacity: 0;

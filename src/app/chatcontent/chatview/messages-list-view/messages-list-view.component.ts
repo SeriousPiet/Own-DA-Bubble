@@ -119,47 +119,6 @@ export class MessagesListViewComponent implements OnInit {
     }
   }
 
-  getTitle(object: Channel | Chat): string {
-    if (object instanceof Channel) return object.name;
-    // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
-    // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
-    return '';
-  }
-
-  getChannelCreatorName(object: Channel | Chat): string {
-    if (object instanceof Channel) {
-      let channelCreator = this.userService.getUserByID(object.creatorID);
-      if (object.creatorID === this.userService.currentUserID) {
-        return 'Du hast'
-      }else{
-        return `${ channelCreator!.name } hat`
-      }
-    }
-    return '';
-  }
-
-  getChannelCreationTime(object: Channel | Chat): string {
-    if (object instanceof Channel) {
-      let channelCreationTime = this.formatDate(object.createdAt);
-      return channelCreationTime
-    }
-    return '';
-  }
-
-
-  formatDate(date: Date) {
-    let formatedMessageDate = date.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-    if (formatedMessageDate == this.isToday()) return "Heute";
-    else {
-      return formatedMessageDate;
-    }
-  }
-
-  isToday() {
-    const today = new Date();
-    let formatedTodaysDate = today.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-    return formatedTodaysDate;
-  }
 
   ngOnDestroy(): void {
     if (this.unsubMessages) {
