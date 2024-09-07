@@ -104,19 +104,17 @@ export class UsersService implements OnDestroy {
 
 
   public async ifCurrentUserVerified(): Promise<boolean> {
-    console.warn('userservice/auth: Checking if user is verified');
     if (this.currentUser) {
       if (this.currentUser.provider !== 'email') return true;
       if (this.currentUser.emailVerified) return true;
-      console.warn('currentAuthUser: ', this.currentAuthUser);
       if (this.currentAuthUser) {
         await this.currentAuthUser.reload();
         console.warn('userservice/auth: Checking email verification');
         if (this.currentAuthUser.emailVerified) {
-          console.warn('userservice/auth: Email verified');
           await this.updateCurrentUserDataOnFirestore({ emailVerified: true });
           return true;
         } else {
+          console.warn('userservice/auth: Email not verified');
           document.getElementById('emailNotVerifiedPopover')?.showPopover();
         }
       }
