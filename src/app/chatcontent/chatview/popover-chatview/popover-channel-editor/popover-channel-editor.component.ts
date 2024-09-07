@@ -81,7 +81,6 @@ export class PopoverChannelEditorComponent implements OnChanges {
   }
 
   isChannelCreator(){
-    console.log(this.currentChannel.creatorID === this.userService.currentUserID)
     return this.currentChannel.creatorID === this.userService.currentUserID;
   }
 
