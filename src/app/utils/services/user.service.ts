@@ -13,7 +13,6 @@ export class UsersService implements OnDestroy {
   private unsubUsers: any = null;
   private user$: any = null;
   private currentAuthUser: any = undefined;
-  private emailVerificationInterval: any = 0;
 
   private changeUserListSubject = new BehaviorSubject<string>('');
   public changeUserList$ = this.changeUserListSubject.asObservable();
@@ -45,8 +44,6 @@ export class UsersService implements OnDestroy {
   getAllUserIDs(): string[] { const userIDs = this.users.map((user) => user.id); return userIDs; }
 
   getUserByID(id: string): User | undefined { return this.users.find((user) => user.id === id); }
-
-  ifCurrentUserEmailVerified(): boolean { return this.currentUser ? this.currentUser.emailVerified : false; }
 
   ifValidUser(userID: string): boolean {
     const user = this.users.find((user) => user.id === userID);
@@ -91,9 +88,10 @@ export class UsersService implements OnDestroy {
       if (user) {
         if (user === this.currentAuthUser) return;
         this.currentAuthUser = user;
-        console.warn('userservice/auth: Authentication successful: ', user.email);
-        if (!user.emailVerified) {
-          this.initEmailVerificationWatchDog();
+        const signinProvider = user.providerData[0].providerId;
+        console.warn('userservice/auth: Authentication successful: ', user.email, ' provider: ', signinProvider);
+        if (!user.emailVerified && signinProvider !== 'google.com') {
+          // this.initEmailVerificationWatchDog();
           console.warn('userservice/auth: Email not verified');
         }
         if (user.email) this.setCurrentUserByEMail(user.email);
@@ -105,20 +103,25 @@ export class UsersService implements OnDestroy {
   }
 
 
-  private initEmailVerificationWatchDog(): void {
-    if (this.emailVerificationInterval !== 0) return;
-    const user = this.firebaseauth.currentUser;
-    if (user) {
-      this.emailVerificationInterval = setInterval(async () => {
-        await user.reload();
+  public async ifCurrentUserVerified(): Promise<boolean> {
+    console.warn('userservice/auth: Checking if user is verified');
+    if (this.currentUser) {
+      if (this.currentUser.provider !== 'email') return true;
+      if (this.currentUser.emailVerified) return true;
+      console.warn('currentAuthUser: ', this.currentAuthUser);
+      if (this.currentAuthUser) {
+        await this.currentAuthUser.reload();
         console.warn('userservice/auth: Checking email verification');
-        if (user.emailVerified) {
-          clearInterval(this.emailVerificationInterval);
+        if (this.currentAuthUser.emailVerified) {
           console.warn('userservice/auth: Email verified');
           await this.updateCurrentUserDataOnFirestore({ emailVerified: true });
+          return true;
+        } else {
+          document.getElementById('emailNotVerifiedPopover')?.showPopover();
         }
-      }, 10000);
+      }
     }
+    return false;
   }
 
 
@@ -128,7 +131,6 @@ export class UsersService implements OnDestroy {
       if (user) {
         console.warn('userservice/auth: Sending email verification to: ', user.email);
         await sendEmailVerification(user);
-        this.initEmailVerificationWatchDog();
       }
     } catch (error) {
       console.error('userservice/auth: ', (error as Error).message);
@@ -196,4 +198,6 @@ export class UsersService implements OnDestroy {
     this.unsubscribeFromUsers();
     this.unsubscribeFromAuthUser();
   }
+
+
 }
