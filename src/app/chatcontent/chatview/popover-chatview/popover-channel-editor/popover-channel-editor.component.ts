@@ -80,6 +80,16 @@ export class PopoverChannelEditorComponent implements OnChanges {
     }
   }
 
+  isChannelCreator(){
+    return this.currentChannel.creatorID === this.userService.currentUserID;
+  }
+
+  showNoRightToEditInfo(){
+    if(!this.isChannelCreator()){
+      return 'Du hast kein Recht diesen Kanal zu bearbeiten.'
+    }
+    return ''
+  }
 
 }
 

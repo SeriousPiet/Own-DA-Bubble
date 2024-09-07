@@ -69,7 +69,7 @@
     }
 
     >.message-info {
-      @include flex(flex-end, center);
+      @include flex(flex-start, center);
       width: 100%;
       gap: 1.25rem;
 
@@ -160,10 +160,14 @@
     .message-reactions {
       @include flex(flex-end, normal);
     }
+
+    .message-info{
+      justify-content: flex-end;
+    }
   }
 
   .interact-ctn-popover {
-    left: 0.1875rem;
+    left: 4.8125rem;
     right: unset;
 
     >section {
@@ -171,6 +175,14 @@
         display: flex;
       }
     }
+  }
+
+  .interact-ctn-popover-slide-out-animation {
+    transform: translateX(3rem);
+  }
+  
+  .interact-ctn-popover-slide-in-animation {
+    transform: translateX(-3rem);
   }
 
   &:not(section .message-header .message-creator-name):hover {
@@ -205,6 +217,7 @@
     }
   }
 }
+
 
 .interact-ctn-popover-slide-out-animation {
   transform: translateX(-3rem);
