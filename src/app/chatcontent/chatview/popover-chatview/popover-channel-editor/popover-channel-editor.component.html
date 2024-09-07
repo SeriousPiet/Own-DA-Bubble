@@ -16,7 +16,7 @@
             <div>
                 <span>Channel Name</span>
                 @if (!channelNameEditor) {
-                <button (click)="showChannelNameEditor()">Bearbeiten</button>
+                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()" [title]="showNoRightToEditInfo()" (click)="showChannelNameEditor()">Bearbeiten</button>
                 }@else {
                 <button (click)="saveEditedChannel()">Speichern</button>
                 }
@@ -31,7 +31,7 @@
             <div>
                 <span>Beschreibung</span>
                 @if (!channelDescriptionEditor) {
-                <button (click)="showChannelDescriptionEditor()">Bearbeiten</button>
+                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()" [title]="showNoRightToEditInfo()" (click)="showChannelDescriptionEditor()">Bearbeiten</button>
                 }@else {
                 <button (click)="saveEditedChannel()">Speichern</button>
                 }
