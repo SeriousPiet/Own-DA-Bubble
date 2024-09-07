@@ -192,7 +192,6 @@ export class ChannelService implements OnDestroy {
    * @param {string[]} membersIDs - The ids of the members of the channel.
    */
   async addNewChannelToFirestore(name: string, description: string, membersIDs: string[]): Promise<boolean> {
-    if (await this.userservice.ifCurrentUserVerified() !== true) return false;
     const newchannel = {
       name: name,
       description: description,

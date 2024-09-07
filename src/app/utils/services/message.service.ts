@@ -16,7 +16,6 @@ export class MessageService {
   constructor() { }
 
   async addNewMessageToCollection(channel: Channel | Chat, messageContent: string): Promise<boolean> {
-    if (await this.userservice.ifCurrentUserVerified() !== true) return false;
     const messagePath = (channel instanceof Channel) ? channel.channelMessagesPath : channel.chatMessagesPath;
     const messageCollectionRef = collection(this.firestore, messagePath);
     if (!messageCollectionRef) throw new Error('MessageService: path "' + messagePath + '" is undefined');
@@ -53,7 +52,6 @@ export class MessageService {
 
 
   async addNewAnswerToMessage(message: Message, answerContent: string): Promise<boolean> {
-    if (await this.userservice.ifCurrentUserVerified() !== true) return false;
     try {
       const answerCollectionRef = collection(this.firestore, message.answerPath);
       if (!answerCollectionRef) throw new Error('MessageService: addNewAnswerToMessage: path "' + message.answerPath + '" is undefined');
@@ -70,7 +68,6 @@ export class MessageService {
 
 
   async toggleReactionToMessage(message: Message, reaction: string): Promise<boolean> {
-    if (await this.userservice.ifCurrentUserVerified() !== true) return false;
     try {
       const newReactionArray = this.getModifiedReactionArray(message.emojies, reaction);
       await updateDoc(doc(this.firestore, message.messagePath), { emojies: newReactionArray });
