@@ -46,7 +46,7 @@
     [ngClass]="{ 'default-channel': isDefaultChannel }"
   >
     @if (!isDefaultChannel && navigationService.chatViewPath) {
-    <div class="chat-messages-content">
+    <div class="chat-messages-content" [ngClass]="{'no-messages': currentChannel.messagesCount == 0}">
       @if(currentChannel.messagesCount > 0){
       <app-messages-list-view
         [ngClass]="{ 'default-channel': isDefaultChannel }"
