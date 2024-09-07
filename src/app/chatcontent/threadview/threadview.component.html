@@ -1,1 +1,34 @@
-<p>threadview works!</p>
+<main class="threadview-main-ctn">
+  <section class="threadview-header">
+    <div>
+      <div>
+        <span class="thread-headline">Thread</span>
+        <img
+          src="../../../assets/icons/chat/general/hashtag-hover.svg"
+          alt="#"
+        />
+        <span class="thread-headline-channel-name">{{
+          getTitle(navigationService.chatViewObject)
+        }}</span>
+      </div>
+      <button></button>
+    </div>
+  </section>
+
+  <section
+    class="threadview-content"
+    [ngClass]="{ 'default-channel': isDefaultChannel }"
+  >
+    @if (navigationService.threadViewPath) {
+    <div class="thread-messages-content">
+      <app-messages-list-view
+        [ngClass]="{ 'default-channel': isDefaultChannel }"
+        [messagesPath]="navigationService.chatViewPath"
+      />
+    </div>
+    <app-message-textarea
+      [newMessageinChannel]="navigationService.chatViewObject"
+    />
+    }
+  </section>
+</main>

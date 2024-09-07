@@ -21,7 +21,12 @@ import { UsersService } from '../../../utils/services/user.service';
 @Component({
   selector: 'app-messages-list-view',
   standalone: true,
-  imports: [MessageComponent, MessageDateComponent, MessageGreetingComponent, CommonModule],
+  imports: [
+    MessageComponent,
+    MessageDateComponent,
+    MessageGreetingComponent,
+    CommonModule,
+  ],
   templateUrl: './messages-list-view.component.html',
   styleUrl: './messages-list-view.component.scss',
 })
@@ -31,7 +36,7 @@ export class MessagesListViewComponent implements OnInit {
 
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
-  public userService = inject(UsersService)
+  public userService = inject(UsersService);
   private unsubMessages: any = null;
   public messages: Message[] = [];
   public messagesDates: Date[] = [];
@@ -51,7 +56,7 @@ export class MessagesListViewComponent implements OnInit {
   constructor(
     private _cdr: ChangeDetectorRef,
     private searchService: SearchService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.messageScrollSubscription =
@@ -75,7 +80,9 @@ export class MessagesListViewComponent implements OnInit {
 
   sortMessagesDate(messageCreationDate: Date) {
     this.messagesDates.push(messageCreationDate);
-    this.messagesDates.sort((a, b) => a.getMonth() - b.getMonth() || a.getDate() - b.getDate());
+    this.messagesDates.sort(
+      (a, b) => a.getMonth() - b.getMonth() || a.getDate() - b.getDate()
+    );
     this.messagesDates = this.messagesDates.filter((date, index, array) => {
       return index === 0 || date.getDate() !== array[index - 1].getDate();
     });
@@ -130,9 +137,9 @@ export class MessagesListViewComponent implements OnInit {
     if (object instanceof Channel) {
       let channelCreator = this.userService.getUserByID(object.creatorID);
       if (object.creatorID === this.userService.currentUserID) {
-        return 'Du hast'
-      }else{
-        return `${ channelCreator!.name } hat`
+        return 'Du hast';
+      } else {
+        return `${channelCreator!.name} hat`;
       }
     }
     return '';
@@ -141,15 +148,18 @@ export class MessagesListViewComponent implements OnInit {
   getChannelCreationTime(object: Channel | Chat): string {
     if (object instanceof Channel) {
       let channelCreationTime = this.formatDate(object.createdAt);
-      return channelCreationTime
+      return channelCreationTime;
     }
     return '';
   }
 
-
   formatDate(date: Date) {
-    let formatedMessageDate = date.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-    if (formatedMessageDate == this.isToday()) return "Heute";
+    let formatedMessageDate = date.toLocaleString('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    if (formatedMessageDate == this.isToday()) return 'Heute';
     else {
       return formatedMessageDate;
     }
@@ -157,7 +167,11 @@ export class MessagesListViewComponent implements OnInit {
 
   isToday() {
     const today = new Date();
-    let formatedTodaysDate = today.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+    let formatedTodaysDate = today.toLocaleString('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
     return formatedTodaysDate;
   }
 
