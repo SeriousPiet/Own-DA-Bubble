@@ -18,6 +18,7 @@
       <button
         class="member-avatars-ctn"
         popovertarget="channel-member-overview-popover"
+        (click)="openMemberListPopover('memberList')"
       >
         <div class="d-flex">
           @for (member of requiredAvatars; track member) {
@@ -31,12 +32,12 @@
         </div>
         <span>{{ getNumberOfMembers(navigationService.chatViewObject) }}</span>
       </button>
-      <div class="add-member-icon-ctn">
+      <button class="add-member-icon-ctn" popovertarget="channel-member-overview-popover" (click)="openMemberListPopover('addMember')">
         <img
           src="assets/icons/chat/general/add-to-channel.svg"
           alt="add-member-icon"
         />
-      </div>
+    </button>
     </div>
     }
   </section>
@@ -83,6 +84,11 @@
     id="channel-member-overview-popover"
     popover
     [currentChannel]="currentChannel"
+    [memberList]="memberList"
+    (memberListChange)="memberList = $event"
+    (addMemberPopoverChange)="addMemberPopover = $event"
+    [addMemberPopover]="addMemberPopover"
+
   ></app-popover-channel-member-overview>
 
   <app-popover-member-profile></app-popover-member-profile>
