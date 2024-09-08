@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, Input } from '@angular/core';
 import { MessageService } from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
+import { UsersService } from '../../utils/services/user.service';
 
 type MessageAttachment = {
   name: string;
@@ -28,14 +29,60 @@ export class MessageTextareaComponent {
   message = ''
 
   attachments: MessageAttachment[] = [];
+  dropzonehighlighted = false;
 
   public messageService = inject(MessageService);
+  private userservice = inject(UsersService);
 
   @Input() newMessageinChannel!: Channel | Chat;
 
-  addNewMessage(newMessagePath: Channel | Chat, message: string) {
-    if (newMessagePath instanceof Channel) {
-      if (message) this.messageService.addNewMessageToCollection(newMessagePath, message);
+  constructor(private el: ElementRef) { }
+  @HostListener('dragenter', ['$event'])
+  onDragEnter(event: DragEvent) {
+    event.preventDefault();  // Verhindert die Standard-Aktion (z. B. das Öffnen der Datei)
+    this.highlightDropZone(true);
+  }
+
+  @HostListener('dragover', ['$event'])
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.highlightDropZone(true);
+  }
+
+  @HostListener('dragleave', ['$event'])
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    if (this.isLeavingDropZone(event)) {
+      this.highlightDropZone(false);
+    }
+  }
+
+  @HostListener('drop', ['$event'])
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    this.highlightDropZone(false);
+
+    this.loadAttachments(event.dataTransfer);
+  }
+
+  private isLeavingDropZone(event: DragEvent): boolean {
+    const dropZone = this.el.nativeElement;
+    const relatedTarget = event.relatedTarget as Node;
+    return !dropZone.contains(relatedTarget);
+  }
+
+  private highlightDropZone(highlight: boolean) {
+    const nativeElement = this.el.nativeElement;
+    if (highlight) this.dropzonehighlighted = true;
+    else setTimeout(() => {
+      this.dropzonehighlighted = false;
+    }, 100);
+  }
+
+
+  async addNewMessage(newMessagePath: Channel | Chat, message: string) {
+    if(message && await this.userservice.ifCurrentUserVerified()) {
+      this.messageService.addNewMessageToCollection(newMessagePath, message);
       this.message = '';
     }
   }
@@ -96,39 +143,5 @@ export class MessageTextareaComponent {
   }
 
 
-  onDragEnter(event: DragEvent) {
-    event.preventDefault();  // Verhindert die Standard-Aktion (z. B. das Öffnen der Datei)
-    event.stopPropagation();
-    this.highlightDropZone(event, true);
-  }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.highlightDropZone(event, true);
-  }
-
-  onDragLeave(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.highlightDropZone(event, false);
-  }
-
-  onDrop(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.highlightDropZone(event, false);
-
-    this.loadAttachments(event.dataTransfer);
-  }
-
-  // Hebe die Drop-Zone hervor, wenn Dateien gezogen werden
-  private highlightDropZone(event: DragEvent, highlight: boolean) {
-    const dropZone = (event.target as HTMLElement);
-    if (highlight) {
-      dropZone.classList.add('drag-over');
-    } else {
-      dropZone.classList.remove('drag-over');
-    }
-  }
 }
