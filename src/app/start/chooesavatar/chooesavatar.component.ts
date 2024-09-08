@@ -59,7 +59,7 @@ export class ChooesavatarComponent {
   }
 
   setAvatar(avatar: number) {
-    if (this.userservice.currentUser?.avatar === avatar) return;
+    if (!this.userservice.currentUser?.pictureURL && this.userservice.currentUser?.avatar === avatar) return;
     this.picturePropertysError = '';
     this.pictureFile = null;
     this.changedAvatar = true;
@@ -82,7 +82,7 @@ export class ChooesavatarComponent {
     try {
       const snapshot = await uploadBytes(storageRef, file);
       const url = await getDownloadURL(snapshot.ref);
-      await this.userservice.updateCurrentUserDataOnFirestore({ pictureURL: url });
+      await this.userservice.updateCurrentUserDataOnFirestore({ pictureURL: url, avatar: 0 });
       return '';
     } catch (error) {
       console.error('userservice/storage: ', (error as Error).message);
