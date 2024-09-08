@@ -72,7 +72,6 @@ export class ChooesavatarComponent {
     this.uploading = true;
     const error = await this.uploadUserPictureToFirestore(this.userservice.currentUserID, pictureFile);
     if (error) this.handleUploadErrors(error);
-    else this.handleUploadSuccess();
     this.uploading = false;
   }
 
@@ -120,11 +119,6 @@ export class ChooesavatarComponent {
 
   private handleUploadErrors(error: any) {
     console.error('Error uploading file: ', error);
-  }
-
-
-  private handleUploadSuccess() {
-    console.log('File uploaded successfully');
   }
 
 
