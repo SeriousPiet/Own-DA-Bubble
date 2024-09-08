@@ -110,8 +110,8 @@ export class ChooesavatarComponent {
       this.picturePropertysError = 'Datei ist zu groß (max. 500 KB)';
       return false;
     }
-    if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
-      this.picturePropertysError = 'Bitte nur PNG oder JPEG';
+    if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif') {
+      this.picturePropertysError = 'Bitte nur PNG, JPEG oder GIF';
       return false;
     }
     return true;
