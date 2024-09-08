@@ -203,7 +203,6 @@ section {
     }
 
     .blue-btn {
-      display: flex;
       @include buttonFull;
 
       &:disabled {
