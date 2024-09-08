@@ -138,10 +138,8 @@ export class ChannelService implements OnDestroy {
     return undefined;
   }
 
-  async getChatWithUserByID(
-    userID: string,
-    createChat: boolean = true
-  ): Promise<Chat | undefined> {
+
+  async getChatWithUserByID(userID: string, createChat: boolean = true): Promise<Chat | undefined> {
     if (this.userservice.currentUser) {
       let chat: Chat | undefined = undefined;
       if (this.userservice.currentUserID === userID)
@@ -155,7 +153,8 @@ export class ChannelService implements OnDestroy {
     return undefined;
   }
 
-  async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
+
+  private async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
     try {
       const chatRef = collection(this.firestore, '/chats');
       const chatObj = {
@@ -192,11 +191,7 @@ export class ChannelService implements OnDestroy {
    * @param {string} description - The description of the channel.
    * @param {string[]} membersIDs - The ids of the members of the channel.
    */
-  async addNewChannelToFirestore(
-    name: string,
-    description: string,
-    membersIDs: string[]
-  ) {
+  async addNewChannelToFirestore(name: string, description: string, membersIDs: string[]): Promise<boolean> {
     const newchannel = {
       name: name,
       description: description,
@@ -206,9 +201,11 @@ export class ChannelService implements OnDestroy {
     };
     const channelCollectionref = collection(this.firestore, '/channels');
     try {
-      const docRef = await addDoc(channelCollectionref, newchannel);
+      await addDoc(channelCollectionref, newchannel);
+      return true;
     } catch (error) {
       console.error('ChannelService: addNewChannelToFirestore: error adding channel' + newchannel.name + ' # ', error);
+      return false;
     }
   }
 

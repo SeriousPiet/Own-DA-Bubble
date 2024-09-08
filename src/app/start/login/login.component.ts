@@ -81,6 +81,7 @@ export class LoginComponent implements OnDestroy {
         signupAt: serverTimestamp(),
         avatar: 0,
         guest: true,
+        emailVerified: true
       });
     this.userservice.setCurrentUserByEMail(email);
     localStorage.setItem('guestuseremail', email);
