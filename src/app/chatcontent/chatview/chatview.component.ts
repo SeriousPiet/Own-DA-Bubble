@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChange, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { MessageDateComponent } from './messages-list-view/message-date/message-date.component';
 import { MessageTextareaComponent } from '../message-textarea/message-textarea.component';
 import { CommonModule } from '@angular/common';
@@ -46,7 +46,11 @@ export class ChatviewComponent implements OnChanges {
   public isDefaultChannel = true;
   public requiredAvatars: string[] = []
 
+  memberList = false;
+  addMemberPopover = false;
+
   @Input() currentChannel!: Channel | Chat;
+  // @Output() memberListChange = new EventEmitter<boolean>();
 
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -111,8 +115,8 @@ export class ChatviewComponent implements OnChanges {
       let channelCreator = this.userService.getUserByID(object.creatorID);
       if (object.creatorID === this.userService.currentUserID) {
         return 'Du hast'
-      }else{
-        return `${ channelCreator!.name } hat`
+      } else {
+        return `${channelCreator!.name} hat`
       }
     }
     return '';
@@ -140,5 +144,21 @@ export class ChatviewComponent implements OnChanges {
     let formatedTodaysDate = today.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
     return formatedTodaysDate;
   }
+
+
+  openMemberListPopover(popover: string) {
+    this.memberList = false;
+    this.addMemberPopover = false;
+    popover === 'memberList' ? this.memberList = true : this.memberList = false;
+    popover === 'addMember' ? this.addMemberPopover = true : this.addMemberPopover = false;
+  }
+
+
+  openAddNewMemberPopover() {
+    this.addMemberPopover = true;
+    this.memberList = false;
+  }
+
+
 
 }

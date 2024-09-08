@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { UsersService } from '../../../../utils/services/user.service';
 import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { CommonModule } from '@angular/common';
+import { Message } from '../../../../shared/models/message.class';
+import { NavigationService } from '../../../../utils/services/navigation.service';
 
 @Component({
   selector: 'app-popover-channel-member-overview',
@@ -15,15 +17,30 @@ import { CommonModule } from '@angular/common';
 export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   userService = inject(UsersService);
+  navigationService = inject(NavigationService);
 
   @Input() currentChannel!: Channel | Chat;
   @Input() isCurrentMember: boolean = false;
+
+  @Input() memberList!: boolean;
+  @Input() addMemberPopover!: boolean;
+
+  @Output() memberListChange = new EventEmitter<boolean>();
+  @Output() addMemberPopoverChange = new EventEmitter<boolean>();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentChannel']) {
       this.currentChannel = changes['currentChannel'].currentValue;
       this.sortMembersArray();
     }
+    if(changes['memberList']) {
+      console.log(changes)
+      this.memberList = changes['memberList'].currentValue;
+      }
+    if(changes['addMemberPopover']) {
+      console.log(changes)
+      this.addMemberPopover = changes['addMemberPopover'].currentValue;
+      }
   }
 
   constructor(private cdr: ChangeDetectorRef) { }
@@ -68,8 +85,22 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     console.log(this.userService.selectedUserObject$) 
   }
 
+  getTitle(object: Channel | Chat | Message | undefined): string {
+    if (object instanceof Channel) return object.name;
+    // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
+    // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
+    return '';
+  }
 
 
+  openAddNewMemberPopover() {
+    this.addMemberPopover = true;
+    this.memberList = false;
+    this.memberListChange.emit(this.memberList);
+    this.addMemberPopoverChange.emit(this.addMemberPopover);
+  }
+
+  
 
 
 
