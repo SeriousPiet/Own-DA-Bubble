@@ -30,6 +30,7 @@ export class MessageTextareaComponent {
 
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
+  formDisabled = false;
 
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
@@ -39,7 +40,7 @@ export class MessageTextareaComponent {
   constructor(private el: ElementRef) { }
   @HostListener('dragenter', ['$event'])
   onDragEnter(event: DragEvent) {
-    event.preventDefault();  // Verhindert die Standard-Aktion (z. B. das Öffnen der Datei)
+    event.preventDefault();
     this.highlightDropZone(true);
   }
 
@@ -73,17 +74,18 @@ export class MessageTextareaComponent {
 
   private highlightDropZone(highlight: boolean) {
     const nativeElement = this.el.nativeElement;
-    if (highlight) this.dropzonehighlighted = true;
-    else setTimeout(() => {
-      this.dropzonehighlighted = false;
-    }, 100);
+    this.dropzonehighlighted = highlight;
   }
 
 
   async addNewMessage(newMessagePath: Channel | Chat, message: string) {
-    if(message && await this.userservice.ifCurrentUserVerified()) {
-      this.messageService.addNewMessageToCollection(newMessagePath, message);
-      this.message = '';
+    if (message && await this.userservice.ifCurrentUserVerified()) {
+      this.formDisabled = true;
+      if (await this.messageService.addNewMessageToCollection(newMessagePath, message)) {
+        this.message = '';
+        this.attachments = [];
+      }
+      this.formDisabled = false;
     }
   }
 

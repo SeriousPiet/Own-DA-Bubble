@@ -1,7 +1,7 @@
 <div [ngClass]="{'drag-over':dropzonehighlighted}" class="input-message">
-    <textarea dragzone class="z-index-2" [(ngModel)]="message" name="" id=""
+    <textarea [disabled]="formDisabled" dragzone class="z-index-2" [(ngModel)]="message" name="" id=""
         placeholder="Nachricht an #Entwicklerteam"></textarea>
-    @if(attachments.length > 0){
+    @if(!formDisabled && attachments.length > 0){
     <div class="attachments">
         @for(attachment of attachments; track attachment){
         <div class="attachment">
@@ -17,7 +17,7 @@
         <div class="message-action-button" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
             <div id="add-attachment-icon" class="button-ctn">
                 <label class="addattachment" for="addattachment">
-                    <input (change)="changeAttachmentFile($event)" id="addattachment" type="file"
+                    <input [disabled]="formDisabled" (change)="changeAttachmentFile($event)" id="addattachment" type="file"
                         accept=".pdf, .png, .jpeg, .gif" multiple>
                     <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/add-attachment.svg"
                         alt="+">
@@ -38,7 +38,7 @@
                     alt="@">
             </div>
         </div>
-        <button (click)="addNewMessage(newMessageinChannel, message)" id="send-message-icon"
+        <button [disabled]="formDisabled" (click)="addNewMessage(newMessageinChannel, message)" id="send-message-icon"
             (mouseenter)="isActive = true" (mouseleave)="isActive = false">
             <img src="./assets/icons/chat/write-message/send.svg" alt="">
         </button>
