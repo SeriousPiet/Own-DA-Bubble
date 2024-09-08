@@ -50,8 +50,6 @@ export class ChatviewComponent implements OnChanges {
   addMemberPopover = false;
 
   @Input() currentChannel!: Channel | Chat;
-  // @Output() memberListChange = new EventEmitter<boolean>();
-
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentChannel']) {
@@ -59,7 +57,6 @@ export class ChatviewComponent implements OnChanges {
       this.currentChannel instanceof Channel && this.currentChannel.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
       this.setObjectType();
       this.getRequiredAvatars();
-      console.log(this.currentChannel)
     }
   }
 

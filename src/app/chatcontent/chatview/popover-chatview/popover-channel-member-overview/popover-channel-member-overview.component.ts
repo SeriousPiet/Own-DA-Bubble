@@ -6,11 +6,15 @@ import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { CommonModule } from '@angular/common';
 import { Message } from '../../../../shared/models/message.class';
 import { NavigationService } from '../../../../utils/services/navigation.service';
+import { User } from '../../../../shared/models/user.class';
+import { FormsModule } from '@angular/forms';
+import { SearchService } from '../../../../utils/services/search.service';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-popover-channel-member-overview',
   standalone: true,
-  imports: [AvatarDirective, CommonModule],
+  imports: [AvatarDirective, CommonModule, FormsModule, AvatarDirective],
   templateUrl: './popover-channel-member-overview.component.html',
   styleUrl: './popover-channel-member-overview.component.scss'
 })
@@ -18,6 +22,21 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   userService = inject(UsersService);
   navigationService = inject(NavigationService);
+
+  isUserSearchSelected = true;
+  userAmount: number = 0;
+  selectedUsers: User[] = [];
+  searchQuery: string = '';
+  suggestions$!: Observable<{ text: string; type: string }[]>;
+  isDropdownVisible = false;
+  isAnyOptionSelected = false;
+
+
+
+
+
+
+
 
   @Input() currentChannel!: Channel | Chat;
   @Input() isCurrentMember: boolean = false;
@@ -33,17 +52,26 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
       this.currentChannel = changes['currentChannel'].currentValue;
       this.sortMembersArray();
     }
-    if(changes['memberList']) {
-      console.log(changes)
-      this.memberList = changes['memberList'].currentValue;
-      }
-    if(changes['addMemberPopover']) {
-      console.log(changes)
-      this.addMemberPopover = changes['addMemberPopover'].currentValue;
-      }
+    if(changes['memberList']) this.memberList = changes['memberList'].currentValue;
+    if(changes['addMemberPopover']) this.addMemberPopover = changes['addMemberPopover'].currentValue;
+      
   }
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private searchService: SearchService,
+    private usersService: UsersService) { }
+
+
+    public getUserFromSuggestion(
+      suggestion: string | { text: string; type: string }
+    ): User | undefined {
+      let userName: string;
+      if (typeof suggestion === 'string') {
+        userName = suggestion.startsWith('@') ? suggestion.slice(1) : suggestion;
+      } else {
+        userName = suggestion.type === 'user' ? suggestion.text.slice(1) : '';
+      }
+      return this.findUserByName(userName);
+    }
 
 
   getMemberName(memberID: string) {
@@ -100,6 +128,83 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     this.addMemberPopoverChange.emit(this.addMemberPopover);
   }
 
+
+  onSearchInput() {
+    this.searchService.updateSearchQuery(this.searchQuery);
+    this.suggestions$ = this.searchService
+      .getSearchSuggestions()
+      .pipe(
+        map((suggestions) =>
+          suggestions.filter((suggestion) => suggestion.type === 'user')
+        )
+      );
+  }
+
+  onFocus() {
+    this.isDropdownVisible = true;
+    if (this.searchQuery) {
+      this.onSearchInput();
+    }
+  }
+
+  onBlur() {
+    setTimeout(() => {
+      this.isDropdownVisible = false;
+      this.searchQuery = '';
+      this.searchService.updateSearchQuery('');
+    }, 200);
+  }
+
+  selectSuggestion(suggestion: { text: string; type: string }) {
+    if (suggestion.type === 'user') {
+      const userName = suggestion.text.slice(1);
+      const user = this.findUserByName(userName);
+      if (user) {
+        this.addUserToSelection(user);
+      }
+    }
+    this.isDropdownVisible = false;
+    this.searchService.addRecentSearch(suggestion.text);
+    this.userAmount++;
+  }
+
+  
+  public findUserByName(name: string): User | undefined {
+    const userIds = this.usersService.getAllUserIDs();
+    for (const id of userIds) {
+      const user = this.usersService.getUserByID(id);
+      if (user && user.name === name) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+
+  addUserToSelection(user: User) {
+    if (!this.selectedUsers.some((u) => u.id === user.id)) {
+      this.selectedUsers.push(user);
+    }
+  }
+
+  removeUserFromSelection(user: User) {
+    this.selectedUsers = this.selectedUsers.filter((u) => u.id !== user.id);
+    if (user.id!) {
+      this.userAmount--;
+    }
+  }
+
+  submitSelectedUsers() {
+    return this.selectedUsers.map((u) => u.id);
+  }
+
+  addOptionSelected(isUserSearchSelected: boolean) {
+    this.isUserSearchSelected = isUserSearchSelected;
+    this.isAnyOptionSelected = true;
+  }
+
+  resetAddmembers(){
+    this.selectedUsers = [];
+  }
   
 
 
