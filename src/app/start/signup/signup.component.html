@@ -12,7 +12,7 @@
     </div>
     }
     @else {
-    <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)">
+    <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)" class="mask-div">
         <button type="button" class="return" [routerLink]="['/']">
             <img src="../../../assets/icons/start/go-back.svg" alt="">
         </button>
