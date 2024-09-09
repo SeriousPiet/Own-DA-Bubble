@@ -33,8 +33,8 @@ export class UsersService implements OnDestroy {
 
   constructor() {
     this.initUserCollection();
-    this.initUserWatchDog();
-    const guestUserEmail = localStorage.getItem('guestuseremail');
+    this.initAuthWatchDog();
+    const guestUserEmail = localStorage.getItem('guestuseremail'); // this is only a guest user
     if (guestUserEmail) this.setCurrentUserByEMail(guestUserEmail);
   }
 
@@ -76,6 +76,7 @@ export class UsersService implements OnDestroy {
           if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
           if (this.currentUserID === change.doc.id) this.changeCurrentUserSubject.next('userchange');
         });
+        this.users.sort((a, b) => a.name.localeCompare(b.name));
         this.changeUserListSubject.next('users');
         if (this.userEmailWaitForLogin) this.setCurrentUserByEMail(this.userEmailWaitForLogin);
       }
@@ -83,7 +84,7 @@ export class UsersService implements OnDestroy {
   }
 
 
-  private initUserWatchDog(): void {
+  private initAuthWatchDog(): void {
     this.user$ = user(this.firebaseauth).subscribe((user) => {
       if (user) {
         if (user === this.currentAuthUser) return;
@@ -91,7 +92,6 @@ export class UsersService implements OnDestroy {
         const signinProvider = user.providerData[0].providerId;
         console.warn('userservice/auth: Authentication successful: ', user.email, ' provider: ', signinProvider);
         if (!user.emailVerified && signinProvider !== 'google.com') {
-          // this.initEmailVerificationWatchDog();
           console.warn('userservice/auth: Email not verified');
         }
         if (user.email) this.setCurrentUserByEMail(user.email);
@@ -158,7 +158,7 @@ export class UsersService implements OnDestroy {
 
 
   public clearCurrentUser(): void {
-    localStorage.removeItem('guestuserid');
+    localStorage.removeItem('guestuserid'); // this is only for guest user
     this.currentUser = undefined;
     this.currentGuestUserID = '';
     this.changeCurrentUserSubject.next('userdelete');
