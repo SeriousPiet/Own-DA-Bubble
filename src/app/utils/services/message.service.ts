@@ -5,6 +5,14 @@ import { IReactions, Message } from '../../shared/models/message.class';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 
+export type MessageAttachment = {
+  name: string;
+  src: any;
+  size: number;
+  lastModified: number;
+  file: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -81,7 +89,7 @@ export class MessageService {
 
 
   private getModifiedReactionArray(reactionsArray: IReactions[], reaction: string) {
-    const currentUserID = this.userservice.currentUser?.id ? this.userservice.currentUser.id : '';
+    const currentUserID = this.userservice.currentUserID;
     let currentReaction = reactionsArray.find(emoji => emoji.type === reaction);
     if (currentReaction) {
       if (currentReaction.userIDs.includes(currentUserID)) {
@@ -102,7 +110,7 @@ export class MessageService {
 
   private createNewMessageObject(messageText: string, answerable: boolean) {
     return {
-      creatorID: this.userservice.currentUser ? this.userservice.currentUser.id : '??? unknow userID ???',
+      creatorID: this.userservice.currentUserID,
       createdAt: serverTimestamp(),
       content: messageText,
       emojies: [],

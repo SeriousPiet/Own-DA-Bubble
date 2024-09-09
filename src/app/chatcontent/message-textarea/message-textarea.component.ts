@@ -1,18 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, inject, Input } from '@angular/core';
-import { MessageService } from '../../utils/services/message.service';
+import { MessageAttachment, MessageService } from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
-
-type MessageAttachment = {
-  name: string;
-  src: any;
-  size: number;
-  lastModified: number;
-  file: any;
-}
 
 @Component({
   selector: 'app-message-textarea',
