@@ -133,11 +133,41 @@
     flex-direction: column;
     min-width: 20rem;
 
+    .img-box {
+      position: relative;
+    }
+
+    .img-box:not(:has(.restricted)) {
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("../../../../assets/icons/modals/profile/swap-avatar.svg");
+        background-size: 2rem 2rem;
+        background-position: bottom right;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        transition: $transition-standard;
+      }
+
+      &:hover {
+        &::after {
+          background-color: rgba(255, 255, 255, 0.4);
+          backdrop-filter: blur(1px);
+          background-position: center;
+          background-size: 4rem 4rem;
+        }
+      }
+    }
+
     .avatar {
       cursor: pointer;
       transition: $transition-standard;
 
-      &.google:hover {
+      &.restricted:hover {
         filter: grayscale(0.8);
         cursor: not-allowed;
       }
@@ -173,7 +203,7 @@
       .input-box {
         @include inputBox(100%, #adb0d9, $secondary, $secondary, false);
 
-        &.google {
+        &.restricted {
           border-color: $disabled !important;
 
           &:hover {
@@ -187,7 +217,7 @@
           padding: 0.75rem 0;
           font-size: 1rem;
 
-          &.google {
+          &.restricted {
             color: $disabled;
             pointer-events: none;
           }
@@ -215,7 +245,7 @@
     }
 
     .error-message,
-    .google-info-message {
+    .restricted-info-message {
       @include nunito(0.875, 400, $error);
       height: 0.875rem;
       width: 100%;
@@ -229,9 +259,6 @@
       .error-message {
         opacity: 0;
       }
-    }
-
-    #choose-avatar {
     }
   }
 

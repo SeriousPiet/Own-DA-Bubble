@@ -95,13 +95,19 @@
     </div>
     <!-- todo: -->
     <div
-      [class.google]="isGoogleAccount"
-      class="avatar"
-      (click)="!isGoogleAccount && showChooseAvatarComponent()"
-      appAvatar
-      [user]="userservice.currentUser!"
-      context="inner-profile"
-    ></div>
+      class="img-box"
+      (click)="
+        !isGoogleAccount && showChooseAvatarComponent()
+      "
+    >
+      <div
+        [class.restricted]="isGoogleAccount"
+        class="avatar"
+        appAvatar
+        [user]="userservice.currentUser!"
+        context="inner-profile"
+      ></div>
+    </div>
 
     <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
       <div class="edit-box">
@@ -135,18 +141,21 @@
             <img src="./assets/icons/modals/profile/mail.svg" alt="" />
             <span>E-mail Adresse</span>
           </div>
-          <div [class.google]="isGoogleAccount" class="input-box">
+          <div
+            [class.restricted]="isGoogleAccount || isGuestAccount"
+            class="input-box"
+          >
             <input
-              [class.google]="isGoogleAccount"
+              [class.restricted]="isGoogleAccount || isGuestAccount"
               type="email"
               formControlName="email"
               placeholder="Deine Mailadresse hier"
-              [readOnly]="isGoogleAccount"
+              [readOnly]="isGoogleAccount || isGuestAccount"
             />
           </div>
 
-          @if (isGoogleAccount) {
-          <div class="google-info-message">
+          @if (isGoogleAccount || isGuestAccount) {
+          <div class="restricted-info-message">
             <span>Mail-Adresse nicht editierbar.</span>
           </div>
           } @if (profileForm.get('email')?.invalid &&
