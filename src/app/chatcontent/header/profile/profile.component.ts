@@ -84,19 +84,23 @@ export class ProfileComponent implements OnInit {
     }
     this.checkCanEmailChange();
     this.reauthpasswordInfoReset();
+    this.isGuestAccount = this.userservice.currentUser?.provider === 'guest';
+    this.isGoogleAccount = this.userservice.currentUser?.provider === 'google';
+
+    console.log(this.isGoogleAccount, this.isGuestAccount);
   }
 
   private checkCanEmailChange() {
-    const currentProvider = this.userservice.currentUser?.provider;
-    this.isGuestAccount = currentProvider === 'guest';
-    this.isGoogleAccount = currentProvider === 'google';
-    this.isGoogleOrGuestAccount = currentProvider !== 'email';
+    this.isGoogleAccount = this.userservice.currentUser?.provider !== 'email';
+    this.isGuestAccount = this.userservice.currentUser?.provider !== 'email';
   }
 
   emailChanged(): boolean {
     return (
+      !this.isGoogleAccount &&
+      !this.isGuestAccount &&
       this.profileForm.get('email')?.value !==
-      this.userservice.currentUser?.email
+        this.userservice.currentUser?.email
     );
   }
 
@@ -139,13 +143,27 @@ export class ProfileComponent implements OnInit {
     this.showProfileDetails = !this.showProfileDetails;
   }
 
+  // todo:
   toggleEditMode() {
     this.editMode = !this.editMode;
     if (this.editMode && this.userservice.currentUser) {
+      const isGuestAccount = this.userservice.currentUser.provider === 'guest';
       this.profileForm.patchValue({
-        name: this.userservice.currentUser.name,
-        email: this.userservice.currentUser.email,
+        name: isGuestAccount ? 'Gast' : this.userservice.currentUser.name,
+        email: isGuestAccount
+          ? 'gast@da-bubble.de'
+          : this.userservice.currentUser.email,
       });
+
+      if (isGuestAccount) {
+        this.profileForm.get('name')?.setValidators(Validators.required);
+      } else {
+        this.profileForm
+          .get('name')
+          ?.setValidators([Validators.required, nameValidator()]);
+      }
+
+      this.profileForm.get('name')?.updateValueAndValidity();
       this.reauthpassword = '';
     }
   }
@@ -191,7 +209,10 @@ export class ProfileComponent implements OnInit {
       if (auth.currentUser && this.userservice.currentUser) {
         await updateEmail(auth.currentUser, newEmail);
         await this.userservice.sendEmailVerificationLink();
-        await this.userservice.updateCurrentUserDataOnFirestore({ email: newEmail, emailVerified: false });
+        await this.userservice.updateCurrentUserDataOnFirestore({
+          email: newEmail,
+          emailVerified: false,
+        });
         return '';
       } else {
         return 'No user to authenticate found';

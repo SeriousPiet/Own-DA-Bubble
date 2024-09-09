@@ -68,7 +68,7 @@
   width: 192px;
 
   .member-avatars-ctn {
-    @include flex(center, center);
+    @include flex(normal, center);
     gap: 10px;
     padding: 0.1875rem 0.625rem;
     width: -webkit-fill-available;

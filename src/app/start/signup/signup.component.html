@@ -4,10 +4,13 @@
 
 <section>
     @if(showChooseAvatarMask) {
-    <app-chooseavatar (clickSuccess)="successChooseAvatar()"></app-chooseavatar>
+    <div class="mask-div">
+        <span class="headline">Wähle deinen Avatar</span>
+        <app-chooseavatar (clickSuccess)="successChooseAvatar()"></app-chooseavatar>
+    </div>
     }
     @else {
-    <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)">
+    <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)" class="mask-div">
         <button type="button" class="return" [routerLink]="['/']">
             <img src="../../../assets/icons/start/go-back.svg" alt="">
         </button>
