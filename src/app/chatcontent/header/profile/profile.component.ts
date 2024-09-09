@@ -43,8 +43,9 @@ export class ProfileComponent implements OnInit {
   showProfileDetails = false;
   editMode = false;
   showChooseAvatarForm = false;
-  isGoogleAccount: boolean = false;
+  isGoogleOrGuestAccount: boolean = false;
   isGuestAccount: boolean = false;
+  isGoogleAccount: boolean = false;
   reauthpassword = '';
   reauthpasswordinfo = '';
 
@@ -83,11 +84,13 @@ export class ProfileComponent implements OnInit {
     }
     this.checkCanEmailChange();
     this.reauthpasswordInfoReset();
-    this.isGuestAccount = this.userservice.currentUser?.provider === 'guest';
   }
 
   private checkCanEmailChange() {
-    this.isGoogleAccount = this.userservice.currentUser?.provider !== 'email';
+    const currentProvider = this.userservice.currentUser?.provider;
+    this.isGuestAccount = currentProvider === 'guest';
+    this.isGoogleAccount = currentProvider === 'google';
+    this.isGoogleOrGuestAccount = currentProvider !== 'email';
   }
 
   emailChanged(): boolean {

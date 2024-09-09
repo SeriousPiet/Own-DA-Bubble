@@ -135,17 +135,17 @@
             <img src="./assets/icons/modals/profile/mail.svg" alt="" />
             <span>E-mail Adresse</span>
           </div>
-          <div [class.google]="isGoogleAccount" class="input-box">
+          <div [class.google]="isGoogleOrGuestAccount" class="input-box">
             <input
-              [class.google]="isGoogleAccount"
+              [class.google]="isGoogleOrGuestAccount"
               type="email"
               formControlName="email"
               placeholder="Deine Mailadresse hier"
-              [readOnly]="isGoogleAccount"
+              [readOnly]="isGoogleOrGuestAccount"
             />
           </div>
 
-          @if (isGoogleAccount) {
+          @if (isGoogleOrGuestAccount) {
           <div class="google-info-message">
             <span>Mail-Adresse nicht editierbar.</span>
           </div>
