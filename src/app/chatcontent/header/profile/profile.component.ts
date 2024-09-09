@@ -84,15 +84,13 @@ export class ProfileComponent implements OnInit {
     }
     this.checkCanEmailChange();
     this.reauthpasswordInfoReset();
-    this.isGuestAccount = this.userservice.currentUser?.provider === 'guest';
-    this.isGoogleAccount = this.userservice.currentUser?.provider === 'google';
 
     console.log(this.isGoogleAccount, this.isGuestAccount);
   }
 
   private checkCanEmailChange() {
-    this.isGoogleAccount = this.userservice.currentUser?.provider !== 'email';
-    this.isGuestAccount = this.userservice.currentUser?.provider !== 'email';
+    this.isGoogleAccount = this.userservice.currentUser?.provider === 'google';
+    this.isGuestAccount = this.userservice.currentUser?.provider === 'guest';
   }
 
   emailChanged(): boolean {

@@ -97,11 +97,11 @@
     <div
       class="img-box"
       (click)="
-        !isGoogleAccount && !isGuestAccount && showChooseAvatarComponent()
+        !isGoogleAccount && showChooseAvatarComponent()
       "
     >
       <div
-        [class.restricted]="isGoogleAccount || isGuestAccount"
+        [class.restricted]="isGoogleAccount"
         class="avatar"
         appAvatar
         [user]="userservice.currentUser!"
