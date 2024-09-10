@@ -153,7 +153,7 @@ export class MessageComponent implements OnInit {
 
   setThread(thread: Message) {
     console.log('current selected thread is:', thread)
-    return this.navigationService.setThreadViewObject(thread);
+    this.navigationService.setThreadViewObject(thread);
   }
 
 
