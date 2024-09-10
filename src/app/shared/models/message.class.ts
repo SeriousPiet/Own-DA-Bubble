@@ -5,7 +5,7 @@ export interface IReactions {
   userIDs: string[];
 }
 
-export type StoredAttachments = {
+export type StoredAttachment = {
   name: string;
   url: string;
 }
@@ -37,8 +37,8 @@ export class Message {
   private _edited: boolean;
   get edited(): boolean { return this._edited; }
 
-  private _attachments: StoredAttachments[];
-  get attachments(): StoredAttachments[] { return this._attachments; }
+  private _attachments: StoredAttachment[];
+  get attachments(): StoredAttachment[] { return this._attachments; }
 
   get messagePath(): string { return this.collectionPath + this.id; }
 
@@ -71,7 +71,7 @@ export class Message {
   }
 
 
-  parseAttachments(data: any): StoredAttachments[] {
+  parseAttachments(data: any): StoredAttachment[] {
     if (data !== undefined && data !== '') {
       return JSON.parse(data);
     }

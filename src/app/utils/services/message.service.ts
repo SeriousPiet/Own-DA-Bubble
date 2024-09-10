@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { addDoc, collection, doc, Firestore, getDocs, serverTimestamp, updateDoc } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
-import { IReactions, Message, StoredAttachments } from '../../shared/models/message.class';
+import { IReactions, Message, StoredAttachment } from '../../shared/models/message.class';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
-import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 
 export type MessageAttachment = {
   name: string;
@@ -52,8 +52,23 @@ export class MessageService {
   }
 
 
-  private async uploadAttachmentsToStorage(messageID: string, attachments: MessageAttachment[]): Promise<StoredAttachments[]> {
-    let uploadedAttachments: StoredAttachments[] = [];
+  public async deleteStoredAttachment(message: Message, storedAttachment: StoredAttachment): Promise<string> {
+    try {
+      const storageRef = ref(this.storage, 'message-attachments/' + message.id + '/' + storedAttachment.name);
+      await deleteObject(storageRef);
+      const updatedAttachments = message.attachments.filter(attachment => attachment.name !== storedAttachment.name);
+      await updateDoc(doc(this.firestore, message.messagePath), { attachments: JSON.stringify(updatedAttachments) });
+      console.warn('MessageService: attachment deleted - id: ' + message.id + ' / name: ' + storedAttachment.name);
+      return '';
+    } catch (error) {
+      console.error('MessageService: error deleting attachment', error);
+      return (error as Error).message;
+    }
+  }
+
+
+  private async uploadAttachmentsToStorage(messageID: string, attachments: MessageAttachment[]): Promise<StoredAttachment[]> {
+    let uploadedAttachments: StoredAttachment[] = [];
     for (const attachment of attachments) {
       const storageRef = ref(this.storage, 'message-attachments/' + messageID + '/' + attachment.name);
       try {
