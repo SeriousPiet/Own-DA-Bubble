@@ -102,7 +102,7 @@ main {
       }
     }
 
-    &:hover {
+    &:not(.no-edit-right):hover {
       cursor: pointer;
       background-color: $background;
       color: $secondary;
@@ -259,4 +259,10 @@ main {
     padding: 0.5rem 0.825rem;
     border-radius: $circled-border-radius;
   }
+}
+
+
+.no-edit-right {
+  user-select: none !important;
+  cursor: default !important;
 }
