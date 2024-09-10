@@ -4,6 +4,7 @@ import { UsersService } from './user.service';
 import { IReactions, Message } from '../../shared/models/message.class';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
+import { getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 
 export type MessageAttachment = {
   name: string;
@@ -13,6 +14,11 @@ export type MessageAttachment = {
   file: any;
 }
 
+export type StoredAttachments = {
+  name: string;
+  url: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,10 +26,11 @@ export class MessageService {
 
   private firestore = inject(Firestore);
   private userservice = inject(UsersService);
+  private storage = getStorage();
 
   constructor() { }
 
-  async addNewMessageToCollection(channel: Channel | Chat, messageContent: string): Promise<boolean> {
+  async addNewMessageToCollectionOLD(channel: Channel | Chat, messageContent: string): Promise<boolean> {
     const messagePath = (channel instanceof Channel) ? channel.channelMessagesPath : channel.chatMessagesPath;
     const messageCollectionRef = collection(this.firestore, messagePath);
     if (!messageCollectionRef) throw new Error('MessageService: path "' + messagePath + '" is undefined');
@@ -37,6 +44,48 @@ export class MessageService {
       console.error('MessageService: error adding message', error);
       return false;
     }
+  }
+
+
+  async addNewMessageToCollection(collectionObject: Channel | Chat | Message, messageContent: string, attachments: MessageAttachment[] = []): Promise<string> {
+    const messagePath = (collectionObject instanceof Channel) ? collectionObject.channelMessagesPath : (collectionObject instanceof Chat) ? collectionObject.chatMessagesPath : collectionObject.answerPath;
+    const objectPath = (collectionObject instanceof Channel) ? 'channels/' + collectionObject.id : (collectionObject instanceof Chat) ? 'chats/' + collectionObject.id : collectionObject.messagePath;
+    try {
+      const messageCollectionRef = collection(this.firestore, messagePath);
+      if (!messageCollectionRef) throw new Error('Nachrichtenpfad "' + messagePath + '" ist nicht gefunden.');
+      // add message to objectpath
+      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true));
+      // add attachments to storage and update message with attachments
+      if (attachments.length > 0) {
+        const uploadedAttachments = await this.uploadAttachmentsToStorage(response.id, attachments);
+        if (uploadedAttachments.length > 0) await updateDoc(doc(this.firestore, response.path), { attachments: JSON.stringify(uploadedAttachments) });
+      }
+      // calculate messagesCount or answerCount and update objectpath
+      const messagesQuerySnapshot = await getDocs(messageCollectionRef);
+      await updateDoc(doc(this.firestore, objectPath), (collectionObject instanceof Message) ? { answerCount: messagesQuerySnapshot.size } : { messagesCount: messagesQuerySnapshot.size });
+      // -----------------------------------------------------
+      console.warn('MessageService: message added to ' + messagePath);
+      return '';
+    } catch (error) {
+      console.error('MessageService: error adding message', error);
+      return (error as Error).message;
+    }
+  }
+
+
+  private async uploadAttachmentsToStorage(messageID: string, attachments: MessageAttachment[]): Promise<StoredAttachments[]> {
+    let uploadedAttachments: StoredAttachments[] = [];
+    for (const attachment of attachments) {
+      const storageRef = ref(this.storage, 'message-attachments/' + messageID + '/' + attachment.name);
+      try {
+        await uploadBytes(storageRef, attachment.file);
+        const url = await getDownloadURL(storageRef);
+        uploadedAttachments.push({ name: attachment.name, url: url });
+      } catch (error) {
+        console.error('MessageService: error uploading attachment ', attachment.name, ' / ', error);
+      }
+    }
+    return uploadedAttachments;
   }
 
 

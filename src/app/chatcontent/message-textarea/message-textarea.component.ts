@@ -22,7 +22,21 @@ export class MessageTextareaComponent {
 
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
-  formDisabled = false;
+  ifMessageUploading = false;
+  errorInfo = '';
+
+  private fileValidators = [
+    {
+      name: 'maxFileSize',
+      validator: (file: any) => file.size <= 500000,
+      error: 'Die Datei ist zu groß. Maximal 500KB erlaubt.'
+    },
+    {
+      name: 'fileType',
+      validator: (file: any) => file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpeg' || file.type === 'application/pdf',
+      error: 'Nur Bilder und PDFs erlaubt.'
+    }
+  ]
 
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
@@ -71,15 +85,36 @@ export class MessageTextareaComponent {
 
 
   async addNewMessage(newMessagePath: Channel | Chat, message: string) {
-    if (message && await this.userservice.ifCurrentUserVerified()) {
-      this.formDisabled = true;
-      if (await this.messageService.addNewMessageToCollection(newMessagePath, message)) {
+    this.clearErrorInfo();
+    if (!message && this.attachments.length === 0) {
+      this.handleErrors('Nachricht darf nicht leer sein.');
+    }
+    else if (await this.userservice.ifCurrentUserVerified()) {
+      this.ifMessageUploading = true;
+      const error = await this.messageService.addNewMessageToCollection(newMessagePath, message, this.attachments)
+      if (error) {
+        this.handleErrors(error);
+      } else {
         this.message = '';
         this.attachments = [];
       }
-      this.formDisabled = false;
+      this.ifMessageUploading = false;
     }
   }
+
+
+  handleErrors(error: string) {
+    this.errorInfo = error;
+    setTimeout(() => {
+      this.clearErrorInfo();
+    }, 8000);
+  }
+
+
+  clearErrorInfo() {
+    this.errorInfo = '';
+  }
+
 
   removeAttachment(attachment: MessageAttachment) {
     this.attachments = this.attachments.filter(a => a !== attachment);
@@ -91,15 +126,28 @@ export class MessageTextareaComponent {
   }
 
   loadAttachments(fileList: any) {
+    this.clearErrorInfo();
+    if ((fileList.files.length + this.attachments.length) > 5) {
+      this.handleErrors('Maximal 5 Dateien erlaubt.');
+      return;
+    }
     for (let i = 0; i < fileList.files.length; i++) {
       const file = fileList.files[i];
       if (this.fileAllreadyAttached(file)) continue;
+      if (!this.fileValidators.every(validator => validator.validator(file))) {
+        this.errorInfo += file.name + ': ' + (this.fileValidators.find(validator => !validator.validator(file))?.error as string) + '\n';
+        continue;
+      }
       if (file.type.startsWith('image')) {
         this.attachments.push(this.readPicture(file));
       } else if (file.type === 'application/pdf') {
         this.attachments.push(this.readPDF(file));
       }
     }
+  }
+
+  ifFilePropertysValid(file: any): boolean {
+    return file.name && file.size && file.lastModified ? true : false;
   }
 
   fileAllreadyAttached(file: any): boolean {

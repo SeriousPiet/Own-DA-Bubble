@@ -1,3 +1,8 @@
+@import "../../../styles.scss";
+@import "../../../mixins.scss";
+@import "../../../fonts.scss";
+
+
 :host {
     position: absolute;
     bottom: 0;
@@ -10,10 +15,17 @@
     border-radius: 0 0 1.875rem 1.875rem;
 }
 
+.errorspan {
+    @include nunito(0.875, 400, $error);
+    margin-left: auto;
+    margin-right: 1rem;
+}
+
 .addattachment {
     display: flex;
     justify-content: center;
     align-items: center;
+
     >input {
         display: none;
     }
@@ -61,6 +73,7 @@
 
         .remove-attachment {
             cursor: pointer;
+
             >img {
                 width: 1rem;
                 height: 1rem;
@@ -70,7 +83,7 @@
 }
 
 .drag-over {
-    box-shadow: inset 0px 0px 10px 5px rgba(0,0,0,0.5);
+    box-shadow: inset 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
 }
 
 .input-message {
@@ -128,18 +141,25 @@
     }
 }
 
-.button-ctn {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.button-disabled {
+    @include flex(center, center);
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 100%;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    border-radius: 50%;
+  }
 
-    &:hover {
-        background-color: #ECEEFE;
-    }
+.button-ctn {
+    @include iconBox;
+
+    // * {
+    //     cursor: pointer;
+    // }
+
+    // &:hover {
+    //     background-color: #ECEEFE;
+    // }
 }
 
 #add-attachment-icon:hover {
@@ -162,12 +182,14 @@
 
 #send-message-icon {
     cursor: pointer;
+
     >img {
         width: 1.875rem;
         height: 1.875rem;
     }
-    &:hover{
-        >img{
+
+    &:hover {
+        >img {
             content: url('../../../assets/icons/chat/write-message/send-hover.svg');
         }
     }
