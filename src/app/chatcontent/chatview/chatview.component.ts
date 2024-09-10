@@ -17,6 +17,7 @@ import { MessageGreetingComponent } from './messages-list-view/message-greeting/
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { PopoverMemberProfileComponent } from "./popover-chatview/popover-member-profile/popover-member-profile.component";
 import { User } from '../../shared/models/user.class';
+import { BehaviorSubject, filter } from 'rxjs';
 
 
 @Component({
@@ -35,7 +36,7 @@ import { User } from '../../shared/models/user.class';
   templateUrl: './chatview.component.html',
   styleUrl: './chatview.component.scss',
 })
-export class ChatviewComponent implements OnChanges {
+export class ChatviewComponent implements OnInit {
 
 
   private firestore = inject(Firestore);
@@ -49,15 +50,25 @@ export class ChatviewComponent implements OnChanges {
   memberList = false;
   addMemberPopover = false;
 
-  @Input() currentChannel!: Channel | Chat;
+  public channelSubject = new BehaviorSubject<Channel | Chat | null>(null);
+channel$ = this.channelSubject.asObservable();
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['currentChannel']) {
-      this.currentChannel = changes['currentChannel'].currentValue;
+@Input() set currentChannel(value: Channel | Chat) {
+  this.channelSubject.next(value);
+}
+
+get currentChannel(): Channel {
+  return this.channelSubject.getValue() as Channel;
+}
+
+  ngOnInit() {
+    this.channel$.pipe(
+      filter(channel => !!channel)
+    ).subscribe(channel => {
       this.currentChannel instanceof Channel && this.currentChannel.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
       this.setObjectType();
       this.getRequiredAvatars();
-    }
+    });
   }
 
   constructor(private cdr: ChangeDetectorRef) {
@@ -157,15 +168,15 @@ export class ChatviewComponent implements OnChanges {
   }
 
   isAllowedToAddMember() {
-    if(this.currentChannel instanceof Channel) {
+    if (this.currentChannel instanceof Channel) {
       return this.currentChannel.creatorID === this.userService.currentUserID &&
-      this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
     }
     return
   }
 
-  showNoRightToEditInfo(){
-    if(!this.isAllowedToAddMember()){
+  showNoRightToEditInfo() {
+    if (!this.isAllowedToAddMember()) {
       return 'Du bist nicht befugt, neue Leute einzuladen.'
     }
     return ''
