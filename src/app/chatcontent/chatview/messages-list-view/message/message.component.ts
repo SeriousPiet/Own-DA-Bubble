@@ -148,15 +148,13 @@ export class MessageComponent implements OnInit {
   setSelectedUserObject(messageCreatorID:string) {
     console.log(messageCreatorID)
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
-    // this.navigationService.comingFromOutside = true;
-    // setTimeout(() => {
-    //   this.navigationService.comingFromOutside = false;
-    // }, 1000);
-    // console.log(this.navigationService.comingFromOutside)
-    console.log(this.userService.selectedUserObject$) 
   }
 
 
+  setThread(thread: Message) {
+    console.log('current selected thread is:', thread)
+    return this.navigationService.setThreadViewObject(thread);
+  }
 
 
 
