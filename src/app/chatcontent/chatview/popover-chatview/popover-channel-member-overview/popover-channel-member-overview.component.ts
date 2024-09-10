@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, viewChild } from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { UsersService } from '../../../../utils/services/user.service';
@@ -10,6 +10,7 @@ import { User } from '../../../../shared/models/user.class';
 import { FormsModule } from '@angular/forms';
 import { SearchService } from '../../../../utils/services/search.service';
 import { map, Observable } from 'rxjs';
+import { ChannelService } from '../../../../utils/services/channel.service';
 
 @Component({
   selector: 'app-popover-channel-member-overview',
@@ -20,7 +21,9 @@ import { map, Observable } from 'rxjs';
 })
 export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
+
   userService = inject(UsersService);
+  channelService = inject(ChannelService);
   navigationService = inject(NavigationService);
 
   isUserSearchSelected = true;
@@ -31,10 +34,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   isDropdownVisible = false;
   isAnyOptionSelected = false;
 
-
-
-
-
+  updateChannelData: { name?: string, description?: string, memberIDs?: string[] } = {};
 
 
 
@@ -47,31 +47,37 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   @Output() memberListChange = new EventEmitter<boolean>();
   @Output() addMemberPopoverChange = new EventEmitter<boolean>();
 
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentChannel']) {
       this.currentChannel = changes['currentChannel'].currentValue;
       this.sortMembersArray();
+      if (this.currentChannel instanceof Channel) {
+        this.updateChannelData.name = this.currentChannel.name;
+        this.updateChannelData.description = this.currentChannel.description;
+        this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
+      }
     }
-    if(changes['memberList']) this.memberList = changes['memberList'].currentValue;
-    if(changes['addMemberPopover']) this.addMemberPopover = changes['addMemberPopover'].currentValue;
-      
+    if (changes['memberList']) this.memberList = changes['memberList'].currentValue;
+    if (changes['addMemberPopover']) this.addMemberPopover = changes['addMemberPopover'].currentValue;
+
   }
 
   constructor(private searchService: SearchService,
     private usersService: UsersService) { }
 
 
-    public getUserFromSuggestion(
-      suggestion: string | { text: string; type: string }
-    ): User | undefined {
-      let userName: string;
-      if (typeof suggestion === 'string') {
-        userName = suggestion.startsWith('@') ? suggestion.slice(1) : suggestion;
-      } else {
-        userName = suggestion.type === 'user' ? suggestion.text.slice(1) : '';
-      }
-      return this.findUserByName(userName);
+  public getUserFromSuggestion(
+    suggestion: string | { text: string; type: string }
+  ): User | undefined {
+    let userName: string;
+    if (typeof suggestion === 'string') {
+      userName = suggestion.startsWith('@') ? suggestion.slice(1) : suggestion;
+    } else {
+      userName = suggestion.type === 'user' ? suggestion.text.slice(1) : '';
     }
+    return this.findUserByName(userName);
+  }
 
 
   getMemberName(memberID: string) {
@@ -102,7 +108,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     }
   }
 
-  setSelectedUserObject(messageCreatorID:string) {
+  setSelectedUserObject(messageCreatorID: string) {
     console.log(messageCreatorID)
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
     // this.navigationService.comingFromOutside = true;
@@ -110,7 +116,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     //   this.navigationService.comingFromOutside = false;
     // }, 1000);
     // console.log(this.navigationService.comingFromOutside)
-    console.log(this.userService.selectedUserObject$) 
+    console.log(this.userService.selectedUserObject$)
   }
 
   getTitle(object: Channel | Chat | Message | undefined): string {
@@ -168,7 +174,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     this.userAmount++;
   }
 
-  
+
   public findUserByName(name: string): User | undefined {
     const userIds = this.usersService.getAllUserIDs();
     for (const id of userIds) {
@@ -182,7 +188,9 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   addUserToSelection(user: User) {
     if (!this.selectedUsers.some((u) => u.id === user.id)) {
-      this.selectedUsers.push(user);
+      if(!this.currentChannel.memberIDs.includes(user.id)) {
+        this.selectedUsers.push(user);
+      }
     }
   }
 
@@ -193,23 +201,44 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     }
   }
 
-  submitSelectedUsers() {
-    return this.selectedUsers.map((u) => u.id);
-  }
-
   addOptionSelected(isUserSearchSelected: boolean) {
     this.isUserSearchSelected = isUserSearchSelected;
     this.isAnyOptionSelected = true;
   }
 
-  resetAddmembers(){
+  resetAddmembers() {
     this.selectedUsers = [];
+    this.userAmount = 0;
   }
-  
+
+  addSelectedUserToChannel() {
+    this.selectedUsers.forEach(user => {
+      this.currentChannel.memberIDs.push(user.id);
+    });
+    this.channelService.updateChannelOnFirestore(this.currentChannel as Channel, this.updateChannelData);
+    this.resetAddmembers();
+    document.getElementById('channel-member-overview-popover')!.hidePopover();
+    this.addMemberPopover = false;
+    this.memberList = false;
+    this.memberListChange.emit(this.memberList);
+    this.addMemberPopoverChange.emit(this.addMemberPopover);
+  }
 
 
+  isAllowedToAddMember() {
+    if(this.currentChannel instanceof Channel) {
+      return this.currentChannel.creatorID === this.userService.currentUserID &&
+      this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+    }
+    return
+  }
 
-
+  showNoRightToEditInfo(){
+    if(!this.isAllowedToAddMember()){
+      return 'Du bist nicht befugt, neue Leute einzuladen.'
+    }
+    return ''
+  }
 
 
 }
