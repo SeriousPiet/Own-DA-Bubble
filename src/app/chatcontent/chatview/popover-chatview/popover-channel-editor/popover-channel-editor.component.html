@@ -43,7 +43,7 @@
                 <span>{{ getChannelCreator(navigationService.chatViewObject) }}</span>
             </div>
         </section>
-        <button class="leave-channel-button">Channel Verlassen</button>
+        <button popovertarget="channel-editor-popover" popovertargetaction="hide" (click)="leaveChannel()" class="leave-channel-button">Channel Verlassen</button>
     </div>
 
 </main>
