@@ -5,6 +5,11 @@ export interface IReactions {
   userIDs: string[];
 }
 
+export type StoredAttachments = {
+  name: string;
+  url: string;
+}
+
 export class Message {
   readonly id: string;
   readonly collectionPath: string;
@@ -32,6 +37,9 @@ export class Message {
   private _edited: boolean;
   get edited(): boolean { return this._edited; }
 
+  private _attachments: StoredAttachments[];
+  get attachments(): StoredAttachments[] { return this._attachments; }
+
   get messagePath(): string { return this.collectionPath + this.id; }
 
   get answerPath(): string { return this.messagePath + '/answers/'; }
@@ -49,6 +57,7 @@ export class Message {
     this._edited = data.edited ? data.edited : false;
     this._editedAt = data.editedAt ? (data.editedAt as Timestamp).toDate() : undefined;
     this.previousMessageFromSameUser = data.previousMessageFromSameUser ? data.previousMessageFromSameUser : false;
+    this._attachments = this.parseAttachments(data.attachments);
   }
 
 
@@ -62,6 +71,14 @@ export class Message {
   }
 
 
+  parseAttachments(data: any): StoredAttachments[] {
+    if (data !== undefined && data !== '') {
+      return JSON.parse(data);
+    }
+    return [];
+  }
+
+
   update(data: any): void {
     if (data.content) this._content = data.content;
     if (data.emojies) this.calculateReaction(data.emojies);
@@ -69,6 +86,7 @@ export class Message {
     if (data.lastAnswerAt) this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
     if (data.edited !== undefined) this._edited = data.edited;
     if (data.editedAt) this._editedAt = (data.editedAt as Timestamp).toDate();
+    if (data.attachments) this._attachments = data.attachments;
   }
 
 }

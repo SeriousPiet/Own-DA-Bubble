@@ -34,7 +34,7 @@ export class MessageviewexampleComponent implements OnDestroy {
 
   public answerContent: string = '';
   addAnswerToMessage(message: Message) {
-    this.messageservice.addNewAnswerToMessage(message, this.answerContent);
+    // this.messageservice.addNewAnswerToMessage(message, this.answerContent);
   }
   changeMessageContent(message: Message) {
     this.messageservice.updateMessage(message, { content: this.answerContent });
