@@ -156,6 +156,27 @@ export class ChatviewComponent implements OnChanges {
     this.memberList = false;
   }
 
+  isAllowedToAddMember() {
+    if(this.currentChannel instanceof Channel) {
+      return this.currentChannel.creatorID === this.userService.currentUserID &&
+      this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+    }
+    return
+  }
+
+  showNoRightToEditInfo(){
+    if(!this.isAllowedToAddMember()){
+      return 'Du bist nicht befugt, neue Leute einzuladen.'
+    }
+    return ''
+  }
+
+
+
+
+
+
+
 
 
 }
