@@ -55,11 +55,13 @@
   </section>
 
   <app-popover-channel-editor id="channel-editor-popover" popover
-    [currentChannel]="currentChannel"></app-popover-channel-editor>
+    [currentChannel]="currentChannel"
+    (updatedChannel)="channelSubject.next($event)"></app-popover-channel-editor>
 
   <app-popover-channel-member-overview id="channel-member-overview-popover" popover [currentChannel]="currentChannel"
     [memberList]="memberList" (memberListChange)="memberList = $event"
     (addMemberPopoverChange)="addMemberPopover = $event"
+    (updatedChannel)="channelSubject.next($event)"
     [addMemberPopover]="addMemberPopover"></app-popover-channel-member-overview>
 
   <app-popover-member-profile></app-popover-member-profile>
