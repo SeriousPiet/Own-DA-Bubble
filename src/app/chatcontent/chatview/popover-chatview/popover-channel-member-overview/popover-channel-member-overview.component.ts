@@ -225,7 +225,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   isAllowedToAddMember() {
     if(this.currentChannel instanceof Channel) {
-      return this.currentChannel.creatorID === this.userService.currentUserID &&
+      return this.currentChannel.creatorID === this.userService.currentUserID ||
       this.currentChannel.memberIDs.includes(this.userService.currentUserID)
     }
     return
