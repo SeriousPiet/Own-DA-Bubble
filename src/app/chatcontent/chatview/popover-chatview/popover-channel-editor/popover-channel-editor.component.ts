@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { NavigationService } from '../../../../utils/services/navigation.service';
@@ -21,6 +21,7 @@ export class PopoverChannelEditorComponent implements OnChanges {
   channelService = inject(ChannelService);
 
   @Input() currentChannel: any;
+  @Output() updatedChannel = new EventEmitter<Channel>();
 
   channelNameEditor = false;
   channelDescriptionEditor = false;
@@ -36,7 +37,7 @@ export class PopoverChannelEditorComponent implements OnChanges {
     }
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
 
   getTitle(object: Channel | Chat): string {
@@ -59,7 +60,7 @@ export class PopoverChannelEditorComponent implements OnChanges {
     return '';
   }
 
-  closeChannelInfoPopover(){
+  closeChannelInfoPopover() {
     this.channelNameEditor = false;
     this.channelDescriptionEditor = false;
   }
@@ -80,15 +81,27 @@ export class PopoverChannelEditorComponent implements OnChanges {
     }
   }
 
-  isChannelCreator(){
+  isChannelCreator() {
     return this.currentChannel.creatorID === this.userService.currentUserID;
   }
 
-  showNoRightToEditInfo(){
-    if(!this.isChannelCreator()){
+  showNoRightToEditInfo() {
+    if (!this.isChannelCreator()) {
       return 'Du hast kein Recht diesen Kanal zu bearbeiten.'
     }
     return ''
+  }
+
+
+  leaveChannel() {
+    let selfInMemberList = this.currentChannel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID);
+    let selfInMemberListIndex = this.currentChannel.memberIDs.indexOf(selfInMemberList);
+    if (selfInMemberList === this.userService.currentUserID) {
+      this.currentChannel.memberIDs.splice(selfInMemberListIndex, 1);
+      this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
+      this.channelService.updateChannelOnFirestore(this.currentChannel, this.updateChannelData);
+      this.updatedChannel.emit(this.currentChannel);
+    }
   }
 
 }
