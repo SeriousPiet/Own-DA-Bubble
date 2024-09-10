@@ -46,6 +46,8 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   @Output() memberListChange = new EventEmitter<boolean>();
   @Output() addMemberPopoverChange = new EventEmitter<boolean>();
+  @Output() updatedChannel = new EventEmitter<Channel>();
+
 
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -111,12 +113,6 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   setSelectedUserObject(messageCreatorID: string) {
     console.log(messageCreatorID)
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
-    // this.navigationService.comingFromOutside = true;
-    // setTimeout(() => {
-    //   this.navigationService.comingFromOutside = false;
-    // }, 1000);
-    // console.log(this.navigationService.comingFromOutside)
-    console.log(this.userService.selectedUserObject$)
   }
 
   getTitle(object: Channel | Chat | Message | undefined): string {
@@ -222,6 +218,8 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     this.memberList = false;
     this.memberListChange.emit(this.memberList);
     this.addMemberPopoverChange.emit(this.addMemberPopover);
+    if(this.currentChannel instanceof Channel) this.updatedChannel.emit(this.currentChannel);
+
   }
 
 
