@@ -113,7 +113,7 @@
       width: 1.5rem;
       height: 1.5rem;
 
-      &:hover {
+      &:not(.no-edit-right):hover {
         filter: invert(35%) sepia(99%) saturate(3059%) hue-rotate(227deg) brightness(94%) contrast(101%);
         transform: scale(1.1);
         transition: all 0.125sec ease-in-out;
@@ -198,4 +198,10 @@
   #channel-editor-popover:popover-open {
     opacity: 0;
   }
+}
+
+
+.no-edit-right {
+  user-select: none !important;
+  cursor: default !important;
 }
