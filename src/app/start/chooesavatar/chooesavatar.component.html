@@ -7,6 +7,7 @@
     <img (click)="setAvatar(avatar.id)" src="{{ avatar.img_name }}" alt="" />
     } }
   </div>
+  @if(!userservice.currentUser?.guest) {
   <div class="or-separator">
     <div></div>
     <span>ODER</span>
@@ -15,16 +16,12 @@
   <div class="choose-picture">
     <span class="infospan">eigenes Bild verwenden (max. 500KB)</span>
     <label for="choosepicture">
-      <input
-        (change)="loadFileToViewInImg($event)"
-        type="file"
-        name="choosepicture"
-        id="choosepicture"
-        accept=".png, .jpeg, .jpg"
-      />
+      <input (change)="loadFileToViewInImg($event)" type="file" name="choosepicture" id="choosepicture"
+        accept=".png, .jpeg, .jpg" />
       <span class="filerequest">Bild wählen</span>
     </label>
   </div>
+  }
   <div class="action">
     @if(uploading) {
     <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
@@ -34,13 +31,7 @@
     <button class="undo" (click)="undoAvatarChange()">Rückgängig</button>
     }
     <button class="success" (click)="submitChooseAvatar($event)">
-      {{
-        changedAvatar
-          ? pictureFile
-            ? "Bild hochladen"
-            : "Avatar wählen"
-          : "Weiter"
-      }}
+      {{changedAvatar ? pictureFile ? "Bild hochladen" : "Avatar wählen" : "Weiter" }}
     </button>
   </div>
 </section>

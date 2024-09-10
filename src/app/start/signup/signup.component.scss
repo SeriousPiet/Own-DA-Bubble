@@ -48,9 +48,8 @@ section {
   padding: 1.5rem 1.25rem 1.25rem;
   background-color: $background;
 
-  form {
+  .mask-div {
     position: relative;
-
     padding: 2rem;
     @include flex(flex-start, stretch);
     flex-direction: column;

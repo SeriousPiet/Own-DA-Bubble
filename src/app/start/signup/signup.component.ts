@@ -14,7 +14,7 @@ import {
   passwordValidator,
 } from '../../utils/form-validators';
 import { ChooesavatarComponent } from '../chooesavatar/chooesavatar.component';
-import { Auth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, updateProfile } from '@angular/fire/auth';
 import {
   addDoc,
   collection,

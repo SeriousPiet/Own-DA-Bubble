@@ -1,28 +1,49 @@
-<div class="input-message">
+<div id="drop-zone" class="input-message"
+(dragenter)="onDragEnter($event)" 
+(dragover)="onDragOver($event)" 
+(dragleave)="onDragLeave($event)" 
+(drop)="onDrop($event)"
+>
     <textarea [(ngModel)]="message" name="" id="" placeholder="Nachricht an #Entwicklerteam"></textarea>
+    @if(attachments.length > 0){
+    <div class="attachments">
+        @for(attachment of attachments; track attachment){
+        <div class="attachment">
+            <img src="{{ attachment.src }}" alt="+">
+            <span>{{ attachment.name }}</span>
+            <img (click)="removeAttachment(attachment)" class="remove-attachment"
+                src="./assets/icons/chat/general/close.svg" alt="">
+        </div>
+        }
+    </div>
+    }
     <div class="input-message-toolbar">
         <div class="message-action-button" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
             <div id="add-attachment-icon" class="button-ctn">
-                <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/add-attachment.svg"
-                    alt="+">
-                <img [ngClass]="{ 'd-none': !isActive }"
-                    src="./assets/icons/chat/write-message/add-attachment-active.svg" alt="+">
+                <label class="addattachment" for="addattachment">
+                    <input (change)="changeAttachmentFile($event)" id="addattachment" type="file"
+                        accept=".pdf, .png, .jpeg, .gif" multiple>
+                    <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/add-attachment.svg"
+                        alt="+">
+                    <img [ngClass]="{ 'd-none': !isActive }"
+                        src="./assets/icons/chat/write-message/add-attachment-active.svg" alt="+">
+                </label>
             </div>
             <span>|</span>
             <div id="emoji-picker-icon" class="button-ctn">
                 <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/emoji-picker.svg"
                     alt="+">
-                <img [ngClass]="{ 'd-none': !isActive }"
-                    src="./assets/icons/chat/write-message/emoji-picker-active.svg" alt="smiley">
+                <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/emoji-picker-active.svg"
+                    alt="smiley">
             </div>
             <div id="tag-person-icon" class="button-ctn">
-                <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/tag-person.svg"
-                    alt="+">
-                <img [ngClass]="{ 'd-none': !isActive }"
-                    src="./assets/icons/chat/write-message/tag-person-active.svg" alt="@">
+                <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/tag-person.svg" alt="+">
+                <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/tag-person-active.svg"
+                    alt="@">
             </div>
         </div>
-        <button (click)="addNewMessage(newMessageinChannel, message)" id="send-message-icon" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
+        <button (click)="addNewMessage(newMessageinChannel, message)" id="send-message-icon"
+            (mouseenter)="isActive = true" (mouseleave)="isActive = false">
             <img src="./assets/icons/chat/write-message/send.svg" alt="">
         </button>
     </div>

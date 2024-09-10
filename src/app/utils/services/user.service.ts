@@ -13,7 +13,6 @@ export class UsersService implements OnDestroy {
   private unsubUsers: any = null;
   private user$: any = null;
   private currentAuthUser: any = undefined;
-  private emailVerificationInterval: any = 0;
 
   private changeUserListSubject = new BehaviorSubject<string>('');
   public changeUserList$ = this.changeUserListSubject.asObservable();
@@ -34,8 +33,8 @@ export class UsersService implements OnDestroy {
 
   constructor() {
     this.initUserCollection();
-    this.initUserWatchDog();
-    const guestUserEmail = localStorage.getItem('guestuseremail');
+    this.initAuthWatchDog();
+    const guestUserEmail = localStorage.getItem('guestuseremail'); // this is only a guest user
     if (guestUserEmail) this.setCurrentUserByEMail(guestUserEmail);
   }
 
@@ -45,8 +44,6 @@ export class UsersService implements OnDestroy {
   getAllUserIDs(): string[] { const userIDs = this.users.map((user) => user.id); return userIDs; }
 
   getUserByID(id: string): User | undefined { return this.users.find((user) => user.id === id); }
-
-  ifCurrentUserEmailVerified(): boolean { return this.currentUser ? this.currentUser.emailVerified : false; }
 
   ifValidUser(userID: string): boolean {
     const user = this.users.find((user) => user.id === userID);
@@ -79,6 +76,7 @@ export class UsersService implements OnDestroy {
           if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
           if (this.currentUserID === change.doc.id) this.changeCurrentUserSubject.next('userchange');
         });
+        this.users.sort((a, b) => a.name.localeCompare(b.name));
         this.changeUserListSubject.next('users');
         if (this.userEmailWaitForLogin) this.setCurrentUserByEMail(this.userEmailWaitForLogin);
       }
@@ -86,14 +84,14 @@ export class UsersService implements OnDestroy {
   }
 
 
-  private initUserWatchDog(): void {
+  private initAuthWatchDog(): void {
     this.user$ = user(this.firebaseauth).subscribe((user) => {
       if (user) {
         if (user === this.currentAuthUser) return;
         this.currentAuthUser = user;
-        console.warn('userservice/auth: Authentication successful: ', user.email);
-        if (!user.emailVerified) {
-          this.initEmailVerificationWatchDog();
+        const signinProvider = user.providerData[0].providerId;
+        console.warn('userservice/auth: Authentication successful: ', user.email, ' provider: ', signinProvider);
+        if (!user.emailVerified && signinProvider !== 'google.com') {
           console.warn('userservice/auth: Email not verified');
         }
         if (user.email) this.setCurrentUserByEMail(user.email);
@@ -105,20 +103,23 @@ export class UsersService implements OnDestroy {
   }
 
 
-  private initEmailVerificationWatchDog(): void {
-    if (this.emailVerificationInterval !== 0) return;
-    const user = this.firebaseauth.currentUser;
-    if (user) {
-      this.emailVerificationInterval = setInterval(async () => {
-        await user.reload();
+  public async ifCurrentUserVerified(): Promise<boolean> {
+    if (this.currentUser) {
+      if (this.currentUser.provider !== 'email') return true;
+      if (this.currentUser.emailVerified) return true;
+      if (this.currentAuthUser) {
+        await this.currentAuthUser.reload();
         console.warn('userservice/auth: Checking email verification');
-        if (user.emailVerified) {
-          clearInterval(this.emailVerificationInterval);
-          console.warn('userservice/auth: Email verified');
+        if (this.currentAuthUser.emailVerified) {
           await this.updateCurrentUserDataOnFirestore({ emailVerified: true });
+          return true;
+        } else {
+          console.warn('userservice/auth: Email not verified');
+          document.getElementById('emailNotVerifiedPopover')?.showPopover();
         }
-      }, 10000);
+      }
     }
+    return false;
   }
 
 
@@ -128,7 +129,6 @@ export class UsersService implements OnDestroy {
       if (user) {
         console.warn('userservice/auth: Sending email verification to: ', user.email);
         await sendEmailVerification(user);
-        this.initEmailVerificationWatchDog();
       }
     } catch (error) {
       console.error('userservice/auth: ', (error as Error).message);
@@ -158,7 +158,7 @@ export class UsersService implements OnDestroy {
 
 
   public clearCurrentUser(): void {
-    localStorage.removeItem('guestuserid');
+    localStorage.removeItem('guestuserid'); // this is only for guest user
     this.currentUser = undefined;
     this.currentGuestUserID = '';
     this.changeCurrentUserSubject.next('userdelete');
@@ -196,4 +196,6 @@ export class UsersService implements OnDestroy {
     this.unsubscribeFromUsers();
     this.unsubscribeFromAuthUser();
   }
+
+
 }

@@ -1,10 +1,12 @@
 import {
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChange,
   SimpleChanges,
 } from '@angular/core';
@@ -26,6 +28,7 @@ import { MessageGreetingComponent } from './messages-list-view/message-greeting/
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { PopoverMemberProfileComponent } from './popover-chatview/popover-member-profile/popover-member-profile.component';
 import { User } from '../../shared/models/user.class';
+import { BehaviorSubject, filter } from 'rxjs';
 
 @Component({
   selector: 'app-chatview',
@@ -46,7 +49,7 @@ import { User } from '../../shared/models/user.class';
   templateUrl: './chatview.component.html',
   styleUrl: './chatview.component.scss',
 })
-export class ChatviewComponent implements OnChanges {
+export class ChatviewComponent implements OnInit {
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService);
@@ -55,19 +58,29 @@ export class ChatviewComponent implements OnChanges {
   public isDefaultChannel = true;
   public requiredAvatars: string[] = [];
 
-  @Input() currentChannel!: Channel | Chat;
+  memberList = false;
+  addMemberPopover = false;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['currentChannel']) {
-      this.currentChannel = changes['currentChannel'].currentValue;
+  public channelSubject = new BehaviorSubject<Channel | Chat | null>(null);
+  channel$ = this.channelSubject.asObservable();
+
+  @Input() set currentChannel(value: Channel | Chat) {
+    this.channelSubject.next(value);
+  }
+
+  get currentChannel(): Channel {
+    return this.channelSubject.getValue() as Channel;
+  }
+
+  ngOnInit() {
+    this.channel$.pipe(filter((channel) => !!channel)).subscribe((channel) => {
       this.currentChannel instanceof Channel &&
       this.currentChannel.defaultChannel
         ? (this.isDefaultChannel = true)
         : (this.isDefaultChannel = false);
       this.setObjectType();
       this.getRequiredAvatars();
-      console.log(this.currentChannel);
-    }
+    });
   }
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -151,5 +164,38 @@ export class ChatviewComponent implements OnChanges {
       month: 'long',
     });
     return formatedTodaysDate;
+  }
+
+  openMemberListPopover(popover: string) {
+    this.memberList = false;
+    this.addMemberPopover = false;
+    popover === 'memberList'
+      ? (this.memberList = true)
+      : (this.memberList = false);
+    popover === 'addMember'
+      ? (this.addMemberPopover = true)
+      : (this.addMemberPopover = false);
+  }
+
+  openAddNewMemberPopover() {
+    this.addMemberPopover = true;
+    this.memberList = false;
+  }
+
+  isAllowedToAddMember() {
+    if (this.currentChannel instanceof Channel) {
+      return (
+        this.currentChannel.creatorID === this.userService.currentUserID &&
+        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+      );
+    }
+    return;
+  }
+
+  showNoRightToEditInfo() {
+    if (!this.isAllowedToAddMember()) {
+      return 'Du bist nicht befugt, neue Leute einzuladen.';
+    }
+    return '';
   }
 }
