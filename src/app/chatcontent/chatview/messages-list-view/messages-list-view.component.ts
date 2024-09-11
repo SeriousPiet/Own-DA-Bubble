@@ -26,8 +26,6 @@ import { UsersService } from '../../../utils/services/user.service';
   styleUrl: './messages-list-view.component.scss',
 })
 export class MessagesListViewComponent implements OnInit {
-  // messagefromUser = true;
-  // messageWroteFromUser = false;
 
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
@@ -48,10 +46,7 @@ export class MessagesListViewComponent implements OnInit {
 
   private messageScrollSubscription: Subscription | undefined;
 
-  constructor(
-    private _cdr: ChangeDetectorRef,
-    private searchService: SearchService
-  ) { }
+  constructor(private searchService: SearchService) { }
 
   ngOnInit(): void {
     this.messageScrollSubscription =
@@ -113,7 +108,6 @@ export class MessagesListViewComponent implements OnInit {
               );
             }
           });
-          this._cdr.detectChanges();
         }
       );
     }
