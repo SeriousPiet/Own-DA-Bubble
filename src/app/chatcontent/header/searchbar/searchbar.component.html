@@ -50,32 +50,47 @@
       class="autocomplete-suggestions"
       *ngIf="(suggestions$ | async)?.length ?? 0 > 0"
     >
-      <div
-        class="suggestion-item"
-        *ngFor="let suggestion of suggestions$ | async"
-        (click)="selectSuggestion(suggestion)"
-      >
-        <div
-          *ngIf="
-            suggestion.type === 'user' && getUserFromSuggestion(suggestion)
-          "
-          appAvatar
-          [user]="getUserFromSuggestion(suggestion)!"
-          context="search"
-        ></div>
-
-        {{ suggestion.text }}
-        <span class="item-action" *ngIf="suggestion.type === 'user'">
-          {{ suggestion.hasChat ? "Chat betreten" : "Unterhaltung starten" }}
-        </span>
-        <span class="item-action" *ngIf="suggestion.type === 'channel'">
-          {{
-            getChannelJoinStatus(suggestion.text.slice(1))
-              ? "Channel betreten"
-              : "Channel beitreten"
-          }}
-        </span>
-      </div>
+      <ng-container *ngFor="let suggestion of suggestions$ | async">
+        <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+          <ng-container [ngSwitch]="suggestion.type">
+            <ng-container *ngSwitchCase="'user'">
+              <div
+                *ngIf="getUserFromSuggestion(suggestion)"
+                appAvatar
+                [user]="getUserFromSuggestion(suggestion)!"
+                context="search"
+              ></div>
+              {{ suggestion.text }}
+              <span class="item-action">{{
+                suggestion.hasChat ? "Chat betreten" : "Unterhaltung starten"
+              }}</span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'channel'">
+              {{ suggestion.text }}
+              <span class="item-action">{{
+                getChannelJoinStatus(suggestion.text.slice(1))
+                  ? "Channel betreten"
+                  : "Channel beitreten"
+              }}</span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'message'">
+              <div class="message-item">
+                <img
+                  src="./assets/icons/modals/search-message.svg"
+                  alt="Nachricht"
+                  class="message-icon"
+                />
+                <div class="message-preview">
+                  <span
+                    class="message-content"
+                    [innerHTML]="suggestion.text"
+                  ></span>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
     </div>
 
     <div class="recent-searches">
@@ -93,23 +108,23 @@
 
         <div
           class="avatar"
-          *ngIf="search.startsWith('@') && getUserFromSuggestion(search)"
+          *ngIf="search.type === 'user' && getUserFromSuggestion(search)"
           appAvatar
           [user]="getUserFromSuggestion(search)!"
           context="search"
         ></div>
 
-        <span>{{ search }}</span>
-        <span class="item-action" *ngIf="search.startsWith('@')">
+        <span [innerHTML]="search.text"></span>
+        <span class="item-action" *ngIf="search.type === 'user'">
           {{
-            getUserChatStatus(search.slice(1))
+            getUserChatStatus(search.text.slice(1))
               ? "Chat betreten"
               : "Unterhaltung starten"
           }}
         </span>
-        <span class="item-action" *ngIf="search.startsWith('#')">
+        <span class="item-action" *ngIf="search.type === 'channel'">
           {{
-            getChannelJoinStatus(search.slice(1))
+            getChannelJoinStatus(search.text.slice(1))
               ? "Channel betreten"
               : "Channel beitreten"
           }}
