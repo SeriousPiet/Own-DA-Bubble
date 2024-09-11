@@ -16,7 +16,8 @@
             <div>
                 <span>Channel Name</span>
                 @if (!channelNameEditor) {
-                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()" [title]="showNoRightToEditInfo()" (click)="showChannelNameEditor()">Bearbeiten</button>
+                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()"
+                    [title]="showNoRightToEditInfo()" (click)="showChannelNameEditor()">Bearbeiten</button>
                 }@else {
                 <button (click)="saveEditedChannel()">Speichern</button>
                 }
@@ -31,7 +32,8 @@
             <div>
                 <span>Beschreibung</span>
                 @if (!channelDescriptionEditor) {
-                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()" [title]="showNoRightToEditInfo()" (click)="showChannelDescriptionEditor()">Bearbeiten</button>
+                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()"
+                    [title]="showNoRightToEditInfo()" (click)="showChannelDescriptionEditor()">Bearbeiten</button>
                 }@else {
                 <button (click)="saveEditedChannel()">Speichern</button>
                 }
@@ -43,18 +45,20 @@
                 <span>{{ getChannelCreator(navigationService.chatViewObject) }}</span>
             </div>
         </section>
-        <button popovertarget="confirmation-popup" class="leave-channel-button">Channel Verlassen</button>
+        <button [disabled]="!isChannelMember()" popovertarget="confirmation-popup"
+            [ngClass]="{'leave-channel-button':true, 'no-edit-right':!isChannelMember()}">Channel Verlassen</button>
     </div>
 </main>
 
 <div id="confirmation-popup" popover>
     <div class="confirmation-popup-ctn">
-        <p>Möchtest Du dieses Channel, <span># {{ getTitle(navigationService.chatViewObject) }},</span> wircklich verlassen? <br>
+        <p>Möchtest Du dieses Channel, <span># {{ getTitle(navigationService.chatViewObject) }},</span> wircklich
+            verlassen? <br>
             Du kannst da nur wieder rein, wenn jemand dich wieder hinzufügt.</p>
-            <div class="btn-ctn">
-                <button popovertarget="confirmation-popup" popovertargetaction="hide">Abbrechen</button>
-                <button popovertarget="channel-editor-popover" popovertargetaction="hide" (click)="leaveChannel()">Bestätigen</button>
-            </div>
+        <div class="btn-ctn">
+            <button popovertarget="confirmation-popup" popovertargetaction="hide">Abbrechen</button>
+            <button popovertarget="channel-editor-popover" popovertargetaction="hide"
+                (click)="leaveChannel()">Bestätigen</button>
+        </div>
     </div>
 </div>
-
