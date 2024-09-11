@@ -14,10 +14,10 @@ export class UsersService implements OnDestroy {
   private user$: any = null;
   private currentAuthUser: any = undefined;
 
-  private changeUserListSubject = new BehaviorSubject<string>('');
+  private changeUserListSubject = new BehaviorSubject<User[]>([]);
   public changeUserList$ = this.changeUserListSubject.asObservable();
 
-  private changeCurrentUserSubject = new BehaviorSubject<string>('');
+  private changeCurrentUserSubject = new BehaviorSubject<User | undefined>(undefined);
   public changeCurrentUser$ = this.changeCurrentUserSubject.asObservable();
 
   private selectedUserObjectSubject = new BehaviorSubject<User | undefined>(undefined);
@@ -25,7 +25,6 @@ export class UsersService implements OnDestroy {
 
 
   public users: User[] = [];
-  private userEmailWaitForLogin: string | undefined;
   public currentUser: User | undefined;
   public currentGuestUserID: string = '';
   public guestUserIDWaitForLogin: string | undefined;
@@ -74,11 +73,10 @@ export class UsersService implements OnDestroy {
             if (user) user.update(change.doc.data());
           }
           if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
-          if (this.currentUserID === change.doc.id) this.changeCurrentUserSubject.next('userchange');
+          if (this.currentUserID === change.doc.id) this.changeCurrentUserSubject.next(this.currentUser);
         });
         this.users.sort((a, b) => a.name.localeCompare(b.name));
-        this.changeUserListSubject.next('users');
-        if (this.userEmailWaitForLogin) this.setCurrentUserByEMail(this.userEmailWaitForLogin);
+        this.changeUserListSubject.next(this.users);
       }
     );
   }
@@ -137,31 +135,37 @@ export class UsersService implements OnDestroy {
 
 
   public async setCurrentUserByEMail(userEmail: string): Promise<void> {
-    this.userEmailWaitForLogin = undefined;
     if (userEmail !== '') {
-      const user = this.users.find((user) => user.email === userEmail);
-      if (user) {
-        if (this.currentUser && this.currentUser.id === user.id) return;
-        this.currentUser = user;
-        if (user.guest) this.currentGuestUserID = user.id;
-        this.changeCurrentUserSubject.next('userset');
-        await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), { online: true, lastLoginAt: serverTimestamp() });
-      } else {
-        this.userEmailWaitForLogin = userEmail;
-      }
+      const userlistSubsciption = this.changeUserList$.subscribe((users) => {
+        const user = users.find((user) => user.email === userEmail);
+        if (user) {
+          this.setCurrentUser(user);
+          setTimeout(() => {
+            userlistSubsciption.unsubscribe();
+          }, 1000);
+        }
+      });
     } else {
-      const userRef = doc(this.firestore, '/users/' + this.currentUserID);
-      if (userRef) await updateDoc(userRef, { online: false });
       this.clearCurrentUser();
     }
   }
 
+  
+  private async setCurrentUser(user: User) {
+    if (this.currentUser && user) return;
+    this.currentUser = user;
+    if (user.guest) this.currentGuestUserID = user.id;
+    await this.updateCurrentUserDataOnFirestore({ online: true, lastLoginAt: serverTimestamp() });
+    this.changeCurrentUserSubject.next(user);
+}
 
-  public clearCurrentUser(): void {
-    localStorage.removeItem('guestuserid'); // this is only for guest user
+
+  public async  clearCurrentUser() {
+    await this.updateCurrentUserDataOnFirestore({ online: false });
     this.currentUser = undefined;
+    localStorage.removeItem('guestuserid'); // this is only for guest user
     this.currentGuestUserID = '';
-    this.changeCurrentUserSubject.next('userdelete');
+    this.changeCurrentUserSubject.next(undefined);
   }
 
   // ############################################################################################################

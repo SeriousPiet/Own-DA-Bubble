@@ -24,37 +24,19 @@ import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/
   templateUrl: './workspacemenu.component.html',
   styleUrl: './workspacemenu.component.scss',
 })
-export class WorkspacemenuComponent implements OnInit {
+export class WorkspacemenuComponent {
+
   addChannelId: HTMLElement | null = null;
-  userCount: number = 0;
+
   public userservice = inject(UsersService);
   public channelservice = inject(ChannelService);
-  public users: User[] = [];
-  public channels: Channel[] = [];
+  private navigationService = inject(NavigationService);
+
   public onlineStatus: string = 'offline';
   public onlineColor: string = '#92c83e';
   public offlineColor: string = '#686868';
-  private navigationService = inject(NavigationService);
 
   @ViewChild(AddchannelComponent) addChannelComponent!: AddchannelComponent;
-
-  ngOnInit(): void {
-    this.sortAndArrangeUsers();
-  }
-
-  sortAndArrangeUsers(): void {
-    const currentUserID = this.userservice.currentUserID;
-    const sortedUsers = this.userservice.users.sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    });
-    const currentUser = sortedUsers.find((user) => user.id === currentUserID);
-    const otherUsers = sortedUsers.filter((user) => user.id !== currentUserID);
-    if (currentUser) {
-      this.users = [currentUser, ...otherUsers];
-    } else {
-      this.users = otherUsers;
-    }
-  }
 
   toggleAddChannelPopover() {
     this.addChannelId = document.getElementById('addChannelId');
