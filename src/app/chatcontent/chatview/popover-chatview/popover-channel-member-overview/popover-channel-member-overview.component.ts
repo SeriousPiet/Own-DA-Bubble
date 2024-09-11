@@ -65,8 +65,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   }
 
-  constructor(private searchService: SearchService,
-    private usersService: UsersService) { }
+  constructor(private searchService: SearchService, private usersService: UsersService) { }
 
 
   public getUserFromSuggestion(
@@ -86,7 +85,6 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     const member = this.userService.getUserByID(memberID);
     return member?.id === this.userService.currentUser?.id ? `${member?.name} (Du)` : member?.name;
   }
-
 
 
   sortMembersArray() {
@@ -184,7 +182,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   addUserToSelection(user: User) {
     if (!this.selectedUsers.some((u) => u.id === user.id)) {
-      if(!this.currentChannel.memberIDs.includes(user.id)) {
+      if (!this.currentChannel.memberIDs.includes(user.id)) {
         this.selectedUsers.push(user);
       }
     }
@@ -214,21 +212,20 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     this.channelService.updateChannelOnFirestore(this.currentChannel as Channel, this.updateChannelData);
     this.resetAddmembers();
     document.getElementById('channel-member-overview-popover')!.hidePopover();
-    if(this.currentChannel instanceof Channel) this.updatedChannel.emit(this.currentChannel);
-
+    if (this.currentChannel instanceof Channel) this.updatedChannel.emit(this.currentChannel);
   }
 
 
   isAllowedToAddMember() {
-    if(this.currentChannel instanceof Channel) {
+    if (this.currentChannel instanceof Channel) {
       return this.currentChannel.creatorID === this.userService.currentUserID ||
-      this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
     }
     return
   }
 
-  showNoRightToEditInfo(){
-    if(!this.isAllowedToAddMember()){
+  showNoRightToEditInfo() {
+    if (!this.isAllowedToAddMember()) {
       return 'Du bist nicht befugt, neue Leute hinzuzufügen.'
     }
     return ''
