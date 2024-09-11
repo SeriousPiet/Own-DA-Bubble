@@ -24,7 +24,7 @@
       @include flex(normal, center);
       gap: 1.25rem;
 
-      > .message-creator-name {
+      >.message-creator-name {
         font-size: 1.125rem;
         font-weight: 700;
 
@@ -33,7 +33,7 @@
         }
       }
 
-      > span {
+      >span {
         font-size: 0.875rem;
         font-weight: 400;
         color: #686868;
@@ -126,13 +126,23 @@
         }
       }
     }
+  }
 
-    .message-ctn .message-from-user {
-      transition: $transition-popover;
-      transform: translatex(3rem);
+  &:hover {
+    >section {
+      .message-reactions {
+        >button {
+          background-color: #ffffff;
+
+          &:hover {
+            border-color: $accent;
+          }
+        }
+      }
     }
   }
 }
+
 
 .message-from-user {
   flex-direction: row-reverse;
