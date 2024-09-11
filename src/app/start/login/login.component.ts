@@ -217,8 +217,8 @@ export class LoginComponent implements OnDestroy {
       }, this.loginInfoStayTime);
     } else {
       this.userlogin = this.userservice.changeCurrentUser$.subscribe(
-        (change) => {
-          if (change == 'userset') {
+        (user) => {
+          if (user) {
             if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
               setTimeout(() => {
                 this.redirectToChatContent();
