@@ -233,7 +233,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   showNoRightToEditInfo(){
     if(!this.isAllowedToAddMember()){
-      return 'Du bist nicht befugt, neue Leute einzuladen.'
+      return 'Du bist nicht befugt, neue Leute hinzuzufügen.'
     }
     return ''
   }
