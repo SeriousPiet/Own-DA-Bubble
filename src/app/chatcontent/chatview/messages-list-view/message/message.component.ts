@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { collection, Firestore, onSnapshot, serverTimestamp } from '@angular/fire/firestore';
+import { ChangeDetectorRef, Component, inject, Input, OnInit, Output } from '@angular/core';
+import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { Message } from '../../../../shared/models/message.class';
 import { MessageService } from '../../../../utils/services/message.service';
@@ -145,7 +145,7 @@ export class MessageComponent implements OnInit {
     }
   }
 
-  setSelectedUserObject(messageCreatorID:string) {
+  setSelectedUserObject(messageCreatorID: string) {
     console.log(messageCreatorID)
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
   }

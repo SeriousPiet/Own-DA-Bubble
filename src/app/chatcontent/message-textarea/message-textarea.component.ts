@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
-import { MessageService } from '../../utils/services/message.service';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  Input,
+} from '@angular/core';
+import {
+  MessageAttachment,
+  MessageService,
+} from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
-
-type MessageAttachment = {
-  name: string;
-  src: any;
-  size: number;
-  lastModified: number;
-  file: any;
-};
+import { UsersService } from '../../utils/services/user.service';
 
 @Component({
   selector: 'app-message-textarea',
@@ -27,17 +29,102 @@ export class MessageTextareaComponent {
   message = '';
 
   attachments: MessageAttachment[] = [];
+  dropzonehighlighted = false;
+  ifMessageUploading = false;
+  errorInfo = '';
+
+  private fileValidators = [
+    {
+      name: 'maxFileSize',
+      validator: (file: any) => file.size <= 500000,
+      error: 'Die Datei ist zu groß. Maximal 500KB erlaubt.',
+    },
+    {
+      name: 'fileType',
+      validator: (file: any) =>
+        file.type === 'image/png' ||
+        file.type === 'image/gif' ||
+        file.type === 'image/jpeg' ||
+        file.type === 'application/pdf',
+      error: 'Nur Bilder und PDFs erlaubt.',
+    },
+  ];
 
   public messageService = inject(MessageService);
+  private userservice = inject(UsersService);
 
   @Input() newMessageinChannel!: Channel | Chat;
 
-  addNewMessage(newMessagePath: Channel | Chat, message: string) {
-    if (newMessagePath instanceof Channel) {
-      if (message)
-        this.messageService.addNewMessageToCollection(newMessagePath, message);
-      this.message = '';
+  constructor(private el: ElementRef) {}
+  @HostListener('dragenter', ['$event'])
+  onDragEnter(event: DragEvent) {
+    event.preventDefault();
+    this.highlightDropZone(true);
+  }
+
+  @HostListener('dragover', ['$event'])
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.highlightDropZone(true);
+  }
+
+  @HostListener('dragleave', ['$event'])
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    if (this.isLeavingDropZone(event)) {
+      this.highlightDropZone(false);
     }
+  }
+
+  @HostListener('drop', ['$event'])
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    this.highlightDropZone(false);
+
+    this.loadAttachments(event.dataTransfer);
+  }
+
+  private isLeavingDropZone(event: DragEvent): boolean {
+    const dropZone = this.el.nativeElement;
+    const relatedTarget = event.relatedTarget as Node;
+    return !dropZone.contains(relatedTarget);
+  }
+
+  private highlightDropZone(highlight: boolean) {
+    const nativeElement = this.el.nativeElement;
+    this.dropzonehighlighted = highlight;
+  }
+
+  async addNewMessage(newMessagePath: Channel | Chat, message: string) {
+    this.clearErrorInfo();
+    if (!message && this.attachments.length === 0) {
+      this.handleErrors('Nachricht darf nicht leer sein.');
+    } else if (await this.userservice.ifCurrentUserVerified()) {
+      this.ifMessageUploading = true;
+      const error = await this.messageService.addNewMessageToCollection(
+        newMessagePath,
+        message,
+        this.attachments
+      );
+      if (error) {
+        this.handleErrors(error);
+      } else {
+        this.message = '';
+        this.attachments = [];
+      }
+      this.ifMessageUploading = false;
+    }
+  }
+
+  handleErrors(error: string) {
+    this.errorInfo = error;
+    setTimeout(() => {
+      this.clearErrorInfo();
+    }, 8000);
+  }
+
+  clearErrorInfo() {
+    this.errorInfo = '';
   }
 
   removeAttachment(attachment: MessageAttachment) {
@@ -50,15 +137,35 @@ export class MessageTextareaComponent {
   }
 
   loadAttachments(fileList: any) {
+    this.clearErrorInfo();
+    if (fileList.files.length + this.attachments.length > 5) {
+      this.handleErrors('Maximal 5 Dateien erlaubt.');
+      return;
+    }
     for (let i = 0; i < fileList.files.length; i++) {
       const file = fileList.files[i];
       if (this.fileAllreadyAttached(file)) continue;
+      if (
+        !this.fileValidators.every((validator) => validator.validator(file))
+      ) {
+        this.errorInfo +=
+          file.name +
+          ': ' +
+          (this.fileValidators.find((validator) => !validator.validator(file))
+            ?.error as string) +
+          '\n';
+        continue;
+      }
       if (file.type.startsWith('image')) {
         this.attachments.push(this.readPicture(file));
       } else if (file.type === 'application/pdf') {
         this.attachments.push(this.readPDF(file));
       }
     }
+  }
+
+  ifFilePropertysValid(file: any): boolean {
+    return file.name && file.size && file.lastModified ? true : false;
   }
 
   fileAllreadyAttached(file: any): boolean {
@@ -98,41 +205,5 @@ export class MessageTextareaComponent {
     };
     reader.readAsDataURL(file);
     return attachment;
-  }
-
-  onDragEnter(event: DragEvent) {
-    event.preventDefault(); // Verhindert die Standard-Aktion (z. B. das Öffnen der Datei)
-    event.stopPropagation();
-    this.highlightDropZone(event, true);
-  }
-
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.highlightDropZone(event, true);
-  }
-
-  onDragLeave(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.highlightDropZone(event, false);
-  }
-
-  onDrop(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.highlightDropZone(event, false);
-
-    this.loadAttachments(event.dataTransfer);
-  }
-
-  // Hebe die Drop-Zone hervor, wenn Dateien gezogen werden
-  private highlightDropZone(event: DragEvent, highlight: boolean) {
-    const dropZone = event.target as HTMLElement;
-    if (highlight) {
-      dropZone.classList.add('drag-over');
-    } else {
-      dropZone.classList.remove('drag-over');
-    }
   }
 }

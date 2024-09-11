@@ -1,11 +1,7 @@
-<div id="drop-zone" class="input-message"
-(dragenter)="onDragEnter($event)" 
-(dragover)="onDragOver($event)" 
-(dragleave)="onDragLeave($event)" 
-(drop)="onDrop($event)"
->
-    <textarea [(ngModel)]="message" name="" id="" placeholder="Nachricht an #Entwicklerteam"></textarea>
-    @if(attachments.length > 0){
+<div [ngClass]="{'drag-over':dropzonehighlighted}" class="input-message">
+    <textarea [disabled]="ifMessageUploading" dragzone class="z-index-2" [(ngModel)]="message" name="" id=""
+        placeholder="Nachricht an #Entwicklerteam"></textarea>
+    @if(!ifMessageUploading && attachments.length > 0){
     <div class="attachments">
         @for(attachment of attachments; track attachment){
         <div class="attachment">
@@ -17,11 +13,12 @@
         }
     </div>
     }
-    <div class="input-message-toolbar">
+    <div class="input-message-toolbar z-index-2">
         <div class="message-action-button" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
-            <div id="add-attachment-icon" class="button-ctn">
+            <div id="add-attachment-icon" [ngClass]="{'button-ctn': attachments.length < 5}" class="button-ctn-size">
                 <label class="addattachment" for="addattachment">
-                    <input (change)="changeAttachmentFile($event)" id="addattachment" type="file"
+                    <input [disabled]="ifMessageUploading || attachments.length>=5"
+                        (change)="changeAttachmentFile($event)" id="addattachment" type="file"
                         accept=".pdf, .png, .jpeg, .gif" multiple>
                     <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/add-attachment.svg"
                         alt="+">
@@ -42,9 +39,17 @@
                     alt="@">
             </div>
         </div>
-        <button (click)="addNewMessage(newMessageinChannel, message)" id="send-message-icon"
-            (mouseenter)="isActive = true" (mouseleave)="isActive = false">
+        @if(errorInfo !== '') {
+        <span class="errorspan">{{ errorInfo }}</span>
+        }
+        @if(ifMessageUploading){
+        <img src="./assets/icons/svg-spinner-accent.svg" alt="" />
+        }
+        @else {
+        <button [disabled]="ifMessageUploading" (click)="addNewMessage(newMessageinChannel, message)"
+            id="send-message-icon" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
             <img src="./assets/icons/chat/write-message/send.svg" alt="">
         </button>
+        }
     </div>
 </div>

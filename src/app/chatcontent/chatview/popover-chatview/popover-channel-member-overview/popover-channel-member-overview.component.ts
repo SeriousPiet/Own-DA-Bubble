@@ -214,10 +214,6 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     this.channelService.updateChannelOnFirestore(this.currentChannel as Channel, this.updateChannelData);
     this.resetAddmembers();
     document.getElementById('channel-member-overview-popover')!.hidePopover();
-    this.addMemberPopover = false;
-    this.memberList = false;
-    this.memberListChange.emit(this.memberList);
-    this.addMemberPopoverChange.emit(this.addMemberPopover);
     if(this.currentChannel instanceof Channel) this.updatedChannel.emit(this.currentChannel);
 
   }
@@ -233,7 +229,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   showNoRightToEditInfo(){
     if(!this.isAllowedToAddMember()){
-      return 'Du bist nicht befugt, neue Leute einzuladen.'
+      return 'Du bist nicht befugt, neue Leute hinzuzufügen.'
     }
     return ''
   }

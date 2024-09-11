@@ -1,3 +1,8 @@
+@import "../../../styles.scss";
+@import "../../../mixins.scss";
+@import "../../../fonts.scss";
+
+
 :host {
     position: absolute;
     bottom: 0;
@@ -10,10 +15,17 @@
     border-radius: 0 0 1.875rem 1.875rem;
 }
 
+.errorspan {
+    @include nunito(0.875, 400, $error);
+    margin-left: auto;
+    margin-right: 1rem;
+}
+
 .addattachment {
     display: flex;
     justify-content: center;
     align-items: center;
+
     >input {
         display: none;
     }
@@ -50,12 +62,6 @@
             width: 1.5rem;
             height: 1.5rem;
             cursor: pointer;
-            transition: all 0.125sec ease-in-out;
-
-            &:hover {
-                width: 5rem;
-                height: 5rem;
-            }
         }
 
         >span {
@@ -67,6 +73,7 @@
 
         .remove-attachment {
             cursor: pointer;
+
             >img {
                 width: 1rem;
                 height: 1rem;
@@ -75,15 +82,12 @@
     }
 }
 
-#drop-zone {
-    transition: box-shadow 0.3s ease;
-}
-
-#drop-zone.drag-over {
-    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.4);
+.drag-over {
+    box-shadow: inset 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
 }
 
 .input-message {
+    position: relative;
     min-height: 9rem;
     max-height: 20rem;
     width: 100%;
@@ -95,6 +99,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
+    transition: box-shadow 0.3s ease;
 
     >textarea {
         resize: none;
@@ -136,18 +141,25 @@
     }
 }
 
-.button-ctn {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.button-disabled {
+    @include flex(center, center);
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 100%;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    border-radius: 50%;
+  }
 
-    &:hover {
-        background-color: #ECEEFE;
-    }
+.button-ctn {
+    @include iconBox;
+
+    // * {
+    //     cursor: pointer;
+    // }
+
+    // &:hover {
+    //     background-color: #ECEEFE;
+    // }
 }
 
 #add-attachment-icon:hover {
@@ -170,12 +182,14 @@
 
 #send-message-icon {
     cursor: pointer;
+
     >img {
         width: 1.875rem;
         height: 1.875rem;
     }
-    &:hover{
-        >img{
+
+    &:hover {
+        >img {
             content: url('../../../assets/icons/chat/write-message/send-hover.svg');
         }
     }

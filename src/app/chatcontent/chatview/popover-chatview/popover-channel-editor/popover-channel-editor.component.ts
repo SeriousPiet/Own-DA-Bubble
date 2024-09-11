@@ -28,12 +28,16 @@ export class PopoverChannelEditorComponent implements OnChanges {
 
   updateChannelData: { name?: string, description?: string, memberIDs?: string[] } = {};
 
+  selfInMemberList: string = '';
+
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['currentChannel']) {
       this.currentChannel = changes['currentChannel'].currentValue;
       this.updateChannelData.name = this.currentChannel.name;
       this.updateChannelData.description = this.currentChannel.description;
       this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
+      this.selfInMemberList = this.currentChannel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID);
     }
   }
 
@@ -92,11 +96,14 @@ export class PopoverChannelEditorComponent implements OnChanges {
     return ''
   }
 
+  isChannelMember() {
+    return this.selfInMemberList === this.userService.currentUserID
+  }
+
 
   leaveChannel() {
-    let selfInMemberList = this.currentChannel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID);
-    let selfInMemberListIndex = this.currentChannel.memberIDs.indexOf(selfInMemberList);
-    if (selfInMemberList === this.userService.currentUserID) {
+    let selfInMemberListIndex = this.currentChannel.memberIDs.indexOf(this.selfInMemberList);
+    if (this.isChannelMember()) {
       this.currentChannel.memberIDs.splice(selfInMemberListIndex, 1);
       this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
       this.channelService.updateChannelOnFirestore(this.currentChannel, this.updateChannelData);
