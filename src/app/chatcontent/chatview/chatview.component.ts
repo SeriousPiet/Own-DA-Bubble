@@ -156,7 +156,7 @@ export class ChatviewComponent implements OnInit {
 
   isAllowedToAddMember() {
     if (this.currentContext instanceof Channel) {
-      return this.currentContext.creatorID === this.userService.currentUserID &&
+      return this.currentContext.creatorID === this.userService.currentUserID ||
         this.currentContext.memberIDs.includes(this.userService.currentUserID)
     }
     return
