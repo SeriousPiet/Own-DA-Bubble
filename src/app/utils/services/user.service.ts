@@ -74,7 +74,7 @@ export class UsersService implements OnDestroy {
           }
           else if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
           if (this.currentUserID === change.doc.id) {
-            if(change.doc.data()['online'] === false) this.updateCurrentUserDataOnFirestore({ online: true });
+            if (change.doc.data()['online'] === false) this.updateCurrentUserDataOnFirestore({ online: true });
             this.changeCurrentUserSubject.next(this.currentUser);
           }
         });
@@ -158,16 +158,18 @@ export class UsersService implements OnDestroy {
     if (this.currentUser && user) return;
     this.currentUser = user;
     if (user.guest) this.currentGuestUserID = user.id;
-    await this.updateCurrentUserDataOnFirestore({ online: true, lastLoginAt: serverTimestamp(), emailVerified: (this.currentAuthUser.emailVerified) });
+    let userData: { online: boolean; lastLoginAt: any; emailVerified?: boolean } = { online: true, lastLoginAt: serverTimestamp() };
+    if (this.currentAuthUser) userData.emailVerified = this.currentAuthUser.emailVerified;
+    await this.updateCurrentUserDataOnFirestore(userData);
     this.changeCurrentUserSubject.next(user);
   }
 
 
   public async clearCurrentUser() {
-    if(this.currentUser) {
+    if (this.currentUser) {
       const logoutUser = this.currentUser;
       this.currentUser = undefined;
-      localStorage.removeItem('guestuserid'); // this is only for guest user
+      localStorage.removeItem('guestuseremail'); // this is only for guest user
       this.currentGuestUserID = '';
       updateDoc(doc(this.firestore, '/users/' + logoutUser.id), { online: false });
       this.changeCurrentUserSubject.next(undefined);
