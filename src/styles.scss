@@ -142,12 +142,15 @@ body {
   max-width: 1920px;
   margin: 0 auto;
   padding: 0;
-  overflow: hidden;
+
+  background: $background;
 
   font-family: "Nunito", sans-serif;
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  overflow: hidden;
 
   &:has(*:popover-open) {
     pointer-events: none;
