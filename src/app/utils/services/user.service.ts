@@ -158,7 +158,7 @@ export class UsersService implements OnDestroy {
     if (this.currentUser && user) return;
     this.currentUser = user;
     if (user.guest) this.currentGuestUserID = user.id;
-    await this.updateCurrentUserDataOnFirestore({ online: true, lastLoginAt: serverTimestamp() });
+    await this.updateCurrentUserDataOnFirestore({ online: true, lastLoginAt: serverTimestamp(), emailVerified: (this.currentAuthUser.emailVerified) });
     this.changeCurrentUserSubject.next(user);
   }
 

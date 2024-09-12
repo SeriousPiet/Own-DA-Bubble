@@ -46,20 +46,22 @@
     <div class="usermail">
       <img src="./assets/icons/start/mail.svg" alt="" />
       <div class="mail-adress">
-        @if (!isGuestAccount) {
         @if(!isGoogleAccount && !userservice.currentUser?.emailVerified) {
-        <span>Email-Adresse nicht verifiziert</span>
+          <span>Email-Adresse nicht verifiziert</span>
+        }
+        @else {
+          <span>Email-Adresse</span>
+        }
+          @if (!isGuestAccount) {
+        @if(!isGoogleAccount && !userservice.currentUser?.emailVerified) {
         <div class="mail-verify">
           <button class="mail-verify-link" (click)="userservice.sendEmailVerificationLink()">Link erneut
             zuschicken</button>
         </div>
         }
-        @else {
-        <span>Email-Adresse</span>
-        }
         <span class="mail-span">{{ userservice.currentUser?.email }}</span>
         } @else {
-        <span class="mail-span">gast&#64;da-bubble.de</span>
+          <span class="mail-span">gast&#64;da-bubble.de</span>
         }
       </div>
     </div>
