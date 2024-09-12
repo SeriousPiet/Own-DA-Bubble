@@ -23,7 +23,7 @@
         <span>{{ getNumberOfMembers(navigationService.chatViewObject) }}</span>
 
       </button>
-      <button [ngClass]="{'add-member-icon-ctn': true}" [title]="showNoRightToEditInfo()"
+      <button [ngClass]="{'add-member-icon-ctn': true, 'no-edit-right': !isAllowedToAddMember()}" [title]="showNoRightToEditInfo()"
         popovertarget="channel-member-overview-popover" (click)="openMemberListPopover('addMember')"
         [disabled]="!isAllowedToAddMember()">
         <img [ngClass]="{'no-edit-right': !isAllowedToAddMember()}" src="assets/icons/chat/general/add-to-channel.svg"
