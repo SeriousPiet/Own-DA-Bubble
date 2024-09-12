@@ -109,7 +109,6 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   }
 
   setSelectedUserObject(messageCreatorID: string) {
-    console.log(messageCreatorID)
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
   }
 

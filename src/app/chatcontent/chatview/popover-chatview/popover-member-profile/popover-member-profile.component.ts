@@ -31,8 +31,6 @@ export class PopoverMemberProfileComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription = this.userService.selectedUserObject$.subscribe(user => {
       this.selectedUser = user;
-      console.log('Benutzer aktualisiert:', user);
-
     });
   }
 
@@ -49,9 +47,5 @@ export class PopoverMemberProfileComponent implements OnInit, OnDestroy {
       this.subscription.unsubscribe();
     }
   }
-
-
-
-
 
 }
