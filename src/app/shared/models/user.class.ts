@@ -74,7 +74,8 @@ export class User {
     if (data.online !== undefined) this._online = data.online;
     if (data.chatIDs) this._chatIDs = data.chatIDs;
     if (data.pictureURL !== undefined) this._pictureURL = data.pictureURL;
-    if (data.emailVerified !== undefined) this._emailVerified = data.emailVerified;
+    if (data.emailVerified !== undefined)
+      this._emailVerified = data.emailVerified;
     this.changeUser.next(this);
   }
 }

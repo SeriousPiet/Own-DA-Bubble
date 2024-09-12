@@ -1,4 +1,18 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, viewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild,
+  viewChild,
+} from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { UsersService } from '../../../../utils/services/user.service';
@@ -9,6 +23,10 @@ import { NavigationService } from '../../../../utils/services/navigation.service
 import { User } from '../../../../shared/models/user.class';
 import { FormsModule } from '@angular/forms';
 import { SearchService } from '../../../../utils/services/search.service';
+import { SearchSuggestion } from '../../../../utils/services/search.service';
+
+import { GroupedSearchResults } from '../../../../utils/services/search.service';
+
 import { map, Observable } from 'rxjs';
 import { ChannelService } from '../../../../utils/services/channel.service';
 
@@ -17,11 +35,9 @@ import { ChannelService } from '../../../../utils/services/channel.service';
   standalone: true,
   imports: [AvatarDirective, CommonModule, FormsModule, AvatarDirective],
   templateUrl: './popover-channel-member-overview.component.html',
-  styleUrl: './popover-channel-member-overview.component.scss'
+  styleUrl: './popover-channel-member-overview.component.scss',
 })
 export class PopoverChannelMemberOverviewComponent implements OnChanges {
-
-
   userService = inject(UsersService);
   channelService = inject(ChannelService);
   navigationService = inject(NavigationService);
@@ -34,9 +50,11 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   isDropdownVisible = false;
   isAnyOptionSelected = false;
 
-  updateChannelData: { name?: string, description?: string, memberIDs?: string[] } = {};
-
-
+  updateChannelData: {
+    name?: string;
+    description?: string;
+    memberIDs?: string[];
+  } = {};
 
   @Input() currentChannel!: Channel | Chat;
   @Input() isCurrentMember: boolean = false;
@@ -48,8 +66,6 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   @Output() addMemberPopoverChange = new EventEmitter<boolean>();
   @Output() updatedChannel = new EventEmitter<Channel>();
 
-
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentChannel']) {
       this.currentChannel = changes['currentChannel'].currentValue;
@@ -60,13 +76,13 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
         this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
       }
     }
-    if (changes['memberList']) this.memberList = changes['memberList'].currentValue;
-    if (changes['addMemberPopover']) this.addMemberPopover = changes['addMemberPopover'].currentValue;
-
+    if (changes['memberList'])
+      this.memberList = changes['memberList'].currentValue;
+    if (changes['addMemberPopover'])
+      this.addMemberPopover = changes['addMemberPopover'].currentValue;
   }
 
-  constructor(private searchService: SearchService,
-    private usersService: UsersService) { }
+  constructor(private searchService: SearchService, private usersService: UsersService) { }
 
 
   public getUserFromSuggestion(
@@ -81,37 +97,43 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     return this.findUserByName(userName);
   }
 
-
   getMemberName(memberID: string) {
     const member = this.userService.getUserByID(memberID);
-    return member?.id === this.userService.currentUser?.id ? `${member?.name} (Du)` : member?.name;
+    return member?.id === this.userService.currentUser?.id
+      ? `${member?.name} (Du)`
+      : member?.name;
   }
 
 
-
   sortMembersArray() {
-    if (this.currentChannel instanceof Channel && this.currentUserIsChannelMember()) {
-      let currentUserIndex = this.currentChannel.memberIDs.indexOf(this.userService.currentUser!.id);
+    if (
+      this.currentChannel instanceof Channel &&
+      this.currentUserIsChannelMember()
+    ) {
+      let currentUserIndex = this.currentChannel.memberIDs.indexOf(
+        this.userService.currentUser!.id
+      );
       this.currentChannel.memberIDs.splice(currentUserIndex, 1);
       this.currentChannel.memberIDs.unshift(this.userService.currentUser!.id);
     }
   }
 
-
   currentUserIsChannelMember() {
-    return this.currentChannel instanceof Channel && this.currentChannel.memberIDs.includes(this.userService.currentUser!.id);
+    return (
+      this.currentChannel instanceof Channel &&
+      this.currentChannel.memberIDs.includes(this.userService.currentUser!.id)
+    );
   }
 
   returnPopoverTarget(messageCreator: string) {
     if (messageCreator === this.userService.currentUser?.id) {
-      return 'profile-popover'
+      return 'profile-popover';
     } else {
-      return 'popover-member-profile'
+      return 'popover-member-profile';
     }
   }
 
   setSelectedUserObject(messageCreatorID: string) {
-    console.log(messageCreatorID)
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
   }
 
@@ -122,7 +144,6 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     return '';
   }
 
-
   openAddNewMemberPopover() {
     this.addMemberPopover = true;
     this.memberList = false;
@@ -130,16 +151,14 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     this.addMemberPopoverChange.emit(this.addMemberPopover);
   }
 
-
   onSearchInput() {
-    this.searchService.updateSearchQuery(this.searchQuery);
-    this.suggestions$ = this.searchService
-      .getSearchSuggestions()
-      .pipe(
-        map((suggestions) =>
-          suggestions.filter((suggestion) => suggestion.type === 'user')
-        )
-      );
+    this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
+      map((groupedResults: GroupedSearchResults) => {
+        return groupedResults.users.filter((suggestion) =>
+          suggestion.text.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      })
+    );
   }
 
   onFocus() {
@@ -157,7 +176,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     }, 200);
   }
 
-  selectSuggestion(suggestion: { text: string; type: string }) {
+  selectSuggestion(suggestion: SearchSuggestion) {
     if (suggestion.type === 'user') {
       const userName = suggestion.text.slice(1);
       const user = this.findUserByName(userName);
@@ -166,10 +185,9 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
       }
     }
     this.isDropdownVisible = false;
-    this.searchService.addRecentSearch(suggestion.text);
+    this.searchService.addRecentSearch(suggestion);
     this.userAmount++;
   }
-
 
   public findUserByName(name: string): User | undefined {
     const userIds = this.usersService.getAllUserIDs();
@@ -184,7 +202,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
 
   addUserToSelection(user: User) {
     if (!this.selectedUsers.some((u) => u.id === user.id)) {
-      if(!this.currentChannel.memberIDs.includes(user.id)) {
+      if (!this.currentChannel.memberIDs.includes(user.id)) {
         this.selectedUsers.push(user);
       }
     }
@@ -208,31 +226,30 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   }
 
   addSelectedUserToChannel() {
-    this.selectedUsers.forEach(user => {
+    this.selectedUsers.forEach((user) => {
       this.currentChannel.memberIDs.push(user.id);
     });
-    this.channelService.updateChannelOnFirestore(this.currentChannel as Channel, this.updateChannelData);
+    this.channelService.updateChannelOnFirestore(
+      this.currentChannel as Channel,
+      this.updateChannelData
+    );
     this.resetAddmembers();
     document.getElementById('channel-member-overview-popover')!.hidePopover();
-    if(this.currentChannel instanceof Channel) this.updatedChannel.emit(this.currentChannel);
-
+    if (this.currentChannel instanceof Channel) this.updatedChannel.emit(this.currentChannel);
   }
-
 
   isAllowedToAddMember() {
-    if(this.currentChannel instanceof Channel) {
+    if (this.currentChannel instanceof Channel) {
       return this.currentChannel.creatorID === this.userService.currentUserID ||
-      this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
     }
-    return
+    return;
   }
 
-  showNoRightToEditInfo(){
-    if(!this.isAllowedToAddMember()){
+  showNoRightToEditInfo() {
+    if (!this.isAllowedToAddMember()) {
       return 'Du bist nicht befugt, neue Leute hinzuzufügen.'
     }
-    return ''
+    return '';
   }
-
-
 }

@@ -139,6 +139,24 @@
       .item-action {
         opacity: 0;
       }
+
+      .message-item {
+        @include flex(flex-start, center);
+        gap: 0.5rem;
+        transition: $transition-standard;
+
+        .message-icon {
+          width: 1.5rem;
+          aspect-ratio: 1 / 1;
+        }
+
+        .message-content {
+          font-weight: 400 !important;
+          strong {
+            color: $accent !important;
+          }
+        }
+      }
     }
   }
 

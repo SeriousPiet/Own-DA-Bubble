@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { NavigationService } from '../../../../utils/services/navigation.service';
@@ -41,7 +41,7 @@ export class PopoverChannelEditorComponent implements OnChanges {
     }
   }
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor() { }
 
 
   getTitle(object: Channel | Chat): string {

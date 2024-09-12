@@ -23,16 +23,11 @@ export class MessageDateComponent {
     }
   }
 
-
-
   isToday() {
     const today = new Date();
     let formatedTodaysDate = today.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
     return formatedTodaysDate;
   }
-
-
-
 
 }
 
