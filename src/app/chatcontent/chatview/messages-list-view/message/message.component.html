@@ -13,7 +13,7 @@
                 class="message-creator-name">{{userService.getUserByID(messageData.creatorID)?.name}}</button>
             <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
         </div>
-        <p>{{ messageData.content }}</p>
+        <p class="message-text">{{ messageData.content }}</p>
         @if(hasReaction){
         <div class="message-reactions">
             @for (reaction of messageData.emojies; track $index) {
@@ -29,7 +29,7 @@
         </div>
         }
         <div class="message-info">
-            @if(messageData.answerCount > 0){
+            @if(messageData.answerCount > 0 && messageData.answerable){
             <div>
                 <a>
                     <span>{{ messageData.answerCount }}</span>

@@ -45,7 +45,7 @@ export class MessageComponent implements OnInit {
       edited: this.messageData.edited,
       editedAt: this.messageData.editedAt
     };
-    this.sortMessageReaction();
+    this.checkForMessageReactions();
     this.sortMessagesByUser();
     this.getMessageCreatorObject();
   }
@@ -86,10 +86,6 @@ export class MessageComponent implements OnInit {
       });
 
     }
-  }
-
-  sortMessageReaction() {
-    if (this.messageData.emojies.length > 0) this.hasReaction = true;
   }
 
 
@@ -146,7 +142,6 @@ export class MessageComponent implements OnInit {
   }
 
   setSelectedUserObject(messageCreatorID: string) {
-    console.log(messageCreatorID)
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
   }
 

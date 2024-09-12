@@ -31,6 +31,7 @@ import { UsersService } from '../../../utils/services/user.service';
   styleUrl: './messages-list-view.component.scss',
 })
 export class MessagesListViewComponent implements OnInit {
+
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService);
@@ -127,7 +128,6 @@ export class MessagesListViewComponent implements OnInit {
               );
             }
           });
-          this._cdr.detectChanges();
         }
       );
     }

@@ -1,5 +1,5 @@
 <main [ngClass]="{'channel-name-editor': channelNameEditor, 'channel-description-editor': channelDescriptionEditor}">
-    <div>
+    <div class="channel-editor-header">
         <div>
             <img src="assets/icons/chat/general/hashtag.svg" alt="#">
             <span> {{getTitle(navigationService.chatViewObject)}} </span>
@@ -11,7 +11,6 @@
     </div>
 
     <div class="channel-info-content">
-
         <section class="channel-name">
             <div>
                 <span>Channel Name</span>
@@ -40,9 +39,9 @@
             </div>
             <textarea [disabled]="!channelDescriptionEditor" [(ngModel)]="updateChannelData.description"></textarea>
             <hr>
-            <div>
+            <div class="channel-creator-info">
                 <span>Erstellt von</span>
-                <span>{{ getChannelCreator(navigationService.chatViewObject) }}</span>
+                <span id="channel-creator-name">{{ getChannelCreator(navigationService.chatViewObject) }}</span>
             </div>
         </section>
         <button [disabled]="!isChannelMember()" popovertarget="confirmation-popup"
