@@ -187,7 +187,7 @@
 }
 
 .no-messages {
-@include flex(flex-end, center);
+  @include flex(flex-end, center);
   align-items: center;
   width: 90% !important;
 }
@@ -206,7 +206,6 @@
     opacity: 0;
   }
 }
-
 
 .no-edit-right {
   user-select: none !important;
