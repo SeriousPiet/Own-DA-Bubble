@@ -49,11 +49,11 @@ export class ChatviewComponent implements OnInit {
   public channelSubject = new BehaviorSubject<Channel | Chat | null>(null);
   channel$ = this.channelSubject.asObservable();
 
-  @Input() set currentChannel(value: Channel | Chat) {
+  @Input() set currentContext(value: Channel | Chat) {
     this.channelSubject.next(value);
   }
 
-  get currentChannel(): Channel {
+  get currentContext(): Channel {
     return this.channelSubject.getValue() as Channel;
   }
 
@@ -62,7 +62,7 @@ export class ChatviewComponent implements OnInit {
 
   ngOnInit() {
     this.channel$.subscribe(() => {
-      this.currentChannel instanceof Channel && this.currentChannel.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
+      this.currentContext.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
       this.getRequiredAvatars();
     });
   }
@@ -81,8 +81,8 @@ export class ChatviewComponent implements OnInit {
 
 
   getRequiredAvatars() {
-    if (this.currentChannel instanceof Channel) {
-      this.requiredAvatars = this.currentChannel.memberIDs.slice(0, 3);
+    if (this.currentContext instanceof Channel) {
+      this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3);
     }
   }
 
@@ -155,9 +155,9 @@ export class ChatviewComponent implements OnInit {
   }
 
   isAllowedToAddMember() {
-    if (this.currentChannel instanceof Channel) {
-      return this.currentChannel.creatorID === this.userService.currentUserID &&
-        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+    if (this.currentContext instanceof Channel) {
+      return this.currentContext.creatorID === this.userService.currentUserID &&
+        this.currentContext.memberIDs.includes(this.userService.currentUserID)
     }
     return
   }

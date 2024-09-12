@@ -35,10 +35,10 @@
 
   <section class="chatview-content" [ngClass]="{ 'default-channel': isDefaultChannel }">
     @if (!isDefaultChannel && navigationService.chatViewPath) {
-    <div class="chat-messages-content" [ngClass]="{'no-messages': currentChannel.messagesCount == 0}">
-      @if(currentChannel.messagesCount > 0){
+    <div class="chat-messages-content" [ngClass]="{'no-messages': currentContext.messagesCount == 0}">
+      @if(currentContext.messagesCount > 0){
       <app-messages-list-view [ngClass]="{ 'default-channel': isDefaultChannel }"
-        [messagesPath]="navigationService.chatViewPath" [currentObject]="currentChannel"></app-messages-list-view>
+        [messagesPath]="navigationService.chatViewPath" [currentObject]="currentContext"></app-messages-list-view>
       }@else{
       <section class="no-messages-ctn">
         <div class="channel-name">
@@ -57,10 +57,10 @@
     }
   </section>
 
-  <app-popover-channel-editor id="channel-editor-popover" popover [currentChannel]="currentChannel"
+  <app-popover-channel-editor id="channel-editor-popover" popover [currentChannel]="currentContext"
     (updatedChannel)="channelSubject.next($event)"></app-popover-channel-editor>
 
-  <app-popover-channel-member-overview id="channel-member-overview-popover" popover [currentChannel]="currentChannel"
+  <app-popover-channel-member-overview id="channel-member-overview-popover" popover [currentChannel]="currentContext"
     [memberList]="memberList" (memberListChange)="memberList = $event"
     (addMemberPopoverChange)="addMemberPopover = $event" (updatedChannel)="channelSubject.next($event)"
     [addMemberPopover]="addMemberPopover"></app-popover-channel-member-overview>
