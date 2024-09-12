@@ -82,10 +82,8 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
       this.addMemberPopover = changes['addMemberPopover'].currentValue;
   }
 
-  constructor(
-    private searchService: SearchService,
-    private usersService: UsersService
-  ) {}
+  constructor(private searchService: SearchService, private usersService: UsersService) { }
+
 
   public getUserFromSuggestion(
     suggestion: string | { text: string; type: string }
@@ -105,6 +103,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
       ? `${member?.name} (Du)`
       : member?.name;
   }
+
 
   sortMembersArray() {
     if (
@@ -135,10 +134,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   }
 
   setSelectedUserObject(messageCreatorID: string) {
-    console.log(messageCreatorID);
-    this.userService.updateSelectedUser(
-      this.userService.getUserByID(messageCreatorID)
-    );
+    this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
   }
 
   getTitle(object: Channel | Chat | Message | undefined): string {
@@ -239,23 +235,20 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     );
     this.resetAddmembers();
     document.getElementById('channel-member-overview-popover')!.hidePopover();
-    if (this.currentChannel instanceof Channel)
-      this.updatedChannel.emit(this.currentChannel);
+    if (this.currentChannel instanceof Channel) this.updatedChannel.emit(this.currentChannel);
   }
 
   isAllowedToAddMember() {
     if (this.currentChannel instanceof Channel) {
-      return (
-        this.currentChannel.creatorID === this.userService.currentUserID ||
+      return this.currentChannel.creatorID === this.userService.currentUserID ||
         this.currentChannel.memberIDs.includes(this.userService.currentUserID)
-      );
     }
     return;
   }
 
   showNoRightToEditInfo() {
     if (!this.isAllowedToAddMember()) {
-      return 'Du bist nicht befugt, neue Leute hinzuzufügen.';
+      return 'Du bist nicht befugt, neue Leute hinzuzufügen.'
     }
     return '';
   }

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { MessageDateComponent } from './messages-list-view/message-date/message-date.component';
 import { MessageTextareaComponent } from '../message-textarea/message-textarea.component';
 import { CommonModule } from '@angular/common';
@@ -9,14 +9,11 @@ import { NavigationService } from '../../utils/services/navigation.service';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Message } from '../../shared/models/message.class';
-import { ChannelService } from '../../utils/services/channel.service';
-import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { MessagesListViewComponent } from './messages-list-view/messages-list-view.component';
 import { UsersService } from '../../utils/services/user.service';
 import { MessageGreetingComponent } from './messages-list-view/message-greeting/message-greeting.component';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { PopoverMemberProfileComponent } from "./popover-chatview/popover-member-profile/popover-member-profile.component";
-import { User } from '../../shared/models/user.class';
 import { BehaviorSubject, filter } from 'rxjs';
 
 
@@ -39,7 +36,6 @@ import { BehaviorSubject, filter } from 'rxjs';
 export class ChatviewComponent implements OnInit {
 
 
-  private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService)
   public isAChannel = false;
@@ -51,34 +47,25 @@ export class ChatviewComponent implements OnInit {
   addMemberPopover = false;
 
   public channelSubject = new BehaviorSubject<Channel | Chat | null>(null);
-channel$ = this.channelSubject.asObservable();
+  channel$ = this.channelSubject.asObservable();
 
-@Input() set currentChannel(value: Channel | Chat) {
-  this.channelSubject.next(value);
-}
+  @Input() set currentContext(value: Channel | Chat) {
+    this.channelSubject.next(value);
+  }
 
-get currentChannel(): Channel {
-  return this.channelSubject.getValue() as Channel;
-}
+  get currentContext(): Channel {
+    return this.channelSubject.getValue() as Channel;
+  }
+
+  constructor() { }
+
 
   ngOnInit() {
-    this.channel$.pipe(
-      filter(channel => !!channel)
-    ).subscribe(channel => {
-      this.currentChannel instanceof Channel && this.currentChannel.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
-      this.setObjectType();
+    this.channel$.subscribe(() => {
+      this.currentContext.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
       this.getRequiredAvatars();
     });
   }
-
-  constructor(private cdr: ChangeDetectorRef) {
-  }
-
-  setObjectType() {
-    if (this.currentChannel instanceof Channel) this.isAChannel = true;
-    if (this.currentChannel instanceof Chat) this.isAChat = true;
-  }
-
 
   getTitle(object: Channel | Chat | Message | undefined): string {
     if (object instanceof Channel) return object.name;
@@ -94,8 +81,8 @@ get currentChannel(): Channel {
 
 
   getRequiredAvatars() {
-    if (this.currentChannel instanceof Channel) {
-      this.requiredAvatars = this.currentChannel.memberIDs.slice(0, 3);
+    if (this.currentContext instanceof Channel) {
+      this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3);
     }
   }
 
@@ -168,9 +155,9 @@ get currentChannel(): Channel {
   }
 
   isAllowedToAddMember() {
-    if (this.currentChannel instanceof Channel) {
-      return this.currentChannel.creatorID === this.userService.currentUserID &&
-        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+    if (this.currentContext instanceof Channel) {
+      return this.currentContext.creatorID === this.userService.currentUserID &&
+        this.currentContext.memberIDs.includes(this.userService.currentUserID)
     }
     return
   }

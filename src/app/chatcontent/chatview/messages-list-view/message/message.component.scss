@@ -24,7 +24,7 @@
       @include flex(normal, center);
       gap: 1.25rem;
 
-      > :nth-child(1) {
+      >.message-creator-name {
         font-size: 1.125rem;
         font-weight: 700;
 
@@ -33,14 +33,14 @@
         }
       }
 
-      > :nth-child(2) {
+      >span {
         font-size: 0.875rem;
         font-weight: 400;
         color: #686868;
       }
     }
 
-    > p {
+    >.message-text {
       margin: 0;
       padding: 15px;
       border-radius: 0 1.875rem 1.875rem 1.875rem;
@@ -75,11 +75,6 @@
       width: 100%;
       gap: 1.25rem;
 
-      > span {
-        font-size: 0.875rem;
-        font-weight: 400;
-      }
-
       div {
         @include flex(normal, center);
         gap: 1.25rem;
@@ -102,6 +97,11 @@
           font-size: 0.875rem;
           font-weight: 400;
         }
+      }
+
+      >span {
+        font-size: 0.875rem;
+        font-weight: 400;
       }
     }
   }
@@ -126,13 +126,23 @@
         }
       }
     }
+  }
 
-    .message-ctn .message-from-user {
-      transition: $transition-popover;
-      transform: translatex(3rem);
+  &:hover {
+    >section {
+      .message-reactions {
+        >button {
+          background-color: #ffffff;
+
+          &:hover {
+            border-color: $accent;
+          }
+        }
+      }
     }
   }
 }
+
 
 .message-from-user {
   flex-direction: row-reverse;
@@ -153,7 +163,7 @@
       }
     }
 
-    > p {
+    >.message-text {
       border-radius: 1.875rem 0 1.875rem 1.875rem;
       background-color: $primary;
       color: white;
