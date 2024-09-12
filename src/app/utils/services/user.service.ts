@@ -68,12 +68,15 @@ export class UsersService implements OnDestroy {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') this.users.push(new User(change.doc.data(), change.doc.id));
-          if (change.type === 'modified') {
+          else if (change.type === 'modified') {
             const user = this.users.find((user) => user.id === change.doc.id);
             if (user) user.update(change.doc.data());
           }
-          if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
-          if (this.currentUserID === change.doc.id) this.changeCurrentUserSubject.next(this.currentUser);
+          else if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
+          if (this.currentUserID === change.doc.id) {
+            if(change.doc.data()['online'] === false) this.updateCurrentUserDataOnFirestore({ online: true });
+            this.changeCurrentUserSubject.next(this.currentUser);
+          }
         });
         this.users.sort((a, b) => a.name.localeCompare(b.name));
         this.changeUserListSubject.next(this.users);
@@ -150,17 +153,17 @@ export class UsersService implements OnDestroy {
     }
   }
 
-  
+
   private async setCurrentUser(user: User) {
     if (this.currentUser && user) return;
     this.currentUser = user;
     if (user.guest) this.currentGuestUserID = user.id;
     await this.updateCurrentUserDataOnFirestore({ online: true, lastLoginAt: serverTimestamp() });
     this.changeCurrentUserSubject.next(user);
-}
+  }
 
 
-  public async  clearCurrentUser() {
+  public async clearCurrentUser() {
     await this.updateCurrentUserDataOnFirestore({ online: false });
     this.currentUser = undefined;
     localStorage.removeItem('guestuserid'); // this is only for guest user
