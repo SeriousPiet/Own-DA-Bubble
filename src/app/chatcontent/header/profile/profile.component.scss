@@ -124,6 +124,13 @@
         .mail-span {
           @include nunito(1.25, 400, $mail);
         }
+
+        .mail-verify {
+
+          .mail-verify-link {
+            @include buttonNoBorder;
+          }
+        }
       }
     }
   }
