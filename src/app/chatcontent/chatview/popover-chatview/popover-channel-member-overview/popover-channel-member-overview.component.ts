@@ -152,11 +152,14 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
   }
 
   onSearchInput() {
+    this.searchService.updateSearchQuery(this.searchQuery);
     this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
-      map((groupedResults: GroupedSearchResults) => {
-        return groupedResults.users.filter((suggestion) =>
-          suggestion.text.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
+      map((groupedResults) => {
+        return [
+          ...groupedResults.users,
+          ...groupedResults.channels,
+          ...groupedResults.messages,
+        ];
       })
     );
   }

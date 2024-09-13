@@ -6,7 +6,7 @@
     @for (message of messages; track message) { 
       
       @if(date.getDate() == message.createdAt.getDate()){
-      <app-message [id]="message.id" [messages]="messages" [messageWriter]="message.creatorID"
+      <app-message [ngClass]="{'chat-view': true }" [id]="message.id" [messages]="messages" [messageWriter]="message.creatorID"
       [messageData]="message"></app-message>
       }
     }
