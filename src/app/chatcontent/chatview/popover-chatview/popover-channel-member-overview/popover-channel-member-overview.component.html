@@ -71,8 +71,8 @@
         }
     </div>
     }
-    <button [ngClass]="{'button-disabled': [isAnyOptionSelected === false ||
-          (isUserSearchSelected && userAmount === 0)], 'button-enable': true}" [disabled]="isAnyOptionSelected === false ||
+    <button [ngClass]="{'button-disabled': isAnyOptionSelected === false ||
+          (isUserSearchSelected && userAmount === 0), 'button-enable': true}" [disabled]="isAnyOptionSelected === false ||
           (isUserSearchSelected && userAmount === 0)" (click)="addSelectedUserToChannel()">Hinzufügen
     </button>
 </main>
