@@ -67,12 +67,6 @@ export class ChatviewComponent implements OnInit {
         });
     }
 
-    // ngOnChanges(changes: SimpleChanges): void {
-    //   if (changes['currentContext']) {
-    //     this.getRequiredAvatars();
-    //   }
-    // }
-
     getTitle(object: Channel | Chat | Message | undefined): string {
         if (object instanceof Channel) return object.name;
         // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
@@ -113,25 +107,6 @@ export class ChatviewComponent implements OnInit {
             this.currentContext instanceof Channel &&
             this.currentContext.memberIDs.includes(this.userService.currentUser!.id)
         );
-    }
-
-    renderChannelMembersAvatar(object: Channel | Chat | Message | undefined) {
-        if (object instanceof Channel && object.memberIDs.length <= 3) {
-            object.memberIDs.forEach(memberID => {
-                return this.userService.getUserByID(memberID)?.avatar
-            });
-        }
-        else if (object instanceof Channel) {
-            this.renderOnlyFirstThreeAvatars(object)
-        }
-    }
-
-    renderOnlyFirstThreeAvatars(object: Channel) {
-        const maxAvatarsCount = 3;
-        const maxAvatars = object.memberIDs.slice(0, maxAvatarsCount)
-        maxAvatars.forEach(memberID => {
-            return this.userService.getUserByID(memberID)?.avatar
-        });
     }
 
     getChannelCreatorName(object: Channel | Chat): string {
