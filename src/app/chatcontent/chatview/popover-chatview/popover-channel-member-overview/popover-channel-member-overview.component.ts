@@ -186,10 +186,9 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
       if (user) {
         this.addUserToSelection(user);
       }
+      this.isDropdownVisible = false;
     }
-    this.isDropdownVisible = false;
-    this.searchService.addRecentSearch(suggestion);
-    this.userAmount++;
+
   }
 
   public findUserByName(name: string): User | undefined {
@@ -207,6 +206,7 @@ export class PopoverChannelMemberOverviewComponent implements OnChanges {
     if (!this.selectedUsers.some((u) => u.id === user.id)) {
       if (!this.currentChannel.memberIDs.includes(user.id)) {
         this.selectedUsers.push(user);
+        this.userAmount++;
       }
     }
   }
