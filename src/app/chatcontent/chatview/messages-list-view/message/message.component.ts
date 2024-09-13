@@ -27,7 +27,7 @@ export class MessageComponent implements OnInit {
     this.checkMessageWriterID(messageWriterID);
   }
   @Input() messages: Message[] = [];
-
+  
   messagefromUser = false;
   messageCreator: User | undefined;
   isHovered = false;
@@ -50,8 +50,7 @@ export class MessageComponent implements OnInit {
     this.getMessageCreatorObject();
   }
 
-  constructor(private cdr: ChangeDetectorRef) {
-  }
+  constructor() {}
 
   getMessageCreatorObject() {
     return this.userService.getUserByID(this.messageData.creatorID);
