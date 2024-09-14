@@ -2,6 +2,155 @@
 @import "../../../mixins.scss";
 @import "../../../fonts.scss";
 
+.intro-screen {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  @include flex(center, center);
+  gap: 1.5rem;
+  background: $intro-gradient;
+  opacity: 1;
+  animation: backgroundFade 0.335s ease-out forwards 2.275s;
+
+  .intro-boundry {
+    @include flex(center, center);
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    max-width: 1920px;
+
+    .animated-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: top left;
+      transform: translate(-50%, -50%);
+
+      @include flex(center, center);
+      animation: travelUpLeft 1s ease-out 1.5s forwards;
+
+      .animated-bubble-logo {
+        position: absolute;
+        z-index: 5;
+        width: 12rem;
+        aspect-ratio: 1 / 1;
+        object-fit: contain;
+
+        animation: splitLogo 0.5s ease-out 0.5s forwards,
+          logoShrink 1s ease-out 1.5s forwards,
+          combineLogo 1s ease-out 1.5s forwards;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .heading {
+        position: absolute;
+        z-index: 2;
+        clip-path: inset(0 0 0 100%);
+        animation: splitText 0.5s ease-out 0.5s forwards,
+          combineText 1s ease-out 1.5s forwards;
+
+        span {
+          font-size: 64px;
+          font-weight: 700;
+          color: white;
+          animation: textShrink 1s ease-out 1.5s forwards;
+        }
+      }
+    }
+  }
+
+  @keyframes splitLogo {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-8.5rem);
+    }
+  }
+
+  @keyframes splitText {
+    0% {
+      transform: translateX(0);
+      clip-path: inset(0 0 0 100%);
+    }
+    100% {
+      transform: translateX(8.5rem);
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes combineText {
+    0% {
+      transform: translateX(8.5rem);
+    }
+    100% {
+      transform: translateX(7.5rem);
+    }
+  }
+
+  @keyframes combineLogo {
+    0% {
+      transform: translateX(-8.5rem);
+    }
+    100% {
+      transform: translate(0.25rem, 0.25rem);
+    }
+  }
+
+  @keyframes travelUpLeft {
+    0% {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    100% {
+      left: 5.25rem;
+      top: 5.5rem;
+      transform: translate(0, 0);
+    }
+  }
+
+  @keyframes logoShrink {
+    0% {
+      width: 12rem;
+    }
+    100% {
+      width: 3rem;
+    }
+  }
+
+  @keyframes textShrink {
+    0% {
+      font-size: 4rem;
+      color: white;
+    }
+    100% {
+      font-size: 2rem;
+      color: black;
+    }
+  }
+
+  @keyframes backgroundFade {
+    0% {
+      opacity: 1;
+    }
+    99% {
+      opacity: 0;
+      z-index: -1;
+    }
+    100% {
+      display: none;
+    }
+  }
+}
+
 #infoPopover {
   margin: auto 1.25rem 1.25rem auto;
   padding: 2rem;
@@ -55,7 +204,7 @@ section {
     left: 1rem;
   }
 
-  .bubble-logo {
+  .static-bubble-logo {
     position: absolute;
     top: 4rem;
     left: 4rem;

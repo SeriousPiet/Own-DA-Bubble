@@ -21,17 +21,20 @@ import { UsersService } from '../../../utils/services/user.service';
 @Component({
   selector: 'app-messages-list-view',
   standalone: true,
-  imports: [MessageComponent, MessageDateComponent, MessageGreetingComponent, CommonModule],
+  imports: [
+    MessageComponent,
+    MessageDateComponent,
+    MessageGreetingComponent,
+    CommonModule,
+  ],
   templateUrl: './messages-list-view.component.html',
   styleUrl: './messages-list-view.component.scss',
 })
 export class MessagesListViewComponent implements OnInit {
-  // messagefromUser = true;
-  // messageWroteFromUser = false;
 
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
-  public userService = inject(UsersService)
+  public userService = inject(UsersService);
   private unsubMessages: any = null;
   public messages: Message[] = [];
   public messagesDates: Date[] = [];
@@ -51,7 +54,7 @@ export class MessagesListViewComponent implements OnInit {
   constructor(
     private _cdr: ChangeDetectorRef,
     private searchService: SearchService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.messageScrollSubscription =
@@ -63,19 +66,31 @@ export class MessagesListViewComponent implements OnInit {
   }
 
   private scrollToMessageInView(message: Message) {
-    const messageElement = document.getElementById(message.id);
-    if (messageElement) {
-      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      messageElement.classList.add('color-change');
-      setTimeout(() => {
-        messageElement.classList.remove('color-change');
-      }, 1750);
-    }
+    const maxAttempts = 5;
+    let attempts = 0;
+
+    const scrollToElement = () => {
+      const messageElement = document.getElementById(message.id);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        messageElement.classList.add('color-change');
+        setTimeout(() => {
+          messageElement.classList.remove('color-change');
+        }, 1750);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(scrollToElement, 500);
+      }
+    };
+
+    setTimeout(scrollToElement, 100);
   }
 
   sortMessagesDate(messageCreationDate: Date) {
     this.messagesDates.push(messageCreationDate);
-    this.messagesDates.sort((a, b) => a.getMonth() - b.getMonth() || a.getDate() - b.getDate());
+    this.messagesDates.sort(
+      (a, b) => a.getMonth() - b.getMonth() || a.getDate() - b.getDate()
+    );
     this.messagesDates = this.messagesDates.filter((date, index, array) => {
       return index === 0 || date.getDate() !== array[index - 1].getDate();
     });
@@ -113,12 +128,10 @@ export class MessagesListViewComponent implements OnInit {
               );
             }
           });
-          this._cdr.detectChanges();
         }
       );
     }
   }
-
 
   ngOnDestroy(): void {
     if (this.unsubMessages) {

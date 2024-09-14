@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, forkJoin, from } from 'rxjs';
 import {
   map,
   switchMap,
@@ -12,8 +12,6 @@ import { UsersService } from './user.service';
 import { ChannelService } from './channel.service';
 import { MessageService } from './message.service';
 import { Message } from '../../shared/models/message.class';
-import { Channel } from '../../shared/models/channel.class';
-import { Chat } from '../../shared/models/chat.class';
 
 import {
   Firestore,
@@ -24,10 +22,28 @@ import {
   limit,
   getDocs,
   startAt,
-  endAt,
+  collectionGroup,
 } from '@angular/fire/firestore';
 
 import { collectionData } from 'rxfire/firestore';
+
+export interface GroupedSearchResults {
+  users: { text: string; type: 'user'; hasChat: boolean }[];
+  channels: { text: string; type: 'channel'; hasChat: boolean }[];
+  messages: {
+    text: string;
+    type: 'message';
+    hasChat: boolean;
+    message: Message;
+  }[];
+}
+
+export interface SearchSuggestion {
+  text: string;
+  type: string;
+  hasChat?: boolean;
+  message?: Message;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +57,13 @@ export class SearchService {
     return this._isContextSearchEnabled;
   }
 
+  /**
+   * A BehaviorSubject that holds the current search state, including the search query and any context restrictions.
+   *
+   * The search state is used to manage the state of the search functionality in the application.
+   * The `query` property holds the current search query, and the `context` property holds any context restrictions
+   * that have been applied to the search.
+   */
   private searchStateSubject = new BehaviorSubject<{
     query: string;
     context: string | null;
@@ -49,6 +72,13 @@ export class SearchService {
     context: null,
   });
 
+  /**
+   * Emits a `Message` object when a message scroll request is made.
+   *
+   * This event emitter is used to notify other parts of the application when a user
+   * requests to scroll to a specific message. The emitted `Message` object contains
+   * the details of the message that should be scrolled to.
+   */
   public messageScrollRequested = new EventEmitter<Message>();
 
   searchState$ = this.searchStateSubject.asObservable();
@@ -57,13 +87,9 @@ export class SearchService {
     private navigationService: NavigationService,
     private usersService: UsersService,
     private channelService: ChannelService,
-    private firestore: Firestore
-  ) {
-    console.log(
-      'Verfügbare Channels im SearchService:',
-      this.channelService.channels
-    );
-  }
+    private firestore: Firestore,
+    private messageService: MessageService
+  ) {}
 
   // ############################################################################################################
   // State Management Methods
@@ -148,8 +174,6 @@ export class SearchService {
    */
   private scrollToMessage(message: Message): void {
     this.messageScrollRequested.emit(message);
-
-    console.log('Scrolling to message:', message);
   }
 
   /**
@@ -246,36 +270,49 @@ export class SearchService {
     return null;
   }
 
+  /**
+   * Creates a new `Message` instance from the provided Firestore document.
+   *
+   * This method extracts the necessary data from the Firestore document and uses it to construct a new `Message` object.
+   *
+   * @param doc - The Firestore document containing the message data.
+   * @returns A new `Message` instance representing the message data from the provided document.
+   */
   private createMessageFromDoc(doc: any): Message {
     const data = doc.data();
     return new Message(data, doc.ref.parent.path, doc.id);
   }
 
   /**
-   * Adds the provided search term to the list of recent searches.
+   * Adds a new search term to the list of recent searches.
    *
    * This method retrieves the current list of recent searches from local storage,
-   * adds the new search term to the beginning of the list, and then trims the list
-   * to a maximum of 5 entries before storing it back in local storage.
+   * prepends the new search term to the list, and then stores the updated list
+   * back in local storage. The list is limited to a maximum of 5 recent searches.
    *
-   * @param term - The search term to add to the list of recent searches.
+   * @param term - The new search term to add to the list of recent searches.
    */
-  addRecentSearch(term: string) {
-    if (term.trim() === '') return; // Ignoriere leere Suchanfragen
+  addRecentSearch(term: SearchSuggestion) {
+    if (term.text.trim() === '') return;
     let searches = this.getRecentSearches();
-    searches = [term, ...searches.filter((s) => s !== term)].slice(0, 5);
+    searches = [term, ...searches.filter((s) => s.text !== term.text)].slice(
+      0,
+      5
+    );
     localStorage.setItem(this.RECENT_SEARCHES_KEY, JSON.stringify(searches));
   }
 
   /**
-   * Retrieves the list of recent searches from local storage.
+   * Retrieves the list of recent search suggestions from local storage.
    *
-   * This method reads the recent searches from the local storage and returns them as an array of strings.
-   * If no recent searches are found in local storage, an empty array is returned.
+   * This method reads the recent search suggestions from the local storage and
+   * returns them as an array of `SearchSuggestion` objects. If no recent searches
+   * are found in local storage, an empty array is returned.
    *
-   * @returns An array of recent search terms.
+   * @returns An array of `SearchSuggestion` objects representing the recent search
+   * suggestions.
    */
-  getRecentSearches(): string[] {
+  getRecentSearches(): SearchSuggestion[] {
     const searches = localStorage.getItem(this.RECENT_SEARCHES_KEY);
     return searches ? JSON.parse(searches) : [];
   }
@@ -293,123 +330,189 @@ export class SearchService {
     this.recentSearches = this.recentSearches.filter((t) => t !== term);
   }
 
-  getSearchSuggestions(): Observable<
-    { text: string; type: string; hasChat: boolean }[]
-  > {
+  /**
+   * Retrieves a grouped set of search suggestions based on the current search query.
+   *
+   * This method debounces the search query, filters out queries that are too short,
+   * and then performs three parallel searches: one for users, one for channels, and
+   * one for messages. The results of these searches are combined into a single
+   * `GroupedSearchResults` object and returned as an Observable.
+   *
+   * @returns An Observable that emits a `GroupedSearchResults` object containing
+   * the search suggestions for users, channels, and messages.
+   */
+  getSearchSuggestions(): Observable<GroupedSearchResults> {
     return this.searchState$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((state) => {
-        if (!state.query) {
-          return of([]);
+        if (!state.query || state.query.trim().length < 3) {
+          return of({ users: [], channels: [], messages: [] });
         }
-        if (this.isContextSearchEnabled && state.context) {
-          return this.searchWithContext(state.query, state.context);
-        } else {
-          return this.searchGlobal(state.query);
-        }
+        return forkJoin({
+          users: this.searchUsers(state.query).pipe(
+            map((users) => users.slice(0, 5))
+          ),
+          channels: this.searchChannels(state.query).pipe(
+            map((channels) => channels.slice(0, 5))
+          ),
+          messages:
+            state.query.trim().length >= 3
+              ? this.searchMessages(state.query).pipe(
+                  map((messages) => messages.slice(0, 5))
+                )
+              : of([]),
+        });
       })
     );
   }
 
   /**
-   * Searches for global search suggestions based on the provided query.
+   * Finds a message by its content in the Firestore database.
    *
-   * @param query - The search query to match against user names and channel names.
-   * @returns An observable that emits an array of search suggestions, where each suggestion has a `text`, `type`, and `hasChat` property.
-   * The `text` property contains the user name or channel name, the `type` property indicates whether the suggestion is for a user or a channel,
-   * and the `hasChat` property indicates whether the suggestion has an associated chat.
+   * @param content - The content of the message to search for.
+   * @returns A Promise that resolves to the found message, or `undefined` if no message was found.
    */
-  private searchGlobal(
+  async findMessageByContent(content: string): Promise<Message | undefined> {
+    const messagesRef = collectionGroup(this.firestore, 'messages');
+    const q = query(messagesRef, where('content', '==', content), limit(1));
+
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return new Message(doc.data(), doc.ref.parent.path, doc.id);
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Searches for users based on the provided query string.
+   *
+   * @param query - The search query to use for finding users.
+   * @returns An Observable that emits an array of objects containing the user's display name, type, and whether the user has a chat.
+   */
+  private searchUsers(
     query: string
-  ): Observable<{ text: string; type: string; hasChat: boolean }[]> {
-    return of(this.channelService.channels).pipe(
-      map((channels) => {
-        const users = this.usersService.getAllUserIDs().map((userId) => {
-          const user = this.usersService.getUserByID(userId);
-          return {
-            text: `@${user?.name}`,
-            type: 'user',
-            hasChat:
-              this.channelService.getChatWithUserByID(userId, false) !==
-              undefined,
-          };
-        });
-
-        const channelResults = channels.map((channel) => ({
-          text: `#${channel.name}`,
-          type: 'channel',
-          hasChat: true,
-        }));
-
-        return [...users, ...channelResults];
-      }),
-      map((results) =>
-        results.filter((item) =>
-          item.text.toLowerCase().includes(query.toLowerCase())
-        )
+  ): Observable<{ text: string; type: 'user'; hasChat: boolean }[]> {
+    return of(this.usersService.getAllUserIDs()).pipe(
+      map((userIds) =>
+        userIds
+          .map((id) => {
+            const user = this.usersService.getUserByID(id);
+            return user
+              ? {
+                  text: `@${user.name}`,
+                  type: 'user' as const,
+                  hasChat:
+                    this.channelService.getChatWithUserByID(id, false) !==
+                    undefined,
+                }
+              : null;
+          })
+          .filter(
+            (user): user is { text: string; type: 'user'; hasChat: boolean } =>
+              user !== null &&
+              user.text.toLowerCase().includes(query.toLowerCase())
+          )
       )
     );
   }
 
   /**
-   * Searches for search suggestions based on the provided query and the current search context.
+   * Searches for channels based on the provided query string.
    *
-   * @param query - The search query to match against user names and channel names.
-   * @param context - The current search context, which can be a channel or a user.
-   * @returns An observable that emits an array of search suggestions, where each suggestion has a `text`, `type`, and `hasChat` property.
-   * The `text` property contains the user name or channel name, the `type` property indicates whether the suggestion is for a user or a channel,
-   * and the `hasChat` property indicates whether the suggestion has an associated chat.
+   * @param query - The search query to use for finding channels.
+   * @returns An Observable that emits an array of objects containing the channel name, type, and whether the user has a chat in that channel.
    */
-  private searchWithContext(
-    query: string,
-    context: string
-  ): Observable<{ text: string; type: string; hasChat: boolean }[]> {
+  private searchChannels(
+    query: string
+  ): Observable<{ text: string; type: 'channel'; hasChat: boolean }[]> {
     return of(this.channelService.channels).pipe(
-      map((channels) => {
-        if (context.startsWith('in:#')) {
-          const channelName = context.slice(4);
-          const channel = channels.find((c) => c.name === channelName);
-          if (channel) {
-            return channel.memberIDs.map((userId) => {
-              const user = this.usersService.getUserByID(userId);
-              return {
-                text: `@${user?.name}`,
-                type: 'user',
-                hasChat:
-                  this.channelService.getChatWithUserByID(userId, false) !==
-                  undefined,
-              };
-            });
-          }
-        } else if (context.startsWith('in:@')) {
-          const userName = context.slice(4);
-          const user = this.usersService
-            .getAllUserIDs()
-            .find((id) => this.usersService.getUserByID(id)?.name === userName);
-          if (user) {
-            return [
-              {
-                text: `@${this.usersService.getUserByID(user)?.name}`,
-                type: 'user',
-                hasChat: true,
-              },
-            ];
-          }
-        }
-        return [];
-      }),
-      map((results) =>
-        results.filter((item) =>
-          item.text.toLowerCase().includes(query.toLowerCase())
-        )
+      map((channels) =>
+        channels
+          .map((channel) => ({
+            text: `#${channel.name}`,
+            type: 'channel' as const,
+            hasChat: true,
+          }))
+          .filter((channel) =>
+            channel.text.toLowerCase().includes(query.toLowerCase())
+          )
       )
+    );
+  }
+
+  /**
+   * Searches for messages based on the provided query string.
+   *
+   * @param query - The search query to use for finding messages.
+   * @returns An Observable that emits an array of objects containing the truncated message content, message type, whether the user has a chat in that channel, and the original message object.
+   */
+  public searchMessages(
+    query: string
+  ): Observable<
+    { text: string; type: 'message'; hasChat: boolean; message: Message }[]
+  > {
+    return from(this.messageService.searchMessages(query)).pipe(
+      map((messages: Message[]) => {
+        return messages.map((message: Message) => ({
+          text: this.truncateMessageContent(message.content, query),
+          type: 'message' as const,
+          hasChat: true,
+          message: message,
+        }));
+      })
     );
   }
 
   // ############################################################################################################
   // Utility Methods
   // ############################################################################################################
+
+  /**
+   * Truncates the content of a message to a maximum length, highlighting the search query within the content.
+   *
+   * @param content - The original message content.
+   * @param query - The search query to highlight in the truncated content.
+   * @param maxLength - The maximum length of the truncated content (default is 60 characters).
+   * @returns The truncated message content with the search query highlighted.
+   */
+  private truncateMessageContent(
+    content: string,
+    query: string,
+    maxLength: number = 60
+  ): string {
+    const lowerContent = content.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    const index = lowerContent.indexOf(lowerQuery);
+
+    let result: string;
+    if (index === -1) {
+      result = content.slice(0, maxLength);
+    } else if (content.length <= maxLength) {
+      result = content;
+    } else {
+      let start = Math.max(
+        0,
+        index - Math.floor((maxLength - query.length) / 2)
+      );
+      let end = Math.min(content.length, start + maxLength);
+
+      if (end === content.length) {
+        start = Math.max(0, end - maxLength);
+      }
+
+      result = content.slice(start, end);
+      if (start > 0) result = '...' + result;
+      if (end < content.length) result = result + '...';
+    }
+
+    return result.replace(
+      new RegExp(query, 'gi'),
+      (match) => `<strong>${match}</strong>`
+    );
+  }
 
   /**
    * Sets whether context search is enabled.
@@ -458,15 +561,11 @@ export class SearchService {
    */
   getContextMembers(): string[] {
     const context = this.getCurrentContext();
-    console.log('Aktueller Kontext:', context);
     if (context.startsWith('in:#')) {
       const channelName = context.slice(4);
-      console.log('Suche nach Channel:', channelName);
-      console.log('Verfügbare Channels:', this.channelService.channels);
       const channel = this.channelService.channels.find(
         (c) => c.name === channelName
       );
-      console.log('Gefundener Channel:', channel);
       return channel ? channel.memberIDs : [];
     }
     return [];

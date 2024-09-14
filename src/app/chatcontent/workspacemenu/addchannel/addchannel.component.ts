@@ -5,6 +5,10 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AvatarDirective } from '../../../utils/directives/avatar.directive';
 import { SearchService } from '../../../utils/services/search.service';
+import { SearchSuggestion } from '../../../utils/services/search.service';
+
+import { GroupedSearchResults } from '../../../utils/services/search.service';
+
 import { User } from '../../../shared/models/user.class';
 import { CommonModule } from '@angular/common';
 import { Observable, map } from 'rxjs';
@@ -60,14 +64,13 @@ export class AddchannelComponent implements AfterViewInit {
   }
 
   onSearchInput() {
-    this.searchService.updateSearchQuery(this.searchQuery);
-    this.suggestions$ = this.searchService
-      .getSearchSuggestions()
-      .pipe(
-        map((suggestions) =>
-          suggestions.filter((suggestion) => suggestion.type === 'user')
-        )
-      );
+    this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
+      map((groupedResults: GroupedSearchResults) => {
+        return groupedResults.users.filter((suggestion) =>
+          suggestion.text.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      })
+    );
   }
 
   onFocus() {
@@ -85,7 +88,7 @@ export class AddchannelComponent implements AfterViewInit {
     }, 200);
   }
 
-  selectSuggestion(suggestion: { text: string; type: string }) {
+  selectSuggestion(suggestion: SearchSuggestion) {
     if (suggestion.type === 'user') {
       const userName = suggestion.text.slice(1);
       const user = this.findUserByName(userName);
@@ -94,7 +97,7 @@ export class AddchannelComponent implements AfterViewInit {
       }
     }
     this.isDropdownVisible = false;
-    this.searchService.addRecentSearch(suggestion.text);
+    this.searchService.addRecentSearch(suggestion);
     this.userAmount++;
   }
 

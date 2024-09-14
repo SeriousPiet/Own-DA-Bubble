@@ -1,4 +1,4 @@
-import { inject, Injectable, OnDestroy } from '@angular/core';
+import { inject, Injectable, OnDestroy, EventEmitter } from '@angular/core';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Message } from '../../shared/models/message.class';
@@ -14,6 +14,14 @@ import { ChannelService } from './channel.service';
  * NavigationService class provides methods and properties for managing navigation within the application.
  */
 export class NavigationService {
+  /**
+   * Emits an event when navigation is complete.
+   */
+  public navigationComplete = new EventEmitter<void>();
+
+  private navigationCompleteSubject = new BehaviorSubject<void>(undefined);
+  public navigationComplete$ = this.navigationCompleteSubject.asObservable();
+
   /**
    * The user service for handling user-related operations.
    */
@@ -79,6 +87,15 @@ export class NavigationService {
     }
     this.clearThread();
     this.changeSubject.next('chatViewObjectSet');
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    this.navigationCompleteSubject.next();
+    if (
+      this._chatViewObject === object ||
+      (this._chatViewObject instanceof Chat && object instanceof User)
+    ) {
+      this.navigationComplete.emit();
+    }
   }
 
   /**
@@ -122,6 +139,17 @@ export class NavigationService {
   // methodes for search-functionality
   // ############################################################################################################
 
+  /**
+   * Gets the search context based on the current chat view object.
+   *
+   * If the chat view object is an instance of `Chat`:
+   * - If there is a chat partner, returns `in:@{chatPartner}`.
+   * - If it's a self-chat, returns `in:@{currentUser.name}`.
+   *
+   * If the chat view object is an instance of `Channel`, returns `in:#${channel.name}`.
+   *
+   * @returns The search context string, or an empty string if the chat view object is not a `Chat` or `Channel`.
+   */
   getSearchContext(): string {
     if (this.chatViewObject instanceof Chat) {
       const chatPartner = this.getChatPartnerName();
@@ -137,6 +165,11 @@ export class NavigationService {
     return '';
   }
 
+  /**
+   * Checks if the current chat view object represents a self-chat (a chat with only the current user).
+   *
+   * @returns {boolean} `true` if the current chat view object is a `Chat` instance and all member IDs match the current user's ID, `false` otherwise.
+   */
   private isSelfChat(): boolean {
     if (this.chatViewObject instanceof Chat && this.userService.currentUser) {
       return this.chatViewObject.memberIDs.every(
@@ -146,6 +179,11 @@ export class NavigationService {
     return false;
   }
 
+  /**
+   * Gets the name of the chat partner for the current chat view object.
+   *
+   * @returns The name of the chat partner, or `undefined` if the current chat view object is not a `Chat` instance or if the current user is the only member of the chat.
+   */
   private getChatPartnerName(): string | undefined {
     if (this.chatViewObject instanceof Chat) {
       const chatPartnerID = this.chatViewObject.memberIDs.find(

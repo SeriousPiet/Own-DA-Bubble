@@ -19,7 +19,7 @@ main {
   min-height: 100%;
   min-width: 100%;
 
-  >div {
+  >.channel-editor-header {
     @include flex(space-between, center);
 
     >div {
@@ -62,14 +62,6 @@ main {
       padding: 1.25rem;
       width: 100%;
 
-      .channel-name-input {
-        gap: 0.625rem;
-
-        >input {
-          @include nunito(1.125, 400)
-        }
-      }
-
       >div {
         width: 100%;
 
@@ -92,6 +84,14 @@ main {
             font-weight: 600;
             color: $secondary;
           }
+        }
+      }
+
+      .channel-name-input {
+        gap: 0.625rem;
+
+        >input {
+          @include nunito(1.125, 400)
         }
       }
     }
@@ -136,22 +136,17 @@ main {
     width: 100%;
   }
 
-  :nth-child(4) {
+  .channel-creator-info {
     @include flex(normal, normal);
     flex-direction: column;
     gap: 1.25rem;
 
-    > :nth-child(2) {
+    > #channel-creator-name {
       font-weight: 400;
       font-size: 1.5rem;
       color: $secondary;
     }
   }
-}
-
-.leave-channel-button {
-  align-self: flex-end;
-  @include buttonFull();
 }
 
 .channel-name-editor {
@@ -183,4 +178,40 @@ main {
 .no-edit-right {
   user-select: none !important;
   cursor: default !important;
+}
+
+.leave-channel-button {
+  align-self: flex-end;
+  @include buttonFull();
+}
+
+#confirmation-popup {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 20px;
+
+  .confirmation-popup-ctn {
+    @include flex(center, center);
+    flex-direction: column;
+    gap: 20px;
+
+
+    >p {
+      line-height: 32px;
+
+      >span {
+        color: $primary
+      }
+    }
+
+    >.btn-ctn {
+      @include flex(flex-end, center);
+      gap: 1.25rem;
+      width: 100%;
+
+      >button {
+        @include buttonFull();
+      }
+    }
+  }
 }

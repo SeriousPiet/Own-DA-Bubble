@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormControl,
@@ -26,15 +26,16 @@ import {
   serverTimestamp,
   where,
 } from '@angular/fire/firestore';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent implements OnDestroy, OnInit {
   private readonly loginInfoStayTime = 2000;
 
   public userservice = inject(UsersService);
@@ -54,6 +55,8 @@ export class LoginComponent implements OnDestroy {
 
   public passwordResetFormShow = false;
 
+  public showIntro = true;
+
   passwordResetForm = new FormGroup({
     email: new FormControl('', [Validators.required, emailValidator()]),
   });
@@ -62,6 +65,19 @@ export class LoginComponent implements OnDestroy {
     email: new FormControl('', [Validators.required, emailValidator()]),
     password: new FormControl('', [Validators.required, passwordValidator()]),
   });
+
+  ngOnInit() {
+    this.checkIntroStatus();
+  }
+
+  private checkIntroStatus() {
+    const introPlayed = sessionStorage.getItem('introPlayed');
+    if (introPlayed) {
+      this.showIntro = false;
+    } else {
+      sessionStorage.setItem('introPlayed', 'true');
+    }
+  }
 
   ngOnDestroy(): void {
     if (this.userlogin) this.userlogin.unsubscribe();
@@ -73,24 +89,21 @@ export class LoginComponent implements OnDestroy {
     this.clearAllErrorSpans();
     // create unique email for guest
     const email = 'gast' + new Date().getTime() + '@gast.de';
-    await addDoc(collection(this.firestore, '/users'),
-      {
-        name: 'Gast',
-        email: email,
-        online: false,
-        signupAt: serverTimestamp(),
-        avatar: 0,
-        guest: true,
-        emailVerified: true
-      });
+    await addDoc(collection(this.firestore, '/users'), {
+      name: 'Gast',
+      email: email,
+      online: false,
+      signupAt: serverTimestamp(),
+      avatar: 0,
+      guest: true,
+      emailVerified: true,
+    });
     this.userservice.setCurrentUserByEMail(email);
     localStorage.setItem('guestuseremail', email);
     this.showSpinner = false;
     this.loginForm.enable();
     this.handleLoginSuccess(true);
-
   }
-
 
   async submitPasswordResetForm(event: Event) {
     event.preventDefault();
@@ -116,7 +129,6 @@ export class LoginComponent implements OnDestroy {
     this.passwordResetForm.enable();
   }
 
-
   async submitLoginForm(event: Event) {
     event.preventDefault();
     const email = this.loginForm.value.email || '';
@@ -129,7 +141,6 @@ export class LoginComponent implements OnDestroy {
     this.loginForm.enable();
   }
 
-
   async loginUser(email: string, password: string): Promise<string> {
     try {
       await signInWithEmailAndPassword(this.firebaseauth, email, password);
@@ -141,7 +152,6 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-
   async signinWithGoogle() {
     this.showSpinner = true;
     const error = await this.signinWithGooglePopup();
@@ -149,7 +159,6 @@ export class LoginComponent implements OnDestroy {
     if (error != '') this.handleLoginErrors(error);
     else this.handleLoginSuccess();
   }
-
 
   async signinWithGooglePopup(): Promise<string> {
     try {
@@ -177,8 +186,11 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-
-  private async addGoogleUserToFirestore(name: string, email: string, pictureURL: string | null): Promise<string> {
+  private async addGoogleUserToFirestore(
+    name: string,
+    email: string,
+    pictureURL: string | null
+  ): Promise<string> {
     const userObj = {
       name: name,
       email: email,
@@ -193,7 +205,9 @@ export class LoginComponent implements OnDestroy {
     return newUser.id;
   }
 
-  private async getUserIDByEmail(email: string | null): Promise<string | undefined> {
+  private async getUserIDByEmail(
+    email: string | null
+  ): Promise<string | undefined> {
     const usersRef = collection(this.firestore, '/users');
     const queryresponse = query(usersRef, where('email', '==', email));
     const querySnapshot = await getDocs(queryresponse);
@@ -216,17 +230,15 @@ export class LoginComponent implements OnDestroy {
         this.redirectToChatContent();
       }, this.loginInfoStayTime);
     } else {
-      this.userlogin = this.userservice.changeCurrentUser$.subscribe(
-        (change) => {
-          if (change == 'userset') {
-            if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
-              setTimeout(() => {
-                this.redirectToChatContent();
-              }, this.loginInfoStayTime - (new Date().getTime() - showLoginInfo));
-            else this.redirectToChatContent();
-          }
+      this.userlogin = this.userservice.changeCurrentUser$.subscribe((user) => {
+        if (user) {
+          if (new Date().getTime() - showLoginInfo < this.loginInfoStayTime)
+            setTimeout(() => {
+              this.redirectToChatContent();
+            }, this.loginInfoStayTime - (new Date().getTime() - showLoginInfo));
+          else this.redirectToChatContent();
         }
-      );
+      });
     }
   }
 

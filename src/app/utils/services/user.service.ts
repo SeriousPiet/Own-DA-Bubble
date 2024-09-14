@@ -14,10 +14,10 @@ export class UsersService implements OnDestroy {
   private user$: any = null;
   private currentAuthUser: any = undefined;
 
-  private changeUserListSubject = new BehaviorSubject<string>('');
+  private changeUserListSubject = new BehaviorSubject<User[]>([]);
   public changeUserList$ = this.changeUserListSubject.asObservable();
 
-  private changeCurrentUserSubject = new BehaviorSubject<string>('');
+  private changeCurrentUserSubject = new BehaviorSubject<User | undefined>(undefined);
   public changeCurrentUser$ = this.changeCurrentUserSubject.asObservable();
 
   private selectedUserObjectSubject = new BehaviorSubject<User | undefined>(undefined);
@@ -25,7 +25,6 @@ export class UsersService implements OnDestroy {
 
 
   public users: User[] = [];
-  private userEmailWaitForLogin: string | undefined;
   public currentUser: User | undefined;
   public currentGuestUserID: string = '';
   public guestUserIDWaitForLogin: string | undefined;
@@ -69,16 +68,18 @@ export class UsersService implements OnDestroy {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') this.users.push(new User(change.doc.data(), change.doc.id));
-          if (change.type === 'modified') {
+          else if (change.type === 'modified') {
             const user = this.users.find((user) => user.id === change.doc.id);
             if (user) user.update(change.doc.data());
           }
-          if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
-          if (this.currentUserID === change.doc.id) this.changeCurrentUserSubject.next('userchange');
+          else if (change.type === 'removed') this.users = this.users.filter((user) => user.email !== change.doc.data()['email']);
+          if (this.currentUserID === change.doc.id) {
+            if (change.doc.data()['online'] === false) this.updateCurrentUserDataOnFirestore({ online: true });
+            this.changeCurrentUserSubject.next(this.currentUser);
+          }
         });
         this.users.sort((a, b) => a.name.localeCompare(b.name));
-        this.changeUserListSubject.next('users');
-        if (this.userEmailWaitForLogin) this.setCurrentUserByEMail(this.userEmailWaitForLogin);
+        this.changeUserListSubject.next(this.users);
       }
     );
   }
@@ -137,31 +138,42 @@ export class UsersService implements OnDestroy {
 
 
   public async setCurrentUserByEMail(userEmail: string): Promise<void> {
-    this.userEmailWaitForLogin = undefined;
     if (userEmail !== '') {
-      const user = this.users.find((user) => user.email === userEmail);
-      if (user) {
-        if (this.currentUser && this.currentUser.id === user.id) return;
-        this.currentUser = user;
-        if (user.guest) this.currentGuestUserID = user.id;
-        this.changeCurrentUserSubject.next('userset');
-        await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), { online: true, lastLoginAt: serverTimestamp() });
-      } else {
-        this.userEmailWaitForLogin = userEmail;
-      }
+      const userlistSubsciption = this.changeUserList$.subscribe((users) => {
+        const user = users.find((user) => user.email === userEmail);
+        if (user) {
+          this.setCurrentUser(user);
+          setTimeout(() => {
+            userlistSubsciption.unsubscribe();
+          }, 1000);
+        }
+      });
     } else {
-      const userRef = doc(this.firestore, '/users/' + this.currentUserID);
-      if (userRef) await updateDoc(userRef, { online: false });
       this.clearCurrentUser();
     }
   }
 
 
-  public clearCurrentUser(): void {
-    localStorage.removeItem('guestuserid'); // this is only for guest user
-    this.currentUser = undefined;
-    this.currentGuestUserID = '';
-    this.changeCurrentUserSubject.next('userdelete');
+  private async setCurrentUser(user: User) {
+    if (this.currentUser && user) return;
+    this.currentUser = user;
+    if (user.guest) this.currentGuestUserID = user.id;
+    let userData: { online: boolean; lastLoginAt: any; emailVerified?: boolean } = { online: true, lastLoginAt: serverTimestamp() };
+    if (this.currentAuthUser) userData.emailVerified = this.currentAuthUser.emailVerified;
+    await this.updateCurrentUserDataOnFirestore(userData);
+    this.changeCurrentUserSubject.next(user);
+  }
+
+
+  public async clearCurrentUser() {
+    if (this.currentUser) {
+      const logoutUser = this.currentUser;
+      this.currentUser = undefined;
+      localStorage.removeItem('guestuseremail'); // this is only for guest user
+      this.currentGuestUserID = '';
+      updateDoc(doc(this.firestore, '/users/' + logoutUser.id), { online: false });
+      this.changeCurrentUserSubject.next(undefined);
+    }
   }
 
   // ############################################################################################################

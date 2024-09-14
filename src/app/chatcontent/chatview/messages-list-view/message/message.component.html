@@ -13,7 +13,7 @@
                 class="message-creator-name">{{userService.getUserByID(messageData.creatorID)?.name}}</button>
             <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
         </div>
-        <p>{{ messageData.content }}</p>
+        <p class="message-text">{{ messageData.content }}</p>
         @if(hasReaction){
         <div class="message-reactions">
             @for (reaction of messageData.emojies; track $index) {
@@ -29,8 +29,8 @@
         </div>
         }
         <div class="message-info">
-            @if(messageData.answerCount > 0){
-            <div>
+            @if(messageData.answerCount > 0 && messageData.answerable){
+            <div id="message-answer-info">
                 <a>
                     <span>{{ messageData.answerCount }}</span>
                     <span>Antworten</span>
@@ -75,7 +75,7 @@
             <div class="button-ctn">
                 <img id="add-reaction-icon" src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
             </div>
-            <div class="button-ctn">
+            <div class="button-ctn" id="comment-message-btn">
                 <img id="comment-icon" src="./assets/icons/chat/message-hover-menu/comment.svg" alt="">
             </div>
             <div (click)="toggleEditMessagePopup()" id="edit-message-icon" class="button-ctn" id="edit-message-icon">
