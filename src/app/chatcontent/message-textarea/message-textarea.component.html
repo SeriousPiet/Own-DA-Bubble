@@ -1,6 +1,7 @@
 <div [ngClass]="{'drag-over':dropzonehighlighted}" class="input-message">
-    <textarea [disabled]="ifMessageUploading" dragzone class="z-index-2" [(ngModel)]="message" name="" id=""
-        placeholder="Nachricht an #Entwicklerteam"></textarea>
+    <div id="editor-container"></div>
+    <!-- <textarea [disabled]="ifMessageUploading" dragzone class="z-index-2" [(ngModel)]="message" name="" id=""
+        placeholder="Nachricht an #Entwicklerteam"></textarea> -->
     @if(!ifMessageUploading && attachments.length > 0){
     <div class="attachments">
         @for(attachment of attachments; track attachment){

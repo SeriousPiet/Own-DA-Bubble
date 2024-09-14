@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, inject, Input } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, Input } from '@angular/core';
 import { MessageAttachment, MessageService } from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
+import Quill from 'quill';
 
 @Component({
   selector: 'app-message-textarea',
@@ -13,12 +14,13 @@ import { UsersService } from '../../utils/services/user.service';
   templateUrl: './message-textarea.component.html',
   styleUrl: './message-textarea.component.scss'
 })
-export class MessageTextareaComponent {
+export class MessageTextareaComponent implements AfterViewInit {
 
   isHovered = false;
   isActive = false;
 
   message = ''
+  quill: Quill | undefined;
 
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
@@ -44,6 +46,25 @@ export class MessageTextareaComponent {
   @Input() newMessageinChannel!: Channel | Chat;
 
   constructor(private el: ElementRef) { }
+
+  ngAfterViewInit(): void {
+    this.quill = new Quill('#editor-container', {
+      theme: 'bubble',
+      placeholder: 'Schreibe eine Nachricht...',
+      modules: {
+        toolbar: false,
+        tooltip: false
+      }
+    });
+    this.quill.root.innerHTML = this.message;
+    this.quill.on('text-change', () => {
+      if (this.quill) {
+        this.message = this.quill.root.innerHTML;
+      }
+    });
+  }
+
+
   @HostListener('dragenter', ['$event'])
   onDragEnter(event: DragEvent) {
     event.preventDefault();

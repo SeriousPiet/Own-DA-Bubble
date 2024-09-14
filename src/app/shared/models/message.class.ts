@@ -57,8 +57,8 @@ export class Message {
     return this.messagePath + '/answers/';
   }
 
-  private _attachments: StoredAttachments[];
-  get attachments(): StoredAttachments[] {
+  private _attachments: StoredAttachment[];
+  get attachments(): StoredAttachment[] {
     return this._attachments;
   }
 
@@ -103,7 +103,7 @@ export class Message {
     }
   }
 
-  parseAttachments(data: any): StoredAttachments[] {
+  parseAttachments(data: any): StoredAttachment[] {
     if (data !== undefined && data !== '') {
       return JSON.parse(data);
     }

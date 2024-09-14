@@ -101,6 +101,15 @@
     gap: 0.5rem;
     transition: box-shadow 0.3s ease;
 
+    #editor-container {
+        width: 100%;
+        min-height: 3rem;
+        max-height: 15rem;
+        overflow-y: auto;
+        flex-grow: 1;
+        outline: none;
+    }
+
     >textarea {
         resize: none;
         width: 100%;
