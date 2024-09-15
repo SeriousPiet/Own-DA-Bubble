@@ -35,6 +35,13 @@ import { BehaviorSubject, filter } from 'rxjs';
 })
 export class ChatviewComponent implements OnInit {
 
+    @Input() set currentContext(value: Channel | Chat) {
+        this.channelSubject.next(value);
+    }
+
+    get currentContext(): Channel {
+        return this.channelSubject.getValue() as Channel;
+    }
 
     public navigationService = inject(NavigationService);
     public userService = inject(UsersService)
@@ -46,16 +53,8 @@ export class ChatviewComponent implements OnInit {
     memberList = false;
     addMemberPopover = false;
 
-    public channelSubject = new BehaviorSubject<Channel | Chat | null>(null);
+    public channelSubject = new BehaviorSubject<Channel | Chat>(this.navigationService.chatViewObject);
     channel$ = this.channelSubject.asObservable();
-
-    @Input() set currentContext(value: Channel | Chat) {
-        this.channelSubject.next(value);
-    }
-
-    get currentContext(): Channel {
-        return this.channelSubject.getValue() as Channel;
-    }
 
     constructor() { }
 
@@ -83,8 +82,7 @@ export class ChatviewComponent implements OnInit {
     getRequiredAvatars() {
         if (this.currentContext instanceof Channel) {
             this.sortAvatarsArray();
-            this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3);
-            console.log(this.requiredAvatars);
+            this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3)
         }
     }
 
@@ -144,20 +142,14 @@ export class ChatviewComponent implements OnInit {
         return formatedTodaysDate;
     }
 
-
     openMemberListPopover(popover: string) {
         this.memberList = false;
         this.addMemberPopover = false;
         popover === 'memberList' ? this.memberList = true : this.memberList = false;
         popover === 'addMember' ? this.addMemberPopover = true : this.addMemberPopover = false;
+        this.currentContext = this.navigationService.chatViewObject;
     }
-
-
-    openAddNewMemberPopover() {
-        this.addMemberPopover = true;
-        this.memberList = false;
-    }
-
+    
     isAllowedToAddMember() {
         if (this.currentContext instanceof Channel) {
             return this.currentContext.creatorID === this.userService.currentUserID ||
