@@ -139,11 +139,17 @@ export class SearchbarComponent implements OnInit {
     this.searchService.updateSearchQuery(this.searchQuery);
     this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
       map((groupedResults) => {
-        return [
-          ...groupedResults.users,
-          ...groupedResults.channels,
-          ...groupedResults.messages,
-        ];
+        if (this.searchQuery.startsWith('@')) {
+          return groupedResults.users;
+        } else if (this.searchQuery.startsWith('#')) {
+          return groupedResults.channels;
+        } else {
+          return [
+            ...groupedResults.users,
+            ...groupedResults.channels,
+            ...groupedResults.messages,
+          ];
+        }
       })
     );
     this.recentSearches = this.searchService.getRecentSearches();

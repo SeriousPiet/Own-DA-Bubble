@@ -330,23 +330,26 @@ export class SearchService {
     this.recentSearches = this.recentSearches.filter((t) => t !== term);
   }
 
-  /**
-   * Retrieves a grouped set of search suggestions based on the current search query.
-   *
-   * This method debounces the search query, filters out queries that are too short,
-   * and then performs three parallel searches: one for users, one for channels, and
-   * one for messages. The results of these searches are combined into a single
-   * `GroupedSearchResults` object and returned as an Observable.
-   *
-   * @returns An Observable that emits a `GroupedSearchResults` object containing
-   * the search suggestions for users, channels, and messages.
-   */
   getSearchSuggestions(): Observable<GroupedSearchResults> {
     return this.searchState$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((state) => {
-        if (!state.query || state.query.trim().length < 3) {
+        if (state.query.startsWith('@')) {
+          const userQuery = state.query.slice(1);
+          return forkJoin({
+            users: this.searchUsers(userQuery),
+            channels: of([]),
+            messages: of([]),
+          });
+        } else if (state.query.startsWith('#')) {
+          const channelQuery = state.query.slice(1);
+          return forkJoin({
+            users: of([]),
+            channels: this.searchChannels(channelQuery),
+            messages: of([]),
+          });
+        } else if (!state.query || state.query.trim().length < 3) {
           return of({ users: [], channels: [], messages: [] });
         }
         return forkJoin({
@@ -386,12 +389,6 @@ export class SearchService {
     return undefined;
   }
 
-  /**
-   * Searches for users based on the provided query string.
-   *
-   * @param query - The search query to use for finding users.
-   * @returns An Observable that emits an array of objects containing the user's display name, type, and whether the user has a chat.
-   */
   private searchUsers(
     query: string
   ): Observable<{ text: string; type: 'user'; hasChat: boolean }[]> {
@@ -419,12 +416,6 @@ export class SearchService {
     );
   }
 
-  /**
-   * Searches for channels based on the provided query string.
-   *
-   * @param query - The search query to use for finding channels.
-   * @returns An Observable that emits an array of objects containing the channel name, type, and whether the user has a chat in that channel.
-   */
   private searchChannels(
     query: string
   ): Observable<{ text: string; type: 'channel'; hasChat: boolean }[]> {
