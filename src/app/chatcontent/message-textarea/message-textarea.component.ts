@@ -5,14 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
-import Quill from 'quill';
+import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-message-textarea',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, QuillModule],
   templateUrl: './message-textarea.component.html',
-  styleUrl: './message-textarea.component.scss'
+  styleUrls: [
+    './message-textarea.component.scss',
+  ]
 })
 export class MessageTextareaComponent implements AfterViewInit {
 
@@ -20,12 +22,29 @@ export class MessageTextareaComponent implements AfterViewInit {
   isActive = false;
 
   message = ''
-  quill: Quill | undefined;
 
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
   ifMessageUploading = false;
   errorInfo = '';
+
+  quillstyle = {
+    // height: '100%',
+    minHeight: '3rem',
+    maxHeight: '16rem',
+    width: '100%',
+    backgroundColor: 'white',
+    color: 'black',
+    fontFamily: 'Nunito',
+    border: 'none',
+  };
+
+  quillconfig = {
+    toolbar: false,
+    // toolbar: [
+    //   ['bold', 'italic', 'underline', 'strike'],
+    // ]
+  }
 
   private fileValidators = [
     {
@@ -48,20 +67,6 @@ export class MessageTextareaComponent implements AfterViewInit {
   constructor(private el: ElementRef) { }
 
   ngAfterViewInit(): void {
-    this.quill = new Quill('#editor-container', {
-      theme: 'bubble',
-      placeholder: 'Schreibe eine Nachricht...',
-      modules: {
-        toolbar: false,
-        tooltip: false
-      }
-    });
-    this.quill.root.innerHTML = this.message;
-    this.quill.on('text-change', () => {
-      if (this.quill) {
-        this.message = this.quill.root.innerHTML;
-      }
-    });
   }
 
 

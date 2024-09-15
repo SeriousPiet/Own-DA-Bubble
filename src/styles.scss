@@ -46,19 +46,20 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 
 @import "./fonts.scss";
 
+// quill editor
 
 .ql-editor {
-  height: 100%;
-  width: 100%;
-  padding: 0.2rem;
-  border: none;
-  outline: none;
-  background-color: transparent;
+  font-family: 'Nunito';
   font-size: 1rem;
-  color: #000000;
-  font-family: "Nunito", sans-serif;
-  overflow-y: auto;
+  border: none;
+  padding: 0;
 }
+
+.ql-tooltip {
+  display: none;
+}
+
+// ---------------------------------- GLOBAL STYLES ----------------------------------
 
 * {
   box-sizing: border-box;
