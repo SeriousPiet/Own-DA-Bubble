@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { NavigationService } from '../../../../utils/services/navigation.service';
@@ -6,6 +6,7 @@ import { UsersService } from '../../../../utils/services/user.service';
 import { ChannelService } from '../../../../utils/services/channel.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-popover-channel-editor',
@@ -14,13 +15,20 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './popover-channel-editor.component.html',
   styleUrl: './popover-channel-editor.component.scss'
 })
-export class PopoverChannelEditorComponent implements OnChanges {
+export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
 
   navigationService = inject(NavigationService);
   userService = inject(UsersService);
   channelService = inject(ChannelService);
 
-  @Input() currentChannel: any;
+  @Input() set currentChannel(value: Channel) {
+    this.channelSubject.next(value);
+  }
+
+  get currentChannel(): Channel {
+    return this.channelSubject.getValue() as Channel;
+  }
+
   @Output() updatedChannel = new EventEmitter<Channel>();
 
   channelNameEditor = false;
@@ -30,19 +38,29 @@ export class PopoverChannelEditorComponent implements OnChanges {
 
   selfInMemberList: string = '';
 
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['currentChannel']) {
-      this.currentChannel = changes['currentChannel'].currentValue;
-      this.updateChannelData.name = this.currentChannel.name;
-      this.updateChannelData.description = this.currentChannel.description;
-      this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
-      this.selfInMemberList = this.currentChannel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID);
-    }
-  }
+  public channelSubject = new BehaviorSubject<Channel | Chat>(this.navigationService.chatViewObject);
+  channel$ = this.channelSubject.asObservable();
 
   constructor() { }
 
+  ngOnInit() {
+    this.subscribeToChannel();
+  }
+
+  subscribeToChannel() {
+    this.channel$.subscribe((channel) => {
+      this.updateChannelDatas();
+      this.selfInMemberList = channel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID) as string;
+    });
+  }
+
+  updateChannelDatas() {
+    if (this.currentChannel instanceof Channel) {
+      this.updateChannelData.name = this.currentChannel.name;
+      this.updateChannelData.description = this.currentChannel.description;
+      this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
+    }
+  }
 
   getTitle(object: Channel | Chat): string {
     if (object instanceof Channel) return object.name;
@@ -97,7 +115,9 @@ export class PopoverChannelEditorComponent implements OnChanges {
   }
 
   isChannelMember() {
-    return this.selfInMemberList === this.userService.currentUserID
+    this.selfInMemberList = this.currentChannel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID) as string;
+    return this.selfInMemberList === this.userService.currentUserID  
+ 
   }
 
 
@@ -108,9 +128,14 @@ export class PopoverChannelEditorComponent implements OnChanges {
       this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
       this.channelService.updateChannelOnFirestore(this.currentChannel, this.updateChannelData);
       this.updatedChannel.emit(this.currentChannel);
+      this.channelSubject.next(this.currentChannel);
     }
   }
 
+
+  ngOnDestroy() {
+    this.channelSubject.unsubscribe();
+  }
 }
 
 
