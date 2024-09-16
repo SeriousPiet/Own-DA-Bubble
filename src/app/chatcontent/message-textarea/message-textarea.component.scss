@@ -89,42 +89,16 @@
 
 .input-message {
     position: relative;
-    min-height: 9rem;
-    max-height: 20rem;
     width: 100%;
     border: 1px solid #ADB0D9;
     border-radius: 1.25rem;
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: stretch;
     gap: 0.5rem;
     transition: box-shadow 0.3s ease;
-
-    quill-editor {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        min-height: 3rem;
-        max-height: 15rem;
-        overflow-y: auto;
-        flex-grow: 1;
-        background-color: white;
-        color: black;
-        outline: none;
-    }
-    
-
-    >textarea {
-        resize: none;
-        width: 100%;
-        min-height: 4rem;
-        border: none;
-        outline: none;
-        font-family: "Nunito";
-        font-size: 1rem;
-    }
 
     .input-message-toolbar {
         width: 100%;
@@ -149,7 +123,6 @@
 
             >span {
                 font-size: 24px;
-
                 font-weight: 100;
             }
         }
@@ -167,14 +140,6 @@
 
 .button-ctn {
     @include iconBox;
-
-    // * {
-    //     cursor: pointer;
-    // }
-
-    // &:hover {
-    //     background-color: #ECEEFE;
-    // }
 }
 
 #add-attachment-icon:hover {

@@ -52,11 +52,21 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
   font-family: 'Nunito';
   font-size: 1rem;
   border: none;
-  padding: 0;
+  padding: 0.25;
 }
 
-.ql-tooltip {
-  display: none;
+// .ql-tooltip {
+//   display: none !important;
+// }
+
+// .ql-popup {
+//   display: none !important;
+// }
+
+.highlight-user {
+  background-color: $primary;
+  color: white;
+  border-radius: 0.3rem;
 }
 
 // ---------------------------------- GLOBAL STYLES ----------------------------------

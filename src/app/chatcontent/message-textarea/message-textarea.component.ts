@@ -6,11 +6,12 @@ import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
 import { QuillModule } from 'ngx-quill';
+import { MessageEditorComponent } from '../message-editor/message-editor.component';
 
 @Component({
   selector: 'app-message-textarea',
   standalone: true,
-  imports: [CommonModule, FormsModule, QuillModule],
+  imports: [CommonModule, FormsModule, QuillModule, MessageEditorComponent],
   templateUrl: './message-textarea.component.html',
   styleUrls: [
     './message-textarea.component.scss',
@@ -40,10 +41,13 @@ export class MessageTextareaComponent implements AfterViewInit {
   };
 
   quillconfig = {
-    toolbar: false,
-    // toolbar: [
-    //   ['bold', 'italic', 'underline', 'strike'],
-    // ]
+    // toolbar: false,
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+      [{ header: 1 }, { header: 2 }, { header: 3 }],
+      ['clean']
+    ]
   }
 
   private fileValidators = [

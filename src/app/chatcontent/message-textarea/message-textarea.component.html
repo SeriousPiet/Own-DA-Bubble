@@ -1,7 +1,5 @@
 <div [ngClass]="{'drag-over':dropzonehighlighted}" class="input-message">
-    <quill-editor [styles]="quillstyle" [modules]="quillconfig" [theme]="'snow'" [placeholder]="'hier nachricht schreiben'"></quill-editor>
-    <!-- <textarea [disabled]="ifMessageUploading" dragzone class="z-index-2" [(ngModel)]="message" name="" id=""
-        placeholder="Nachricht an #Entwicklerteam"></textarea> -->
+    <app-message-editor [placeholder]="'Bitte Nachricht schreiben...'"></app-message-editor>
     @if(!ifMessageUploading && attachments.length > 0){
     <div class="attachments">
         @for(attachment of attachments; track attachment){
