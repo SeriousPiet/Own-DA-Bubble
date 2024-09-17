@@ -55,16 +55,16 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
   padding: 0.25;
 }
 
-// .ql-tooltip {
-//   display: none !important;
-// }
-
-// .ql-popup {
-//   display: none !important;
-// }
-
 .highlight-user {
+  padding: 0.05rem;
   background-color: $primary;
+  color: white;
+  border-radius: 0.3rem;
+}
+
+.highlight-channel {
+  padding: 0.05rem;
+  background-color: $disabled;
   color: white;
   border-radius: 0.3rem;
 }

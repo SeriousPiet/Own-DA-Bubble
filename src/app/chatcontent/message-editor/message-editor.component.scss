@@ -12,20 +12,40 @@ section {
         left: 0;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
-        align-items: center;
+        justify-content: flex-start;
+        align-items: stretch;
         gap: 0.5rem;
         padding: 0.5rem;
         border-radius: 0.625rem;
         border: 1px solid #ADB0D9;
-        background-color: #ECEEFE;
+        background-color: white;
         height: fit-content;
         width: fit-content;
 
-        >span {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: black;
+        .picker-item-select {
+            border: 1px solid #ADB0D9;
+        }
+
+        .picker-item {
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 0.625rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+
+            >span {
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: black;
+            }
+
+            &:hover {
+                background-color: #ADB0D9;
+            }
         }
     }
 
@@ -37,7 +57,7 @@ section {
         outline: none;
         border: 1ps solid black;
     }
-    
+
     .editor-toolbar {
         position: sticky;
         top: 0;
