@@ -95,15 +95,18 @@ html {
 }
 
 h1 {
-  @extend .nunito-46-700;
+  font-size: 2.875rem;
+  font-weight: 700;
 }
 
 h2 {
-  @extend .nunito-32-700;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 h3 {
-  @extend .nunito-24-700;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 h1,
@@ -150,7 +153,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  overflow: hidden;
+  overflow: auto;
 
   &:has(*:popover-open) {
     pointer-events: none;
@@ -158,6 +161,10 @@ body {
     *:popover-open {
       pointer-events: auto !important;
     }
+  }
+
+  @media (width <= 425px) {
+    overflow-y: auto;
   }
 
   @media (width <= 1440px) {
