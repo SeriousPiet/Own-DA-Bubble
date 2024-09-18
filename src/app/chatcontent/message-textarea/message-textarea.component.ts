@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, HostListener, inject, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { MessageAttachment, MessageService } from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
@@ -17,7 +17,11 @@ import { MessageEditorComponent } from '../message-editor/message-editor.compone
     './message-textarea.component.scss',
   ]
 })
-export class MessageTextareaComponent implements AfterViewInit {
+export class MessageTextareaComponent {
+  
+  @ViewChild('messageeditor', { static: true }) messageeditor!: MessageEditorComponent;
+  
+  @Input() newMessageinChannel!: Channel | Chat;
 
   isHovered = false;
   isActive = false;
@@ -30,7 +34,6 @@ export class MessageTextareaComponent implements AfterViewInit {
   errorInfo = '';
 
   quillstyle = {
-    // height: '100%',
     minHeight: '3rem',
     maxHeight: '16rem',
     width: '100%',
@@ -39,16 +42,6 @@ export class MessageTextareaComponent implements AfterViewInit {
     fontFamily: 'Nunito',
     border: 'none',
   };
-
-  quillconfig = {
-    // toolbar: false,
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-      [{ header: 1 }, { header: 2 }, { header: 3 }],
-      ['clean']
-    ]
-  }
 
   private fileValidators = [
     {
@@ -66,13 +59,12 @@ export class MessageTextareaComponent implements AfterViewInit {
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
 
-  @Input() newMessageinChannel!: Channel | Chat;
 
   constructor(private el: ElementRef) { }
 
-  ngAfterViewInit(): void {
+  openUserPicker() {
+    this.messageeditor.openUserPicker();
   }
-
 
   @HostListener('dragenter', ['$event'])
   onDragEnter(event: DragEvent) {

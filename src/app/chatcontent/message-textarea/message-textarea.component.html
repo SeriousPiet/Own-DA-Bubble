@@ -1,5 +1,5 @@
 <div [ngClass]="{'drag-over':dropzonehighlighted}" class="input-message">
-    <app-message-editor [placeholder]="'Bitte Nachricht schreiben...'"></app-message-editor>
+    <app-message-editor #messageeditor [placeholder]="'Bitte Nachricht schreiben...'"></app-message-editor>
     @if(!ifMessageUploading && attachments.length > 0){
     <div class="attachments">
         @for(attachment of attachments; track attachment){
@@ -32,7 +32,7 @@
                 <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/emoji-picker-active.svg"
                     alt="smiley">
             </div>
-            <div id="tag-person-icon" class="button-ctn">
+            <div (click)="openUserPicker()" id="tag-person-icon" class="button-ctn">
                 <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/tag-person.svg" alt="+">
                 <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/tag-person-active.svg"
                     alt="@">

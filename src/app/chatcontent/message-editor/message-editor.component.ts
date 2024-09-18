@@ -15,9 +15,9 @@ class LockedSpanBlot extends Inline {
 
   static override create(value: any) {
     const node = super.create();
-    if (value.class) node.setAttribute('class', value.class || 'highlight-user');  // Klasse setzen
+    if (value.class) node.setAttribute('class', value.class || 'highlight-user');
     if (value.id) node.setAttribute('id', value.id);
-    node.setAttribute('contenteditable', 'false');  // Macht das Span nicht bearbeitbar
+    node.setAttribute('contenteditable', 'false');
     return node;
   }
 
@@ -38,7 +38,6 @@ class LockedSpanBlot extends Inline {
   }
 }
 
-// Quill.register(LockedSpanBlot);
 
 @Component({
   selector: 'app-message-editor',
@@ -55,7 +54,7 @@ export class MessageEditorComponent implements AfterViewInit {
   @Input() message = '';
   @Input() placeholder = '';
 
-  @Output() enterPressed = new EventEmitter<string>();
+  @Output() enterPressed = new EventEmitter<string>(); // ToDO: Implement this event
 
   public userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
@@ -63,13 +62,12 @@ export class MessageEditorComponent implements AfterViewInit {
   quill!: Quill;
   savedRange: any = null;
   showToolbar = false;
+  boundingKey = ' ';
 
   showPicker = false;
   pickersign = '';
   pickerItems: User[] | Channel[] = [];
   lastItem: User | Channel | null = null;
-  searchString = '';
-  oldSearchString = '';
   currentPickerIndex = -1;
 
   quillstyle = {
@@ -88,6 +86,11 @@ export class MessageEditorComponent implements AfterViewInit {
     return item instanceof User;
   }
 
+  openUserPicker() {
+    this.openPicker('@');
+    this.updatePickerItems('');
+  }
+
   ngAfterViewInit(): void {
     if (this.editor) {
       this.editor.onEditorCreated.subscribe((quill: any) => {
@@ -103,16 +106,7 @@ export class MessageEditorComponent implements AfterViewInit {
           this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => { return this.handlePickerSelection('ArrowDown'); });
           this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelection('ArrowUp'); });
           this.quill.keyboard.addBinding({ key: 'Escape' }, () => { return this.handlePickerSelection('Escape'); });
-          this.quill.root.addEventListener('keydown', (event: KeyboardEvent) => {
-            if (event.key === 'Enter' && this.showPicker) {
-              this.handlePickerSelection('Enter');
-              event.preventDefault();
-              event.stopPropagation();
-              console.log('xEnter gedrückt......');
-              return false;
-            }
-            return true;
-          });
+          this.quill.keyboard.addBinding({ key: 'ArrowRight' }, () => { return this.handlePickerSelection('Select'); });
         }
         this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
       });
@@ -134,10 +128,10 @@ export class MessageEditorComponent implements AfterViewInit {
     } else if (key === 'ArrowDown') {
       this.setCurrentPicker((this.currentPickerIndex + 1) % this.pickerItems.length);
       return false;
-    } else if (key === 'Enter') {
-      if (this.lastItem) this.clickPickerItem(this.lastItem);
-      this.enterPressed.emit(this.quill.getText());
-      return false;
+    } else if (key === 'Select') {
+      const currentItem = this.currentPickerIndex === -1 ? this.lastItem : this.pickerItems[this.currentPickerIndex];
+      if (currentItem) this.clickPickerItem(currentItem);
+      return true;
     } else if (key === 'Escape') {
       this.closePicker();
       return false;
@@ -169,14 +163,10 @@ export class MessageEditorComponent implements AfterViewInit {
 
 
   onTextChange(event: any) {
-    if (this.pickersign) {
+    if (this.showPicker) {
       const newSearchString = this.getTextBeforePreviousSign(this.pickersign);
-      this.searchString = newSearchString ? newSearchString : '';
-      if (this.searchString.endsWith(' ')) this.closePicker();
-      else if (this.searchString === '' || this.oldSearchString !== this.searchString) {
-        this.oldSearchString = this.searchString;
-        this.updatePickerItems();
-      }
+      if (newSearchString === null) this.closePicker();
+      else this.updatePickerItems(newSearchString);
     }
   }
 
@@ -185,15 +175,12 @@ export class MessageEditorComponent implements AfterViewInit {
     if (!range) return null;
     const cursorPosition = range.index;
     const textBeforeCursor = this.quill.getText(0, cursorPosition + 1);
-    const lastCharIndex = Math.max(
-      textBeforeCursor.lastIndexOf(char),
-      textBeforeCursor.lastIndexOf('\n'),
-      textBeforeCursor.lastIndexOf('\r'),
-      textBeforeCursor.lastIndexOf('\t'),
-      textBeforeCursor.lastIndexOf(' ')
-    );
+    const lastCharIndex = textBeforeCursor.lastIndexOf(char);
     if (lastCharIndex === -1) return null;
-    return textBeforeCursor.slice(lastCharIndex + 1, cursorPosition);
+    const result = textBeforeCursor.slice(lastCharIndex + 1, cursorPosition);
+    const regex = /^[a-zA-Z]*$/;
+    if (!regex.test(result)) return null;
+    return result;
   }
 
 
@@ -218,11 +205,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
 
   clickPickerItem(item: User | Channel) {
-    if (this.isUser(item)) {
-      this.insertUserAsSpan(item);
-    } else {
-      this.insertChannelAsSpan(item);
-    }
+    this.insertItemAsSpan(item);
     this.closePicker();
   }
 
@@ -234,29 +217,20 @@ export class MessageEditorComponent implements AfterViewInit {
   }
 
 
-  insertUserAsSpan(user: User) {
-    const cursorPosition = this.removeWordAndSymbol('@');
-    if (cursorPosition === -1) return;
-    this.quill.disable();
-    this.quill.insertText(cursorPosition, '||');
-    const insertString = `<span class="highlight-user" id="${user.id}" contenteditable="false">@${user.name}</span>`;
-    this.quill.clipboard.dangerouslyPasteHTML(cursorPosition + 1, insertString);
-    this.quill.enable();
-    this.quill.setSelection(cursorPosition + user.name.length + 1, Quill.sources.SILENT);
-    this.quill.focus();
-    this._cdr.detectChanges();
-  }
-
-
-  insertChannelAsSpan(channel: Channel) {
-    const cursorPosition = this.removeWordAndSymbol('#');
-    if (cursorPosition === -1) return;
-    this.quill.insertText(cursorPosition, '#' + channel.name + ' ');
-    this.quill.formatText(cursorPosition, cursorPosition + channel.name.length + 1, 'lockedSpan', {
-      class: 'highlight-channel',
-      id: channel.id
+  insertItemAsSpan(item: User | Channel) {
+    const tagSign = item instanceof User ? '@' : '#';
+    const tagClass = item instanceof User ? 'highlight-user' : 'highlight-channel';
+    let cursorPosition = this.removeWordAndSymbol(tagSign);
+    if (cursorPosition === -1) cursorPosition = this.quill.getLength();
+    const spanText = tagSign + item.name;
+    const spanTextLength = spanText.length;
+    this.quill.insertText(cursorPosition, this.boundingKey + spanText + this.boundingKey);
+    this.quill.formatText(cursorPosition + this.boundingKey.length, spanTextLength, 'lockedSpan', {
+      class: tagClass,
+      id: item.id
     });
-    this.quill.setSelection(cursorPosition + channel.name.length + 2, Quill.sources.SILENT);
+    this.quill.setSelection(this.boundingKey.length * 2 + cursorPosition + spanTextLength, Quill.sources.SILENT);
+    this.quill.focus();
     this._cdr.detectChanges();
   }
 
@@ -269,17 +243,16 @@ export class MessageEditorComponent implements AfterViewInit {
     if (this.currentPickerIndex === -1) this.lastItem = null;
     else this.lastItem = this.pickerItems[this.currentPickerIndex];
     this.currentPickerIndex = index;
+    this._cdr.detectChanges();
   }
 
 
-  updatePickerItems() {
+  updatePickerItems(searchTerm: string) {
     if (this.pickersign === '@') {
-      this.pickerItems = this.userservice.users.filter(user => !user.guest && (this.searchString === '' || user.name.toLowerCase().includes(this.searchString.toLowerCase())));
-      this._cdr.detectChanges();
+      this.pickerItems = this.userservice.users.filter(user => !user.guest && (searchTerm === '' || user.name.toLowerCase().includes(searchTerm.toLowerCase())));
       this.setCurrentPicker(-1);
     } else if (this.pickersign === '#') {
-      this.pickerItems = this.channelservice.channels.filter(channel => !channel.defaultChannel && channel.name.toLowerCase().includes(this.searchString.toLowerCase()));
-      this._cdr.detectChanges();
+      this.pickerItems = this.channelservice.channels.filter(channel => !channel.defaultChannel && channel.name.toLowerCase().includes(searchTerm.toLowerCase()));
       this.setCurrentPicker(-1);
     }
   }
@@ -292,7 +265,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   openPicker(pickerSign: string) {
     if (this.showPicker) this.closePicker();
-    this.showPicker = true;
+    else this.showPicker = true;
     this.pickersign = pickerSign;
     this._cdr.detectChanges();
   }
@@ -303,8 +276,6 @@ export class MessageEditorComponent implements AfterViewInit {
     this.pickersign = '';
     this.pickerItems = [];
     this.setCurrentPicker(-1);
-    this.searchString = '';
-    this.oldSearchString = '';
     this._cdr.detectChanges();
   }
 
