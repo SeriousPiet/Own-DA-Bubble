@@ -14,8 +14,8 @@
   min-height: 100vh;
   height: 100%;
   background: $intro-gradient;
-  opacity: 0.6;
-  // animation: backgroundFade 0.335s ease-out forwards 2.275s;
+  opacity: 1;
+  animation: backgroundFade 0.335s ease-out forwards 2.275s;
 
   .intro-boundry {
     @include flex(center, center);
@@ -57,7 +57,7 @@
         @media (width <= 640px) {
           animation: splitLogoLarge 0.5s ease-out 0.5s forwards,
             shrinkLogoLarge 1s ease-out 1.5s forwards,
-            combineLogoMedium 1s ease-out 1.5s forwards;
+            combineLogoInterim 1s ease-out 1.5s forwards;
         }
         @media (width <= 560px) {
           width: 8rem;
@@ -87,7 +87,7 @@
 
         @media (width <= 640px) {
           animation: splitTextLarge 0.5s ease-out 0.5s forwards,
-            combineTextMedium 1s ease-out 1.5s forwards;
+            combineTextInterim 1s ease-out 1.5s forwards;
         }
         @media (width <= 560px) {
           animation: splitTextMedium 0.5s ease-out 0.5s forwards,
@@ -259,6 +259,26 @@
       top: 5.5rem;
       left: 50%;
       transform: translateX(-50%);
+    }
+  }
+
+  // ########### INTERIM ###########
+
+  @keyframes combineLogoInterim {
+    0% {
+      transform: translateX(-8.5rem);
+    }
+    100% {
+      transform: translate(-5.25rem, -1.75rem);
+    }
+  }
+
+  @keyframes combineTextInterim {
+    0% {
+      transform: translateX(8.5rem);
+    }
+    100% {
+      transform: translate(2rem, -2rem);
     }
   }
 
