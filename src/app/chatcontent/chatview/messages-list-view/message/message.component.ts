@@ -52,58 +52,74 @@ export class MessageComponent implements OnInit {
       edited: this.messageData.edited,
       editedAt: this.messageData.editedAt,
     };
-    this.sortMessageReaction();
-    this.sortMessagesByUser();
+    this.checkForMessageReactions();
+    this.sortMessages();
     this.getMessageCreatorObject();
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
-
-  openThread(message: Message) {
-    this.navigationService.setThreadViewObject(message);
-  }
+  constructor() {}
 
   getMessageCreatorObject() {
     return this.userService.getUserByID(this.messageData.creatorID);
   }
 
-  // this function still need to be refactored
-
-  sortMessagesByUser() {
+  sortMessages() {
     if (this.messages.length > 0) {
-      let previousCreatorId = this.messages[0].creatorID;
-      let previousMessageDate = new Date(
-        this.messages[0].createdAt
-      ).toDateString();
-
+      const previousMessageDetails = {
+        creatorId: this.messages[0].creatorID,
+        messageDate: new Date(this.messages[0].createdAt).toDateString(),
+      };
       this.messages.forEach((message, index) => {
-        if (index === 0) {
-          // Die erste Nachricht hat immer `previousMessageFromSameUser` auf `false`
-          message.previousMessageFromSameUser = false;
-        } else {
-          const currentCreatorId = message.creatorID;
-          const currentMessageDate = new Date(message.createdAt).toDateString();
-
-          // Überprüfen, ob der Ersteller und das Datum gleich sind
-          if (
-            currentCreatorId === previousCreatorId &&
-            currentMessageDate === previousMessageDate
-          ) {
-            message.previousMessageFromSameUser = true;
-          } else {
-            message.previousMessageFromSameUser = false;
-          }
-
-          // Update previous message details
-          previousCreatorId = currentCreatorId;
-          previousMessageDate = currentMessageDate;
-        }
+        this.identifyConsecutiveMessages(
+          previousMessageDetails,
+          message,
+          index
+        );
       });
     }
   }
 
-  sortMessageReaction() {
-    if (this.messageData.emojies.length > 0) this.hasReaction = true;
+  identifyConsecutiveMessages(
+    previousMessageDetails: { creatorId: string; messageDate: string },
+    message: Message,
+    index: number
+  ) {
+    if (this.isFirstMessage(index)) {
+      message.previousMessageFromSameUser = false;
+    } else {
+      const currentCreatorId = message.creatorID;
+      const currentMessageDate = new Date(message.createdAt).toDateString();
+      if (
+        this.isSameCreatorAndDate(
+          currentCreatorId,
+          previousMessageDetails.creatorId,
+          currentMessageDate,
+          previousMessageDetails.messageDate
+        )
+      ) {
+        message.previousMessageFromSameUser = true;
+      } else {
+        message.previousMessageFromSameUser = false;
+      }
+      previousMessageDetails.creatorId = currentCreatorId;
+      previousMessageDetails.messageDate = currentMessageDate;
+    }
+  }
+
+  isFirstMessage(index: number) {
+    return index === 0;
+  }
+
+  isSameCreatorAndDate(
+    currentCreatorId: string,
+    previousCreatorId: string,
+    currentMessageDate: string,
+    previousMessageDate: string
+  ) {
+    return (
+      currentCreatorId === previousCreatorId &&
+      currentMessageDate === previousMessageDate
+    );
   }
 
   checkForMessageReactions() {
@@ -171,7 +187,6 @@ export class MessageComponent implements OnInit {
   }
 
   setSelectedUserObject(messageCreatorID: string) {
-    console.log(messageCreatorID);
     this.userService.updateSelectedUser(
       this.userService.getUserByID(messageCreatorID)
     );

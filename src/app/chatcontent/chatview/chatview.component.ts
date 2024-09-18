@@ -1,13 +1,9 @@
 import {
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnInit,
-  Output,
-  SimpleChange,
   SimpleChanges,
 } from '@angular/core';
 import { MessageDateComponent } from './messages-list-view/message-date/message-date.component';
@@ -20,14 +16,11 @@ import { NavigationService } from '../../utils/services/navigation.service';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Message } from '../../shared/models/message.class';
-import { ChannelService } from '../../utils/services/channel.service';
-import { Firestore } from '@angular/fire/firestore';
 import { MessagesListViewComponent } from './messages-list-view/messages-list-view.component';
 import { UsersService } from '../../utils/services/user.service';
 import { MessageGreetingComponent } from './messages-list-view/message-greeting/message-greeting.component';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { PopoverMemberProfileComponent } from './popover-chatview/popover-member-profile/popover-member-profile.component';
-import { User } from '../../shared/models/user.class';
 import { BehaviorSubject, filter } from 'rxjs';
 
 @Component({
@@ -50,7 +43,14 @@ import { BehaviorSubject, filter } from 'rxjs';
   styleUrl: './chatview.component.scss',
 })
 export class ChatviewComponent implements OnInit {
-  private firestore = inject(Firestore);
+  @Input() set currentContext(value: Channel | Chat) {
+    this.channelSubject.next(value);
+  }
+
+  get currentContext(): Channel {
+    return this.channelSubject.getValue() as Channel;
+  }
+
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService);
   public isAChannel = false;
@@ -61,37 +61,26 @@ export class ChatviewComponent implements OnInit {
   memberList = false;
   addMemberPopover = false;
 
-  public channelSubject = new BehaviorSubject<Channel | Chat | null>(null);
+  public channelSubject = new BehaviorSubject<Channel | Chat>(
+    this.navigationService.chatViewObject
+  );
   channel$ = this.channelSubject.asObservable();
 
-  @Input() set currentChannel(value: Channel | Chat) {
-    this.channelSubject.next(value);
-  }
-
-  get currentChannel(): Channel {
-    return this.channelSubject.getValue() as Channel;
-  }
+  constructor() {}
 
   ngOnInit() {
-    this.channel$.pipe(filter((channel) => !!channel)).subscribe((channel) => {
-      this.currentChannel instanceof Channel &&
-      this.currentChannel.defaultChannel
+    this.channel$.subscribe(() => {
+      this.currentContext.defaultChannel
         ? (this.isDefaultChannel = true)
         : (this.isDefaultChannel = false);
-      this.setObjectType();
       this.getRequiredAvatars();
     });
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
-
-  setObjectType() {
-    if (this.currentChannel instanceof Channel) this.isAChannel = true;
-    if (this.currentChannel instanceof Chat) this.isAChat = true;
-  }
-
   getTitle(object: Channel | Chat | Message | undefined): string {
     if (object instanceof Channel) return object.name;
+    // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
+    // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
     return '';
   }
 
@@ -101,27 +90,30 @@ export class ChatviewComponent implements OnInit {
   }
 
   getRequiredAvatars() {
-    if (this.currentChannel instanceof Channel) {
-      this.requiredAvatars = this.currentChannel.memberIDs.slice(0, 3);
+    if (this.currentContext instanceof Channel) {
+      this.sortAvatarsArray();
+      this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3);
     }
   }
 
-  renderChannelMembersAvatar(object: Channel | Chat | Message | undefined) {
-    if (object instanceof Channel && object.memberIDs.length <= 3) {
-      object.memberIDs.forEach((memberID) => {
-        return this.userService.getUserByID(memberID)?.avatar;
-      });
-    } else if (object instanceof Channel) {
-      this.renderOnlyFirstThreeAvatars(object);
+  sortAvatarsArray() {
+    if (
+      this.currentContext instanceof Channel &&
+      this.currentUserIsChannelMember()
+    ) {
+      let currentUserIndex = this.currentContext.memberIDs.indexOf(
+        this.userService.currentUser!.id
+      );
+      this.currentContext.memberIDs.splice(currentUserIndex, 1);
+      this.currentContext.memberIDs.unshift(this.userService.currentUser!.id);
     }
   }
 
-  renderOnlyFirstThreeAvatars(object: Channel) {
-    const maxAvatarsCount = 3;
-    const maxAvatars = object.memberIDs.slice(0, maxAvatarsCount);
-    maxAvatars.forEach((memberID) => {
-      return this.userService.getUserByID(memberID)?.avatar;
-    });
+  currentUserIsChannelMember() {
+    return (
+      this.currentContext instanceof Channel &&
+      this.currentContext.memberIDs.includes(this.userService.currentUser!.id)
+    );
   }
 
   getChannelCreatorName(object: Channel | Chat): string {
@@ -175,18 +167,14 @@ export class ChatviewComponent implements OnInit {
     popover === 'addMember'
       ? (this.addMemberPopover = true)
       : (this.addMemberPopover = false);
-  }
-
-  openAddNewMemberPopover() {
-    this.addMemberPopover = true;
-    this.memberList = false;
+    this.currentContext = this.navigationService.chatViewObject;
   }
 
   isAllowedToAddMember() {
-    if (this.currentChannel instanceof Channel) {
+    if (this.currentContext instanceof Channel) {
       return (
-        this.currentChannel.creatorID === this.userService.currentUserID &&
-        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+        this.currentContext.creatorID === this.userService.currentUserID ||
+        this.currentContext.memberIDs.includes(this.userService.currentUserID)
       );
     }
     return;

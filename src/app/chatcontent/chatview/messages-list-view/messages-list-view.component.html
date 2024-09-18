@@ -1,10 +1,11 @@
 <section>
-  @for (date of messagesDates; track $index) {
+  @for (date of messagesDates; track date) {
   <app-message-date [date]="date"></app-message-date>
 
   @for (message of messages; track message) { @if(date.getDate() ==
   message.createdAt.getDate()){
   <app-message
+    [ngClass]="{ 'chat-view': true }"
     [id]="message.id"
     [messages]="messages"
     [messageWriter]="message.creatorID"

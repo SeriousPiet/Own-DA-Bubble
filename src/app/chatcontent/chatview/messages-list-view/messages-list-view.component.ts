@@ -31,8 +31,6 @@ import { UsersService } from '../../../utils/services/user.service';
   styleUrl: './messages-list-view.component.scss',
 })
 export class MessagesListViewComponent implements OnInit {
-  // messagefromUser = true;
-  // messageWroteFromUser = false;
 
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
@@ -68,14 +66,24 @@ export class MessagesListViewComponent implements OnInit {
   }
 
   private scrollToMessageInView(message: Message) {
-    const messageElement = document.getElementById(message.id);
-    if (messageElement) {
-      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      messageElement.classList.add('color-change');
-      setTimeout(() => {
-        messageElement.classList.remove('color-change');
-      }, 1750);
-    }
+    const maxAttempts = 5;
+    let attempts = 0;
+
+    const scrollToElement = () => {
+      const messageElement = document.getElementById(message.id);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        messageElement.classList.add('color-change');
+        setTimeout(() => {
+          messageElement.classList.remove('color-change');
+        }, 1750);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(scrollToElement, 500);
+      }
+    };
+
+    setTimeout(scrollToElement, 100);
   }
 
   sortMessagesDate(messageCreationDate: Date) {
@@ -120,7 +128,6 @@ export class MessagesListViewComponent implements OnInit {
               );
             }
           });
-          this._cdr.detectChanges();
         }
       );
     }

@@ -27,7 +27,7 @@
     <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
     } @if(picturePropertysError) {
     <span class="errorspan">{{ picturePropertysError }}</span>
-    } @if(changedAvatar) {
+    } @if(changedAvatar && !uploading) {
     <button class="undo" (click)="undoAvatarChange()">Rückgängig</button>
     }
     <button class="success" (click)="submitChooseAvatar($event)">

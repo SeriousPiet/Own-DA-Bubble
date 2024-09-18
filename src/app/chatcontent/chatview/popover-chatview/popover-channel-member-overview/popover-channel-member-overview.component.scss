@@ -79,7 +79,7 @@ main {
     }
   }
 
-  .add-member {
+  .add-member-btn {
     @include flex(center, center);
     gap: 0.9375rem;
     width: 100%;
@@ -190,19 +190,20 @@ main {
   .button-disabled {
     @include buttonDisabled();
     align-self: flex-end;
+    cursor: default !important;
   }
 
-  .button-enable{
+  .button-enable {
     @include buttonFull();
     align-self: flex-end;
   }
-
 }
 
 .search-blocks {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
+
   &.context-active {
     margin: 0.5rem 0;
   }

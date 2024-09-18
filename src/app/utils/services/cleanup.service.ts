@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { UsersService } from './user.service';
 import { collection, deleteDoc, doc, Firestore, getDoc, getDocs, updateDoc } from '@angular/fire/firestore';
 import { ChannelService } from './channel.service';
@@ -9,7 +9,7 @@ import { NavigationService } from './navigation.service';
 @Injectable({
   providedIn: 'root'
 })
-export class CleanupService {
+export class CleanupService implements OnDestroy {
   private navigationservice = inject(NavigationService);
   private userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
@@ -17,8 +17,19 @@ export class CleanupService {
   private firebaseauth = inject(Auth);
 
   private docsToDelete: string[] = [];
+  private unsubUserList: any = null;
 
-  constructor() { }
+  constructor() {
+    this.markAllGuestsToDelete();
+    setTimeout(() => {
+      this.deleteAllGuestData();      
+    }, 5000);
+  }
+
+
+  ngOnDestroy(): void {
+    if (this.unsubUserList) this.unsubUserList();
+  }
 
 
   async logoutUser(): Promise<void> {
@@ -28,61 +39,84 @@ export class CleanupService {
     } else {
       const guestID = this.userservice.currentGuestUserID;
       this.userservice.clearCurrentUser();
-      await this.deleteAllGuestContent(guestID);
+      await this.deleteAllUserContentByID(guestID);
     }
   }
 
 
-  async deleteAllOfflineGuestContent() {
-    for (let i = 0; i < this.userservice.users.length; i++) {
-      const user = this.userservice.users[i];
-      if (user.guest && !user.online) {
-        await this.deleteAllGuestContent(user.id);
+  async deleteAllGuestData() {
+    const users = this.userservice.users;
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      if (user.guest) {
+        if (!user.online) {
+          const userDoc = await getDoc(doc(this.firestore, '/users/' + user.id));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData['markedToDeleteAT'] < Date.now() - 4500) {
+              await this.deleteAllUserContentByID(user.id);
+            }
+          }
+        }
       }
     }
   }
 
 
-  async deleteAllGuestContent(guestID: string) {
+  async markAllGuestsToDelete() {
+    const users = this.userservice.users;
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      if (user.guest) {
+        if (user.online) {
+          console.warn('cleanupservice: Marking guest for deletion (' + user.id + ')');
+          await updateDoc(doc(this.firestore, '/users/' + user.id), { online: false, markedToDeleteAT: Date.now() });
+        }
+      }
+    }
+  }
+
+
+  public async deleteAllUserContentByID(userID: string) {
     for (let i = 0; i < this.channelservice.channels.length; i++) {
       const channel = this.channelservice.channels[i];
       if (channel.defaultChannel) continue;
-      if (channel.creatorID === guestID) {
+      if (channel.creatorID === userID) {
         this.clearAndDeleteChannel(channel);
       } else {
-        await this.deleteAllMessagesFromChannel(channel, guestID);
+        await this.deleteAllMessagesFromChannel(channel, userID);
       }
     }
-    await this.deleteAllChatsWithGuest(guestID);
-    console.warn('cleanupservice: All guest content deleted (' + guestID + ')');
-    await deleteDoc(doc(this.firestore, '/users/' + guestID));
+    await this.deleteAllChatsWithGuest(userID);
+    console.warn('cleanupservice: All user content deleted (' + userID + ')');
+    await deleteDoc(doc(this.firestore, '/users/' + userID));
     await this.deleteAllDocs();
   }
 
 
-  private async deleteAllAnswersFromMessage(message: any, guestID: string | undefined = undefined) {
+  private async deleteAllAnswersFromMessage(message: any, userID: string | undefined = undefined) {
     const answerRef = collection(this.firestore, message.ref.path + '/answers');
     if (answerRef) {
       const answers = await getDocs(answerRef);
       for (let k = 0; k < answers.docs.length; k++) {
         const answer = answers.docs[k];
-        if (!guestID || answer.data()['creatorID'] === guestID) {
+        if (!userID || answer.data()['creatorID'] === userID) {
           this.docsToDelete.push(message.ref.path + '/answers/' + answer.id);
         }
       }
     }
-    if (!guestID) this.docsToDelete.push(message.ref.path);
+    if (!userID) this.docsToDelete.push(message.ref.path);
   }
 
 
-  private async deleteAllMessagesFromChannel(channel: Channel, guestID: string) {
+  private async deleteAllMessagesFromChannel(channel: Channel, userID: string) {
     const messages = await getDocs(collection(this.firestore, channel.channelMessagesPath));
     for (let j = 0; j < messages.docs.length; j++) {
       const message = messages.docs[j];
-      if (message.data()['creatorID'] === guestID) {
+      if (message.data()['creatorID'] === userID) {
         this.deleteAllAnswersFromMessage(message);
       } else {
-        this.deleteAllAnswersFromMessage(message, guestID);
+        this.deleteAllAnswersFromMessage(message, userID);
       }
     }
   }
@@ -98,8 +132,8 @@ export class CleanupService {
   }
 
 
-  private async deleteAllChatsWithGuest(guestID: string) {
-    const chatIDs = this.userservice.getUserByID(guestID)?.chatIDs;
+  private async deleteAllChatsWithGuest(userID: string) {
+    const chatIDs = this.userservice.getUserByID(userID)?.chatIDs;
     if (chatIDs) {
       for (let i = 0; i < chatIDs.length; i++) {
         const chatID = chatIDs[i];

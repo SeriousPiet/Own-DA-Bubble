@@ -5,14 +5,18 @@ import {
   ElementRef,
   ViewEncapsulation,
 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
+import { filter, map, switchMap, take } from 'rxjs/operators';
+
 import { SearchService } from '../../../utils/services/search.service';
+import { SearchSuggestion } from '../../../utils/services/search.service';
+
 import { NavigationService } from '../../../utils/services/navigation.service';
 import { ChannelService } from '../../../utils/services/channel.service';
 import { UsersService } from '../../../utils/services/user.service';
 import { User } from '../../../shared/models/user.class';
 import { Channel } from '../../../shared/models/channel.class';
-import { Chat } from '../../../shared/models/chat.class';
+import { Message } from '../../../shared/models/message.class';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvatarDirective } from '../../../utils/directives/avatar.directive';
@@ -32,9 +36,12 @@ export class SearchbarComponent implements OnInit {
     keywords: string[];
   }>;
   searchQuery: string = '';
-  suggestions$!: Observable<{ text: string; type: string; hasChat: boolean }[]>;
+  suggestions$!: Observable<
+    { text: string; type: string; hasChat: boolean; message?: Message }[]
+  >;
+
   isDropdownVisible = false;
-  recentSearches: string[] = [];
+  recentSearches: SearchSuggestion[] = [];
   currentContext: string = '';
   isDatepickerVisible = false;
   isWelcomeChannel: boolean = true;
@@ -43,6 +50,15 @@ export class SearchbarComponent implements OnInit {
   // Lifecycle Hooks
   // ############################################################################################################
 
+  /**
+   * Constructs the SearchbarComponent and subscribes to changes in the navigation service.
+   * When the 'chatViewObjectSet' event is emitted, it updates the welcome channel status.
+   *
+   * @param searchService - The SearchService instance.
+   * @param navigationService - The NavigationService instance.
+   * @param channelService - The ChannelService instance.
+   * @param usersService - The UsersService instance.
+   */
   constructor(
     private searchService: SearchService,
     public navigationService: NavigationService,
@@ -56,6 +72,11 @@ export class SearchbarComponent implements OnInit {
     });
   }
 
+  /**
+   * Updates the welcome channel status based on the current chat view object.
+   * If the current chat view object is an instance of Channel and its name is 'Willkommen',
+   * the `isWelcomeChannel` flag is set to true, indicating that the current view is the welcome channel.
+   */
   private updateWelcomeChannelStatus() {
     const currentObject = this.navigationService.chatViewObject;
     this.isWelcomeChannel =
@@ -71,6 +92,10 @@ export class SearchbarComponent implements OnInit {
     this.recentSearches = this.searchService.getRecentSearches();
   }
 
+  /**
+   * A reference to the HTML input element for the date picker.
+   * This reference is used to programmatically show the date picker UI when the date picker is made visible.
+   */
   @ViewChild('dateInput') dateInput!: ElementRef<HTMLInputElement>;
 
   /**
@@ -105,18 +130,29 @@ export class SearchbarComponent implements OnInit {
   // ############################################################################################################
   // Event Handlers
   // ############################################################################################################
+
   /**
    * Updates the search query, retrieves the latest search suggestions, and retrieves the recent searches.
    * Also logs the current search context to the console.
    */
   onSearchInput() {
     this.searchService.updateSearchQuery(this.searchQuery);
-    this.suggestions$ = this.searchService.getSearchSuggestions();
-    this.recentSearches = this.searchService.getRecentSearches();
-    console.log(
-      'Aktueller Suchkontext:',
-      this.navigationService.getSearchContext()
+    this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
+      map((groupedResults) => {
+        if (this.searchQuery.startsWith('@')) {
+          return groupedResults.users;
+        } else if (this.searchQuery.startsWith('#')) {
+          return groupedResults.channels;
+        } else {
+          return [
+            ...groupedResults.users,
+            ...groupedResults.channels,
+            ...groupedResults.messages,
+          ];
+        }
+      })
     );
+    this.recentSearches = this.searchService.getRecentSearches();
   }
 
   /**
@@ -126,8 +162,6 @@ export class SearchbarComponent implements OnInit {
    */
   onFocus() {
     this.currentContext = this.searchService.getCurrentContext();
-    console.log('Suchkontext bei Fokus:', this.currentContext);
-
     this.isDropdownVisible = true;
     if (this.searchQuery) {
       this.onSearchInput();
@@ -169,88 +203,156 @@ export class SearchbarComponent implements OnInit {
   }
 
   /**
-   * Handles the selection of a recent search from the search dropdown.
-   * If the selected search starts with '@', it is treated as a user search and the corresponding user is set as the chat view object.
-   * If the selected search starts with '#', it is treated as a channel search and the corresponding channel is set as the chat view object.
-   * The search query is then updated with the selected search, and a search input event is triggered.
-   *
-   * @param search - The selected recent search string.
+   * Selects a recent search suggestion and updates the search query and input.
+   * @param search - The search suggestion to select.
    */
-  selectRecentSearch(search: string) {
-    if (search.startsWith('@')) {
-      const userName = search.slice(1);
-      const user = this.findUserByName(userName);
-      if (user) {
-        this.navigationService.setChatViewObject(user);
-      }
-    } else if (search.startsWith('#')) {
-      const channelName = search.slice(1);
-      const channel = this.channelService.channels.find(
-        (c) => c.name === channelName
-      );
-      if (channel) {
-        this.navigationService.setChatViewObject(channel);
-      }
-    }
-    this.removeContextFromSearch();
-    this.searchQuery = search;
+  selectRecentSearch(search: SearchSuggestion) {
+    this.selectSuggestion(search);
+    this.searchQuery = search.text;
     this.onSearchInput();
   }
 
   /**
-   * Handles the selection of a search suggestion from the search dropdown.
-   * If the selected suggestion is for a user, it sets the corresponding user as the chat view object.
-   * If the selected suggestion is for a channel, it sets the corresponding channel as the chat view object.
-   * The search dropdown is then hidden.
+   * Handles the selection of a search suggestion, performing the appropriate action based on the suggestion type.
    *
-   * @param suggestion - The selected search suggestion, containing the text, type, and whether a chat exists for the selected entity.
+   * @param suggestion - The search suggestion to be processed.
+   * @returns {Promise<void>} A Promise that resolves when the suggestion handling is complete.
    */
-  selectSuggestion(suggestion: {
-    text: string;
-    type: string;
-    hasChat: boolean;
-  }) {
-    if (suggestion.type === 'user') {
-      const userName = suggestion.text.slice(1);
-      const user = this.findUserByName(userName);
-      if (user) {
-        suggestion.hasChat =
-          this.channelService.getChatWithUserByID(user.id, false) !== undefined;
-        this.navigationService.setChatViewObject(user);
-      }
-    } else if (suggestion.type === 'channel') {
-      const channelName = suggestion.text.slice(1);
-      const channel = this.channelService.channels.find(
-        (c: Channel) => c.name === channelName
-      );
-      if (channel) {
-        this.navigationService.setChatViewObject(channel);
-      }
+  async selectSuggestion(suggestion: SearchSuggestion): Promise<void> {
+    switch (suggestion.type) {
+      case 'user':
+        await this.handleUserSuggestion(suggestion);
+        break;
+      case 'channel':
+        await this.handleChannelSuggestion(suggestion);
+        break;
+      case 'message':
+        if (suggestion.message) {
+          await this.handleMessageSuggestion(suggestion);
+        }
+        break;
     }
+    this.finalizeSuggestionSelection(suggestion);
+  }
+
+  /**
+   * Handles the selection of a user search suggestion, finding the user by name and setting the chat view object to the user if found.
+   *
+   * @param suggestion - The search suggestion containing the user information.
+   * @returns {Promise<void>} A Promise that resolves when the user suggestion handling is complete.
+   */
+  private async handleUserSuggestion(suggestion: SearchSuggestion) {
+    const userName = suggestion.text.slice(1);
+    const user = this.findUserByName(userName);
+    if (user) {
+      suggestion.hasChat =
+        this.channelService.getChatWithUserByID(user.id, false) !== undefined;
+      await this.navigationService.setChatViewObject(user);
+    }
+  }
+
+  /**
+   * Handles the selection of a channel search suggestion, finding the channel by name and setting the chat view object to the channel if found.
+   *
+   * @param suggestion - The search suggestion containing the channel information.
+   * @returns {Promise<void>} A Promise that resolves when the channel suggestion handling is complete.
+   */
+  private async handleChannelSuggestion(suggestion: SearchSuggestion) {
+    const channelName = suggestion.text.slice(1);
+    const channel = this.channelService.channels.find(
+      (c) => c.name === channelName
+    );
+    if (channel) {
+      await this.navigationService.setChatViewObject(channel);
+    }
+  }
+
+  /**
+   * Handles the selection of a message search suggestion, finding the target chat or channel and setting the chat view object to it, then scrolling to the message.
+   *
+   * @param suggestion - The search suggestion containing the message information.
+   * @returns {Promise<void>} A Promise that resolves when the message suggestion handling is complete.
+   */
+  private async handleMessageSuggestion(suggestion: SearchSuggestion) {
+    if (suggestion.message) {
+      const targetId = suggestion.message.collectionPath.split('/')[1];
+      if (suggestion.message.collectionPath.startsWith('channels/')) {
+        const channel = this.channelService.channels.find(
+          (c) => c.id === targetId
+        );
+        if (channel) await this.navigationService.setChatViewObject(channel);
+      } else {
+        const chat = this.channelService.getChatByID(targetId);
+        if (chat) {
+          const chatPartner = this.channelService.getChatPartner(chat);
+          if (chatPartner)
+            await this.navigationService.setChatViewObject(chatPartner);
+        }
+      }
+      this.scrollToMessage(suggestion.message);
+    }
+  }
+
+  /**
+   * Finalizes the selection of a search suggestion by removing the search context, adding the suggestion to the recent searches, and hiding the search dropdown.
+   *
+   * @param suggestion - The search suggestion that was selected.
+   */
+  private finalizeSuggestionSelection(suggestion: SearchSuggestion) {
     this.removeContextFromSearch();
-    this.searchService.addRecentSearch(suggestion.text);
+    this.searchService.addRecentSearch(suggestion);
     this.recentSearches = this.searchService.getRecentSearches();
     this.isDropdownVisible = false;
   }
 
   /**
-   * Retrieves the user object from a search suggestion.
+   * Scrolls to the specified message in the chat view.
    *
-   * This method takes a search suggestion, which can be either a string or an object with properties `text`, `type`, and `hasChat`. If the suggestion is a string, it assumes the string represents a user name and returns the corresponding user object. If the suggestion is an object, it checks the `type` property to determine if the suggestion is for a user, and then extracts the user name from the `text` property.
+   * This method first waits for the navigation to complete, then checks every 500ms for up to 5 attempts if the chat view object matches the target message's collection path. Once a match is found, it emits the message to the `messageScrollRequested` event.
    *
-   * @param suggestion - The search suggestion, which can be either a string or an object with properties `text`, `type`, and `hasChat`.
+   * @param message - The message to scroll to.
+   */
+  private scrollToMessage(message: Message) {
+    this.navigationService.navigationComplete$
+      .pipe(
+        take(1),
+        switchMap(() =>
+          timer(0, 500).pipe(
+            take(5),
+            map(
+              () =>
+                this.navigationService.chatViewObject.id ===
+                message.collectionPath.split('/')[1]
+            ),
+            filter((isMatch) => isMatch),
+            take(1)
+          )
+        )
+      )
+      .subscribe(() => {
+        this.searchService.messageScrollRequested.emit(message);
+      });
+  }
+
+  /**
+   * Gets the user object from a search suggestion.
+   *
+   * This method checks if the search suggestion is of type 'user', and if so, it extracts the user name from the suggestion text and calls `findUserByName()` to retrieve the corresponding user object.
+   *
+   * @param suggestion - The search suggestion object containing the text and type.
    * @returns The user object if found, otherwise `undefined`.
    */
-  public getUserFromSuggestion(
-    suggestion: string | { text: string; type: string; hasChat: boolean }
-  ): User | undefined {
-    let userName: string;
-    if (typeof suggestion === 'string') {
-      userName = suggestion.startsWith('@') ? suggestion.slice(1) : suggestion;
-    } else {
-      userName = suggestion.type === 'user' ? suggestion.text.slice(1) : '';
+  getUserFromSuggestion(suggestion: {
+    text: string;
+    type: string;
+  }): User | undefined {
+    if (suggestion.type === 'user') {
+      const userName = suggestion.text.startsWith('@')
+        ? suggestion.text.slice(1)
+        : suggestion.text;
+      return this.findUserByName(userName);
     }
-    return this.findUserByName(userName);
+    return undefined;
   }
 
   /**
@@ -279,13 +381,10 @@ export class SearchbarComponent implements OnInit {
    */
   addContextToSearch() {
     const context = this.searchService.getCurrentContext();
-    console.log('Adding context:', context);
     if (context) {
       this.searchService.addContextRestriction(context);
       const contextMembers = this.searchService.getContextMembers();
-      console.log('Context members IDs:', contextMembers);
       const memberNames = this.searchService.getUserNames(contextMembers);
-      console.log('Context member names:', memberNames);
     }
   }
 
@@ -308,13 +407,17 @@ export class SearchbarComponent implements OnInit {
   /**
    * Adds a search term to the recent searches list.
    *
-   * This method calls the `addRecentSearch()` method on the `searchService` to add the provided search term to the list of recent searches.
-   * It then updates the `recentSearches` property with the latest list of recent searches.
+   * This method creates a new search suggestion object with the provided search term, sets its type to 'text' and `hasChat` to `false`, and then adds it to the recent searches list using the `addRecentSearch()` method of the `searchService`. It then updates the `recentSearches` property with the latest list of recent searches.
    *
    * @param term - The search term to add to the recent searches list.
    */
   addSearchTerm(term: string) {
-    this.searchService.addRecentSearch(term);
+    const suggestion: SearchSuggestion = {
+      text: term,
+      type: 'text',
+      hasChat: false,
+    };
+    this.searchService.addRecentSearch(suggestion);
     this.recentSearches = this.searchService.getRecentSearches();
   }
 
@@ -334,6 +437,27 @@ export class SearchbarComponent implements OnInit {
   // ############################################################################################################
   // Utility Methods
   // ############################################################################################################
+
+  /**
+   * Gets the message context for a given search suggestion.
+   *
+   * If the suggestion type is 'message' and a message object is provided, this method returns the context of the message.
+   * Otherwise, it returns an empty string.
+   *
+   * @param suggestion - The search suggestion object containing information about the suggestion.
+   * @returns The message context, or an empty string if the suggestion is not a message.
+   */
+  getMessageContext(suggestion: {
+    text: string;
+    type: string;
+    hasChat: boolean;
+    message?: Message;
+  }): string {
+    if (suggestion.type === 'message' && suggestion.message) {
+      return suggestion.message.content;
+    }
+    return '';
+  }
 
   /**
    * Gets the current search restrictions.

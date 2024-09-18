@@ -1,4 +1,5 @@
 <main
+  (click)="setThread(messageData)"
   (mouseenter)="isHovered = true"
   (mouseleave)="isHovered = false; showEditMessagePopup = false"
   [ngClass]="{
@@ -29,7 +30,7 @@
       </button>
       <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
     </div>
-    <p>{{ messageData.content }}</p>
+    <p class="message-text">{{ messageData.content }}</p>
     @if(hasReaction){
     <div class="message-reactions">
       @for (reaction of messageData.emojies; track $index) { @if(reaction.length
@@ -51,8 +52,8 @@
     </div>
     }
     <div class="message-info">
-      @if(messageData.answerCount > 0){
-      <div>
+      @if(messageData.answerCount > 0 && messageData.answerable){
+      <div id="message-answer-info">
         <a>
           <span>{{ messageData.answerCount }}</span>
           <span>Antworten</span>
@@ -123,7 +124,7 @@
           alt=""
         />
       </div>
-      <div class="button-ctn" (click)="setThread(messageData)">
+      <div class="button-ctn" id="comment-message-btn">
         <img
           id="comment-icon"
           src="./assets/icons/chat/message-hover-menu/comment.svg"

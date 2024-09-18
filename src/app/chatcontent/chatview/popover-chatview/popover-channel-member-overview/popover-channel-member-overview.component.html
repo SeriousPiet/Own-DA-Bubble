@@ -8,16 +8,15 @@
     </div>
     <section class="member-list">
         @for (memberID of currentChannel.memberIDs; track memberID) {
-        <button class="member" [ngClass]="{'current-user':memberID === userService.currentUser?.id}"
+        <button [ngClass]="{'current-user':memberID === userService.currentUser?.id, 'member': true}"
             (click)="setSelectedUserObject(memberID)" [attr.popovertarget]="returnPopoverTarget(memberID)">
             <div appAvatar [user]="userService.getUserByID(memberID)" context="chat-channel-members-big"></div>
             <span>{{ getMemberName(memberID) }}</span>
         </button>
         }
-        <button (click)="openAddNewMemberPopover()" 
-        [ngClass]="{'no-edit-right': !isAllowedToAddMember(), 'add-member': true}"
-        [title]="showNoRightToEditInfo()"
-        [disabled]="!isAllowedToAddMember()">
+        <button (click)="openAddNewMemberPopover()"
+            [ngClass]="{'no-edit-right': !isAllowedToAddMember(), 'add-member-btn': true}"
+            [title]="showNoRightToEditInfo()" [disabled]="!isAllowedToAddMember()">
             <div>
                 <img src="assets/icons/chat/general/add-to-channel.svg" alt="">
             </div>
@@ -72,8 +71,8 @@
         }
     </div>
     }
-    <button [ngClass]="{'button-disabled': [isAnyOptionSelected === false ||
-          (isUserSearchSelected && userAmount === 0)], 'button-enable': true}" [disabled]="isAnyOptionSelected === false ||
+    <button [ngClass]="{'button-disabled': isAnyOptionSelected === false ||
+          (isUserSearchSelected && userAmount === 0), 'button-enable': true}" [disabled]="isAnyOptionSelected === false ||
           (isUserSearchSelected && userAmount === 0)" (click)="addSelectedUserToChannel()">Hinzufügen
     </button>
 </main>
