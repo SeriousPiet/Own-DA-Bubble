@@ -33,7 +33,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  styleUrls: ['./intro-animation.scss', './login.component.scss'],
 })
 export class LoginComponent implements OnDestroy, OnInit {
   private readonly loginInfoStayTime = 2000;
