@@ -15,20 +15,24 @@
     </div>
   </section>
 
-  <section
-    class="threadview-content"
-    [ngClass]="{ 'default-channel': isDefaultChannel }"
-  >
-    @if (navigationService.threadViewPath) {
+  <section class="threadview-content">
+    @if (navigationService.threadViewObject) {
     <div class="thread-messages-content">
+      <app-message-date [date]="navigationService.threadViewObject.createdAt" />
+
+      <app-message
+        [id]="navigationService.threadViewObject.id"
+        [messageWriter]="navigationService.threadViewObject.creatorID"
+        [messageData]="navigationService.threadViewObject"
+      />
       <app-messages-list-view
-        [ngClass]="{ 'default-channel': isDefaultChannel }"
-        [messagesPath]="navigationService.chatViewPath"
+        class="thread-list-view"
+        [messagesPath]="navigationService.threadViewPath"
+      />
+      <app-message-textarea
+        [newMessageinChannel]="navigationService.threadViewObject"
       />
     </div>
-    <app-message-textarea
-      [newMessageinChannel]="navigationService.chatViewObject"
-    />
     }
   </section>
 </main>

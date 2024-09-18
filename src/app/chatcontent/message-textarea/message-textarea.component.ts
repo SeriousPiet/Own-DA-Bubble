@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
+import { Message } from '../../shared/models/message.class';
 
 @Component({
   selector: 'app-message-textarea',
@@ -53,7 +54,7 @@ export class MessageTextareaComponent {
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
 
-  @Input() newMessageinChannel!: Channel | Chat;
+  @Input() newMessageinChannel!: Channel | Chat | Message;
 
   constructor(private el: ElementRef) {}
   @HostListener('dragenter', ['$event'])
@@ -95,7 +96,10 @@ export class MessageTextareaComponent {
     this.dropzonehighlighted = highlight;
   }
 
-  async addNewMessage(newMessagePath: Channel | Chat, message: string) {
+  async addNewMessage(
+    newMessagePath: Channel | Chat | Message,
+    message: string
+  ) {
     this.clearErrorInfo();
     if (!message && this.attachments.length === 0) {
       this.handleErrors('Nachricht darf nicht leer sein.');

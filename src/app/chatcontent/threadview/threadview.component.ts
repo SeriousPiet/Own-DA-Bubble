@@ -10,10 +10,12 @@ import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { NavigationService } from '../../utils/services/navigation.service';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
+import { MessageComponent } from '../chatview/messages-list-view/message/message.component';
 import { Message } from '../../shared/models/message.class';
 import { UsersService } from '../../utils/services/user.service';
 import { MessagesListViewComponent } from '../chatview/messages-list-view/messages-list-view.component';
 import { MessageTextareaComponent } from '../message-textarea/message-textarea.component';
+import { MessageDateComponent } from '../chatview/messages-list-view/message-date/message-date.component';
 
 @Component({
   selector: 'app-threadview',
@@ -21,6 +23,8 @@ import { MessageTextareaComponent } from '../message-textarea/message-textarea.c
   imports: [
     CommonModule,
     AvatarDirective,
+    MessageComponent,
+    MessageDateComponent,
     MessagesListViewComponent,
     MessageTextareaComponent,
   ],
@@ -28,12 +32,14 @@ import { MessageTextareaComponent } from '../message-textarea/message-textarea.c
   styleUrl: './threadview.component.scss',
 })
 export class ThreadviewComponent {
+  public messages: Message[] = [];
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService);
   public isAChannel = false;
   public isAChat = false;
   public isDefaultChannel = true;
   public requiredAvatars: string[] = [];
+  public messagesDates: Date[] = [];
 
   @Input() currentChannel!: Channel | Chat;
 

@@ -1,4 +1,11 @@
-import { ChangeDetectorRef, Component, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { Message } from '../../../../shared/models/message.class';
@@ -14,10 +21,9 @@ import { User } from '../../../../shared/models/user.class';
   standalone: true,
   imports: [CommonModule, FormsModule, AvatarDirective],
   templateUrl: './message.component.html',
-  styleUrl: './message.component.scss'
+  styleUrl: './message.component.scss',
 })
 export class MessageComponent implements OnInit {
-
   public userService = inject(UsersService);
   public navigationService = inject(NavigationService);
   public messageService = inject(MessageService);
@@ -26,6 +32,7 @@ export class MessageComponent implements OnInit {
   @Input() set messageWriter(messageWriterID: string) {
     this.checkMessageWriterID(messageWriterID);
   }
+  @Input() id: string = '';
   @Input() messages: Message[] = [];
 
   messagefromUser = false;
@@ -33,7 +40,7 @@ export class MessageComponent implements OnInit {
   isHovered = false;
   hasReaction = false;
   showEditMessagePopup = false;
-  updatedMessage: { content?: string, edited?: boolean, editedAt?: any } = {};
+  updatedMessage: { content?: string; edited?: boolean; editedAt?: any } = {};
 
   messageEditorModus = false;
   messagePath = '';
@@ -43,14 +50,17 @@ export class MessageComponent implements OnInit {
     this.updatedMessage = {
       content: this.messageData.content,
       edited: this.messageData.edited,
-      editedAt: this.messageData.editedAt
+      editedAt: this.messageData.editedAt,
     };
     this.sortMessageReaction();
     this.sortMessagesByUser();
     this.getMessageCreatorObject();
   }
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  openThread(message: Message) {
+    this.navigationService.setThreadViewObject(message);
   }
 
   getMessageCreatorObject() {
@@ -62,7 +72,9 @@ export class MessageComponent implements OnInit {
   sortMessagesByUser() {
     if (this.messages.length > 0) {
       let previousCreatorId = this.messages[0].creatorID;
-      let previousMessageDate = new Date(this.messages[0].createdAt).toDateString();
+      let previousMessageDate = new Date(
+        this.messages[0].createdAt
+      ).toDateString();
 
       this.messages.forEach((message, index) => {
         if (index === 0) {
@@ -73,7 +85,10 @@ export class MessageComponent implements OnInit {
           const currentMessageDate = new Date(message.createdAt).toDateString();
 
           // Überprüfen, ob der Ersteller und das Datum gleich sind
-          if (currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate) {
+          if (
+            currentCreatorId === previousCreatorId &&
+            currentMessageDate === previousMessageDate
+          ) {
             message.previousMessageFromSameUser = true;
           } else {
             message.previousMessageFromSameUser = false;
@@ -84,7 +99,6 @@ export class MessageComponent implements OnInit {
           previousMessageDate = currentMessageDate;
         }
       });
-
     }
   }
 
@@ -92,18 +106,18 @@ export class MessageComponent implements OnInit {
     if (this.messageData.emojies.length > 0) this.hasReaction = true;
   }
 
-
   checkForMessageReactions() {
     if (this.messageData.emojies.length > 0) this.hasReaction = true;
     else this.hasReaction = false;
   }
 
-
   getFormatedMessageTime(messageTime: Date | undefined) {
-    let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     return `${formatedMessageTime} Uhr`;
   }
-
 
   checkMessageWriterID(messageWriterID: string) {
     if (messageWriterID == this.userService.currentUser?.id) {
@@ -120,49 +134,51 @@ export class MessageComponent implements OnInit {
     this.messageEditorModus = !this.messageEditorModus;
   }
 
-  editMessage(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
+  editMessage(
+    message: Message,
+    updatedData: { content?: string; edited?: boolean; editedAt?: any }
+  ) {
     if (updatedData.content) {
       this.messageService.updateMessage(message, updatedData);
-      updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
-      updatedData.editedAt ? this.updatedMessage.editedAt = updatedData.editedAt : this.updatedMessage.editedAt = serverTimestamp();
+      updatedData.edited
+        ? (this.updatedMessage.edited = true)
+        : (this.updatedMessage.edited = false);
+      updatedData.editedAt
+        ? (this.updatedMessage.editedAt = updatedData.editedAt)
+        : (this.updatedMessage.editedAt = serverTimestamp());
       this.toggleMessageEditor();
     }
   }
 
-  discardChanges(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
-    updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
+  discardChanges(
+    message: Message,
+    updatedData: { content?: string; edited?: boolean; editedAt?: any }
+  ) {
+    updatedData.edited
+      ? (this.updatedMessage.edited = true)
+      : (this.updatedMessage.edited = false);
     updatedData.content = message.content;
 
     this.toggleMessageEditor();
   }
 
-
   returnPopoverTarget(messageCreator: string) {
     if (messageCreator === this.userService.currentUser?.id) {
-      return 'profile-popover'
+      return 'profile-popover';
     } else {
-      return 'popover-member-profile'
+      return 'popover-member-profile';
     }
   }
 
   setSelectedUserObject(messageCreatorID: string) {
-    console.log(messageCreatorID)
-    this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
+    console.log(messageCreatorID);
+    this.userService.updateSelectedUser(
+      this.userService.getUserByID(messageCreatorID)
+    );
   }
-
 
   setThread(thread: Message) {
-    console.log('current selected thread is:', thread)
+    console.log('current selected thread is:', thread);
     this.navigationService.setThreadViewObject(thread);
   }
-
-
-
-
-
-
-
-
-
-
 }
