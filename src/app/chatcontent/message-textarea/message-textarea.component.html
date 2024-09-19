@@ -26,13 +26,13 @@
                 </label>
             </div>
             <span>|</span>
-            <div id="emoji-picker-icon" class="button-ctn">
+            <div (click)="messageeditor.toogleEmojiePicker()" id="emoji-picker-icon" class="button-ctn">
                 <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/emoji-picker.svg"
                     alt="+">
                 <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/emoji-picker-active.svg"
                     alt="smiley">
             </div>
-            <div (click)="openUserPicker()" id="tag-person-icon" class="button-ctn">
+            <div (click)="messageeditor.toggleListPicker()" id="tag-person-icon" class="button-ctn">
                 <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/tag-person.svg" alt="+">
                 <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/tag-person-active.svg"
                     alt="@">
@@ -45,8 +45,8 @@
         <img src="./assets/icons/svg-spinner-accent.svg" alt="" />
         }
         @else {
-        <button [disabled]="ifMessageUploading" (click)="addNewMessage()"
-            id="send-message-icon" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
+        <button [disabled]="ifMessageUploading" (click)="addNewMessage()" id="send-message-icon"
+            (mouseenter)="isActive = true" (mouseleave)="isActive = false">
             <img src="./assets/icons/chat/write-message/send.svg" alt="">
         </button>
         }

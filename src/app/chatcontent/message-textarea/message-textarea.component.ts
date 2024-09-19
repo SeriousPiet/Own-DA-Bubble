@@ -62,10 +62,6 @@ export class MessageTextareaComponent {
 
   constructor(private el: ElementRef) { }
 
-  openUserPicker() {
-    this.messageeditor.openUserPicker();
-  }
-
   @HostListener('dragenter', ['$event'])
   onDragEnter(event: DragEvent) {
     event.preventDefault();

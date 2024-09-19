@@ -5,10 +5,24 @@ section {
     justify-content: flex-start;
     align-items: stretch;
 
+    .emoji-mart {
+        position: absolute;
+        z-index: 1000;
+        bottom: 100%;
+        left: 0;
+        height: fit-content;
+        width: fit-content;
+
+        .emoji-mart-emoji {
+            cursor: pointer;
+        }
+    }
+
+
     .picker {
         position: absolute;
         z-index: 1000;
-        bottom: 8rem;
+        bottom: 100%;
         left: 0;
         display: flex;
         flex-direction: column;
