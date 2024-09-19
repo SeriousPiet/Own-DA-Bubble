@@ -13,7 +13,10 @@
                 class="message-creator-name">{{userService.getUserByID(messageData.creatorID)?.name}}</button>
             <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
         </div>
-        <p class="message-text">{{ messageData.content }}</p>
+
+        <div #messagediv class="message-text"></div>
+        <!-- <p class="message-text">{{ messageData.content }}</p> -->
+
         @if(hasReaction){
         <div class="message-reactions">
             @for (reaction of messageData.emojies; track $index) {
@@ -45,9 +48,10 @@
     </section>
     }@else {
     <div (mouseenter)="isHovered = false" class="message-editor">
-        <textarea [(ngModel)]="updatedMessage.content"></textarea>
+        <app-message-editor #messageeditor [messageAsHTML]="messageData.content"></app-message-editor>
+        <!-- <textarea [(ngModel)]="updatedMessage.content"></textarea> -->
         <div class="input-message-toolbar">
-            <div id="emoji-picker-icon" class="button-ctn">
+            <div (click)="messageEditor.toogleEmojiePicker()" id="emoji-picker-icon" class="button-ctn">
                 <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+">
             </div>
             <div class="message-editor-button">

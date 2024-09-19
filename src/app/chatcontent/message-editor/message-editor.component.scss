@@ -9,13 +9,7 @@ section {
         position: absolute;
         z-index: 1000;
         bottom: 100%;
-        left: 0;
-        height: fit-content;
-        width: fit-content;
-
-        .emoji-mart-emoji {
-            cursor: pointer;
-        }
+        right: 0;
     }
 
 
@@ -95,7 +89,7 @@ section {
 
     .show-editor-toolbar {
         max-height: 3rem;
-        border-bottom: 1px solid lightgray;
+        border-bottom: 1px solid #ADB0D9;
     }
 
     .hide-editor-toolbar {

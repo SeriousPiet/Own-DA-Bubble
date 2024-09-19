@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { Message } from '../../../../shared/models/message.class';
@@ -8,26 +8,33 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { User } from '../../../../shared/models/user.class';
+import { MessageEditorComponent } from '../../../message-editor/message-editor.component';
+import { ChannelService } from '../../../../utils/services/channel.service';
+import { Channel } from '../../../../shared/models/channel.class';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [CommonModule, FormsModule, AvatarDirective],
+  imports: [CommonModule, FormsModule, AvatarDirective, MessageEditorComponent],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('messagediv') messageDiv!: ElementRef;
+  @ViewChild('messageeditor') messageEditor!: MessageEditorComponent;
 
   public userService = inject(UsersService);
   public navigationService = inject(NavigationService);
   public messageService = inject(MessageService);
+  public channelService = inject(ChannelService);
 
   @Input() messageData: any;
   @Input() set messageWriter(messageWriterID: string) {
     this.checkMessageWriterID(messageWriterID);
   }
   @Input() messages: Message[] = [];
-  
+
   messagefromUser = false;
   messageCreator: User | undefined;
   isHovered = false;
@@ -50,7 +57,56 @@ export class MessageComponent implements OnInit {
     this.getMessageCreatorObject();
   }
 
-  constructor() {}
+  constructor() { }
+
+  ngAfterViewInit(): void {
+    this.messageDiv.nativeElement.innerHTML = this.messageData.content;
+    this.calculateMessageSpans();
+  }
+
+  calculateMessageSpans() {
+    const spans = this.messageDiv.nativeElement.querySelectorAll('span');
+    spans.forEach((span: HTMLSpanElement) => {
+      if (span.classList.length > 0) {
+        if (span.classList[0].endsWith('channel')) {
+          // channel
+          this.prepareChannelSpan(span);
+        } else if (span.classList[0].endsWith('user')) {
+          // user
+          this.prepareUserSpan(span);
+        }
+      }
+    });
+  }
+
+  prepareChannelSpan(span: HTMLSpanElement) {
+    const spanChannel = this.getChannelOnlyWhenNotCurrent(span.id);
+    if (spanChannel) {
+      span.classList.add('highlight-item');
+      span.classList.add('highlight-can-clicked');
+      span.addEventListener('click', (event) => {
+        event.stopPropagation();
+        this.navigationService.setChatViewObject(spanChannel);
+      });
+    }
+  }
+
+  getChannelOnlyWhenNotCurrent(channelID: string): Channel | undefined {
+    const channel = this.channelService.channels.find(channel => channel.id === channelID);
+    if (channel && this.navigationService.chatViewObject !== channel) return channel;
+    return undefined;
+  }
+
+  prepareUserSpan(span: HTMLSpanElement) {
+    span.classList.add('highlight-item');
+    span.classList.add('highlight-can-clicked');
+    span.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.setSelectedUserObject(span.id);
+      const popoverElement = document.getElementById(this.returnPopoverTarget(span.id));
+      if (popoverElement) (popoverElement as any).showPopover();
+    });
+  }
 
   getMessageCreatorObject() {
     return this.userService.getUserByID(this.messageData.creatorID);
@@ -122,6 +178,7 @@ export class MessageComponent implements OnInit {
 
   editMessage(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
     if (updatedData.content) {
+      const messageHTML = this.messageEditor.getMessageAsHTML();
       this.messageService.updateMessage(message, updatedData);
       updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
       updatedData.editedAt ? this.updatedMessage.editedAt = updatedData.editedAt : this.updatedMessage.editedAt = serverTimestamp();
@@ -151,7 +208,7 @@ export class MessageComponent implements OnInit {
 
 
   setThread(thread: Message) {
-    console.log('current selected thread is:', thread)
+    // console.log('current selected thread is:', thread);
     this.navigationService.setThreadViewObject(thread);
   }
 
