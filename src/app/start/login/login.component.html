@@ -1,20 +1,22 @@
-<div *ngIf="showIntro" class="intro-screen">
-  <div class="intro-boundry">
-    <div class="animated-content">
-      <div class="animated-bubble-logo">
-        <img src="./assets/img/start-logo.png" alt="" />
-      </div>
+<!-- <div *ngIf="showIntro" class="intro-screen"> -->
 
-      <div class="heading">
-        <span>DABubble</span>
+<section>
+  <div class="intro-screen">
+    <div class="intro-boundry">
+      <div class="animated-content">
+        <div class="animated-bubble-logo">
+          <img src="./assets/img/start-logo.png" alt="" />
+        </div>
+
+        <div class="heading">
+          <span>DABubble</span>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<section>
   <!-- DEBUG Section -->
-  <div class="debug-btn">
+  <div class="debug-btn d-none">
     <button [routerLink]="['/chatthreadtest']">DEBUG</button>
     <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
     @if(userservice.currentUser) { User: {{ userservice.currentUser.name }}
