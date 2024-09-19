@@ -8,6 +8,7 @@ import { User } from '../../shared/models/user.class';
 import { UsersService } from '../../utils/services/user.service';
 import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
+import { FormsModule } from '@angular/forms';
 
 class LockedSpanBlot extends Inline {
   static override blotName = 'lockedSpan';
@@ -42,7 +43,7 @@ class LockedSpanBlot extends Inline {
 @Component({
   selector: 'app-message-editor',
   standalone: true,
-  imports: [QuillModule, CommonModule, AvatarDirective],
+  imports: [QuillModule, CommonModule, AvatarDirective, FormsModule],
   templateUrl: './message-editor.component.html',
   styleUrl: './message-editor.component.scss'
 })
@@ -51,28 +52,30 @@ export class MessageEditorComponent implements AfterViewInit {
   @ViewChild('editor', { static: true }) editor!: QuillEditorComponent;
   @ViewChild('toolbar', { static: true }) toolbar!: ElementRef;
 
-  @Input() message = '';
-  @Input() placeholder = '';
+  @Input() messageAsHTML = '';
+  @Input() placeholder = 'Nachricht schreiben...';
+  @Input() minHeight_rem = 4;
+  @Input() maxHeight_rem = 16;
 
   @Output() enterPressed = new EventEmitter<string>(); // ToDO: Implement this event
 
   public userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
 
-  quill!: Quill;
-  savedRange: any = null;
-  showToolbar = false;
-  boundingKey = ' ';
+  public quill!: Quill;
+  private savedRange: any = null;
+  public showToolbar = false;
+  private boundingKey = ' '; // sign bevor and after the span
 
-  showPicker = false;
-  pickersign = '';
-  pickerItems: User[] | Channel[] = [];
-  lastItem: User | Channel | null = null;
-  currentPickerIndex = -1;
+  public showPicker = false;
+  private pickersign = '';
+  public pickerItems: User[] | Channel[] = [];
+  private lastItem: User | Channel | null = null;
+  public currentPickerIndex = -1;
 
-  quillstyle = {
-    minHeight: '3rem',
-    maxHeight: '16rem',
+  public quillstyle = {
+    minHeight: this.minHeight_rem + 'rem',
+    maxHeight: this.maxHeight_rem + 'rem',
     width: '100%',
     backgroundColor: 'white',
     color: 'black',
@@ -91,6 +94,14 @@ export class MessageEditorComponent implements AfterViewInit {
     this.updatePickerItems('');
   }
 
+  getMessageAsHTML() {
+    return this.quill.getSemanticHTML();
+  }
+
+  clearEditor() {
+    this.quill.setText('');
+  }
+
   ngAfterViewInit(): void {
     if (this.editor) {
       this.editor.onEditorCreated.subscribe((quill: any) => {
@@ -103,10 +114,11 @@ export class MessageEditorComponent implements AfterViewInit {
           this.quill.on('text-change', (event) => this.onTextChange(event));
           this.quill.keyboard.addBinding({ key: '@' }, () => { this.openPicker('@'); return true; });
           this.quill.keyboard.addBinding({ key: '#' }, () => { this.openPicker('#'); return true; });
-          this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => { return this.handlePickerSelection('ArrowDown'); });
-          this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelection('ArrowUp'); });
-          this.quill.keyboard.addBinding({ key: 'Escape' }, () => { return this.handlePickerSelection('Escape'); });
-          this.quill.keyboard.addBinding({ key: 'ArrowRight' }, () => { return this.handlePickerSelection('Select'); });
+          this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => { return this.handlePickerSelectionKeys('ArrowDown'); });
+          this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelectionKeys('ArrowUp'); });
+          this.quill.keyboard.addBinding({ key: 'Escape' }, () => { return this.handlePickerSelectionKeys('Escape'); });
+          this.quill.keyboard.addBinding({ key: 'ArrowRight' }, () => { return this.handlePickerSelectionKeys('Select'); });
+          
         }
         this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
       });
@@ -120,13 +132,13 @@ export class MessageEditorComponent implements AfterViewInit {
   }
 
 
-  handlePickerSelection(key: string): boolean {
+  handlePickerSelectionKeys(key: string): boolean {
     if (!this.showPicker) return true;
     if (key === 'ArrowUp') {
-      this.setCurrentPicker((this.currentPickerIndex - 1 + this.pickerItems.length) % this.pickerItems.length);
+      this.setCurrentPickerIndex((this.currentPickerIndex - 1 + this.pickerItems.length) % this.pickerItems.length);
       return false;
     } else if (key === 'ArrowDown') {
-      this.setCurrentPicker((this.currentPickerIndex + 1) % this.pickerItems.length);
+      this.setCurrentPickerIndex((this.currentPickerIndex + 1) % this.pickerItems.length);
       return false;
     } else if (key === 'Select') {
       const currentItem = this.currentPickerIndex === -1 ? this.lastItem : this.pickerItems[this.currentPickerIndex];
@@ -235,11 +247,7 @@ export class MessageEditorComponent implements AfterViewInit {
   }
 
 
-  highLightText(text: string) {
-  }
-
-
-  setCurrentPicker(index: number) {
+  setCurrentPickerIndex(index: number) {
     if (this.currentPickerIndex === -1) this.lastItem = null;
     else this.lastItem = this.pickerItems[this.currentPickerIndex];
     this.currentPickerIndex = index;
@@ -250,10 +258,10 @@ export class MessageEditorComponent implements AfterViewInit {
   updatePickerItems(searchTerm: string) {
     if (this.pickersign === '@') {
       this.pickerItems = this.userservice.users.filter(user => !user.guest && (searchTerm === '' || user.name.toLowerCase().includes(searchTerm.toLowerCase())));
-      this.setCurrentPicker(-1);
+      this.setCurrentPickerIndex(-1);
     } else if (this.pickersign === '#') {
       this.pickerItems = this.channelservice.channels.filter(channel => !channel.defaultChannel && channel.name.toLowerCase().includes(searchTerm.toLowerCase()));
-      this.setCurrentPicker(-1);
+      this.setCurrentPickerIndex(-1);
     }
   }
 
@@ -275,7 +283,7 @@ export class MessageEditorComponent implements AfterViewInit {
     this.showPicker = false;
     this.pickersign = '';
     this.pickerItems = [];
-    this.setCurrentPicker(-1);
+    this.setCurrentPickerIndex(-1);
     this._cdr.detectChanges();
   }
 

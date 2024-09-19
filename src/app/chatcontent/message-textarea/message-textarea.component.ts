@@ -18,15 +18,15 @@ import { MessageEditorComponent } from '../message-editor/message-editor.compone
   ]
 })
 export class MessageTextareaComponent {
-  
+
   @ViewChild('messageeditor', { static: true }) messageeditor!: MessageEditorComponent;
-  
+
   @Input() newMessageinChannel!: Channel | Chat;
 
   isHovered = false;
   isActive = false;
 
-  message = ''
+  // message = ''
 
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
@@ -106,18 +106,19 @@ export class MessageTextareaComponent {
   }
 
 
-  async addNewMessage(newMessagePath: Channel | Chat, message: string) {
+  async addNewMessage() {
+    const newHTMLMessage = this.messageeditor.getMessageAsHTML();
     this.clearErrorInfo();
-    if (!message && this.attachments.length === 0) {
+    if (newHTMLMessage === '<p></p>' && this.attachments.length === 0) {
       this.handleErrors('Nachricht darf nicht leer sein.');
     }
     else if (await this.userservice.ifCurrentUserVerified()) {
       this.ifMessageUploading = true;
-      const error = await this.messageService.addNewMessageToCollection(newMessagePath, message, this.attachments)
+      const error = await this.messageService.addNewMessageToCollection(this.newMessageinChannel, newHTMLMessage, this.attachments)
       if (error) {
         this.handleErrors(error);
       } else {
-        this.message = '';
+        this.messageeditor.clearEditor();
         this.attachments = [];
       }
       this.ifMessageUploading = false;

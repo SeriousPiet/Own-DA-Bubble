@@ -57,6 +57,6 @@
             <button class="ql-header" value="3"></button>
         </span>
     </div>
-    <quill-editor #editor [styles]="quillstyle" [modules]="{toolbar: '#editor-toolbar'}" [theme]="'snow'"
+    <quill-editor #editor [(ngModel)]="messageAsHTML" [styles]="quillstyle" [modules]="{toolbar: '#editor-toolbar'}" [theme]="'snow'"
         [placeholder]="placeholder"></quill-editor>
 </section>
