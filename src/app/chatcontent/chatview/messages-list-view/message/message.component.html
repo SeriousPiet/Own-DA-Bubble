@@ -1,4 +1,5 @@
-<main (click)="setThread(messageData)" (mouseenter)="isHovered = true" (mouseleave)="isHovered = false; showEditMessagePopup = false" [ngClass]="{'message-ctn':true, 
+<main (click)="setThread(messageData)" (mouseenter)="isHovered = true"
+    (mouseleave)="isHovered = false; showEditMessagePopup = false" [ngClass]="{'message-ctn':true, 
     'message-from-user': messagefromUser, 
     'editor-modus-bg-color':messageEditorModus, 
     'message-from-same-user': messageData.previousMessageFromSameUser}">
@@ -9,14 +10,41 @@
     @if (!messageEditorModus) {
     <section>
         <div [ngClass]="{'message-header':true}">
-            <button (click)="setSelectedUserObject(messageData.creatorID)" [attr.popovertarget]="returnPopoverTarget(messageData.creatorID)"
+            <button (click)="setSelectedUserObject(messageData.creatorID)"
+                [attr.popovertarget]="returnPopoverTarget(messageData.creatorID)"
                 class="message-creator-name">{{userService.getUserByID(messageData.creatorID)?.name}}</button>
             <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
         </div>
 
         <div #messagediv class="message-text"></div>
-        <!-- <p class="message-text">{{ messageData.content }}</p> -->
-
+        @if(messageData.attachments.length > 0){
+        <div class="message-attachments">
+            @for(attachment of messageData.attachments; track $index){
+            @if(attachment.type == 'image'){
+            <div class="attachment">
+                <div class="action-div">
+                    <div class="pdf-actions">
+                        <img (click)="downloadPDF(attachment)" src="./assets/icons/chat/general/download.svg" alt="">
+                        <img (click)="deleteAttachment(attachment)" src="./assets/icons/chat/general/trash.svg" alt="">
+                    </div>
+                </div>
+                <img class="type-image" src="{{attachment.url}}" alt="">
+            </div>
+            } @else if(attachment.type == 'pdf'){
+            <div class="attachment">
+                <img class="type-pdf" src="./assets/icons/chat/write-message/pdf.svg" alt="">
+                <div class="action-div">
+                    <div class="pdf-actions">
+                        <img (click)="downloadPDF(attachment)" src="./assets/icons/chat/general/download.svg" alt="">
+                        <img (click)="deleteAttachment(attachment)" src="./assets/icons/chat/general/trash.svg" alt="">
+                    </div>
+                </div>
+                <span>{{attachment.name}}</span>
+            </div>
+            }
+            }
+        </div>
+        }
         @if(hasReaction){
         <div class="message-reactions">
             @for (reaction of messageData.emojies; track $index) {
@@ -41,7 +69,7 @@
                 <span>letzte Antwort: 14:56</span>
             </div>
             }
-            @if(updatedMessage.edited){
+            @if(messageData.edited){
             <span>(Bearbeitet)</span>
             }
         </div>
@@ -49,14 +77,13 @@
     }@else {
     <div (mouseenter)="isHovered = false" class="message-editor">
         <app-message-editor #messageeditor [messageAsHTML]="messageData.content"></app-message-editor>
-        <!-- <textarea [(ngModel)]="updatedMessage.content"></textarea> -->
         <div class="input-message-toolbar">
             <div (click)="messageEditor.toogleEmojiePicker()" id="emoji-picker-icon" class="button-ctn">
                 <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+">
             </div>
             <div class="message-editor-button">
-                <button class="abort-btn" (click)="discardChanges(messageData,updatedMessage)">Abbrechen</button>
-                <button class="save-btn" (click)="editMessage(messageData, updatedMessage)">Speichern</button>
+                <button class="abort-btn" (click)="cancelUpdateMessage()">Abbrechen</button>
+                <button class="save-btn" (click)="updateMessage()">Speichern</button>
             </div>
         </div>
     </div>

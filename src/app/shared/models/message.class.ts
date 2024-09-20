@@ -1,4 +1,5 @@
 import { Timestamp } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
 
 export interface IReactions {
   type: string;
@@ -7,10 +8,15 @@ export interface IReactions {
 
 export type StoredAttachment = {
   name: string;
+  type: 'image' | 'pdf';
   url: string;
+  path: string;
 };
 
 export class Message {
+  private changeMessage = new BehaviorSubject<Message>(this);
+  public changeMessage$ = this.changeMessage.asObservable();
+
   readonly id: string;
   readonly collectionPath: string;
   readonly creatorID: string;
@@ -118,6 +124,7 @@ export class Message {
       this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
     if (data.edited !== undefined) this._edited = data.edited;
     if (data.editedAt) this._editedAt = (data.editedAt as Timestamp).toDate();
-    if (data.attachments) this._attachments = data.attachments;
+    if (data.attachments) this._attachments = this.parseAttachments(data.attachments);
+    this.changeMessage.next(this);
   }
 }

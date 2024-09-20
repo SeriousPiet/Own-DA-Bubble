@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
-import { Message } from '../../../../shared/models/message.class';
+import { Message, StoredAttachment } from '../../../../shared/models/message.class';
 import { MessageService } from '../../../../utils/services/message.service';
 import { UsersService } from '../../../../utils/services/user.service';
 import { CommonModule } from '@angular/common';
@@ -40,28 +40,44 @@ export class MessageComponent implements OnInit, AfterViewInit {
   isHovered = false;
   hasReaction = false;
   showEditMessagePopup = false;
-  updatedMessage: { content?: string, edited?: boolean, editedAt?: any } = {};
 
   messageEditorModus = false;
   messagePath = '';
   message = '';
 
   ngOnInit(): void {
-    this.updatedMessage = {
-      content: this.messageData.content,
-      edited: this.messageData.edited,
-      editedAt: this.messageData.editedAt
-    };
     this.checkForMessageReactions();
     this.sortMessages();
     this.getMessageCreatorObject();
   }
 
-  constructor() { }
+  constructor(private cdr: ChangeDetectorRef) { }
 
   ngAfterViewInit(): void {
+    this.messageData.changeMessage$.subscribe((message: Message) => {
+      this.fillMessageContentHTML();
+      this.cdr.detectChanges();
+    });
+  }
+
+
+  fillMessageContentHTML() {
     this.messageDiv.nativeElement.innerHTML = this.messageData.content;
     this.calculateMessageSpans();
+  }
+
+
+  downloadPDF(attachment: StoredAttachment) {
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = 'filename.pdf';
+    link.target = '_blank'; // Open in a new tab
+    link.click();
+  }
+
+
+  deleteAttachment(attachment: StoredAttachment) {
+    this.messageService.deleteStoredAttachment(this.messageData, attachment);
   }
 
   calculateMessageSpans() {
@@ -107,6 +123,21 @@ export class MessageComponent implements OnInit, AfterViewInit {
       if (popoverElement) (popoverElement as any).showPopover();
     });
   }
+
+
+  updateMessage() {
+    const editorContent = this.messageEditor.getMessageAsHTML();
+    if (editorContent !== '<br></br>' && editorContent !== this.messageData.content) {
+      this.messageService.updateMessage(this.messageData, { content: editorContent, edited: true, editedAt: serverTimestamp() });
+      this.toggleMessageEditor();
+    }
+  }
+
+
+  cancelUpdateMessage() {
+    this.toggleMessageEditor();
+  }
+
 
   getMessageCreatorObject() {
     return this.userService.getUserByID(this.messageData.creatorID);
@@ -175,24 +206,6 @@ export class MessageComponent implements OnInit, AfterViewInit {
     this.toggleEditMessagePopup();
     this.messageEditorModus = !this.messageEditorModus;
   }
-
-  editMessage(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
-    if (updatedData.content) {
-      const messageHTML = this.messageEditor.getMessageAsHTML();
-      this.messageService.updateMessage(message, updatedData);
-      updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
-      updatedData.editedAt ? this.updatedMessage.editedAt = updatedData.editedAt : this.updatedMessage.editedAt = serverTimestamp();
-      this.toggleMessageEditor();
-    }
-  }
-
-  discardChanges(message: Message, updatedData: { content?: string, edited?: boolean, editedAt?: any }) {
-    updatedData.edited ? this.updatedMessage.edited = true : this.updatedMessage.edited = false;
-    updatedData.content = message.content;
-
-    this.toggleMessageEditor();
-  }
-
 
   returnPopoverTarget(messageCreator: string) {
     if (messageCreator === this.userService.currentUser?.id) {
