@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { Message, StoredAttachment } from '../../../../shared/models/message.class';
@@ -19,10 +19,10 @@ import { Channel } from '../../../../shared/models/channel.class';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
-export class MessageComponent implements OnInit, AfterViewInit {
+export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked {
 
-  @ViewChild('messagediv') messageDiv!: ElementRef;
-  @ViewChild('messageeditor') messageEditor!: MessageEditorComponent;
+  @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
+  @ViewChild('messageeditor', { static: false }) messageEditor!: MessageEditorComponent;
 
   public userService = inject(UsersService);
   public navigationService = inject(NavigationService);
@@ -45,6 +45,8 @@ export class MessageComponent implements OnInit, AfterViewInit {
   messagePath = '';
   message = '';
 
+  private needContentUpdate = false;
+
   ngOnInit(): void {
     this.checkForMessageReactions();
     this.sortMessages();
@@ -52,6 +54,14 @@ export class MessageComponent implements OnInit, AfterViewInit {
   }
 
   constructor(private cdr: ChangeDetectorRef) { }
+
+
+  ngAfterViewChecked(): void {
+    if(this.messageDiv && this.needContentUpdate) {
+      this.needContentUpdate = false;
+      this.fillMessageContentHTML();
+    }
+  }
 
   ngAfterViewInit(): void {
     this.messageData.changeMessage$.subscribe((message: Message) => {
@@ -62,6 +72,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
 
   fillMessageContentHTML() {
+    console.log('messageData', this.messageData);
     this.messageDiv.nativeElement.innerHTML = this.messageData.content;
     this.calculateMessageSpans();
   }
@@ -136,6 +147,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
   cancelUpdateMessage() {
     this.toggleMessageEditor();
+    this.needContentUpdate = true;
   }
 
 
@@ -224,14 +236,5 @@ export class MessageComponent implements OnInit, AfterViewInit {
     // console.log('current selected thread is:', thread);
     this.navigationService.setThreadViewObject(thread);
   }
-
-
-
-
-
-
-
-
-
 
 }
