@@ -1,7 +1,7 @@
 <!-- <div *ngIf="showIntro" class="intro-screen"> -->
 
 <section>
-  <div class="intro-screen">
+  <div *ngIf="showIntro" class="intro-screen">
     <div class="intro-boundry">
       <div class="animated-content">
         <div class="animated-bubble-logo">
@@ -16,7 +16,7 @@
   </div>
 
   <!-- DEBUG Section -->
-  <div class="debug-btn d-none">
+  <div class="debug-btn">
     <button [routerLink]="['/chatthreadtest']">DEBUG</button>
     <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
     @if(userservice.currentUser) { User: {{ userservice.currentUser.name }}
@@ -37,15 +37,16 @@
 
   <div id="infoPopover" popover>
     <div>
-      @if(logininfoicon) {
+      @if(loginInfoIcon) {
       <img src="./assets/icons/modals/send-white.svg" alt="" />
       }
-      {{ logininfomessage }}
+      {{ loginInfoMessage }}
     </div>
   </div>
 
   @if(passwordResetFormShow) {
   <form
+    class="pw-reset-form"
     [formGroup]="passwordResetForm"
     (ngSubmit)="submitPasswordResetForm($event)"
   >
@@ -73,7 +74,8 @@
       }
     </div>
     <div class="info-gray">
-      Wir senden dir einem Link, um dein Passwort zurückzusetzen.
+      Wir senden Dir eine Mail mit einem Link, um Dein Passwort zurückzusetzen.
+      Schau bitte auch in Deinem Spam-Ordner nach.
     </div>
     <div class="action-btns-pwreset">
       @if(showSpinner) {
@@ -84,13 +86,17 @@
         type="submit"
         class="blue-btn"
       >
-        EMail abschicken
+        E-Mail abschicken
       </button>
     </div>
   </form>
   } @else {
 
-  <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
+  <form
+    class="login-form"
+    [formGroup]="loginForm"
+    (ngSubmit)="submitLoginForm($event)"
+  >
     <span class="title">Anmeldung</span>
     <div class="info">
       Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
@@ -153,13 +159,26 @@
       <button [disabled]="loginForm.invalid" type="submit" class="blue-btn">
         Anmelden
       </button>
-      @if(showSpinner) {
-      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
+      @if(showSpinner && !spinnerMobile) {
+      <img
+        class="spinner"
+        src="../../../assets/icons/svg-spinner-accent.svg"
+        alt=""
+      />
       }
       <button (click)="loginGuest()" type="button" class="white-btn">
         Gäste-Login
       </button>
     </div>
+    @if(showSpinner && spinnerMobile ) {
+    <div class="spinner-box">
+      <img
+        class="spinner"
+        src="../../../assets/icons/svg-spinner-accent.svg"
+        alt=""
+      />
+    </div>
+    }
   </form>
   }
   <div class="mandatory-buttons">
