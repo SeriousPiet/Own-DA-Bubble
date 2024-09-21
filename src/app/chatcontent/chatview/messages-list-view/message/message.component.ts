@@ -72,7 +72,6 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
 
 
   fillMessageContentHTML() {
-    console.log('messageData', this.messageData);
     this.messageDiv.nativeElement.innerHTML = this.messageData.content;
     this.calculateMessageSpans();
   }

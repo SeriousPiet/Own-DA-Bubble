@@ -62,6 +62,6 @@
             </button>
         </span>
     </div>
-    <quill-editor #editor [(ngModel)]="messageAsHTML" [styles]="quillstyle" [modules]="{toolbar: '#editor-toolbar'}"
+    <quill-editor #editor [(ngModel)]="messageAsHTML" [styles]="quillstyle" [modules]="quillconfig"
         [theme]="'snow'" [placeholder]="placeholder"></quill-editor>
 </section>

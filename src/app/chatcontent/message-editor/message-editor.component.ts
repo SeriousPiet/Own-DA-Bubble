@@ -11,6 +11,7 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
+import { Delta } from 'quill/core';
 
 class LockedSpanBlot extends Inline {
   static override blotName = 'lockedSpan';
@@ -78,6 +79,9 @@ export class MessageEditorComponent implements AfterViewInit {
     fontFamily: 'Nunito',
     border: 'none',
   };
+  public quillconfig = {
+    toolbar: '#editor-toolbar'
+  };
 
   // ListPicker for users and channels
   public showPicker = false;
@@ -140,6 +144,13 @@ export class MessageEditorComponent implements AfterViewInit {
       this.editor.onEditorCreated.subscribe((quill: any) => {
         this.registerLockedSpanBlot();
         this.quill = this.editor!.quillEditor;
+        this.quill.on('editor-change', (eventName: string, ...args: any[]) => {
+          if (eventName === 'text-change') {
+            const [delta, oldDelta, source] = args;
+            const hasImage = delta.ops.some((op: any) => op.insert && op.insert.image);
+            if (source === 'user' && hasImage) this.quill.history.undo();
+          }
+        });
         if (this.quill) {
           const editorElement = this.quill.root;
           editorElement.addEventListener('focus', () => this.onFocused(editorElement));
