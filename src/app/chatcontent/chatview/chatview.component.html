@@ -1,6 +1,7 @@
 <main class="chatview-main-ctn">
   @if(!isDefaultChannel){
   <section class="chatview-header">
+    @if(isAChannel){
     <button class="chatview-channel-name" popovertarget="channel-editor-popover">
       <div>
         <div>
@@ -30,17 +31,25 @@
           alt="add-member-icon" />
       </button>
     </div>
+    }@else if(isAChat){
+    <button (click)="setSelectedUserObject(currentContext.memberIDs[1])"
+      [attr.popovertarget]="returnPopoverTarget(currentContext.memberIDs[1])" class="chatview-chat-partner-name">
+      <div appAvatar [user]="getChatPartner(navigationService.chatViewObject)" context="chat-dm-header"></div>
+      <span>{{returnChatPartnerName()}}</span>
+    </button>
+    }
   </section>
   }
 
   <section class="chatview-content" [ngClass]="{ 'default-channel': isDefaultChannel }">
-    @if (!isDefaultChannel && navigationService.chatViewPath) {
+    @if (!isDefaultChannel) {
     <div class="chat-messages-content" [ngClass]="{'no-messages': currentContext.messagesCount == 0}">
       @if(currentContext.messagesCount > 0){
       <app-messages-list-view [ngClass]="{ 'default-channel': isDefaultChannel }"
         [messagesPath]="navigationService.chatViewPath" [currentObject]="currentContext"></app-messages-list-view>
       }@else{
       <section class="no-messages-ctn">
+        @if(isAChannel){
         <div class="channel-name">
           <img src="assets/icons/chat/general/hashtag.svg" alt="#" />
           <span>{{ getTitle(navigationService.chatViewObject) }}</span>
@@ -48,6 +57,27 @@
         <div class="channel-begin">{{getChannelCreatorName(navigationService.chatViewObject)}} diesen Channel
           {{getChannelCreationTime(navigationService.chatViewObject)}} erstellt. Das ist der Anfang des Channel <span> #
             {{ getTitle(navigationService.chatViewObject) }}</span>.</div>
+        }@else if(isAChat){
+        <section class="no-pm-ctn">
+          <button (click)="setSelectedUserObject(currentContext.memberIDs[1])"
+            [attr.popovertarget]="returnPopoverTarget(currentContext.memberIDs[1])" class="chat-partner-name">
+            <div appAvatar [user]="getChatPartner(navigationService.chatViewObject)" context="thread-message"></div>
+            <span>{{returnChatPartnerName()}}</span>
+          </button>
+          @if(isSelfChat()){
+          <p id="message-to-itself">
+            <span>Dieser Raum ist nur für dich da.</span>
+            Mache Notizen, liste deine To-Dos auf oder bewahre Links und Datein griffbereit auf. Du kannst hier auch
+            gern Dinge mit dir selbst besprechen.
+          </p>
+          }@else {
+          <p>Dieser Unterhaltung findet nur zwischen <button
+              (click)="setSelectedUserObject(currentContext.memberIDs[1])"
+              [attr.popovertarget]="returnPopoverTarget(currentContext.memberIDs[1])">&#64;{{returnChatPartnerName()}}</button>
+            und dir statt.</p>
+          }
+        </section>
+        }
       </section>
       }
     </div>
