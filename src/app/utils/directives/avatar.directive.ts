@@ -265,7 +265,7 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
       case 'chat-dm-header':
         return {
-          imgSize: '2.5rem',
+          imgSize: '3.125rem',
           statusSize: '0.675rem',
           imgBorderColor: 'transparent',
           pseudoBorderColor: '#fff',
