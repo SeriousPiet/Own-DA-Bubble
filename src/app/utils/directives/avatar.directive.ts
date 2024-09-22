@@ -2,6 +2,7 @@ import {
   Directive,
   ElementRef,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Renderer2,
@@ -28,7 +29,7 @@ type AvatarContext =
   selector: '[appAvatar]',
   standalone: true,
 })
-export class AvatarDirective implements OnInit, OnDestroy {
+export class AvatarDirective implements OnInit, OnChanges, OnDestroy {
   @Input() user: User | undefined;
   @Input() context: AvatarContext = 'chat-message';
 
@@ -43,6 +44,7 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['user'] && !changes['user'].firstChange) {
+      this.subscribeUser();
       this.updateAvatar();
     }
   }
@@ -62,6 +64,11 @@ export class AvatarDirective implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.applyAvatarStyles();
+  }
+
+
+  private subscribeUser() {
+    if(this.userSubscription) this.userSubscription.unsubscribe();
     this.userSubscription = this.user?.changeUser$.subscribe(
       (user: User | null) => {
         if (user) {
