@@ -94,7 +94,11 @@ export class MessageEditorComponent implements AfterViewInit {
           key: 13,
           handler: () => {
             console.log('enter pressed on quill');
-            this.enterPressed.emit(this.getMessageAsHTML());
+            if (this.showPicker) {
+              this.handlePickerSelectionKeys('Select');
+            } else {
+              this.enterPressed.emit(this.getMessageAsHTML());
+            }
           }
         }
       }
@@ -134,8 +138,10 @@ export class MessageEditorComponent implements AfterViewInit {
   }
 
   closeEmojiPicker() {
-    this.showEmojiPicker = false;
-    this._cdr.detectChanges();
+    if (this.showEmojiPicker) {
+      this.showEmojiPicker = false;
+      this._cdr.detectChanges();
+    }
   }
 
   constructor(private _cdr: ChangeDetectorRef) { }
@@ -155,6 +161,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   clearEditor() {
     this.quill.setText('');
+    this.quill.history.clear();
   }
 
   ngAfterViewInit(): void {
@@ -179,7 +186,6 @@ export class MessageEditorComponent implements AfterViewInit {
           this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => { return this.handlePickerSelectionKeys('ArrowDown'); });
           this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelectionKeys('ArrowUp'); });
           this.quill.keyboard.addBinding({ key: 'Escape' }, () => { return this.handlePickerSelectionKeys('Escape'); });
-          this.quill.keyboard.addBinding({ key: 'ArrowRight' }, () => { return this.handlePickerSelectionKeys('Select'); });
           this.quill.keyboard.bindings['Enter'] = [];
         }
         this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
@@ -233,7 +239,8 @@ export class MessageEditorComponent implements AfterViewInit {
     if (!target || !this.toolbar.nativeElement.contains(target)) {
       this.showToolbar = false;
     }
-    console.log('onBlur ', event);
+    this.closeListPicker();
+    this.closeEmojiPicker();
   }
 
 
@@ -344,11 +351,13 @@ export class MessageEditorComponent implements AfterViewInit {
 
 
   closeListPicker() {
-    this.showPicker = false;
-    this.pickersign = '';
-    this.pickerItems = [];
-    this.setCurrentPickerIndex(-1);
-    this._cdr.detectChanges();
+    if (this.showPicker) {
+      this.showPicker = false;
+      this.pickersign = '';
+      this.pickerItems = [];
+      this.setCurrentPickerIndex(-1);
+      this._cdr.detectChanges();
+    }
   }
 
 }

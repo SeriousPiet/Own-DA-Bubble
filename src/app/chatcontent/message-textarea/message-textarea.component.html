@@ -1,5 +1,5 @@
 <div [ngClass]="{'drag-over':dropzonehighlighted}" class="input-message">
-    <app-message-editor #messageeditor [placeholder]="'Bitte Nachricht schreiben...'"></app-message-editor>
+    <app-message-editor #messageeditor (enterPressed)="addNewMessage()" [placeholder]="'Bitte Nachricht schreiben...'"></app-message-editor>
     @if(!ifMessageUploading && attachments.length > 0){
     <div class="attachments">
         @for(attachment of attachments; track attachment){

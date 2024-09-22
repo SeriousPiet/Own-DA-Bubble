@@ -85,7 +85,7 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   downloadPDF(attachment: StoredAttachment) {
     const link = document.createElement('a');
     link.href = attachment.url;
-    link.download = 'filename.pdf';
+    link.download = attachment.name;
     link.target = '_blank'; // Open in a new tab
     link.click();
   }

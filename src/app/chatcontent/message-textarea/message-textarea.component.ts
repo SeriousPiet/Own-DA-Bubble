@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { MessageAttachment, MessageService } from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
@@ -60,7 +60,7 @@ export class MessageTextareaComponent {
   private userservice = inject(UsersService);
 
 
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) { }
 
   @HostListener('dragenter', ['$event'])
   onDragEnter(event: DragEvent) {
@@ -103,12 +103,14 @@ export class MessageTextareaComponent {
 
 
   async addNewMessage() {
+    if(this.ifMessageUploading) return;
     const newHTMLMessage = this.messageeditor.getMessageAsHTML();
     this.clearErrorInfo();
     if (newHTMLMessage === '<p></p>' && this.attachments.length === 0) {
       this.handleErrors('Nachricht darf nicht leer sein.');
     }
     else if (await this.userservice.ifCurrentUserVerified()) {
+      this.messageeditor.quill.disable();
       this.ifMessageUploading = true;
       const error = await this.messageService.addNewMessageToCollection(this.newMessageinChannel, newHTMLMessage, this.attachments)
       if (error) {
@@ -118,7 +120,9 @@ export class MessageTextareaComponent {
         this.attachments = [];
       }
       this.ifMessageUploading = false;
+      this.messageeditor.quill.enable();
     }
+    this._cdr.detectChanges();
   }
 
 

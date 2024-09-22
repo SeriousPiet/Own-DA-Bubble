@@ -55,7 +55,7 @@ export class MessagesListViewComponent implements OnInit {
   constructor(
     private _cdr: ChangeDetectorRef,
     private searchService: SearchService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.messageScrollSubscription =
@@ -104,32 +104,23 @@ export class MessagesListViewComponent implements OnInit {
   private subscribeMessages(messagesPath: string | undefined) {
     if (this.unsubMessages) this.unsubMessages();
     if (messagesPath) {
-      this.unsubMessages = onSnapshot(
-        collection(this.firestore, messagesPath),
-        (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-              let newMessage = new Message(
-                change.doc.data(),
-                messagesPath,
-                change.doc.id
-              );
-              this.messages.push(newMessage);
-              this.sortMessagesDate(newMessage.createdAt);
-            }
-            if (change.type === 'modified') {
-              const message = this.messages.find(
-                (message) => message.id === change.doc.id
-              );
-              if (message) message.update(change.doc.data());
-            }
-            if (change.type === 'removed') {
-              this.messages = this.messages.filter(
-                (message) => message.id !== change.doc.data()['id']
-              );
-            }
-          });
-        }
+      this.unsubMessages = onSnapshot(collection(this.firestore, messagesPath), (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
+            let newMessage = new Message(change.doc.data(), messagesPath, change.doc.id);
+            this.messages.push(newMessage);
+            this.sortMessagesDate(newMessage.createdAt);
+          }
+          if (change.type === 'modified') {
+            const message = this.messages.find((message) => message.id === change.doc.id);
+            if (message) message.update(change.doc.data());
+          }
+          if (change.type === 'removed') {
+            this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
+          }
+        });
+        this._cdr.detectChanges();
+      }
       );
     }
   }
