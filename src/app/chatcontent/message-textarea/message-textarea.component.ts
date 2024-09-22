@@ -45,14 +45,18 @@ export class MessageTextareaComponent {
     {
       name: 'maxFileSize',
       validator: (file: any) => file.size <= 500000,
-      error: 'Die Datei ist zu groß. Maximal 500KB erlaubt.'
+      error: 'Die Datei ist zu groß. Maximal 500KB erlaubt.',
     },
     {
       name: 'fileType',
-      validator: (file: any) => file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpeg' || file.type === 'application/pdf',
-      error: 'Nur Bilder und PDFs erlaubt.'
-    }
-  ]
+      validator: (file: any) =>
+        file.type === 'image/png' ||
+        file.type === 'image/gif' ||
+        file.type === 'image/jpeg' ||
+        file.type === 'application/pdf',
+      error: 'Nur Bilder und PDFs erlaubt.',
+    },
+  ];
 
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
@@ -139,12 +143,11 @@ export class MessageTextareaComponent {
     }, 8000);
   }
 
-
   // -----------------------------------------------------------------------------
   // methods for attachments
   // -----------------------------------------------------------------------------
   removeAttachment(attachment: MessageAttachment) {
-    this.attachments = this.attachments.filter(a => a !== attachment);
+    this.attachments = this.attachments.filter((a) => a !== attachment);
   }
 
   changeAttachmentFile(event: any) {
@@ -161,8 +164,15 @@ export class MessageTextareaComponent {
     for (let i = 0; i < fileList.files.length; i++) {
       const file = fileList.files[i];
       if (this.fileAllreadyAttached(file)) continue;
-      if (!this.fileValidators.every(validator => validator.validator(file))) {
-        this.errorInfo += file.name + ': ' + (this.fileValidators.find(validator => !validator.validator(file))?.error as string) + '\n';
+      if (
+        !this.fileValidators.every((validator) => validator.validator(file))
+      ) {
+        this.errorInfo +=
+          file.name +
+          ': ' +
+          (this.fileValidators.find((validator) => !validator.validator(file))
+            ?.error as string) +
+          '\n';
         continue;
       }
       if (file.type.startsWith('image')) {
@@ -190,8 +200,8 @@ export class MessageTextareaComponent {
       size: file.size,
       lastModified: file.lastModified,
       src: './assets/icons/chat/write-message/pdf.svg',
-      file: file
-    }
+      file: file,
+    };
     return attachment;
   }
 
@@ -203,9 +213,11 @@ export class MessageTextareaComponent {
       size: file.size,
       lastModified: file.lastModified,
       src: './assets/icons/chat/write-message/attachment.svg',
-      file: file
-    }
-    reader.onload = (e) => { attachment.src = e.target?.result; }
+      file: file,
+    };
+    reader.onload = (e) => {
+      attachment.src = e.target?.result;
+    };
     reader.readAsDataURL(file);
     return attachment;
   }

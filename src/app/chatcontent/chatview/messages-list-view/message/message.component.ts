@@ -17,7 +17,7 @@ import { Channel } from '../../../../shared/models/channel.class';
   standalone: true,
   imports: [CommonModule, FormsModule, AvatarDirective, MessageEditorComponent],
   templateUrl: './message.component.html',
-  styleUrl: './message.component.scss'
+  styleUrl: './message.component.scss',
 })
 export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked {
 
@@ -33,6 +33,7 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   @Input() set messageWriter(messageWriterID: string) {
     this.checkMessageWriterID(messageWriterID);
   }
+  @Input() id: string = '';
   @Input() messages: Message[] = [];
 
   @Input() messageEditorOpen = false;
@@ -163,21 +164,36 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
     if (this.messages.length > 0) {
       const previousMessageDetails = {
         creatorId: this.messages[0].creatorID,
-        messageDate: new Date(this.messages[0].createdAt).toDateString()
+        messageDate: new Date(this.messages[0].createdAt).toDateString(),
       };
       this.messages.forEach((message, index) => {
-        this.identifyConsecutiveMessages(previousMessageDetails, message, index);
+        this.identifyConsecutiveMessages(
+          previousMessageDetails,
+          message,
+          index
+        );
       });
     }
   }
 
-  identifyConsecutiveMessages(previousMessageDetails: { creatorId: string, messageDate: string }, message: Message, index: number) {
+  identifyConsecutiveMessages(
+    previousMessageDetails: { creatorId: string; messageDate: string },
+    message: Message,
+    index: number
+  ) {
     if (this.isFirstMessage(index)) {
       message.previousMessageFromSameUser = false;
     } else {
       const currentCreatorId = message.creatorID;
       const currentMessageDate = new Date(message.createdAt).toDateString();
-      if (this.isSameCreatorAndDate(currentCreatorId, previousMessageDetails.creatorId, currentMessageDate, previousMessageDetails.messageDate)) {
+      if (
+        this.isSameCreatorAndDate(
+          currentCreatorId,
+          previousMessageDetails.creatorId,
+          currentMessageDate,
+          previousMessageDetails.messageDate
+        )
+      ) {
         message.previousMessageFromSameUser = true;
       } else {
         message.previousMessageFromSameUser = false;
@@ -188,25 +204,33 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   }
 
   isFirstMessage(index: number) {
-    return index === 0
+    return index === 0;
   }
 
-  isSameCreatorAndDate(currentCreatorId: string, previousCreatorId: string, currentMessageDate: string, previousMessageDate: string) {
-    return currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate
+  isSameCreatorAndDate(
+    currentCreatorId: string,
+    previousCreatorId: string,
+    currentMessageDate: string,
+    previousMessageDate: string
+  ) {
+    return (
+      currentCreatorId === previousCreatorId &&
+      currentMessageDate === previousMessageDate
+    );
   }
-
 
   checkForMessageReactions() {
     if (this.messageData.emojies.length > 0) this.hasReaction = true;
     else this.hasReaction = false;
   }
 
-
   getFormatedMessageTime(messageTime: Date | undefined) {
-    let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     return `${formatedMessageTime} Uhr`;
   }
-
 
   checkMessageWriterID(messageWriterID: string) {
     if (messageWriterID == this.userService.currentUser?.id) {
@@ -226,16 +250,17 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
 
   returnPopoverTarget(messageCreator: string) {
     if (messageCreator === this.userService.currentUser?.id) {
-      return 'profile-popover'
+      return 'profile-popover';
     } else {
-      return 'popover-member-profile'
+      return 'popover-member-profile';
     }
   }
 
   setSelectedUserObject(messageCreatorID: string) {
-    this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
+    this.userService.updateSelectedUser(
+      this.userService.getUserByID(messageCreatorID)
+    );
   }
-
 
   setThread(thread: Message) {
     // console.log('current selected thread is:', thread);

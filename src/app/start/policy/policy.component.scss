@@ -8,8 +8,12 @@ section {
   height: 100vh;
   width: 100%;
   max-width: 1920px;
-  padding: 1.5rem 1.25rem 1.25rem;
+  padding: 1.25rem 1.25rem;
   background-color: $background;
+
+  @media (width <= 768px) {
+    padding: 1.25rem clamp(0rem, 4.464vw + -0.893rem, 1.25rem);
+  }
 
   .modal {
     position: relative;
@@ -20,11 +24,24 @@ section {
     align-items: stretch;
     gap: 1rem;
     max-height: 65%;
-    width: fit-content;
-    max-width: 65%;
+    width: calc(100% - 8rem);
+    max-width: 52rem;
     background-color: white;
     border-radius: 2rem;
     box-shadow: 0px 2px 10px 0px #00000014;
+
+    @media (width <= 768px) {
+      width: calc(100% - clamp(0.125rem, 28.125vw + -5.5rem, 8rem));
+      max-height: 72%;
+      padding: clamp(1.25rem, 2.679vw + 0.714rem, 2rem);
+    }
+    @media (width <= 640px) {
+      max-height: 86%;
+    }
+    @media (width <= 425px) {
+      padding: 1.25rem;
+      max-height: 100%;
+    }
 
     .button-bar {
       width: 100%;
@@ -44,11 +61,16 @@ section {
     overflow-y: auto;
     scroll-behavior: smooth;
 
+    h1 {
+      line-height: 100%;
+      margin-top: 0 !important;
+    }
+
     h1,
     h2,
     h3,
     p {
-      margin: 1rem;
+      margin: 1rem 0;
     }
 
     .index {
@@ -74,6 +96,17 @@ section {
       &:hover {
         font-weight: 700;
       }
+    }
+
+    ul {
+      padding-inline-start: 2rem !important;
+    }
+    ul > * > ul {
+      padding-inline-start: 1.5rem !important;
+    }
+
+    li {
+      text-wrap: balance;
     }
   }
 }

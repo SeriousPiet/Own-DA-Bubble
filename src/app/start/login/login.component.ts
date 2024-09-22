@@ -47,9 +47,10 @@ export class LoginComponent implements OnDestroy, OnInit {
   public errorEmail = '';
   public errorPassword = '';
   public errorGoogleSignin = '';
-  public logininfomessage = '?';
-  public logininfoicon = false;
+  public loginInfoMessage = '?';
+  public loginInfoIcon = false;
   public showSpinner = false;
+  public spinnerMobile: boolean = false;
 
   public showInfoModal = false;
 
@@ -68,6 +69,8 @@ export class LoginComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.checkIntroStatus();
+    this.checkScreenWidth();
+    window.addEventListener('resize', this.checkScreenWidth.bind(this));
   }
 
   private checkIntroStatus() {
@@ -81,6 +84,11 @@ export class LoginComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     if (this.userlogin) this.userlogin.unsubscribe();
+    window.removeEventListener('resize', this.checkScreenWidth.bind(this));
+  }
+
+  private checkScreenWidth() {
+    this.spinnerMobile = window.innerWidth <= 480;
   }
 
   async loginGuest() {
@@ -244,27 +252,25 @@ export class LoginComponent implements OnDestroy, OnInit {
 
   handleLoginErrors(error: string) {
     if (error.includes('auth/user-not-found')) {
-      this.errorEmail = 'Diese E-Mail-Adresse ist leider ungültig.';
+      this.errorEmail = 'Diese Mailaddresse ist nicht registriert.';
     } else if (error.includes('auth/wrong-password')) {
-      this.errorPassword =
-        'Falsches Passwort oder E-Mail. Bitte noch einmal versuchen.';
+      this.errorPassword = 'Falsches Passwort.';
     } else if (error.includes('auth/popup-closed-by-user')) {
-      this.errorGoogleSignin =
-        'Googleanmeldung wurde durch Benutzer abgebrochen.';
+      this.errorGoogleSignin = 'Anmeldung durch Benutzer abgebrochen.';
     } else if (error.includes('auth/google-signin-error-name-email-missing')) {
       this.errorGoogleSignin =
-        'Googleanmeldung fehlgeschlagen. Keine Name und keine EMail gefunden.';
+        'Anmeldung fehlgeschlagen. Name & E-Mail unbekannt.';
     }
   }
 
   showInfoMessage(message: string, showImg: boolean) {
     if (message == '') {
-      this.logininfoicon = false;
+      this.loginInfoIcon = false;
       document.getElementById('infoPopover')?.hidePopover();
       return;
     } else {
-      this.logininfoicon = showImg;
-      this.logininfomessage = message;
+      this.loginInfoIcon = showImg;
+      this.loginInfoMessage = message;
       document.getElementById('infoPopover')?.showPopover();
     }
   }

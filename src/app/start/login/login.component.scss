@@ -3,16 +3,16 @@
 @import "../../../mixins.scss";
 
 #infoPopover {
+  transform: translateX(100vw);
   margin: auto 1.25rem 1.25rem auto;
   padding: 2rem;
   background-color: $accent;
   border: unset;
   border-radius: 2rem 2rem 0 2rem;
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
   color: white;
   box-shadow: 0px 6px 10px 0px #00000033;
-  transform: translateX(100vw);
   transition: $transition-popover;
 
   > div {
@@ -36,7 +36,7 @@
 .errorspan {
   @include nunito(0.875, 400, $error);
   position: absolute;
-  bottom: -1.25rem;
+  bottom: -1.325rem;
   left: 1.5rem;
 }
 
@@ -45,9 +45,9 @@ section {
   @include flex(center, center);
   min-height: 100vh;
   height: fit-content;
-  width: 100%;
   max-width: 1920px;
-  padding: 1.5rem 1.25rem 1.25rem;
+  width: 100%;
+  padding: 1.25rem;
   background-color: $background;
 
   .debug-btn {
@@ -124,8 +124,8 @@ section {
     flex-direction: column;
     gap: 2rem;
     height: fit-content;
-    width: 100%;
     max-width: 38rem;
+    width: 100%;
     padding: 2rem;
     background-color: white;
     border-radius: 2rem;
@@ -144,7 +144,6 @@ section {
     }
 
     @media (width <= 375px) {
-      gap: 1.5rem;
       margin: 6rem auto 14rem auto;
     }
 
@@ -181,6 +180,7 @@ section {
     .title {
       @include nunito(2.5, 700, $accent);
       text-align: center;
+      line-height: 100%;
     }
 
     .info {
@@ -240,10 +240,13 @@ section {
     }
 
     .action-btns-pwreset {
-      align-self: center;
-
       @include flex(flex-end, center);
+      align-self: center;
       width: 100%;
+
+      @media (width < 480px) {
+        @include flex(center, center);
+      }
 
       img {
         width: 2.5rem;
@@ -272,14 +275,23 @@ section {
     }
   }
 
+  form.pw-reset-form span.title {
+    @media (width <= 560px) {
+      margin-top: 2rem;
+    }
+    @media (width < 465px) {
+      margin-top: 0;
+    }
+  }
+
   .mandatory-buttons {
     position: absolute;
     left: 50%;
     bottom: 2rem;
+    transform: translateX(-50%);
     @include flex(center, center);
     gap: 4rem;
     width: fit-content;
-    transform: translateX(-50%);
 
     @media (width <= 640px) {
       bottom: 1.25rem;
@@ -287,6 +299,21 @@ section {
 
     button {
       @include buttonMandatory;
+    }
+  }
+
+  .spinner-box {
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10rem;
+    height: 10rem;
+
+    img {
+      width: 100%;
+      height: 100%;
     }
   }
 }

@@ -2,28 +2,38 @@
   Bitte verifiziere erst deine E-Mail-Adresse!
 </div>
 
-
-<section class="chatcontent" [ngClass]="!isWorkspaceMenuVisible ? 'menu-hidden' : ''">
+<section
+  class="chatcontent"
+  [ngClass]="!isWorkspaceMenuVisible ? 'menu-hidden' : ''"
+>
   <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
     @if (isWorkspaceMenuVisible) {
     <div class="wsm-close"></div>
     } @else if (!isWorkspaceMenuVisible) {
     <div class="wsm-open"></div>
     }
-    <span class="nunito-20-500">Workspace-Menü
-      {{ isWorkspaceMenuVisible ? "öffnen" : "schließen" }}</span>
+    <span class="nunito-20-500"
+      >Workspace-Menü
+      {{ isWorkspaceMenuVisible ? "öffnen" : "schließen" }}</span
+    >
   </button>
 
   <div class="top-bar">
     <app-header />
   </div>
-  <div class="workspace-menu" [@slideInOut]="isWorkspaceMenuVisible ? 'visible' : 'hidden'">
+  <div
+    class="workspace-menu"
+    [@slideInOut]="isWorkspaceMenuVisible ? 'visible' : 'hidden'"
+  >
     <app-workspacemenu />
   </div>
   <div class="chatview">
     <app-chatview [currentContext]="navigationService.chatViewObject" />
   </div>
-  <div class="threadview">
-    <app-threadview />
+  <div
+    class="threadview"
+    [@slideInOut]="isThreadViewVisible ? 'visible' : 'hidden'"
+  >
+    <app-threadview [toggleThreadView]="toggleThreadView" />
   </div>
 </section>

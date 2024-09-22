@@ -1,4 +1,11 @@
-import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { MessageDateComponent } from './messages-list-view/message-date/message-date.component';
 import { MessageTextareaComponent } from '../message-textarea/message-textarea.component';
 import { CommonModule } from '@angular/common';
@@ -13,164 +20,170 @@ import { MessagesListViewComponent } from './messages-list-view/messages-list-vi
 import { UsersService } from '../../utils/services/user.service';
 import { MessageGreetingComponent } from './messages-list-view/message-greeting/message-greeting.component';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
-import { PopoverMemberProfileComponent } from "./popover-chatview/popover-member-profile/popover-member-profile.component";
+import { PopoverMemberProfileComponent } from './popover-chatview/popover-member-profile/popover-member-profile.component';
 import { BehaviorSubject, filter } from 'rxjs';
 
-
 @Component({
-    selector: 'app-chatview',
-    standalone: true,
-    imports: [CommonModule,
-        MessageDateComponent,
-        MessageComponent,
-        MessageTextareaComponent,
-        PopoverChannelEditorComponent,
-        PopoverChannelMemberOverviewComponent,
-        PopoverChannelMemberOverviewComponent,
-        MessagesListViewComponent,
-        MessageGreetingComponent,
-        AvatarDirective, PopoverMemberProfileComponent],
-    templateUrl: './chatview.component.html',
-    styleUrl: './chatview.component.scss',
+  selector: 'app-chatview',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MessageDateComponent,
+    MessageComponent,
+    MessageTextareaComponent,
+    PopoverChannelEditorComponent,
+    PopoverChannelMemberOverviewComponent,
+    PopoverChannelMemberOverviewComponent,
+    MessagesListViewComponent,
+    MessageGreetingComponent,
+    AvatarDirective,
+    PopoverMemberProfileComponent,
+  ],
+  templateUrl: './chatview.component.html',
+  styleUrl: './chatview.component.scss',
 })
 export class ChatviewComponent implements OnInit {
+  @Input() set currentContext(value: Channel | Chat) {
+    this.channelSubject.next(value);
+  }
 
-    @Input() set currentContext(value: Channel | Chat) {
-        this.channelSubject.next(value);
+  get currentContext(): Channel {
+    return this.channelSubject.getValue() as Channel;
+  }
+
+  public navigationService = inject(NavigationService);
+  public userService = inject(UsersService);
+  public isAChannel = false;
+  public isAChat = false;
+  public isDefaultChannel = true;
+  public requiredAvatars: string[] = [];
+
+  memberList = false;
+  addMemberPopover = false;
+
+  public channelSubject = new BehaviorSubject<Channel | Chat>(
+    this.navigationService.chatViewObject
+  );
+  channel$ = this.channelSubject.asObservable();
+
+  constructor() {}
+
+  ngOnInit() {
+    this.channel$.subscribe(() => {
+      this.currentContext.defaultChannel
+        ? (this.isDefaultChannel = true)
+        : (this.isDefaultChannel = false);
+      this.getRequiredAvatars();
+    });
+  }
+
+  getTitle(object: Channel | Chat | Message | undefined): string {
+    if (object instanceof Channel) return object.name;
+    // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
+    // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
+    return '';
+  }
+
+  getNumberOfMembers(object: Channel | Chat) {
+    if (object instanceof Channel) return object.memberIDs.length;
+    return;
+  }
+
+  getRequiredAvatars() {
+    if (this.currentContext instanceof Channel) {
+      this.sortAvatarsArray();
+      this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3);
     }
+  }
 
-    get currentContext(): Channel {
-        return this.channelSubject.getValue() as Channel;
+  sortAvatarsArray() {
+    if (
+      this.currentContext instanceof Channel &&
+      this.currentUserIsChannelMember()
+    ) {
+      let currentUserIndex = this.currentContext.memberIDs.indexOf(
+        this.userService.currentUser!.id
+      );
+      this.currentContext.memberIDs.splice(currentUserIndex, 1);
+      this.currentContext.memberIDs.unshift(this.userService.currentUser!.id);
     }
+  }
 
-    public navigationService = inject(NavigationService);
-    public userService = inject(UsersService)
-    public isAChannel = false;
-    public isAChat = false;
-    public isDefaultChannel = true;
-    public requiredAvatars: string[] = []
+  currentUserIsChannelMember() {
+    return (
+      this.currentContext instanceof Channel &&
+      this.currentContext.memberIDs.includes(this.userService.currentUser!.id)
+    );
+  }
 
-    memberList = false;
-    addMemberPopover = false;
-
-    public channelSubject = new BehaviorSubject<Channel | Chat>(this.navigationService.chatViewObject);
-    channel$ = this.channelSubject.asObservable();
-
-    constructor() { }
-
-
-    ngOnInit() {
-        this.channel$.subscribe(() => {
-            this.currentContext.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
-            this.getRequiredAvatars();
-        });
+  getChannelCreatorName(object: Channel | Chat): string {
+    if (object instanceof Channel) {
+      let channelCreator = this.userService.getUserByID(object.creatorID);
+      if (object.creatorID === this.userService.currentUserID) {
+        return 'Du hast';
+      } else {
+        return `${channelCreator!.name} hat`;
+      }
     }
+    return '';
+  }
 
-    getTitle(object: Channel | Chat | Message | undefined): string {
-        if (object instanceof Channel) return object.name;
-        // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
-        // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
-        return '';
+  getChannelCreationTime(object: Channel | Chat): string {
+    if (object instanceof Channel) {
+      let channelCreationTime = this.formatDate(object.createdAt);
+      return channelCreationTime;
     }
+    return '';
+  }
 
-    getNumberOfMembers(object: Channel | Chat) {
-        if (object instanceof Channel) return object.memberIDs.length;
-        return
+  formatDate(date: Date) {
+    let formatedMessageDate = date.toLocaleString('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    if (formatedMessageDate == this.isToday()) return 'Heute';
+    else {
+      return formatedMessageDate;
     }
+  }
 
+  isToday() {
+    const today = new Date();
+    let formatedTodaysDate = today.toLocaleString('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    return formatedTodaysDate;
+  }
 
-    getRequiredAvatars() {
-        if (this.currentContext instanceof Channel) {
-            this.sortAvatarsArray();
-            this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3)
-        }
+  openMemberListPopover(popover: string) {
+    this.memberList = false;
+    this.addMemberPopover = false;
+    popover === 'memberList'
+      ? (this.memberList = true)
+      : (this.memberList = false);
+    popover === 'addMember'
+      ? (this.addMemberPopover = true)
+      : (this.addMemberPopover = false);
+    this.currentContext = this.navigationService.chatViewObject;
+  }
+
+  isAllowedToAddMember() {
+    if (this.currentContext instanceof Channel) {
+      return (
+        this.currentContext.creatorID === this.userService.currentUserID ||
+        this.currentContext.memberIDs.includes(this.userService.currentUserID)
+      );
     }
+    return;
+  }
 
-
-    sortAvatarsArray() {
-        if (
-            this.currentContext instanceof Channel &&
-            this.currentUserIsChannelMember()
-        ) {
-            let currentUserIndex = this.currentContext.memberIDs.indexOf(
-                this.userService.currentUser!.id
-            );
-            this.currentContext.memberIDs.splice(currentUserIndex, 1);
-            this.currentContext.memberIDs.unshift(this.userService.currentUser!.id);
-        }
+  showNoRightToEditInfo() {
+    if (!this.isAllowedToAddMember()) {
+      return 'Du bist nicht befugt, neue Leute einzuladen.';
     }
-
-    currentUserIsChannelMember() {
-        return (
-            this.currentContext instanceof Channel &&
-            this.currentContext.memberIDs.includes(this.userService.currentUser!.id)
-        );
-    }
-
-    getChannelCreatorName(object: Channel | Chat): string {
-        if (object instanceof Channel) {
-            let channelCreator = this.userService.getUserByID(object.creatorID);
-            if (object.creatorID === this.userService.currentUserID) {
-                return 'Du hast'
-            } else {
-                return `${channelCreator!.name} hat`
-            }
-        }
-        return '';
-    }
-
-    getChannelCreationTime(object: Channel | Chat): string {
-        if (object instanceof Channel) {
-            let channelCreationTime = this.formatDate(object.createdAt);
-            return channelCreationTime
-        }
-        return '';
-    }
-
-
-    formatDate(date: Date) {
-        let formatedMessageDate = date.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-        if (formatedMessageDate == this.isToday()) return "Heute";
-        else {
-            return formatedMessageDate;
-        }
-    }
-
-    isToday() {
-        const today = new Date();
-        let formatedTodaysDate = today.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
-        return formatedTodaysDate;
-    }
-
-    openMemberListPopover(popover: string) {
-        this.memberList = false;
-        this.addMemberPopover = false;
-        popover === 'memberList' ? this.memberList = true : this.memberList = false;
-        popover === 'addMember' ? this.addMemberPopover = true : this.addMemberPopover = false;
-        this.currentContext = this.navigationService.chatViewObject;
-    }
-    
-    isAllowedToAddMember() {
-        if (this.currentContext instanceof Channel) {
-            return this.currentContext.creatorID === this.userService.currentUserID ||
-                this.currentContext.memberIDs.includes(this.userService.currentUserID)
-        }
-        return
-    }
-
-    showNoRightToEditInfo() {
-        if (!this.isAllowedToAddMember()) {
-            return 'Du bist nicht befugt, neue Leute einzuladen.'
-        }
-        return ''
-    }
-
-
-
-
-
-
-
-
-
+    return '';
+  }
 }
