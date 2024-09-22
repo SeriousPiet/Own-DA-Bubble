@@ -26,8 +26,6 @@ export class MessageTextareaComponent {
   isHovered = false;
   isActive = false;
 
-  // message = ''
-
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
   ifMessageUploading = false;
@@ -62,11 +60,15 @@ export class MessageTextareaComponent {
 
   constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) { }
 
+  // -----------------------------------------------------------------------------
+  // Eventlistener for drag and drop
+  // -----------------------------------------------------------------------------
   @HostListener('dragenter', ['$event'])
   onDragEnter(event: DragEvent) {
     event.preventDefault();
     this.highlightDropZone(true);
   }
+
 
   @HostListener('dragover', ['$event'])
   onDragOver(event: DragEvent) {
@@ -74,21 +76,21 @@ export class MessageTextareaComponent {
     this.highlightDropZone(true);
   }
 
+
   @HostListener('dragleave', ['$event'])
   onDragLeave(event: DragEvent) {
     event.preventDefault();
-    if (this.isLeavingDropZone(event)) {
-      this.highlightDropZone(false);
-    }
+    if (this.isLeavingDropZone(event)) this.highlightDropZone(false);
   }
+
 
   @HostListener('drop', ['$event'])
   onDrop(event: DragEvent) {
     event.preventDefault();
     this.highlightDropZone(false);
-
     this.loadAttachments(event.dataTransfer);
   }
+
 
   private isLeavingDropZone(event: DragEvent): boolean {
     const dropZone = this.el.nativeElement;
@@ -96,16 +98,20 @@ export class MessageTextareaComponent {
     return !dropZone.contains(relatedTarget);
   }
 
+
   private highlightDropZone(highlight: boolean) {
     const nativeElement = this.el.nativeElement;
     this.dropzonehighlighted = highlight;
   }
 
 
+  // -----------------------------------------------------------------------------
+  // Add new message to the channel
+  // -----------------------------------------------------------------------------
   async addNewMessage() {
-    if(this.ifMessageUploading) return;
+    if (this.ifMessageUploading) return;
     const newHTMLMessage = this.messageeditor.getMessageAsHTML();
-    this.clearErrorInfo();
+    this.errorInfo = '';
     if (newHTMLMessage === '<p></p>' && this.attachments.length === 0) {
       this.handleErrors('Nachricht darf nicht leer sein.');
     }
@@ -126,19 +132,17 @@ export class MessageTextareaComponent {
   }
 
 
-  handleErrors(error: string) {
+  private handleErrors(error: string) {
     this.errorInfo = error;
     setTimeout(() => {
-      this.clearErrorInfo();
+      this.errorInfo = '';
     }, 8000);
   }
 
 
-  clearErrorInfo() {
-    this.errorInfo = '';
-  }
-
-
+  // -----------------------------------------------------------------------------
+  // methods for attachments
+  // -----------------------------------------------------------------------------
   removeAttachment(attachment: MessageAttachment) {
     this.attachments = this.attachments.filter(a => a !== attachment);
   }
@@ -148,8 +152,8 @@ export class MessageTextareaComponent {
     this.loadAttachments(event.target);
   }
 
-  loadAttachments(fileList: any) {
-    this.clearErrorInfo();
+  private loadAttachments(fileList: any) {
+    this.errorInfo = '';
     if ((fileList.files.length + this.attachments.length) > 5) {
       this.handleErrors('Maximal 5 Dateien erlaubt.');
       return;
@@ -169,11 +173,8 @@ export class MessageTextareaComponent {
     }
   }
 
-  ifFilePropertysValid(file: any): boolean {
-    return file.name && file.size && file.lastModified ? true : false;
-  }
 
-  fileAllreadyAttached(file: any): boolean {
+  private fileAllreadyAttached(file: any): boolean {
     return this.attachments.find(a =>
       a.name === file.name
       && a.size === file.size
@@ -181,7 +182,8 @@ export class MessageTextareaComponent {
     ) ? true : false;
   }
 
-  readPDF(file: any): MessageAttachment {
+
+  private readPDF(file: any): MessageAttachment {
     const reader = new FileReader();
     const attachment: MessageAttachment = {
       name: file.name,
@@ -193,7 +195,8 @@ export class MessageTextareaComponent {
     return attachment;
   }
 
-  readPicture(file: any): MessageAttachment {
+
+  private readPicture(file: any): MessageAttachment {
     const reader = new FileReader();
     const attachment: MessageAttachment = {
       name: file.name,
@@ -206,7 +209,5 @@ export class MessageTextareaComponent {
     reader.readAsDataURL(file);
     return attachment;
   }
-
-
 
 }
