@@ -7,6 +7,7 @@ import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
 import { QuillModule } from 'ngx-quill';
 import { MessageEditorComponent } from '../message-editor/message-editor.component';
+import { Message } from '../../shared/models/message.class';
 
 @Component({
   selector: 'app-message-textarea',
@@ -21,7 +22,7 @@ export class MessageTextareaComponent {
 
   @ViewChild('messageeditor', { static: true }) messageeditor!: MessageEditorComponent;
 
-  @Input() newMessageinChannel!: Channel | Chat;
+  @Input() messagesCollectionObject!: Channel | Chat | Message;
 
   isHovered = false;
   isActive = false;
@@ -122,7 +123,7 @@ export class MessageTextareaComponent {
     else if (await this.userservice.ifCurrentUserVerified()) {
       this.messageeditor.quill.disable();
       this.ifMessageUploading = true;
-      const error = await this.messageService.addNewMessageToCollection(this.newMessageinChannel, newHTMLMessage, this.attachments)
+      const error = await this.messageService.addNewMessageToCollection(this.messagesCollectionObject, newHTMLMessage, this.attachments)
       if (error) {
         this.handleErrors(error);
       } else {
