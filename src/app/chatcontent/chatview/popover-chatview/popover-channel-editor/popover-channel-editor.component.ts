@@ -21,7 +21,7 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
   userService = inject(UsersService);
   channelService = inject(ChannelService);
 
-  @Input() set currentChannel(value: Channel) {
+  @Input() set currentChannel(value: Channel | Chat) {
     this.channelSubject.next(value);
   }
 
@@ -104,7 +104,8 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
   }
 
   isChannelCreator() {
-    return this.currentChannel.creatorID === this.userService.currentUserID;
+    if (this.currentChannel instanceof Channel) return this.currentChannel.creatorID === this.userService.currentUserID;
+    return
   }
 
   showNoRightToEditInfo() {
@@ -116,14 +117,14 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
 
   isChannelMember() {
     this.selfInMemberList = this.currentChannel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID) as string;
-    return this.selfInMemberList === this.userService.currentUserID  
- 
+    return this.selfInMemberList === this.userService.currentUserID
+
   }
 
 
   leaveChannel() {
     let selfInMemberListIndex = this.currentChannel.memberIDs.indexOf(this.selfInMemberList);
-    if (this.isChannelMember()) {
+    if (this.isChannelMember() && this.currentChannel instanceof Channel) {
       this.currentChannel.memberIDs.splice(selfInMemberListIndex, 1);
       this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
       this.channelService.updateChannelOnFirestore(this.currentChannel, this.updateChannelData);
