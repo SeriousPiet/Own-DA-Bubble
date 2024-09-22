@@ -320,16 +320,16 @@
   }
 }
 
-#add-reaction-icon:hover {
+#add-reaction-icon:hover>img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg");
 }
 
-#comment-icon:hover {
+#comment-message-btn:hover>img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/comment-hover.svg");
 }
 
-#edit-message-icon:hover {
-  content: url("../../../../../assets/icons/chat/message-hover-menu/more-hover.svg");
+#edit-message-icon:hover>img {
+  content: url("../../../../../assets/icons/wsm/ws-write-hover.svg");
 }
 
 .edit-message-ctn {

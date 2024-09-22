@@ -82,7 +82,6 @@
             </div>
         </div>
     </div>
-
     }
 
 
@@ -98,21 +97,22 @@
                 class="button-ctn">
                 <img src="./assets/icons/chat/emoji/celebration.svg" alt="">
             </div>
-            <div class="button-ctn">
-                <img id="add-reaction-icon" src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
+            <div class="button-ctn" id="add-reaction-icon">
+                <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
             </div>
             <div class="button-ctn" id="comment-message-btn">
                 <img id="comment-icon" src="./assets/icons/chat/message-hover-menu/comment.svg" alt="">
             </div>
             @if(!messageEditorOpen) {
-            <div (click)="toggleEditMessagePopup()" id="edit-message-icon" class="button-ctn" id="edit-message-icon">
-                <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="">
+            <div (click)="toggleMessageEditor()" class="button-ctn" id="edit-message-icon">
+                <img src="./assets/icons/wsm/ws-write.svg" alt="">
             </div>
             }
         </section>
-        <div (click)="toggleMessageEditor()" class="edit-message-ctn"
+        <!-- removed -->
+        <!-- <div (click)="toggleMessageEditor()" class="edit-message-ctn"
             [ngClass]="{'toggle-edit-message-popup':showEditMessagePopup}">
             <span>Nachricht Bearbeiten</span>
-        </div>
+        </div> -->
     </div>
 </main>

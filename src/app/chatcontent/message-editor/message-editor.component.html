@@ -7,7 +7,8 @@
                 <img src="./assets/icons/chat/write-message/enter.svg" alt="">
                 <span>ESC</span>
             </div>
-            <img (click)="handlePickerSelectionKeys('Escape')" class="picker-close" src="./assets/icons/chat/general/close.svg" alt="">
+            <img (click)="handlePickerSelectionKeys('Escape')" class="picker-close"
+                src="./assets/icons/chat/general/close.svg" alt="">
         </div>
         <div class="picker-item-list">
             @for(item of pickerItems; track item){
@@ -31,8 +32,8 @@
             emoji="point_up"></emoji-mart>
     </div>
     }
-    <div #toolbar [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'" id="editor-toolbar"
-        class="editor-toolbar">
+    <div #toolbar class="editor-toolbar" [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'"
+        id="editor-toolbar">
         <span class="ql-formats">
             <button class="ql-bold"></button>
             <button class="ql-italic"></button>
