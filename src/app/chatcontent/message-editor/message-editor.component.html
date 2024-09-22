@@ -1,28 +1,31 @@
 <section>
     @if(showPicker) {
-    <div class="picker">
-        <div class="pickerinfo">
-            <span>Pfeiltasten hoch/runter = auswählen</span>
-            <span>Escape = schliessen</span>
+    <div class="picker-list">
+        <div class="picker-info">
+            <span><img src="./assets/icons/chat/write-message/updown.svg" alt=""> = auswählen</span>
             <span>Pfeiltaste rechts = übernehmen</span>
+            <span>Escape = schliessen</span>
         </div>
-        @for(item of pickerItems; track item){
-        <div [ngClass]="currentPickerIndex === $index ? 'picker-item-select' : 'picker-item-nonselect'"
-            class="picker-item">
-            @if(isUser(item)){
-            <div appAvatar [user]="item" context="search"></div>
+        <div class="picker-item-list">
+            @for(item of pickerItems; track item){
+            <div [ngClass]="currentPickerIndex === $index ? 'picker-item-select' : 'picker-item-nonselect'"
+                class="picker-item">
+                @if(isUser(item)){
+                <div appAvatar [user]="item" context="search"></div>
+                }
+                @else {
+                <img src="../../../assets/icons/wsm/hashtag.svg" alt="">
+                }
+                <span class="picker-item-name" (click)="clickPickerItem(item)">{{ item.name }}</span>
+            </div>
             }
-            @else {
-            <img src="../../../assets/icons/wsm/hashtag.svg" alt="">
-            }
-            <span (click)="clickPickerItem(item)">{{ item.name }}</span>
         </div>
-        }
     </div>
     }
     @if(showEmojiPicker) {
     <div class="emoji-mart">
-        <emoji-mart (emojiClick)="clickEmoji($event)" [autoFocus]="true" title="Wähle ein Emoji..." emoji="point_up"></emoji-mart>
+        <emoji-mart (emojiClick)="clickEmoji($event)" [autoFocus]="true" title="Wähle ein Emoji..."
+            emoji="point_up"></emoji-mart>
     </div>
     }
     <div #toolbar [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'" id="editor-toolbar"
@@ -62,6 +65,6 @@
             </button>
         </span>
     </div>
-    <quill-editor #editor [(ngModel)]="messageAsHTML" [styles]="quillstyle" [modules]="quillconfig"
-        [theme]="'snow'" [placeholder]="placeholder"></quill-editor>
+    <quill-editor #editor [(ngModel)]="messageAsHTML" [styles]="quillstyle" [modules]="quillconfig" [theme]="'snow'"
+        [placeholder]="placeholder"></quill-editor>
 </section>

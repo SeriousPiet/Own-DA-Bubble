@@ -80,7 +80,25 @@ export class MessageEditorComponent implements AfterViewInit {
     border: 'none',
   };
   public quillconfig = {
-    toolbar: '#editor-toolbar'
+    toolbar: '#editor-toolbar',
+    keyboard: {
+      bindings: {
+        shift_enter: {
+          key: 13,
+          shiftKey: true,
+          handler: (range: { index: number; }, ctx: any) => {
+            this.quill.insertText(range.index, '\n');
+          }
+        },
+        enter: {
+          key: 13,
+          handler: () => {
+            console.log('enter pressed on quill');
+            this.enterPressed.emit(this.getMessageAsHTML());
+          }
+        }
+      }
+    }
   };
 
   // ListPicker for users and channels
@@ -162,7 +180,7 @@ export class MessageEditorComponent implements AfterViewInit {
           this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelectionKeys('ArrowUp'); });
           this.quill.keyboard.addBinding({ key: 'Escape' }, () => { return this.handlePickerSelectionKeys('Escape'); });
           this.quill.keyboard.addBinding({ key: 'ArrowRight' }, () => { return this.handlePickerSelectionKeys('Select'); });
-
+          this.quill.keyboard.bindings['Enter'] = [];
         }
         this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
       });
@@ -215,7 +233,7 @@ export class MessageEditorComponent implements AfterViewInit {
     if (!target || !this.toolbar.nativeElement.contains(target)) {
       this.showToolbar = false;
     }
-    console.log('onBlur ' , event);
+    console.log('onBlur ', event);
   }
 
 

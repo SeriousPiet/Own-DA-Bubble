@@ -13,7 +13,7 @@ section {
     }
 
 
-    .picker {
+    .picker-list {
         position: absolute;
         z-index: 1000;
         bottom: 100%;
@@ -21,49 +21,62 @@ section {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: stretch;
-        gap: 0.5rem;
-        padding: 0.5rem;
         border-radius: 0.625rem;
         border: 1px solid #ADB0D9;
         background-color: white;
         height: fit-content;
         width: fit-content;
+        max-height: 10rem;
+        overflow-y: auto;
 
-        .pickerinfo {
+        .picker-info {
+            position: sticky;
+            z-index: 1010;
+            top: 0;
             display: flex;
+            padding: 0.3rem;
             flex-direction: column;
             justify-content: flex-start;
             border-bottom: 1px solid lightgray;
+            background-color: white;
         }
 
-        .picker-item-select {
-            border: 1px solid #ADB0D9;
-        }
-
-        .picker-item-nonselect {
-            border: 1px solid transparent;
-        }
-
-        .picker-item {
+        .picker-item-list {
+            padding: 0 0.3rem;
             display: flex;
-            width: 100%;
-            flex-direction: row;
+            flex-direction: column;
             justify-content: flex-start;
-            align-items: center;
+            align-items: stretch;
             gap: 0.5rem;
-            border-radius: 0.625rem;
-            cursor: pointer;
-            padding: 0.3rem 0.5rem;
 
-            >span {
-                font-size: 0.875rem;
-                font-weight: 600;
-                color: black;
+            .picker-item-select {
+                border: 1px solid #ADB0D9;
             }
 
-            &:hover {
-                background-color: #ADB0D9;
+            .picker-item-nonselect {
+                border: 1px solid transparent;
+            }
+
+            .picker-item {
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 0.5rem;
+                border-radius: 0.625rem;
+                cursor: pointer;
+                padding: 0.3rem;
+
+                .picker-item-name {
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: black;
+                }
+
+                &:hover {
+                    background-color: #ADB0D9;
+                }
             }
         }
     }

@@ -70,7 +70,8 @@
     </section>
     }@else {
     <div (mouseenter)="isHovered = false" class="message-editor">
-        <app-message-editor #messageeditor [messageAsHTML]="messageData.content"></app-message-editor>
+        <app-message-editor #messageeditor (enterPressed)="updateMessage()"
+            [messageAsHTML]="messageData.content"></app-message-editor>
         <div class="input-message-toolbar">
             <div (click)="messageEditor.toogleEmojiePicker()" id="emoji-picker-icon" class="button-ctn">
                 <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+">
@@ -104,9 +105,9 @@
                 <img id="comment-icon" src="./assets/icons/chat/message-hover-menu/comment.svg" alt="">
             </div>
             @if(!messageEditorOpen) {
-                <div (click)="toggleEditMessagePopup()" id="edit-message-icon" class="button-ctn" id="edit-message-icon">
-                    <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="">
-                </div>
+            <div (click)="toggleEditMessagePopup()" id="edit-message-icon" class="button-ctn" id="edit-message-icon">
+                <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="">
+            </div>
             }
         </section>
         <div (click)="toggleMessageEditor()" class="edit-message-ctn"
