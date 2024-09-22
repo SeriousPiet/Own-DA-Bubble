@@ -215,6 +215,7 @@ export class MessageEditorComponent implements AfterViewInit {
     if (!target || !this.toolbar.nativeElement.contains(target)) {
       this.showToolbar = false;
     }
+    console.log('onBlur ' , event);
   }
 
 

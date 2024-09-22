@@ -20,28 +20,22 @@
         @if(messageData.attachments.length > 0){
         <div class="message-attachments">
             @for(attachment of messageData.attachments; track $index){
-            @if(attachment.type == 'image'){
             <div class="attachment">
                 <div class="action-div">
                     <div class="pdf-actions">
                         <img (click)="downloadPDF(attachment)" src="./assets/icons/chat/general/download.svg" alt="">
+                        @if(messageData.creatorID == userService.currentUserID) {
                         <img (click)="deleteAttachment(attachment)" src="./assets/icons/chat/general/trash.svg" alt="">
+                        }
                     </div>
                 </div>
+                @if(attachment.type == 'image'){
                 <img class="type-image" src="{{attachment.url}}" alt="">
-            </div>
-            } @else if(attachment.type == 'pdf'){
-            <div class="attachment">
+                } @else if(attachment.type == 'pdf'){
                 <img class="type-pdf" src="./assets/icons/chat/write-message/pdf.svg" alt="">
-                <div class="action-div">
-                    <div class="pdf-actions">
-                        <img (click)="downloadPDF(attachment)" src="./assets/icons/chat/general/download.svg" alt="">
-                        <img (click)="deleteAttachment(attachment)" src="./assets/icons/chat/general/trash.svg" alt="">
-                    </div>
-                </div>
                 <span>{{attachment.name}}</span>
+                }
             </div>
-            }
             }
         </div>
         }
@@ -82,7 +76,7 @@
                 <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+">
             </div>
             <div class="message-editor-button">
-                <button class="abort-btn" (click)="cancelUpdateMessage()">Abbrechen</button>
+                <button class="abort-btn" (click)="closeMessageEditor()">Abbrechen</button>
                 <button class="save-btn" (click)="updateMessage()">Speichern</button>
             </div>
         </div>
@@ -109,9 +103,11 @@
             <div class="button-ctn" id="comment-message-btn">
                 <img id="comment-icon" src="./assets/icons/chat/message-hover-menu/comment.svg" alt="">
             </div>
-            <div (click)="toggleEditMessagePopup()" id="edit-message-icon" class="button-ctn" id="edit-message-icon">
-                <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="">
-            </div>
+            @if(!messageEditorOpen) {
+                <div (click)="toggleEditMessagePopup()" id="edit-message-icon" class="button-ctn" id="edit-message-icon">
+                    <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="">
+                </div>
+            }
         </section>
         <div (click)="toggleMessageEditor()" class="edit-message-ctn"
             [ngClass]="{'toggle-edit-message-popup':showEditMessagePopup}">

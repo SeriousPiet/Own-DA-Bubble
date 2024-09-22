@@ -39,6 +39,7 @@ export class MessagesListViewComponent implements OnInit {
   public messages: Message[] = [];
   public messagesDates: Date[] = [];
   public noMessagesAvailable = true;
+  public messageEditorOpen = false;
 
   @Input() currentObject!: Channel | Chat;
 

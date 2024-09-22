@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { Message, StoredAttachment } from '../../../../shared/models/message.class';
@@ -34,6 +34,9 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
     this.checkMessageWriterID(messageWriterID);
   }
   @Input() messages: Message[] = [];
+
+  @Input() messageEditorOpen = false;
+  @Output() messageEditorOpenChange = new EventEmitter<boolean>();
 
   messagefromUser = false;
   messageCreator: User | undefined;
@@ -139,12 +142,12 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
     const editorContent = this.messageEditor.getMessageAsHTML();
     if (editorContent !== '<br></br>' && editorContent !== this.messageData.content) {
       this.messageService.updateMessage(this.messageData, { content: editorContent, edited: true, editedAt: serverTimestamp() });
-      this.toggleMessageEditor();
     }
+    this.closeMessageEditor();
   }
 
 
-  cancelUpdateMessage() {
+  closeMessageEditor() {
     this.toggleMessageEditor();
     this.needContentUpdate = true;
   }
@@ -216,6 +219,7 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   toggleMessageEditor() {
     this.toggleEditMessagePopup();
     this.messageEditorModus = !this.messageEditorModus;
+    this.messageEditorOpenChange.emit(this.messageEditorModus);
   }
 
   returnPopoverTarget(messageCreator: string) {
