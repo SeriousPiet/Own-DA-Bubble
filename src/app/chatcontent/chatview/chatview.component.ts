@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { MessageDateComponent } from './messages-list-view/message-date/message-date.component';
 import { MessageTextareaComponent } from '../message-textarea/message-textarea.component';
 import { CommonModule } from '@angular/common';
@@ -14,7 +14,7 @@ import { UsersService } from '../../utils/services/user.service';
 import { MessageGreetingComponent } from './messages-list-view/message-greeting/message-greeting.component';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { PopoverMemberProfileComponent } from "./popover-chatview/popover-member-profile/popover-member-profile.component";
-import { BehaviorSubject, filter } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 
 @Component({
@@ -39,8 +39,8 @@ export class ChatviewComponent implements OnInit {
         this.channelSubject.next(value);
     }
 
-    get currentContext(): Channel {
-        return this.channelSubject.getValue() as Channel;
+    get currentContext(): Channel | Chat {
+        return this.channelSubject.getValue();
     }
 
     public navigationService = inject(NavigationService);
@@ -61,16 +61,40 @@ export class ChatviewComponent implements OnInit {
 
     ngOnInit() {
         this.channel$.subscribe(() => {
-            this.currentContext.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
+            this.setContext();
             this.getRequiredAvatars();
         });
     }
 
+    setContext() {
+        this.currentContext instanceof Channel && this.currentContext.defaultChannel ? this.isDefaultChannel = true : this.isDefaultChannel = false;
+        this.currentContext instanceof Channel ? this.isAChannel = true : this.isAChannel = false;
+        this.currentContext instanceof Chat ? this.isAChat = true : this.isAChat = false;
+    }
+
     getTitle(object: Channel | Chat | Message | undefined): string {
         if (object instanceof Channel) return object.name;
-        // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
-        // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
         return '';
+    }
+
+    getChatPartner(object: Chat | Channel) {
+        if (this.currentContext instanceof Chat) {
+            const chatPartnerID = object.memberIDs.find(id => id !== this.userService.currentUser?.id);
+            if (chatPartnerID) return this.userService.getUserByID(chatPartnerID)
+            if (this.isSelfChat()) return this.userService.getUserByID(object.memberIDs[0]);
+        }
+        return undefined;
+    }
+
+    returnChatPartnerName() {
+        const chatPartner = this.currentContext.memberIDs.find(id => id !== this.userService.currentUser?.id);
+        if (chatPartner) return this.userService.getUserByID(chatPartner)?.name;
+        else return `${this.userService.getUserByID(this.currentContext.memberIDs[0])?.name} (Du)`;
+    }
+
+    isSelfChat(): boolean {
+        if (this.currentContext.memberIDs.length === 2 && this.currentContext.memberIDs[0] === this.currentContext.memberIDs[1]) return true;
+        return false;
     }
 
     getNumberOfMembers(object: Channel | Chat) {
@@ -78,14 +102,12 @@ export class ChatviewComponent implements OnInit {
         return
     }
 
-
     getRequiredAvatars() {
         if (this.currentContext instanceof Channel) {
             this.sortAvatarsArray();
             this.requiredAvatars = this.currentContext.memberIDs.slice(0, 3)
         }
     }
-
 
     sortAvatarsArray() {
         if (
@@ -149,7 +171,7 @@ export class ChatviewComponent implements OnInit {
         popover === 'addMember' ? this.addMemberPopover = true : this.addMemberPopover = false;
         this.currentContext = this.navigationService.chatViewObject;
     }
-    
+
     isAllowedToAddMember() {
         if (this.currentContext instanceof Channel) {
             return this.currentContext.creatorID === this.userService.currentUserID ||
@@ -166,6 +188,17 @@ export class ChatviewComponent implements OnInit {
     }
 
 
+    setSelectedUserObject(messageCreatorID: string) {
+        this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
+    }
+
+    returnPopoverTarget(messageCreator: string) {
+        if (messageCreator === this.userService.currentUser?.id) {
+            return 'profile-popover'
+        } else {
+            return 'popover-member-profile'
+        }
+    }
 
 
 
