@@ -33,8 +33,6 @@
   }
 }
 
-
-
 section.chatcontent {
   width: 100%;
   max-width: 1920px;
@@ -54,6 +52,10 @@ section.chatcontent {
 
   &.menu-hidden {
     padding-left: 0;
+  }
+
+  &.thread-hidden {
+    padding-right: 0;
   }
 }
 

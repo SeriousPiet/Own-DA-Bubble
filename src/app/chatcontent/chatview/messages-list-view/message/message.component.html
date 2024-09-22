@@ -1,5 +1,4 @@
 <main
-  (click)="setThread(messageData)"
   (mouseenter)="isHovered = true"
   (mouseleave)="isHovered = false; showEditMessagePopup = false"
   [ngClass]="{
@@ -124,7 +123,11 @@
           alt=""
         />
       </div>
-      <div class="button-ctn" id="comment-message-btn">
+      <div
+        class="button-ctn"
+        id="comment-message-btn"
+        (click)="setThread(messageData); triggerToggleThreadView()"
+      >
         <img
           id="comment-icon"
           src="./assets/icons/chat/message-hover-menu/comment.svg"

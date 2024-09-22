@@ -1,4 +1,5 @@
 <main class="threadview-main-ctn">
+  @if (navigationService.threadViewObject) {
   <section class="threadview-header">
     <div>
       <div>
@@ -11,9 +12,10 @@
           getTitle(navigationService.chatViewObject)
         }}</span>
       </div>
-      <button></button>
+      <button (click)="triggerToggleThreadView()"></button>
     </div>
   </section>
+  }
 
   <section class="threadview-content">
     @if (navigationService.threadViewObject) {

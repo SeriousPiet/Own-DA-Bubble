@@ -46,6 +46,14 @@ export class MessageComponent implements OnInit {
   messagePath = '';
   message = '';
 
+  @Input() toggleThreadView!: () => void;
+
+  triggerToggleThreadView() {
+    if (this.toggleThreadView) {
+      this.toggleThreadView();
+    }
+  }
+
   ngOnInit(): void {
     this.updatedMessage = {
       content: this.messageData.content,
@@ -193,7 +201,6 @@ export class MessageComponent implements OnInit {
   }
 
   setThread(thread: Message) {
-    console.log('current selected thread is:', thread);
     this.navigationService.setThreadViewObject(thread);
   }
 }

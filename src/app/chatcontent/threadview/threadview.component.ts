@@ -57,6 +57,14 @@ export class ThreadviewComponent {
     }
   }
 
+  @Input() toggleThreadView!: () => void;
+
+  triggerToggleThreadView() {
+    if (this.toggleThreadView) {
+      this.toggleThreadView();
+    }
+  }
+
   constructor(private cdr: ChangeDetectorRef) {}
 
   getTitle(object: Channel | Chat | Message | undefined): string {
