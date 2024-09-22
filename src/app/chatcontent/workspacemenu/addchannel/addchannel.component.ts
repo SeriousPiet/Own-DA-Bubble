@@ -164,6 +164,7 @@ export class AddchannelComponent implements AfterViewInit {
     } else {
       this.userByIds = this.userservice.getAllUserIDs();
     }
+    this.userByIds.push(this.userservice.currentUserID);
     this.channelservice.addNewChannelToFirestore(
       this.name,
       this.description,

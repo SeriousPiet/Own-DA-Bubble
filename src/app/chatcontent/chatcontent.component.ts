@@ -25,7 +25,7 @@ import { NavigationService } from '../utils/services/navigation.service';
     WorkspacemenuComponent,
   ],
   templateUrl: './chatcontent.component.html',
-  styleUrl: './chatcontent.component.scss',
+  styleUrls: ['./chatcontent.component.scss'], // Korrektur: styleUrls statt styleUrl
   animations: [
     trigger('slideInOut', [
       state(
@@ -49,6 +49,7 @@ import { NavigationService } from '../utils/services/navigation.service';
 })
 export class ChatcontentComponent {
   isWorkspaceMenuVisible = true;
+  isThreadViewVisible = true;
 
   navigationService = inject(NavigationService);
 
@@ -70,6 +71,26 @@ export class ChatcontentComponent {
       workspaceMenu.classList.add('hidden');
       setTimeout(() => {
         workspaceMenu.style.display = 'none';
+      }, 125);
+    }
+  }
+
+  toggleThreadView() {
+    this.isThreadViewVisible = !this.isThreadViewVisible;
+    const chatContent = document.querySelector('.chatcontent') as HTMLElement;
+    const threadview = document.querySelector('.threadview') as HTMLElement;
+
+    if (this.isThreadViewVisible) {
+      chatContent.classList.remove('thread-hidden');
+      threadview.style.display = 'block';
+      threadview.classList.remove('hidden');
+      threadview.classList.add('visible');
+    } else {
+      chatContent.classList.add('thread-hidden');
+      threadview.classList.remove('visible');
+      threadview.classList.add('hidden');
+      setTimeout(() => {
+        threadview.style.display = 'none';
       }, 125);
     }
   }

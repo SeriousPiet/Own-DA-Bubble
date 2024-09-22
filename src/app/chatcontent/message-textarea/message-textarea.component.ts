@@ -1,24 +1,33 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, inject, Input } from '@angular/core';
-import { MessageAttachment, MessageService } from '../../utils/services/message.service';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  Input,
+} from '@angular/core';
+import {
+  MessageAttachment,
+  MessageService,
+} from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
+import { Message } from '../../shared/models/message.class';
 
 @Component({
   selector: 'app-message-textarea',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './message-textarea.component.html',
-  styleUrl: './message-textarea.component.scss'
+  styleUrl: './message-textarea.component.scss',
 })
 export class MessageTextareaComponent {
-
   isHovered = false;
   isActive = false;
 
-  message = ''
+  message = '';
 
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
@@ -29,21 +38,25 @@ export class MessageTextareaComponent {
     {
       name: 'maxFileSize',
       validator: (file: any) => file.size <= 500000,
-      error: 'Die Datei ist zu groß. Maximal 500KB erlaubt.'
+      error: 'Die Datei ist zu groß. Maximal 500KB erlaubt.',
     },
     {
       name: 'fileType',
-      validator: (file: any) => file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpeg' || file.type === 'application/pdf',
-      error: 'Nur Bilder und PDFs erlaubt.'
-    }
-  ]
+      validator: (file: any) =>
+        file.type === 'image/png' ||
+        file.type === 'image/gif' ||
+        file.type === 'image/jpeg' ||
+        file.type === 'application/pdf',
+      error: 'Nur Bilder und PDFs erlaubt.',
+    },
+  ];
 
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
 
-  @Input() newMessageinChannel!: Channel | Chat;
+  @Input() newMessageinChannel!: Channel | Chat | Message;
 
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef) {}
   @HostListener('dragenter', ['$event'])
   onDragEnter(event: DragEvent) {
     event.preventDefault();
@@ -83,15 +96,20 @@ export class MessageTextareaComponent {
     this.dropzonehighlighted = highlight;
   }
 
-
-  async addNewMessage(newMessagePath: Channel | Chat, message: string) {
+  async addNewMessage(
+    newMessagePath: Channel | Chat | Message,
+    message: string
+  ) {
     this.clearErrorInfo();
     if (!message && this.attachments.length === 0) {
       this.handleErrors('Nachricht darf nicht leer sein.');
-    }
-    else if (await this.userservice.ifCurrentUserVerified()) {
+    } else if (await this.userservice.ifCurrentUserVerified()) {
       this.ifMessageUploading = true;
-      const error = await this.messageService.addNewMessageToCollection(newMessagePath, message, this.attachments)
+      const error = await this.messageService.addNewMessageToCollection(
+        newMessagePath,
+        message,
+        this.attachments
+      );
       if (error) {
         this.handleErrors(error);
       } else {
@@ -102,7 +120,6 @@ export class MessageTextareaComponent {
     }
   }
 
-
   handleErrors(error: string) {
     this.errorInfo = error;
     setTimeout(() => {
@@ -110,14 +127,12 @@ export class MessageTextareaComponent {
     }, 8000);
   }
 
-
   clearErrorInfo() {
     this.errorInfo = '';
   }
 
-
   removeAttachment(attachment: MessageAttachment) {
-    this.attachments = this.attachments.filter(a => a !== attachment);
+    this.attachments = this.attachments.filter((a) => a !== attachment);
   }
 
   changeAttachmentFile(event: any) {
@@ -127,15 +142,22 @@ export class MessageTextareaComponent {
 
   loadAttachments(fileList: any) {
     this.clearErrorInfo();
-    if ((fileList.files.length + this.attachments.length) > 5) {
+    if (fileList.files.length + this.attachments.length > 5) {
       this.handleErrors('Maximal 5 Dateien erlaubt.');
       return;
     }
     for (let i = 0; i < fileList.files.length; i++) {
       const file = fileList.files[i];
       if (this.fileAllreadyAttached(file)) continue;
-      if (!this.fileValidators.every(validator => validator.validator(file))) {
-        this.errorInfo += file.name + ': ' + (this.fileValidators.find(validator => !validator.validator(file))?.error as string) + '\n';
+      if (
+        !this.fileValidators.every((validator) => validator.validator(file))
+      ) {
+        this.errorInfo +=
+          file.name +
+          ': ' +
+          (this.fileValidators.find((validator) => !validator.validator(file))
+            ?.error as string) +
+          '\n';
         continue;
       }
       if (file.type.startsWith('image')) {
@@ -151,11 +173,14 @@ export class MessageTextareaComponent {
   }
 
   fileAllreadyAttached(file: any): boolean {
-    return this.attachments.find(a =>
-      a.name === file.name
-      && a.size === file.size
-      && a.lastModified === file.lastModified
-    ) ? true : false;
+    return this.attachments.find(
+      (a) =>
+        a.name === file.name &&
+        a.size === file.size &&
+        a.lastModified === file.lastModified
+    )
+      ? true
+      : false;
   }
 
   readPDF(file: any): MessageAttachment {
@@ -165,8 +190,8 @@ export class MessageTextareaComponent {
       size: file.size,
       lastModified: file.lastModified,
       src: './assets/icons/chat/write-message/pdf.svg',
-      file: file
-    }
+      file: file,
+    };
     return attachment;
   }
 
@@ -177,13 +202,12 @@ export class MessageTextareaComponent {
       size: file.size,
       lastModified: file.lastModified,
       src: './assets/icons/chat/write-message/attachment.svg',
-      file: file
-    }
-    reader.onload = (e) => { attachment.src = e.target?.result; }
+      file: file,
+    };
+    reader.onload = (e) => {
+      attachment.src = e.target?.result;
+    };
     reader.readAsDataURL(file);
     return attachment;
   }
-
-
-
 }

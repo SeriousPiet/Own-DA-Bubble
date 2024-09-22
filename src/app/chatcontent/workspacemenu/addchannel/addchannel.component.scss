@@ -119,7 +119,7 @@
       }
     }
     > div:hover {
-      cursor: pointer;
+      cursor: default;
     }
   }
 
@@ -199,7 +199,6 @@
     font-weight: 700;
     letter-spacing: 1px;
     gap: 0.5rem;
-    cursor: pointer;
 
     button.remove-context {
       @include flex(flex-start, center);
