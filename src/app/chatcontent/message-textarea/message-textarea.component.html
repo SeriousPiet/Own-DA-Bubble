@@ -15,9 +15,9 @@
     <div class="input-message-toolbar z-index-2">
         <div class="message-action-button" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
             <div id="add-attachment-icon" [ngClass]="{'button-ctn': attachments.length < 5}" class="button-ctn-size">
-                <label class="addattachment" for="addattachment">
+                <label class="addattachment" [for]="inputID">
                     <input [disabled]="ifMessageUploading || attachments.length>=5"
-                        (change)="changeAttachmentFile($event)" id="addattachment" type="file"
+                        (change)="changeAttachmentFile($event)" [id]="inputID" type="file"
                         accept=".pdf, .png, .jpeg, .gif" multiple>
                     <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/add-attachment.svg"
                         alt="+">

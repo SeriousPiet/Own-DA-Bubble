@@ -33,7 +33,7 @@
     </div>
     }
     <div #toolbar class="editor-toolbar" [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'"
-        id="editor-toolbar">
+        [id]="toolbarID">
         <span class="ql-formats">
             <button class="ql-bold"></button>
             <button class="ql-italic"></button>

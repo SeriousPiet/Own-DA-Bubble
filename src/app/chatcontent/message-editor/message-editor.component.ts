@@ -68,6 +68,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   // Quill Editor variables and configuration
   public quill!: Quill;
+  public toolbarID = 'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
   private boundingKey = ' '; // sign bevor and after the span
@@ -81,7 +82,7 @@ export class MessageEditorComponent implements AfterViewInit {
     border: 'none',
   };
   public quillconfig = {
-    toolbar: '#editor-toolbar',
+    toolbar: '#' + this.toolbarID,
     keyboard: {
       bindings: {
         shift_enter: {

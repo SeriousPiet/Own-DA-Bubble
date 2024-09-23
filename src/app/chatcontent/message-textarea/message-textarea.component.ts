@@ -26,12 +26,14 @@ export class MessageTextareaComponent {
   @Input() set messagesCollectionObject(value: Channel | Chat | Message) {
     this._messagesCollectionObject = value;
     if (this.messageeditor && this.messageeditor.quill) {
+      this.attachments = [];
       this.messageeditor.clearEditor();
       this.messageeditor.quill.focus();
     }
   }
 
   isHovered = false;
+  inputID = Math.random().toString(36).substring(2, 9);
   isActive = false;
 
   attachments: MessageAttachment[] = [];
@@ -149,6 +151,7 @@ export class MessageTextareaComponent {
   }
 
   changeAttachmentFile(event: any) {
+    console.log(event);
     event.preventDefault();
     this.loadAttachments(event.target);
   }
