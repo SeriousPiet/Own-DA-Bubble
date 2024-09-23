@@ -223,7 +223,6 @@ section {
     @include flex(flex-start, center);
     @include buttonNoBorder;
     @include fontSizer(18, 400, black);
-    width: fit-content;
     gap: 1.25rem;
     color: black !important;
 

@@ -54,21 +54,25 @@
     <div>
       <div>
         <input
+          id="allMembers"
           class="select-user-search"
           type="radio"
           name="userOption"
           (change)="addOptionSelected(false)"
-        />Alle Mitglieder von Devspace hinzufügen
+        />
+        <label for="allMembers">Alle Mitglieder von Devspace hinzufügen</label>
       </div>
     </div>
     <div style="flex-direction: column">
       <div>
         <input
+          id="specificPeople"
           class="select-user-search"
           type="radio"
           name="userOption"
           (change)="addOptionSelected(true)"
-        />Bestimmte Leute hinzufügen
+        />
+        <label for="specificPeople">Bestimmte Leute hinzufügen</label>
       </div>
       <div>
         <div class="addUserSearchbar" *ngIf="isUserSearchSelected">
