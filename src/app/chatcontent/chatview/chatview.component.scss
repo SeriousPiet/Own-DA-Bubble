@@ -211,3 +211,63 @@
   user-select: none !important;
   cursor: default !important;
 }
+
+
+.chatview-chat-partner-name {
+  @include flex(normal, center);
+  gap: .9375rem;
+  padding: .25rem 1.25rem;
+  border-radius: 2.1875rem;
+
+  >span {
+    @include nunito(1.5, 700);
+  }
+
+  &:hover {
+    background-color: $background;
+  }
+}
+
+.no-pm-ctn {
+  @include flex(center, normal);
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .chat-partner-name {
+    @include flex(normal, flex-end);
+    gap: 1.5625rem;
+
+    >span {
+      @include nunito(1.5, 700);
+
+      &:hover {
+        color: $primary;
+        cursor: pointer;
+      }
+    }
+  }
+
+  >p {
+    @include nunito(1.25, 400);
+    color: $disabled;
+
+    >button {
+      @include nunito(1.25, 600);
+      color: $primary;
+      cursor: pointer;
+      padding: unset;
+    }
+  }
+}
+
+#message-to-itself {
+  >span {
+    color: $disabled;
+    font-weight: 700;
+
+    &:hover {
+      cursor: text;
+    }
+  }
+
+}
