@@ -117,6 +117,9 @@
         @include round-checkbox();
         margin: 0;
       }
+      > label:hover {
+        cursor: pointer;
+      }
     }
     > div:hover {
       cursor: default;
