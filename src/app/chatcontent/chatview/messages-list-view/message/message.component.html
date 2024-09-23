@@ -2,8 +2,9 @@
     'message-from-user': messagefromUser, 
     'editor-modus-bg-color':messageEditorModus, 
     'message-from-same-user': _messageData.previousMessageFromSameUser}">
-    <div class="message-avatar-ctn" (click)="showUserPopover(_messageData.creatorID)">
-        <div appAvatar context="chat-message" [user]="getMessageCreatorObject()!" class="message-creator-avatar"></div>
+    <div class="message-avatar-ctn">
+        <div (click)="showUserPopover(_messageData.creatorID)" appAvatar context="chat-message"
+            [user]="getMessageCreatorObject()!" class="message-creator-avatar"></div>
         <span>{{ getFormatedMessageTime(_messageData.createdAt) }}</span>
     </div>
     @if (!messageEditorModus) {
@@ -41,8 +42,7 @@
         <div class="message-reactions">
             @for (reaction of _messageData.emojies; track $index) {
             @if(reaction.userIDs.length != 0){
-            <button
-                (click)="messageService.toggleReactionToMessage(_messageData, reaction.type)">
+            <button (click)="messageService.toggleReactionToMessage(_messageData, reaction.type)">
                 <img src="./assets/icons/chat/emoji/{{reaction.type}}.svg" alt="">
                 <span>{{ reaction.userIDs.length }}</span>
             </button>
@@ -54,7 +54,7 @@
         <div class="message-info">
             @if(_messageData.answerCount > 0 && _messageData.answerable){
             <div id="message-answer-info">
-                <a>
+                <a (click)="setThread(_messageData)">
                     <span>{{ _messageData.answerCount }}</span>
                     <span>Antworten</span>
                 </a>
@@ -87,12 +87,10 @@
         'interact-ctn-popover-slide-in-animation': isHovered, 
         'interact-ctn-popover': true }">
         <section>
-            <div (click)="messageService.toggleReactionToMessage(_messageData, 'check-green')"
-                class="button-ctn">
+            <div (click)="messageService.toggleReactionToMessage(_messageData, 'check-green')" class="button-ctn">
                 <img src="./assets/icons/chat/emoji/check-green.svg" alt="">
             </div>
-            <div (click)="messageService.toggleReactionToMessage(_messageData, 'celebration')"
-                class="button-ctn">
+            <div (click)="messageService.toggleReactionToMessage(_messageData, 'celebration')" class="button-ctn">
                 <img src="./assets/icons/chat/emoji/celebration.svg" alt="">
             </div>
             <div class="button-ctn" id="add-reaction-icon">

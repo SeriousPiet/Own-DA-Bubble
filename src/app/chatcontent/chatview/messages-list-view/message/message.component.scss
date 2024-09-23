@@ -48,6 +48,7 @@
     &:hover {
       .action-div {
         background-color: lightgray;
+
         img {
           opacity: 1;
 
@@ -69,6 +70,11 @@
   transition: $transition-popover;
 
   .message-avatar-ctn {
+
+    .message-creator-avatar {
+      cursor: pointer;
+    }
+
     >span {
       display: none;
     }
