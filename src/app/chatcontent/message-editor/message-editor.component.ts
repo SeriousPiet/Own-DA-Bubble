@@ -60,7 +60,8 @@ export class MessageEditorComponent implements AfterViewInit {
   @Input() minHeight_rem = 4;
   @Input() maxHeight_rem = 16;
 
-  @Output() enterPressed = new EventEmitter<string>(); // ToDO: Implement this event
+  @Output() enterPressed = new EventEmitter<string>();
+  @Output() escapePressed = new EventEmitter<string>();
 
   public userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
@@ -185,8 +186,15 @@ export class MessageEditorComponent implements AfterViewInit {
           this.quill.keyboard.addBinding({ key: '#' }, () => { this.openListPicker('#'); return true; });
           this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => { return this.handlePickerSelectionKeys('ArrowDown'); });
           this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelectionKeys('ArrowUp'); });
-          this.quill.keyboard.addBinding({ key: 'Escape' }, () => { return this.handlePickerSelectionKeys('Escape'); });
+          this.quill.keyboard.addBinding({ key: 'Escape' }, () => {
+            if (!this.showPicker) {
+              this.quill.blur();
+              this.escapePressed.emit();
+            }
+            return this.handlePickerSelectionKeys('Escape');
+          });
           this.quill.keyboard.bindings['Enter'] = [];
+          this.quill.focus();
         }
         this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
       });

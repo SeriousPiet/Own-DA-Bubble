@@ -22,7 +22,14 @@ export class MessageTextareaComponent {
 
   @ViewChild('messageeditor', { static: true }) messageeditor!: MessageEditorComponent;
 
-  @Input() messagesCollectionObject!: Channel | Chat | Message;
+  private _messagesCollectionObject!: Channel | Chat | Message;
+  @Input() set messagesCollectionObject(value: Channel | Chat | Message) {
+    this._messagesCollectionObject = value;
+    if (this.messageeditor && this.messageeditor.quill) {
+      this.messageeditor.clearEditor();
+      this.messageeditor.quill.focus();
+    }
+  }
 
   isHovered = false;
   isActive = false;
@@ -31,16 +38,6 @@ export class MessageTextareaComponent {
   dropzonehighlighted = false;
   ifMessageUploading = false;
   errorInfo = '';
-
-  quillstyle = {
-    minHeight: '3rem',
-    maxHeight: '16rem',
-    width: '100%',
-    backgroundColor: 'white',
-    color: 'black',
-    fontFamily: 'Nunito',
-    border: 'none',
-  };
 
   private fileValidators = [
     {
@@ -123,7 +120,7 @@ export class MessageTextareaComponent {
     else if (await this.userservice.ifCurrentUserVerified()) {
       this.messageeditor.quill.disable();
       this.ifMessageUploading = true;
-      const error = await this.messageService.addNewMessageToCollection(this.messagesCollectionObject, newHTMLMessage, this.attachments)
+      const error = await this.messageService.addNewMessageToCollection(this._messagesCollectionObject, newHTMLMessage, this.attachments)
       if (error) {
         this.handleErrors(error);
       } else {

@@ -57,7 +57,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   }
 
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private _cdr: ChangeDetectorRef) { }
 
 
   ngAfterViewChecked(): void {
@@ -71,7 +71,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   ngAfterViewInit(): void {
     this._messageData.changeMessage$.subscribe((message: Message) => {
       this.fillMessageContentHTML();
-      this.cdr.detectChanges();
+      this._cdr.detectChanges();
     });
   }
 
@@ -158,6 +158,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   closeMessageEditor() {
     this.toggleMessageEditor();
     this.needContentUpdate = true;
+    this._cdr.detectChanges();
   }
 
 

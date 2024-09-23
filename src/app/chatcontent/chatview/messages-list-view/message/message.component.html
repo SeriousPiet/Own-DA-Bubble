@@ -68,7 +68,7 @@
     </section>
     }@else {
     <div (mouseenter)="isHovered = false" class="message-editor">
-        <app-message-editor #messageeditor (enterPressed)="updateMessage()"
+        <app-message-editor #messageeditor (enterPressed)="updateMessage()" (escapePressed)="closeMessageEditor()"
             [messageAsHTML]="_messageData.content"></app-message-editor>
         <div class="input-message-toolbar">
             <div (click)="messageEditor.toogleEmojiePicker()" id="emoji-picker-icon" class="button-ctn">
