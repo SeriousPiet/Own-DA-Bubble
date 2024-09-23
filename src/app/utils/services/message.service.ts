@@ -53,7 +53,7 @@ export class MessageService {
       if (!messageCollectionRef)
         throw new Error('Nachrichtenpfad "' + messagePath + '" ist nicht gefunden.');
       // add message to objectpath
-      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, true));
+      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, collectionObject instanceof Message ? false : true));
       // add attachments to storage and update message with attachments
       if (attachments.length > 0) {
         const uploadedAttachments = await this.uploadAttachmentsToStorage(response.id, attachments);

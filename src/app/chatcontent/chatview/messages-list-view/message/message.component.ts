@@ -19,7 +19,7 @@ import { Channel } from '../../../../shared/models/channel.class';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
-export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked {
+export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
   @ViewChild('messageeditor', { static: false }) messageEditor!: MessageEditorComponent;
@@ -29,7 +29,11 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   public messageService = inject(MessageService);
   public channelService = inject(ChannelService);
 
-  @Input() messageData: any;
+  public _messageData!: Message;
+  @Input() set messageData(newMessage: Message) {
+    this._messageData = newMessage;
+    this.fillMessageContentHTML();
+  }
   @Input() set messageWriter(messageWriterID: string) {
     this.checkMessageWriterID(messageWriterID);
   }
@@ -46,8 +50,6 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   showEditMessagePopup = false;
 
   messageEditorModus = false;
-  messagePath = '';
-  message = '';
 
   private needContentUpdate = false;
 
@@ -61,14 +63,14 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
 
 
   ngAfterViewChecked(): void {
-    if(this.messageDiv && this.needContentUpdate) {
+    if (this.messageDiv && this.needContentUpdate) {
       this.needContentUpdate = false;
       this.fillMessageContentHTML();
     }
   }
 
   ngAfterViewInit(): void {
-    this.messageData.changeMessage$.subscribe((message: Message) => {
+    this._messageData.changeMessage$.subscribe((message: Message) => {
       this.fillMessageContentHTML();
       this.cdr.detectChanges();
     });
@@ -76,8 +78,8 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
 
 
   fillMessageContentHTML() {
-    if(this.messageDiv) {
-      this.messageDiv.nativeElement.innerHTML = this.messageData.content;
+    if (this.messageDiv) {
+      this.messageDiv.nativeElement.innerHTML = this._messageData.content;
       this.calculateMessageSpans();
     }
   }
@@ -93,7 +95,7 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
 
 
   deleteAttachment(attachment: StoredAttachment) {
-    this.messageService.deleteStoredAttachment(this.messageData, attachment);
+    this.messageService.deleteStoredAttachment(this._messageData, attachment);
   }
 
   calculateMessageSpans() {
@@ -143,8 +145,8 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
 
   updateMessage() {
     const editorContent = this.messageEditor.getMessageAsHTML();
-    if (editorContent !== '<br></br>' && editorContent !== this.messageData.content) {
-      this.messageService.updateMessage(this.messageData, { content: editorContent, edited: true, editedAt: serverTimestamp() });
+    if (editorContent !== '<br></br>' && editorContent !== this._messageData.content) {
+      this.messageService.updateMessage(this._messageData, { content: editorContent, edited: true, editedAt: serverTimestamp() });
     }
     this.closeMessageEditor();
   }
@@ -157,7 +159,7 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
 
 
   getMessageCreatorObject() {
-    return this.userService.getUserByID(this.messageData.creatorID);
+    return this.userService.getUserByID(this._messageData.creatorID);
   }
 
   sortMessages() {
@@ -220,7 +222,7 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   }
 
   checkForMessageReactions() {
-    if (this.messageData.emojies.length > 0) this.hasReaction = true;
+    if (this._messageData.emojies.length > 0) this.hasReaction = true;
     else this.hasReaction = false;
   }
 
@@ -256,6 +258,13 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
     }
   }
 
+
+  showUserPopover(messageCreatorID: string) {
+    this.setSelectedUserObject(messageCreatorID);
+    const popoverElement = document.getElementById(this.returnPopoverTarget(messageCreatorID));
+    if (popoverElement) (popoverElement as any).showPopover();
+  }
+
   setSelectedUserObject(messageCreatorID: string) {
     this.userService.updateSelectedUser(
       this.userService.getUserByID(messageCreatorID)
@@ -263,8 +272,9 @@ export class MessageComponent implements OnInit, AfterViewInit,AfterViewChecked 
   }
 
   setThread(thread: Message) {
-    // console.log('current selected thread is:', thread);
-    this.navigationService.setThreadViewObject(thread);
+    if (this._messageData.answerable) {
+      this.navigationService.setThreadViewObject(thread);
+    }
   }
 
 }
