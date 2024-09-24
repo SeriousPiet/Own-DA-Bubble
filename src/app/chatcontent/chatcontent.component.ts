@@ -1,11 +1,7 @@
-import { Component, inject } from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { Subscription } from 'rxjs';
+
 import { HeaderComponent } from './header/header.component';
 import { WorkspacemenuComponent } from './workspacemenu/workspacemenu.component';
 import { ChatviewComponent } from './chatview/chatview.component';
@@ -25,73 +21,82 @@ import { NavigationService } from '../utils/services/navigation.service';
     WorkspacemenuComponent,
   ],
   templateUrl: './chatcontent.component.html',
-  styleUrls: ['./chatcontent.component.scss'], // Korrektur: styleUrls statt styleUrl
-  animations: [
-    trigger('slideInOut', [
-      state(
-        'visible',
-        style({
-          // fixed value is gonna be replaced by the a dynamically set value due to screenwidth / responsive breakpoint
-          width: '20rem',
-          opacity: 1,
-        })
-      ),
-      state(
-        'hidden',
-        style({
-          width: '0',
-          opacity: 0,
-        })
-      ),
-      transition('visible <=> hidden', [animate('0.125s ease-out')]),
-    ]),
-  ],
+  styleUrl: './chatcontent.component.scss',
 })
-export class ChatcontentComponent {
+export class ChatcontentComponent implements OnInit, OnDestroy {
+  private breakpointSubscription: Subscription | undefined;
+
+  currentLayout: 'three-column' | 'two-column' | 'one-column' = 'three-column';
   isWorkspaceMenuVisible = true;
-  isThreadViewVisible = true;
+  isThreadViewVisible = false;
 
   navigationService = inject(NavigationService);
 
+  constructor(private breakpointObserver: BreakpointObserver) {}
+
+  ngOnInit() {
+    const layoutBreakpoints = {
+      'three-column': '(min-width: 1200px)',
+      'two-column': '(min-width: 720px) and (max-width: 1199px)',
+      'one-column': '(max-width: 719px)',
+    };
+
+    this.breakpointSubscription = this.breakpointObserver
+      .observe(Object.values(layoutBreakpoints))
+      .subscribe((state: BreakpointState) => {
+        if (state.breakpoints[layoutBreakpoints['three-column']]) {
+          this.currentLayout = 'three-column';
+        } else if (state.breakpoints[layoutBreakpoints['two-column']]) {
+          this.currentLayout = 'two-column';
+        } else {
+          this.currentLayout = 'one-column';
+        }
+        this.adjustLayout();
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.breakpointSubscription) {
+      this.breakpointSubscription.unsubscribe();
+    }
+  }
+
+  adjustLayout() {
+    switch (this.currentLayout) {
+      case 'three-column':
+        // Alle Spalten können sichtbar sein, aber ThreadView ist initial ausgeblendet
+        this.isWorkspaceMenuVisible = true;
+        break;
+      case 'two-column':
+        // Wenn ThreadView geöffnet wird, schließe WSM
+        if (this.isThreadViewVisible) {
+          this.isWorkspaceMenuVisible = false;
+        }
+        break;
+      case 'one-column':
+        // Nur eine Spalte sichtbar
+        if (this.isThreadViewVisible) {
+          this.isWorkspaceMenuVisible = false;
+        } else if (this.isWorkspaceMenuVisible) {
+          this.isThreadViewVisible = false;
+        }
+        break;
+    }
+  }
+
   toggleWorkspaceMenu() {
     this.isWorkspaceMenuVisible = !this.isWorkspaceMenuVisible;
-    const chatContent = document.querySelector('.chatcontent') as HTMLElement;
-    const workspaceMenu = document.querySelector(
-      '.workspace-menu'
-    ) as HTMLElement;
-
-    if (this.isWorkspaceMenuVisible) {
-      chatContent.classList.remove('menu-hidden');
-      workspaceMenu.style.display = 'block';
-      workspaceMenu.classList.remove('hidden');
-      workspaceMenu.classList.add('visible');
-    } else {
-      chatContent.classList.add('menu-hidden');
-      workspaceMenu.classList.remove('visible');
-      workspaceMenu.classList.add('hidden');
-      setTimeout(() => {
-        workspaceMenu.style.display = 'none';
-      }, 125);
+    if (this.currentLayout !== 'three-column' && this.isWorkspaceMenuVisible) {
+      this.isThreadViewVisible = false;
     }
+    this.adjustLayout();
   }
 
   toggleThreadView() {
     this.isThreadViewVisible = !this.isThreadViewVisible;
-    const chatContent = document.querySelector('.chatcontent') as HTMLElement;
-    const threadview = document.querySelector('.threadview') as HTMLElement;
-
-    if (this.isThreadViewVisible) {
-      chatContent.classList.remove('thread-hidden');
-      threadview.style.display = 'block';
-      threadview.classList.remove('hidden');
-      threadview.classList.add('visible');
-    } else {
-      chatContent.classList.add('thread-hidden');
-      threadview.classList.remove('visible');
-      threadview.classList.add('hidden');
-      setTimeout(() => {
-        threadview.style.display = 'none';
-      }, 125);
+    if (this.currentLayout !== 'three-column' && this.isThreadViewVisible) {
+      this.isWorkspaceMenuVisible = false;
     }
+    this.adjustLayout();
   }
 }
