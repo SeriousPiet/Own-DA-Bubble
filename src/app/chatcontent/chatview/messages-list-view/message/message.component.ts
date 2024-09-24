@@ -1,74 +1,184 @@
 import {
+  AfterViewChecked,
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
+  ElementRef,
+  EventEmitter,
   inject,
   Input,
   OnInit,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
-import { Message } from '../../../../shared/models/message.class';
+import {
+  Message,
+  StoredAttachment,
+} from '../../../../shared/models/message.class';
 import { MessageService } from '../../../../utils/services/message.service';
 import { UsersService } from '../../../../utils/services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { User } from '../../../../shared/models/user.class';
+import { MessageEditorComponent } from '../../../message-editor/message-editor.component';
+import { ChannelService } from '../../../../utils/services/channel.service';
+import { Channel } from '../../../../shared/models/channel.class';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [CommonModule, FormsModule, AvatarDirective],
+  imports: [CommonModule, FormsModule, AvatarDirective, MessageEditorComponent],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent
+  implements OnInit, AfterViewInit, AfterViewChecked
+{
+  @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
+  @ViewChild('messageeditor', { static: false })
+  messageEditor!: MessageEditorComponent;
+
   public userService = inject(UsersService);
   public navigationService = inject(NavigationService);
   public messageService = inject(MessageService);
+  public channelService = inject(ChannelService);
 
-  @Input() messageData: any;
+  public _messageData!: Message;
+  @Input() set messageData(newMessage: Message) {
+    this._messageData = newMessage;
+    this.fillMessageContentHTML();
+  }
   @Input() set messageWriter(messageWriterID: string) {
     this.checkMessageWriterID(messageWriterID);
   }
   @Input() id: string = '';
   @Input() messages: Message[] = [];
 
+  @Input() messageEditorOpen = false;
+  @Output() messageEditorOpenChange = new EventEmitter<boolean>();
+
   messagefromUser = false;
   messageCreator: User | undefined;
   isHovered = false;
-  hasReaction = false;
   showEditMessagePopup = false;
-  updatedMessage: { content?: string; edited?: boolean; editedAt?: any } = {};
-
   messageEditorModus = false;
-  messagePath = '';
-  message = '';
-
-  @Input() toggleThreadView!: () => void;
-
-  triggerToggleThreadView() {
-    if (this.toggleThreadView) {
-      this.toggleThreadView();
-    }
-  }
+  private needContentUpdate = false;
 
   ngOnInit(): void {
-    this.updatedMessage = {
-      content: this.messageData.content,
-      edited: this.messageData.edited,
-      editedAt: this.messageData.editedAt,
-    };
-    this.checkForMessageReactions();
     this.sortMessages();
     this.getMessageCreatorObject();
   }
 
-  constructor() {}
+  constructor(private _cdr: ChangeDetectorRef) {}
+
+  ngAfterViewChecked(): void {
+    if (this.messageDiv && this.needContentUpdate) {
+      this.needContentUpdate = false;
+      this.fillMessageContentHTML();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this._messageData.changeMessage$.subscribe((message: Message) => {
+      this.fillMessageContentHTML();
+      this._cdr.detectChanges();
+    });
+  }
+
+  fillMessageContentHTML() {
+    if (this.messageDiv) {
+      this.messageDiv.nativeElement.innerHTML = this._messageData.content;
+      this.calculateMessageSpans();
+    }
+  }
+
+  downloadPDF(attachment: StoredAttachment) {
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name;
+    link.target = '_blank'; // Open in a new tab
+    link.click();
+  }
+
+  deleteAttachment(attachment: StoredAttachment) {
+    this.messageService.deleteStoredAttachment(this._messageData, attachment);
+  }
+
+  calculateMessageSpans() {
+    const spans = this.messageDiv.nativeElement.querySelectorAll('span');
+    spans.forEach((span: HTMLSpanElement) => {
+      if (span.classList.length > 0) {
+        if (span.classList[0].endsWith('channel')) {
+          // channel
+          this.prepareChannelSpan(span);
+        } else if (span.classList[0].endsWith('user')) {
+          // user
+          this.prepareUserSpan(span);
+        }
+      }
+    });
+  }
+
+  prepareChannelSpan(span: HTMLSpanElement) {
+    const spanChannel = this.getChannelOnlyWhenNotCurrent(span.id);
+    if (spanChannel) {
+      span.classList.add('highlight-item');
+      span.classList.add('highlight-can-clicked');
+      span.addEventListener('click', (event) => {
+        event.stopPropagation();
+        this.navigationService.setChatViewObject(spanChannel);
+      });
+    }
+  }
+
+  getChannelOnlyWhenNotCurrent(channelID: string): Channel | undefined {
+    const channel = this.channelService.channels.find(
+      (channel) => channel.id === channelID
+    );
+    if (channel && this.navigationService.chatViewObject !== channel)
+      return channel;
+    return undefined;
+  }
+
+  prepareUserSpan(span: HTMLSpanElement) {
+    span.classList.add('highlight-item');
+    span.classList.add('highlight-can-clicked');
+    span.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.setSelectedUserObject(span.id);
+      const popoverElement = document.getElementById(
+        this.returnPopoverTarget(span.id)
+      );
+      if (popoverElement) (popoverElement as any).showPopover();
+    });
+  }
+
+  updateMessage() {
+    const editorContent = this.messageEditor.getMessageAsHTML();
+    if (
+      editorContent !== '<br></br>' &&
+      editorContent !== this._messageData.content
+    ) {
+      this.messageService.updateMessage(this._messageData, {
+        content: editorContent,
+        edited: true,
+        editedAt: serverTimestamp(),
+      });
+    }
+    this.closeMessageEditor();
+  }
+
+  closeMessageEditor() {
+    this.toggleMessageEditor();
+    this.needContentUpdate = true;
+    this._cdr.detectChanges();
+  }
 
   getMessageCreatorObject() {
-    return this.userService.getUserByID(this.messageData.creatorID);
+    return this.userService.getUserByID(this._messageData.creatorID);
   }
 
   sortMessages() {
@@ -130,11 +240,6 @@ export class MessageComponent implements OnInit {
     );
   }
 
-  checkForMessageReactions() {
-    if (this.messageData.emojies.length > 0) this.hasReaction = true;
-    else this.hasReaction = false;
-  }
-
   getFormatedMessageTime(messageTime: Date | undefined) {
     let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', {
       hour: '2-digit',
@@ -156,34 +261,7 @@ export class MessageComponent implements OnInit {
   toggleMessageEditor() {
     this.toggleEditMessagePopup();
     this.messageEditorModus = !this.messageEditorModus;
-  }
-
-  editMessage(
-    message: Message,
-    updatedData: { content?: string; edited?: boolean; editedAt?: any }
-  ) {
-    if (updatedData.content) {
-      this.messageService.updateMessage(message, updatedData);
-      updatedData.edited
-        ? (this.updatedMessage.edited = true)
-        : (this.updatedMessage.edited = false);
-      updatedData.editedAt
-        ? (this.updatedMessage.editedAt = updatedData.editedAt)
-        : (this.updatedMessage.editedAt = serverTimestamp());
-      this.toggleMessageEditor();
-    }
-  }
-
-  discardChanges(
-    message: Message,
-    updatedData: { content?: string; edited?: boolean; editedAt?: any }
-  ) {
-    updatedData.edited
-      ? (this.updatedMessage.edited = true)
-      : (this.updatedMessage.edited = false);
-    updatedData.content = message.content;
-
-    this.toggleMessageEditor();
+    this.messageEditorOpenChange.emit(this.messageEditorModus);
   }
 
   returnPopoverTarget(messageCreator: string) {
@@ -194,6 +272,14 @@ export class MessageComponent implements OnInit {
     }
   }
 
+  showUserPopover(messageCreatorID: string) {
+    this.setSelectedUserObject(messageCreatorID);
+    const popoverElement = document.getElementById(
+      this.returnPopoverTarget(messageCreatorID)
+    );
+    if (popoverElement) (popoverElement as any).showPopover();
+  }
+
   setSelectedUserObject(messageCreatorID: string) {
     this.userService.updateSelectedUser(
       this.userService.getUserByID(messageCreatorID)
@@ -201,6 +287,8 @@ export class MessageComponent implements OnInit {
   }
 
   setThread(thread: Message) {
-    this.navigationService.setThreadViewObject(thread);
+    if (this._messageData.answerable) {
+      this.navigationService.setThreadViewObject(thread);
+    }
   }
 }

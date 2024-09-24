@@ -1,4 +1,15 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Chat } from '../../../../shared/models/chat.class';
 import { NavigationService } from '../../../../utils/services/navigation.service';
@@ -13,15 +24,14 @@ import { BehaviorSubject } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './popover-channel-editor.component.html',
-  styleUrl: './popover-channel-editor.component.scss'
+  styleUrl: './popover-channel-editor.component.scss',
 })
 export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
-
   navigationService = inject(NavigationService);
   userService = inject(UsersService);
   channelService = inject(ChannelService);
 
-  @Input() set currentChannel(value: Channel) {
+  @Input() set currentChannel(value: Channel | Chat) {
     this.channelSubject.next(value);
   }
 
@@ -34,14 +44,20 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
   channelNameEditor = false;
   channelDescriptionEditor = false;
 
-  updateChannelData: { name?: string, description?: string, memberIDs?: string[] } = {};
+  updateChannelData: {
+    name?: string;
+    description?: string;
+    memberIDs?: string[];
+  } = {};
 
   selfInMemberList: string = '';
 
-  public channelSubject = new BehaviorSubject<Channel | Chat>(this.navigationService.chatViewObject);
+  public channelSubject = new BehaviorSubject<Channel | Chat>(
+    this.navigationService.chatViewObject
+  );
   channel$ = this.channelSubject.asObservable();
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
     this.subscribeToChannel();
@@ -50,7 +66,9 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
   subscribeToChannel() {
     this.channel$.subscribe((channel) => {
       this.updateChannelDatas();
-      this.selfInMemberList = channel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID) as string;
+      this.selfInMemberList = channel.memberIDs.find(
+        (memberID: string) => memberID === this.userService.currentUserID
+      ) as string;
     });
   }
 
@@ -76,9 +94,9 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
     return '';
   }
 
-
   getChannelCreator(object: Channel | Chat) {
-    if (object instanceof Channel) return this.userService.getUserByID(object.creatorID)?.name
+    if (object instanceof Channel)
+      return this.userService.getUserByID(object.creatorID)?.name;
     return '';
   }
 
@@ -99,44 +117,50 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
     this.channelNameEditor = false;
     this.channelDescriptionEditor = false;
     if (this.navigationService.chatViewObject instanceof Channel) {
-      this.channelService.updateChannelOnFirestore(this.navigationService.chatViewObject, this.updateChannelData);
+      this.channelService.updateChannelOnFirestore(
+        this.navigationService.chatViewObject,
+        this.updateChannelData
+      );
     }
   }
 
   isChannelCreator() {
-    return this.currentChannel.creatorID === this.userService.currentUserID;
+    if (this.currentChannel instanceof Channel)
+      return this.currentChannel.creatorID === this.userService.currentUserID;
+    return;
   }
 
   showNoRightToEditInfo() {
     if (!this.isChannelCreator()) {
-      return 'Du hast kein Recht diesen Kanal zu bearbeiten.'
+      return 'Du hast kein Recht diesen Kanal zu bearbeiten.';
     }
-    return ''
+    return '';
   }
 
   isChannelMember() {
-    this.selfInMemberList = this.currentChannel.memberIDs.find((memberID: string) => memberID === this.userService.currentUserID) as string;
-    return this.selfInMemberList === this.userService.currentUserID  
- 
+    this.selfInMemberList = this.currentChannel.memberIDs.find(
+      (memberID: string) => memberID === this.userService.currentUserID
+    ) as string;
+    return this.selfInMemberList === this.userService.currentUserID;
   }
 
-
   leaveChannel() {
-    let selfInMemberListIndex = this.currentChannel.memberIDs.indexOf(this.selfInMemberList);
-    if (this.isChannelMember()) {
+    let selfInMemberListIndex = this.currentChannel.memberIDs.indexOf(
+      this.selfInMemberList
+    );
+    if (this.isChannelMember() && this.currentChannel instanceof Channel) {
       this.currentChannel.memberIDs.splice(selfInMemberListIndex, 1);
       this.updateChannelData.memberIDs = this.currentChannel.memberIDs;
-      this.channelService.updateChannelOnFirestore(this.currentChannel, this.updateChannelData);
+      this.channelService.updateChannelOnFirestore(
+        this.currentChannel,
+        this.updateChannelData
+      );
       this.updatedChannel.emit(this.currentChannel);
       this.channelSubject.next(this.currentChannel);
     }
   }
 
-
   ngOnDestroy() {
     this.channelSubject.unsubscribe();
   }
 }
-
-
-

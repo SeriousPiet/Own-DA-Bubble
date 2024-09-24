@@ -47,6 +47,40 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 
 @import "./fonts.scss";
 
+// quill editor
+
+.ql-editor {
+  font-family: "Nunito";
+  font-size: 1rem;
+  border: none;
+  padding: 0.25;
+}
+
+.highlight-user {
+  padding: 0.05rem;
+  background-color: $primary;
+  color: white;
+  border-radius: 0.3rem;
+}
+
+.highlight-channel {
+  padding: 0.05rem;
+  background-color: $disabled;
+  color: white;
+  border-radius: 0.3rem;
+}
+
+.highlight-can-clicked {
+  cursor: pointer;
+}
+
+.highlight-item:hover {
+  background-color: $hover-grey;
+  color: black;
+}
+
+// ---------------------------------- GLOBAL STYLES ----------------------------------
+
 * {
   box-sizing: border-box;
 }
@@ -86,11 +120,11 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 html {
   font-size: 16px;
 
-  @media (width <= 768px) {
+  @media (width <=768px) {
     font-size: 14px;
   }
 
-  @media (width <= 375px) {
+  @media (width <=375px) {
     font-size: 12px;
   }
 }
@@ -164,7 +198,7 @@ body {
     }
   }
 
-  @media (width <= 425px) {
+  @media (width <=425px) {
     overflow-y: auto;
   }
 

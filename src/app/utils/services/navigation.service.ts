@@ -83,6 +83,21 @@ export class NavigationService {
       if (chat) {
         this._chatViewObject = chat;
         this._chatViewPath = chat.chatMessagesPath;
+      } else {
+        const chatID = await this.channelService.addChatWithUserOnFirestore(object.id)
+        if(chatID) {
+          const chatListChangeSubscription = this.channelService.chatListChange$.subscribe( () => {
+            const chat = this.channelService.chats.find((chat) => chat.id === chatID);
+            if(chat) {
+              this._chatViewObject = chat;
+              this._chatViewPath = chat.chatMessagesPath;
+              setTimeout(() => {
+                chatListChangeSubscription.unsubscribe();                
+              }, 100);
+            }
+          }
+        )
+        }
       }
     }
     this.clearThread();

@@ -1,16 +1,22 @@
 import { Timestamp } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
 
 export interface IReactions {
   type: string;
   userIDs: string[];
 }
 
-export type StoredAttachments = {
+export type StoredAttachment = {
   name: string;
+  type: 'image' | 'pdf';
   url: string;
+  path: string;
 };
 
 export class Message {
+  private changeMessage = new BehaviorSubject<Message>(this);
+  public changeMessage$ = this.changeMessage.asObservable();
+
   readonly id: string;
   readonly collectionPath: string;
   readonly creatorID: string;
@@ -57,8 +63,8 @@ export class Message {
     return this.messagePath + '/answers/';
   }
 
-  private _attachments: StoredAttachments[];
-  get attachments(): StoredAttachments[] {
+  private _attachments: StoredAttachment[];
+  get attachments(): StoredAttachment[] {
     return this._attachments;
   }
 
@@ -103,7 +109,7 @@ export class Message {
     }
   }
 
-  parseAttachments(data: any): StoredAttachments[] {
+  parseAttachments(data: any): StoredAttachment[] {
     if (data !== undefined && data !== '') {
       return JSON.parse(data);
     }
@@ -118,6 +124,7 @@ export class Message {
       this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
     if (data.edited !== undefined) this._edited = data.edited;
     if (data.editedAt) this._editedAt = (data.editedAt as Timestamp).toDate();
-    if (data.attachments) this._attachments = data.attachments;
+    if (data.attachments) this._attachments = this.parseAttachments(data.attachments);
+    this.changeMessage.next(this);
   }
 }

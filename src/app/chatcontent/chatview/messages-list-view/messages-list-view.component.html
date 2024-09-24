@@ -5,6 +5,8 @@
   @for (message of messages; track message) { @if(date.getDate() ==
   message.createdAt.getDate()){
   <app-message
+    [messageEditorOpen]="messageEditorOpen"
+    (messageEditorOpenChange)="messageEditorOpen = $event"
     [ngClass]="{ 'chat-view': true }"
     [id]="message.id"
     [messages]="messages"

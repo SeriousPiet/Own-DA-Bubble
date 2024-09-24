@@ -5,39 +5,72 @@
     'message-ctn': true,
     'message-from-user': messagefromUser,
     'editor-modus-bg-color': messageEditorModus,
-    'message-from-same-user': messageData.previousMessageFromSameUser
+    'message-from-same-user': _messageData.previousMessageFromSameUser
   }"
 >
   <div class="message-avatar-ctn">
     <div
+      (click)="showUserPopover(_messageData.creatorID)"
       appAvatar
       context="chat-message"
       [user]="getMessageCreatorObject()!"
       class="message-creator-avatar"
     ></div>
-    <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
+    <span>{{ getFormatedMessageTime(_messageData.createdAt) }}</span>
   </div>
   @if (!messageEditorModus) {
   <section>
     <div [ngClass]="{ 'message-header': true }">
       <button
-        (click)="setSelectedUserObject(messageData.creatorID)"
-        [attr.popovertarget]="returnPopoverTarget(messageData.creatorID)"
+        (click)="showUserPopover(_messageData.creatorID)"
         class="message-creator-name"
       >
-        {{ userService.getUserByID(messageData.creatorID)?.name }}
+        {{ userService.getUserByID(_messageData.creatorID)?.name }}
       </button>
-      <span>{{ getFormatedMessageTime(messageData.createdAt) }}</span>
+      <span>{{ getFormatedMessageTime(_messageData.createdAt) }}</span>
     </div>
-    <p class="message-text">{{ messageData.content }}</p>
-    @if(hasReaction){
+
+    <div #messagediv class="message-text"></div>
+    @if(_messageData.attachments.length > 0){
+    <div class="message-attachments">
+      @for(attachment of _messageData.attachments; track $index){
+      <div class="attachment">
+        <div class="action-div">
+          <div class="pdf-actions">
+            <img
+              (click)="downloadPDF(attachment)"
+              src="./assets/icons/chat/general/download.svg"
+              alt=""
+            />
+            @if(_messageData.creatorID == userService.currentUserID) {
+            <img
+              (click)="deleteAttachment(attachment)"
+              src="./assets/icons/chat/general/trash.svg"
+              alt=""
+            />
+            }
+          </div>
+        </div>
+        @if(attachment.type == 'image'){
+        <img class="type-image" src="{{ attachment.url }}" alt="" />
+        } @else if(attachment.type == 'pdf'){
+        <img
+          class="type-pdf"
+          src="./assets/icons/chat/write-message/pdf.svg"
+          alt=""
+        />
+        <span>{{ attachment.name }}</span>
+        }
+      </div>
+      }
+    </div>
+    } @if(_messageData.emojies.length > 0){
     <div class="message-reactions">
-      @for (reaction of messageData.emojies; track $index) { @if(reaction.length
-      != 0){
+      @for (reaction of _messageData.emojies; track $index) {
+      @if(reaction.userIDs.length != 0){
       <button
         (click)="
-          messageService.toggleReactionToMessage(messageData, reaction.type);
-          checkForMessageReactions()
+          messageService.toggleReactionToMessage(_messageData, reaction.type)
         "
       >
         <img src="./assets/icons/chat/emoji/{{ reaction.type }}.svg" alt="" />
@@ -51,43 +84,43 @@
     </div>
     }
     <div class="message-info">
-      @if(messageData.answerCount > 0 && messageData.answerable){
+      @if(_messageData.answerCount > 0 && _messageData.answerable){
       <div id="message-answer-info">
-        <a>
-          <span>{{ messageData.answerCount }}</span>
+        <a (click)="setThread(_messageData)">
+          <span>{{ _messageData.answerCount }}</span>
           <span>Antworten</span>
         </a>
         <span>letzte Antwort: 14:56</span>
       </div>
-      } @if(updatedMessage.edited){
+      } @if(_messageData.edited){
       <span>(Bearbeitet)</span>
       }
     </div>
   </section>
   }@else {
   <div (mouseenter)="isHovered = false" class="message-editor">
-    <textarea [(ngModel)]="updatedMessage.content"></textarea>
+    <app-message-editor
+      #messageeditor
+      (enterPressed)="updateMessage()"
+      (escapePressed)="closeMessageEditor()"
+      [messageAsHTML]="_messageData.content"
+    ></app-message-editor>
     <div class="input-message-toolbar">
-      <div id="emoji-picker-icon" class="button-ctn">
+      <div
+        (click)="messageEditor.toogleEmojiePicker()"
+        id="emoji-picker-icon"
+        class="button-ctn"
+      >
         <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+" />
       </div>
       <div class="message-editor-button">
-        <button
-          class="abort-btn"
-          (click)="discardChanges(messageData, updatedMessage)"
-        >
+        <button class="abort-btn" (click)="closeMessageEditor()">
           Abbrechen
         </button>
-        <button
-          class="save-btn"
-          (click)="editMessage(messageData, updatedMessage)"
-        >
-          Speichern
-        </button>
+        <button class="save-btn" (click)="updateMessage()">Speichern</button>
       </div>
     </div>
   </div>
-
   }
 
   <div
@@ -100,8 +133,7 @@
     <section>
       <div
         (click)="
-          messageService.toggleReactionToMessage(messageData, 'check-green');
-          checkForMessageReactions()
+          messageService.toggleReactionToMessage(_messageData, 'check-green')
         "
         class="button-ctn"
       >
@@ -109,24 +141,23 @@
       </div>
       <div
         (click)="
-          messageService.toggleReactionToMessage(messageData, 'celebration');
-          checkForMessageReactions()
+          messageService.toggleReactionToMessage(_messageData, 'celebration')
         "
         class="button-ctn"
       >
         <img src="./assets/icons/chat/emoji/celebration.svg" alt="" />
       </div>
-      <div class="button-ctn">
+      <div class="button-ctn" id="add-reaction-icon">
         <img
-          id="add-reaction-icon"
           src="./assets/icons/chat/message-hover-menu/add-reaction.svg"
           alt=""
         />
       </div>
+      @if(_messageData.answerable) {
       <div
+        (click)="setThread(_messageData)"
         class="button-ctn"
         id="comment-message-btn"
-        (click)="setThread(messageData); triggerToggleThreadView()"
       >
         <img
           id="comment-icon"
@@ -134,21 +165,20 @@
           alt=""
         />
       </div>
+      } @if(!messageEditorOpen) {
       <div
-        (click)="toggleEditMessagePopup()"
-        id="edit-message-icon"
+        (click)="toggleMessageEditor()"
         class="button-ctn"
         id="edit-message-icon"
       >
-        <img src="./assets/icons/chat/message-hover-menu/more.svg" alt="" />
+        <img src="./assets/icons/wsm/ws-write.svg" alt="" />
       </div>
+      }
     </section>
-    <div
-      (click)="toggleMessageEditor()"
-      class="edit-message-ctn"
-      [ngClass]="{ 'toggle-edit-message-popup': showEditMessagePopup }"
-    >
-      <span>Nachricht Bearbeiten</span>
-    </div>
+    <!-- removed -->
+    <!-- <div (click)="toggleMessageEditor()" class="edit-message-ctn"
+            [ngClass]="{'toggle-edit-message-popup':showEditMessagePopup}">
+            <span>Nachricht Bearbeiten</span>
+        </div> -->
   </div>
 </main>

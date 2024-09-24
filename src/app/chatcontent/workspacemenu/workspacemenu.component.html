@@ -57,15 +57,13 @@
             [user]="userservice.currentUser"
             context="wsm-list"
           ></div>
-          <span style="width: fit-content"
-            >{{ userservice.currentUser?.name }} <br />(Du)
-          </span>
+          <span>{{ userservice.currentUser?.name }} <br />(Du) </span>
         </li>
         @for(user of userservice.users; track user) { @if(user.id !==
         userservice.currentUserID) {
         <li class="dm-list-item" hoverElement (click)="setChat(user)">
           <div class="avatar" appAvatar [user]="user" context="wsm-list"></div>
-          <span style="width: fit-content">{{ user.name }} </span>
+          <span>{{ user.name }} </span>
         </li>
         } }
       </ul>

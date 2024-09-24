@@ -18,6 +18,7 @@ import { UsersService } from './user.service';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { User } from '../../shared/models/user.class';
+import { BehaviorSubject } from 'rxjs';
 
 /**
  * @class ChannelService
@@ -36,7 +37,10 @@ export class ChannelService implements OnDestroy {
 
   private subscribeUserListChange: any;
 
-  private chats: Chat[] = [];
+  private chatListChange = new BehaviorSubject<Chat[]>([]);
+  public chatListChange$ = this.chatListChange.asObservable();
+
+  public chats: Chat[] = [];
   private unsubChats: any = null;
 
   /**
@@ -110,17 +114,18 @@ export class ChannelService implements OnDestroy {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added')
             this.chats.push(
-              new Chat(change.doc.data()['memberIDs'], change.doc.id)
+              new Chat(change.doc.data(), change.doc.id)
             );
           if (change.type === 'modified')
             this.chats.push(
-              new Chat(change.doc.data()['memberIDs'], change.doc.id)
+              new Chat(change.doc.data(), change.doc.id)
             );
           if (change.type === 'removed')
             this.chats = this.chats.filter(
               (chat) => chat.id !== change.doc.data()['id']
             );
         });
+        this.chatListChange.next(this.chats);
       }
     );
   }
@@ -138,23 +143,22 @@ export class ChannelService implements OnDestroy {
     return undefined;
   }
 
-
-  async getChatWithUserByID(userID: string, createChat: boolean = true): Promise<Chat | undefined> {
+  async getChatWithUserByID(selectedUserID: string, createChat: boolean = true): Promise<Chat | undefined> {
     if (this.userservice.currentUser) {
-      let chat: Chat | undefined = undefined;
-      if (this.userservice.currentUserID === userID)
-        chat = this.chats.find(
-          (chat) => chat.memberIDs[0] === userID && chat.memberIDs[1] === userID
+      let selectedChat: Chat | undefined = undefined;
+      if (this.userservice.currentUserID === selectedUserID) 
+        selectedChat = this.chats.find(
+          (selectedChat) => selectedChat.memberIDs[0] === selectedUserID && selectedChat.memberIDs[1] === selectedUserID
         );
-      else chat = this.chats.find((chat) => chat.memberIDs.includes(userID));
-      if (chat) return chat;
-      if (createChat) return await this.addChatWithUserOnFirestore(userID);
+      else selectedChat = this.chats.find((selectedChat) => selectedChat.memberIDs.includes(selectedUserID));
+      console.log(selectedChat)
+      if (selectedChat) return selectedChat;
+      // if (createChat) return await this.addChatWithUserOnFirestore(selectedUserID);
     }
-    return undefined;
+    return;
   }
 
-
-  private async addChatWithUserOnFirestore(userID: string): Promise<Chat | undefined> {
+  async addChatWithUserOnFirestore(userID: string): Promise<string | undefined> {
     try {
       const chatRef = collection(this.firestore, '/chats');
       const chatObj = {
@@ -175,7 +179,7 @@ export class ChannelService implements OnDestroy {
             chat.id,
           ],
         });
-      return new Chat(chatObj.memberIDs, chat.id);
+      return chat.id;
     } catch (error) {
       console.error(
         'userservice/chat: Error adding chat(' + (error as Error).message + ')'

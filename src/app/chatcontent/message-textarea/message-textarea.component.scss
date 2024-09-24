@@ -33,17 +33,19 @@
 .attachments {
   align-self: stretch;
   height: fit-content;
+  min-height: 3rem;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #adb0d9 #eceefe;
 
   .attachment {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -52,6 +54,7 @@
     border-radius: 0.625rem;
     background-color: #eceefe;
     height: fit-content;
+    transition: $transition-standard;
 
     &:hover {
       background-color: #d9dffd;
@@ -66,17 +69,40 @@
     > span {
       font-size: 0.875rem;
       font-weight: 600;
-      color: #adb0d9;
+      color: black;
       max-width: 30ch;
     }
 
-    .remove-attachment {
-      cursor: pointer;
-
-      > img {
-        width: 1rem;
-        height: 1rem;
+    &:hover {
+      .remove-attachment {
+        display: flex;
       }
+    }
+
+    .remove-attachment {
+      display: none;
+      position: absolute;
+      cursor: pointer;
+      top: -0.5rem;
+      right: -0.5rem;
+      width: 1rem;
+      height: 1rem;
+      border: 1px solid black;
+      border-radius: 50%;
+      transition: $transition-standard;
+
+      &:hover {
+        background-color: $error;
+      }
+    }
+  }
+
+  .remove-attachment {
+    cursor: pointer;
+
+    > img {
+      width: 1rem;
+      height: 1rem;
     }
   }
 }
@@ -87,28 +113,13 @@
 
 .input-message {
   position: relative;
-  min-height: 9rem;
-  max-height: 20rem;
   width: 100%;
-  border: 1px solid #adb0d9;
-  border-radius: 1.25rem;
-  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: stretch;
   gap: 0.5rem;
   transition: box-shadow 0.3s ease;
-
-  > textarea {
-    resize: none;
-    width: 100%;
-    min-height: 4rem;
-    border: none;
-    outline: none;
-    font-family: "Nunito";
-    font-size: 1rem;
-  }
 
   .input-message-toolbar {
     width: 100%;
@@ -133,7 +144,6 @@
 
       > span {
         font-size: 24px;
-
         font-weight: 100;
       }
     }
@@ -151,14 +161,6 @@
 
 .button-ctn {
   @include iconBox;
-
-  // * {
-  //     cursor: pointer;
-  // }
-
-  // &:hover {
-  //     background-color: #ECEEFE;
-  // }
 }
 
 #add-attachment-icon:hover {

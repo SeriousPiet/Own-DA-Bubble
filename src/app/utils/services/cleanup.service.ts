@@ -20,10 +20,12 @@ export class CleanupService implements OnDestroy {
   private unsubUserList: any = null;
 
   constructor() {
-    this.markAllGuestsToDelete();
     setTimeout(() => {
-      this.deleteAllGuestData();      
+      this.markAllGuestsToDelete();
     }, 5000);
+    setTimeout(() => {
+      this.deleteAllGuestData();
+    }, 10000);
   }
 
 
