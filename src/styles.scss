@@ -41,6 +41,7 @@ $vert-spacer: #adb0d9;
 
 // transitions
 $transition-standard: all 0.125s ease-in-out;
+$transition-grid: all 0.25s ease-in-out;
 $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
   0.25s overlay allow-discrete, 0.25s transform ease-out;
 
