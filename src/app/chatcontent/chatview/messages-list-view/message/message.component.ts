@@ -14,6 +14,7 @@ import {
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import {
+  IReactions,
   Message,
   StoredAttachment,
 } from '../../../../shared/models/message.class';
@@ -27,17 +28,17 @@ import { MessageEditorComponent } from '../../../message-editor/message-editor.c
 import { ChannelService } from '../../../../utils/services/channel.service';
 import { Channel } from '../../../../shared/models/channel.class';
 import { EmojipickerService } from '../../../../utils/services/emojipicker.service';
+import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [CommonModule, FormsModule, AvatarDirective, MessageEditorComponent],
+  imports: [CommonModule, FormsModule, AvatarDirective, MessageEditorComponent, EmojiModule],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
 export class MessageComponent
-  implements OnInit, AfterViewInit, AfterViewChecked
-{
+  implements OnInit, AfterViewInit, AfterViewChecked {
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
   @ViewChild('messageeditor', { static: false })
   messageEditor!: MessageEditorComponent;
@@ -76,7 +77,7 @@ export class MessageComponent
     this.getMessageCreatorObject();
   }
 
-  constructor(private _cdr: ChangeDetectorRef) {}
+  constructor(private _cdr: ChangeDetectorRef) { }
 
   ngAfterViewChecked(): void {
     if (this.messageDiv && this.needContentUpdate) {
@@ -91,6 +92,22 @@ export class MessageComponent
       this._cdr.detectChanges();
     });
   }
+
+
+  isEmptyMessage(message: string) {
+    return message === '<p><br></p>' || message === '<p></p>';
+  }
+
+
+  hasMessagetextContent() {
+    return !this.isEmptyMessage(this._messageData.content);
+  }
+
+
+  isReactionSelf(reaction: IReactions) {
+    return reaction.userIDs.includes(this.userService.currentUserID);
+  }
+
 
   fillMessageContentHTML() {
     if (this.messageDiv) {
@@ -162,10 +179,7 @@ export class MessageComponent
 
   updateMessage() {
     const editorContent = this.messageEditor.getMessageAsHTML();
-    if (
-      editorContent !== '<br></br>' &&
-      editorContent !== this._messageData.content
-    ) {
+    if (!this.isEmptyMessage(editorContent) && editorContent !== this._messageData.content) {
       this.messageService.updateMessage(this._messageData, {
         content: editorContent,
         edited: true,

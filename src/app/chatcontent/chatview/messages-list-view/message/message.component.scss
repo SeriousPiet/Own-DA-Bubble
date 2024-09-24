@@ -6,6 +6,24 @@ $p-left: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
 $p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
 $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
 
+.emoji-div {
+  font-family: sans-serif, "Nunito";
+  font-size: 1.2rem;
+}
+
+.self-reaction {
+  border-radius: 1000px;
+  background-color: $primary;
+  border: 1px solid $mail;
+}
+
+.other-reaction {
+  border-radius: 1000px;
+  background-color: white;
+  border: $default-border;
+}
+
+
 .message-attachments {
   @include nunito(1, 400, black);
   display: flex;
@@ -58,8 +76,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
           opacity: 1;
 
           &:hover {
-            filter: invert(29%) sepia(96%) saturate(7480%) hue-rotate(180deg)
-              brightness(100%) contrast(102%);
+            filter: invert(29%) sepia(96%) saturate(7480%) hue-rotate(180deg) brightness(100%) contrast(102%);
           }
         }
       }
@@ -79,12 +96,12 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
       cursor: pointer;
     }
 
-    > span {
+    >span {
       display: none;
     }
   }
 
-  > section {
+  >section {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -94,7 +111,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
       @include flex(normal, center);
       gap: 1.25rem;
 
-      > .message-creator-name {
+      >.message-creator-name {
         font-size: $creator-fs;
         font-weight: 700;
         text-wrap: balance;
@@ -105,14 +122,14 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
         }
       }
 
-      > span {
+      >span {
         font-size: 0.875rem;
         font-weight: 400;
         color: #686868;
       }
     }
 
-    > .message-text {
+    >.message-text {
       margin: 0;
       padding: 15px;
       border-radius: 0 1.875rem 1.875rem 1.875rem;
@@ -127,22 +144,20 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
       gap: 10px;
       min-height: 2.25rem;
 
-      > button {
+      >button {
         padding: 5px 10px;
         @include flex(center, center);
         gap: 10px;
-        border: $default-border;
-        border-radius: 20px;
       }
 
-      > img {
+      >img {
         &:hover {
           content: url(../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
         }
       }
     }
 
-    > .message-info {
+    >.message-info {
       @include flex(flex-start, center);
       width: 100%;
       gap: 1.25rem;
@@ -151,7 +166,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
         @include flex(normal, center);
         gap: 1.25rem;
 
-        > a {
+        >a {
           display: flex;
           gap: 0.375rem;
           font-size: 1.125rem;
@@ -165,13 +180,13 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
           }
         }
 
-        > span {
+        >span {
           font-size: 0.875rem;
           font-weight: 400;
         }
       }
 
-      > span {
+      >span {
         font-size: 0.875rem;
         font-weight: 400;
       }
@@ -183,32 +198,24 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
     cursor: pointer;
     background-color: $background;
 
-    > section {
-      > p {
+    >section {
+      >p {
         background-color: #ffffff;
-      }
-
-      .message-reactions {
-        > button {
-          background-color: #ffffff;
-
-          &:hover {
-            border-color: $accent;
-          }
-        }
       }
     }
   }
 
   &:hover {
-    > section {
-      .message-reactions {
-        > button {
-          background-color: #ffffff;
-
-          &:hover {
-            border-color: $accent;
-          }
+    >section {
+      .self-reaction {
+        &:hover {
+          border: 1px solid $error;
+        }
+      }
+      .other-reaction {
+        background-color: #ffffff;
+        &:hover {
+          border-color: $accent;
         }
       }
     }
@@ -220,13 +227,13 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
   // insert clamp() for padding-right here
   padding: 0.625rem $p-left 0.625rem $p-right;
 
-  > section {
+  >section {
     align-items: flex-end;
 
     .message-header {
       flex-direction: row-reverse;
 
-      > span {
+      >span {
         text-align: end;
         text-wrap: nowrap;
       }
@@ -236,7 +243,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
       }
     }
 
-    > .message-text {
+    >.message-text {
       border-radius: 1.875rem 0 1.875rem 1.875rem;
       background-color: $primary;
       color: white;
@@ -257,7 +264,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
     left: 4.8125rem;
     right: unset;
 
-    > section {
+    >section {
       #edit-message-icon {
         display: flex;
       }
@@ -289,11 +296,11 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
   right: 5.8125rem;
   background-color: white;
 
-  > section {
+  >section {
     @include flex(normal, center);
     gap: 0.3125rem;
 
-    > div {
+    >div {
       @include flex(center, center);
       padding: 8px;
       border-radius: 20px;
@@ -333,15 +340,15 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
   }
 }
 
-#add-reaction-icon:hover > img {
+#add-reaction-icon:hover>img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg");
 }
 
-#comment-message-btn:hover > img {
+#comment-message-btn:hover>img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/comment-hover.svg");
 }
 
-#edit-message-icon:hover > img {
+#edit-message-icon:hover>img {
   content: url("../../../../../assets/icons/wsm/ws-write-hover.svg");
 }
 
@@ -357,7 +364,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
   opacity: 0;
   display: none;
 
-  > span {
+  >span {
     padding: 0.625rem 1.25rem;
     border-radius: 0 1.875rem 1.875rem 1.875rem;
     min-width: 220px;
@@ -387,7 +394,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
   flex-direction: column;
   justify-content: space-between;
 
-  > textarea {
+  >textarea {
     resize: none;
     width: 100%;
     border: none;
@@ -396,13 +403,13 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
     font-size: 1rem;
   }
 
-  > div {
+  >div {
     @include flex(space-between, center);
   }
 }
 
 #emoji-picker-icon:hover {
-  > img {
+  >img {
     content: url("../../../../../assets/icons/chat/write-message/emoji-picker-hover.svg");
   }
 }
@@ -437,7 +444,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
       display: none;
     }
 
-    > section {
+    >section {
       .message-header {
         display: none;
       }
