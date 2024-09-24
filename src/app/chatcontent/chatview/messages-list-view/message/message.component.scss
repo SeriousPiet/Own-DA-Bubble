@@ -4,6 +4,7 @@
 // 2.875rem at 1920px to 1.25rem at 1280px
 $p-left: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
 $p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
+$creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
 
 .message-attachments {
   @include nunito(1, 400, black);
@@ -94,7 +95,7 @@ $p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
       gap: 1.25rem;
 
       > .message-creator-name {
-        font-size: 1.125rem;
+        font-size: $creator-fs;
         font-weight: 700;
         text-wrap: balance;
         text-align: left;

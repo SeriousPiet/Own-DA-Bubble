@@ -229,6 +229,10 @@ section {
       background-image: url("../../../assets/icons/wsm/add-channel-2.svg");
       @include background-properties;
     }
+
+    span {
+      text-wrap: nowrap;
+    }
   }
 
   button:hover {

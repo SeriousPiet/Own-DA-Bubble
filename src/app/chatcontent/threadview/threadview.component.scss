@@ -86,11 +86,12 @@
 }
 
 .threadview-content {
-  height: 44.5rem;
-  width: 100%;
+  position: relative;
   @include flex(normal, center);
   flex-direction: column;
-  position: relative;
+  gap: 1.5rem;
+  height: 44.5rem;
+  width: 100%;
   overflow-y: scroll;
 
   .thread-messages-content {
