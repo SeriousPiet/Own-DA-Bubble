@@ -2,199 +2,198 @@
 @import "../../../mixins.scss";
 @import "../../../fonts.scss";
 
-
 :host {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    background-color: #FFFFFF;
-    border-radius: 0 0 1.875rem 1.875rem;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem;
+  background-color: #ffffff;
+  border-radius: 0 0 1.875rem 1.875rem;
 }
 
 .errorspan {
-    @include nunito(0.875, 400, $error);
-    margin-left: auto;
-    margin-right: 1rem;
+  @include nunito(0.875, 400, $error);
+  margin-left: auto;
+  margin-right: 1rem;
 }
 
 .addattachment {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    >input {
-        display: none;
-    }
+  > input {
+    display: none;
+  }
 }
 
 .attachments {
-    align-self: stretch;
-    height: fit-content;
+  align-self: stretch;
+  height: fit-content;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #adb0d9 #eceefe;
+
+  .attachment {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: #ADB0D9 #ECEEFE;
+    padding: 0.5rem;
+    border-radius: 0.625rem;
+    background-color: #eceefe;
+    height: fit-content;
 
-    .attachment {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        border-radius: 0.625rem;
-        background-color: #ECEEFE;
-        height: fit-content;
-
-        &:hover {
-            background-color: #D9DFFD;
-        }
-
-        >img {
-            width: 1.5rem;
-            height: 1.5rem;
-            cursor: pointer;
-        }
-
-        >span {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #ADB0D9;
-            max-width: 30ch;
-        }
-
-        .remove-attachment {
-            cursor: pointer;
-
-            >img {
-                width: 1rem;
-                height: 1rem;
-            }
-        }
+    &:hover {
+      background-color: #d9dffd;
     }
+
+    > img {
+      width: 1.5rem;
+      height: 1.5rem;
+      cursor: pointer;
+    }
+
+    > span {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #adb0d9;
+      max-width: 30ch;
+    }
+
+    .remove-attachment {
+      cursor: pointer;
+
+      > img {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+  }
 }
 
 .drag-over {
-    box-shadow: inset 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
 }
 
 .input-message {
-    position: relative;
-    min-height: 9rem;
-    max-height: 20rem;
+  position: relative;
+  min-height: 9rem;
+  max-height: 20rem;
+  width: 100%;
+  border: 1px solid #adb0d9;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  transition: box-shadow 0.3s ease;
+
+  > textarea {
+    resize: none;
     width: 100%;
-    border: 1px solid #ADB0D9;
-    border-radius: 1.25rem;
-    padding: 1.25rem;
+    min-height: 4rem;
+    border: none;
+    outline: none;
+    font-family: "Nunito";
+    font-size: 1rem;
+  }
+
+  .input-message-toolbar {
+    width: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    transition: box-shadow 0.3s ease;
 
-    >textarea {
-        resize: none;
-        width: 100%;
-        min-height: 4rem;
-        border: none;
-        outline: none;
-        font-family: "Nunito";
-        font-size: 1rem;
-    }
+    .message-action-button {
+      display: flex;
+      align-items: center;
+      gap: 0.3125rem;
 
-    .input-message-toolbar {
-        width: 100%;
+      > img {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      > button {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+      }
 
-        .message-action-button {
-            display: flex;
-            align-items: center;
-            gap: .3125rem;
+      > span {
+        font-size: 24px;
 
-            >img {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-
-            >button {
-                display: flex;
-                align-items: center;
-            }
-
-            >span {
-                font-size: 24px;
-
-                font-weight: 100;
-            }
-        }
+        font-weight: 100;
+      }
     }
+  }
 }
 
 .button-disabled {
-    @include flex(center, center);
-    width: 2.5rem;
-    height: 2.5rem;
-    aspect-ratio: 1 / 1;
-    flex-shrink: 0;
-    border-radius: 50%;
-  }
+  @include flex(center, center);
+  width: 2.5rem;
+  height: 2.5rem;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
 
 .button-ctn {
-    @include iconBox;
+  @include iconBox;
 
-    // * {
-    //     cursor: pointer;
-    // }
+  // * {
+  //     cursor: pointer;
+  // }
 
-    // &:hover {
-    //     background-color: #ECEEFE;
-    // }
+  // &:hover {
+  //     background-color: #ECEEFE;
+  // }
 }
 
 #add-attachment-icon:hover {
-    >img {
-        content: url('../../../assets/icons/chat/write-message/add-attachment-hover.svg');
-    }
+  > img {
+    content: url("../../../assets/icons/chat/write-message/add-attachment-hover.svg");
+  }
 }
 
 #emoji-picker-icon:hover {
-    >img {
-        content: url('../../../assets/icons/chat/write-message/emoji-picker-hover.svg');
-    }
+  > img {
+    content: url("../../../assets/icons/chat/write-message/emoji-picker-hover.svg");
+  }
 }
 
 #tag-person-icon:hover {
-    >img {
-        content: url('../../../assets/icons/chat/write-message/tag-person-hover.svg');
-    }
+  > img {
+    content: url("../../../assets/icons/chat/write-message/tag-person-hover.svg");
+  }
 }
 
 #send-message-icon {
-    cursor: pointer;
+  cursor: pointer;
 
-    >img {
-        width: 1.875rem;
-        height: 1.875rem;
-    }
+  > img {
+    width: 1.875rem;
+    height: 1.875rem;
+  }
 
-    &:hover {
-        >img {
-            content: url('../../../assets/icons/chat/write-message/send-hover.svg');
-        }
+  &:hover {
+    > img {
+      content: url("../../../assets/icons/chat/write-message/send-hover.svg");
     }
+  }
 }
 
 .d-none {
-    display: none !important;
+  display: none !important;
 }

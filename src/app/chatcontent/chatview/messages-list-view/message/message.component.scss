@@ -1,20 +1,24 @@
 @import "../../../../../styles.scss";
 @import "../../../../../mixins.scss";
 
+// 2.875rem at 1920px to 1.25rem at 1280px
+$p-left: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
+$p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
+
 .message-ctn {
   display: flex;
-  padding: 0.625rem 0rem 0.625rem 2.8125rem;
+  padding: 0.625rem $p-right 0.625rem $p-left;
   gap: 1.875rem;
   position: relative;
   transition: $transition-popover;
 
   .message-avatar-ctn {
-    >span {
+    > span {
       display: none;
     }
   }
 
-  >section {
+  > section {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -24,23 +28,25 @@
       @include flex(normal, center);
       gap: 1.25rem;
 
-      >.message-creator-name {
+      > .message-creator-name {
         font-size: 1.125rem;
         font-weight: 700;
+        text-wrap: balance;
+        text-align: left;
 
         &:hover {
           color: $accent;
         }
       }
 
-      >span {
+      > span {
         font-size: 0.875rem;
         font-weight: 400;
         color: #686868;
       }
     }
 
-    >.message-text {
+    > .message-text {
       margin: 0;
       padding: 15px;
       border-radius: 0 1.875rem 1.875rem 1.875rem;
@@ -55,7 +61,7 @@
       gap: 10px;
       min-height: 2.25rem;
 
-      >button {
+      > button {
         padding: 5px 10px;
         @include flex(center, center);
         gap: 10px;
@@ -63,14 +69,14 @@
         border-radius: 20px;
       }
 
-      >img {
+      > img {
         &:hover {
           content: url(../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
         }
       }
     }
 
-    >.message-info {
+    > .message-info {
       @include flex(flex-start, center);
       width: 100%;
       gap: 1.25rem;
@@ -79,7 +85,7 @@
         @include flex(normal, center);
         gap: 1.25rem;
 
-        >a {
+        > a {
           display: flex;
           gap: 0.375rem;
           font-size: 1.125rem;
@@ -93,13 +99,13 @@
           }
         }
 
-        >span {
+        > span {
           font-size: 0.875rem;
           font-weight: 400;
         }
       }
 
-      >span {
+      > span {
         font-size: 0.875rem;
         font-weight: 400;
       }
@@ -111,13 +117,13 @@
     cursor: pointer;
     background-color: $background;
 
-    >section {
-      >p {
+    > section {
+      > p {
         background-color: #ffffff;
       }
 
       .message-reactions {
-        >button {
+        > button {
           background-color: #ffffff;
 
           &:hover {
@@ -129,9 +135,9 @@
   }
 
   &:hover {
-    >section {
+    > section {
       .message-reactions {
-        >button {
+        > button {
           background-color: #ffffff;
 
           &:hover {
@@ -143,19 +149,20 @@
   }
 }
 
-
 .message-from-user {
   flex-direction: row-reverse;
-  padding: 0.625rem 2.8125rem 0.625rem 0;
+  // insert clamp() for padding-right here
+  padding: 0.625rem $p-left 0.625rem $p-right;
 
-  >section {
+  > section {
     align-items: flex-end;
 
     .message-header {
       flex-direction: row-reverse;
 
-      >span {
+      > span {
         text-align: end;
+        text-wrap: nowrap;
       }
 
       .message-creator-name {
@@ -163,7 +170,7 @@
       }
     }
 
-    >.message-text {
+    > .message-text {
       border-radius: 1.875rem 0 1.875rem 1.875rem;
       background-color: $primary;
       color: white;
@@ -184,7 +191,7 @@
     left: 4.8125rem;
     right: unset;
 
-    >section {
+    > section {
       #edit-message-icon {
         display: flex;
       }
@@ -216,11 +223,11 @@
   right: 5.8125rem;
   background-color: white;
 
-  >section {
+  > section {
     @include flex(normal, center);
     gap: 0.3125rem;
 
-    >div {
+    > div {
       @include flex(center, center);
       padding: 8px;
       border-radius: 20px;
@@ -284,7 +291,7 @@
   opacity: 0;
   display: none;
 
-  >span {
+  > span {
     padding: 0.625rem 1.25rem;
     border-radius: 0 1.875rem 1.875rem 1.875rem;
     min-width: 220px;
@@ -314,7 +321,7 @@
   flex-direction: column;
   justify-content: space-between;
 
-  >textarea {
+  > textarea {
     resize: none;
     width: 100%;
     border: none;
@@ -323,13 +330,13 @@
     font-size: 1rem;
   }
 
-  >div {
+  > div {
     @include flex(space-between, center);
   }
 }
 
 #emoji-picker-icon:hover {
-  >img {
+  > img {
     content: url("../../../../../assets/icons/chat/write-message/emoji-picker-hover.svg");
   }
 }
@@ -364,7 +371,7 @@
       display: none;
     }
 
-    >section {
+    > section {
       .message-header {
         display: none;
       }
@@ -373,7 +380,7 @@
 }
 
 :host:not(.chat-view) {
-    #message-answer-info{
-      display: none;
-    }
+  #message-answer-info {
+    display: none;
   }
+}
