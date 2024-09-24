@@ -1,9 +1,11 @@
 import {
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   inject,
   Input,
   OnInit,
+  Output,
 } from '@angular/core';
 import { MessageComponent } from './message/message.component';
 import { MessageDateComponent } from './message-date/message-date.component';
@@ -39,6 +41,13 @@ export class MessagesListViewComponent implements OnInit {
   public messagesDates: Date[] = [];
   public noMessagesAvailable = true;
   public messageEditorOpen = false;
+
+  @Output() openThreadView = new EventEmitter<void>();
+
+  onOpenThreadView() {
+    console.log('MessagesListViewComponent: --> openThreadView called');
+    this.openThreadView.emit();
+  }
 
   @Input() currentObject!: Channel | Chat;
 
