@@ -12,6 +12,7 @@ import { ChatviewComponent } from './chatview/chatview.component';
 import { ThreadviewComponent } from './threadview/threadview.component';
 import { CommonModule } from '@angular/common';
 import { NavigationService } from '../utils/services/navigation.service';
+import { EmojipickerComponent } from './emojipicker/emojipicker.component';
 
 @Component({
   selector: 'app-chatcontent',
@@ -23,6 +24,7 @@ import { NavigationService } from '../utils/services/navigation.service';
     ChatviewComponent,
     ThreadviewComponent,
     WorkspacemenuComponent,
+    EmojipickerComponent
   ],
   templateUrl: './chatcontent.component.html',
   styleUrls: ['./chatcontent.component.scss'], // Korrektur: styleUrls statt styleUrl

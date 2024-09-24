@@ -26,12 +26,6 @@
         </div>
     </div>
     }
-    @if(showEmojiPicker) {
-    <div class="emoji-mart">
-        <emoji-mart (emojiClick)="clickEmoji($event)" [autoFocus]="true" title="Wähle ein Emoji..."
-            emoji="point_up"></emoji-mart>
-    </div>
-    }
     <div #toolbar class="editor-toolbar" [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'"
         [id]="toolbarID">
         <span class="ql-formats">

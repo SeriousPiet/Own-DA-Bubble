@@ -43,12 +43,13 @@
             @for (reaction of _messageData.emojies; track $index) {
             @if(reaction.userIDs.length != 0){
             <button (click)="messageService.toggleReactionToMessage(_messageData, reaction.type)">
-                <img src="./assets/icons/chat/emoji/{{reaction.type}}.svg" alt="">
+                <!-- <img src="./assets/icons/chat/emoji/{{reaction.type}}.svg" alt=""> -->
+                <span [innerHTML]="reaction.type"></span>
                 <span>{{ reaction.userIDs.length }}</span>
             </button>
             }
             }
-            <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
+            <img (click)="addReaction()" src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
         </div>
         }
         <div class="message-info">
@@ -71,7 +72,7 @@
         <app-message-editor #messageeditor (enterPressed)="updateMessage()" (escapePressed)="closeMessageEditor()"
             [messageAsHTML]="_messageData.content"></app-message-editor>
         <div class="input-message-toolbar">
-            <div (click)="messageEditor.toogleEmojiePicker()" id="emoji-picker-icon" class="button-ctn">
+            <div (click)="messageEditor.openEmojiPicker()" id="emoji-picker-icon" class="button-ctn">
                 <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+">
             </div>
             <div class="message-editor-button">
@@ -93,7 +94,7 @@
             <div (click)="messageService.toggleReactionToMessage(_messageData, 'celebration')" class="button-ctn">
                 <img src="./assets/icons/chat/emoji/celebration.svg" alt="">
             </div>
-            <div class="button-ctn" id="add-reaction-icon">
+            <div (click)="addReaction()" class="button-ctn" id="add-reaction-icon">
                 <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="">
             </div>
             @if(_messageData.answerable) {

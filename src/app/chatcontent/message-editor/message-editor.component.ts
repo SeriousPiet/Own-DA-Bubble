@@ -10,8 +10,7 @@ import { UsersService } from '../../utils/services/user.service';
 import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
-import { PickerComponent } from '@ctrl/ngx-emoji-mart';
-import { Delta } from 'quill/core';
+import { EmojipickerService } from '../../utils/services/emojipicker.service';
 
 class LockedSpanBlot extends Inline {
   static override blotName = 'lockedSpan';
@@ -46,7 +45,7 @@ class LockedSpanBlot extends Inline {
 @Component({
   selector: 'app-message-editor',
   standalone: true,
-  imports: [QuillModule, CommonModule, AvatarDirective, FormsModule, PickerComponent],
+  imports: [QuillModule, CommonModule, AvatarDirective, FormsModule],
   templateUrl: './message-editor.component.html',
   styleUrl: './message-editor.component.scss'
 })
@@ -65,6 +64,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   public userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
+  private emojiService = inject(EmojipickerService);
 
   // Quill Editor variables and configuration
   public quill!: Quill;
@@ -114,36 +114,16 @@ export class MessageEditorComponent implements AfterViewInit {
   private lastItem: User | Channel | null = null;
   public currentPickerIndex = -1;
 
-  // Emoji Picker
-  public showEmojiPicker = false;
-
-  toogleEmojiePicker() {
-    if (this.showEmojiPicker) this.closeEmojiPicker();
-    else this.openEmojiPicker();
-  }
-
   openEmojiPicker() {
-    if (this.showPicker) this.closeListPicker();
-    this.showEmojiPicker = true;
-    this._cdr.detectChanges();
+    this.emojiService.showPicker(this.choosenEmoji.bind(this));
   }
 
-  clickEmoji(event: any) {
-    this.closeEmojiPicker();
+  choosenEmoji(emoji: string) {
     const position = this.getLastOrCurrentSelection();
-    const emoji = `${event.emoji.native}`;
     const emojiLength = emoji.length;
-    console.log('emoji clicked ' + emoji);
     this.quill.insertText(position ? position.index : 0, emoji);
     this.quill.setSelection(position ? position.index + emojiLength : emojiLength, Quill.sources.SILENT);
     this.quill.focus();
-  }
-
-  closeEmojiPicker() {
-    if (this.showEmojiPicker) {
-      this.showEmojiPicker = false;
-      this._cdr.detectChanges();
-    }
   }
 
   constructor(private _cdr: ChangeDetectorRef) { }
@@ -249,7 +229,6 @@ export class MessageEditorComponent implements AfterViewInit {
       this.showToolbar = false;
     }
     this.closeListPicker();
-    this.closeEmojiPicker();
   }
 
 
@@ -351,7 +330,6 @@ export class MessageEditorComponent implements AfterViewInit {
 
 
   openListPicker(pickerSign: string) {
-    if (this.showEmojiPicker) this.closeEmojiPicker();
     if (this.showPicker) this.closeListPicker();
     else this.showPicker = true;
     this.pickersign = pickerSign;

@@ -11,6 +11,7 @@ import { User } from '../../../../shared/models/user.class';
 import { MessageEditorComponent } from '../../../message-editor/message-editor.component';
 import { ChannelService } from '../../../../utils/services/channel.service';
 import { Channel } from '../../../../shared/models/channel.class';
+import { EmojipickerService } from '../../../../utils/services/emojipicker.service';
 
 @Component({
   selector: 'app-message',
@@ -28,6 +29,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   public navigationService = inject(NavigationService);
   public messageService = inject(MessageService);
   public channelService = inject(ChannelService);
+  public emojiService = inject(EmojipickerService);
 
   public _messageData!: Message;
   @Input() set messageData(newMessage: Message) {
@@ -152,6 +154,13 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
       this.messageService.updateMessage(this._messageData, { content: editorContent, edited: true, editedAt: serverTimestamp() });
     }
     this.closeMessageEditor();
+  }
+
+
+  addReaction() {
+    this.emojiService.showPicker((emoji: string) => {
+      this.messageService.toggleReactionToMessage(this._messageData, emoji);
+    });
   }
 
 
