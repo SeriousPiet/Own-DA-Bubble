@@ -1,9 +1,11 @@
 import {
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   inject,
   Input,
   OnInit,
+  Output,
 } from '@angular/core';
 import { MessageComponent } from './message/message.component';
 import { MessageDateComponent } from './message-date/message-date.component';
@@ -31,7 +33,6 @@ import { UsersService } from '../../../utils/services/user.service';
   styleUrl: './messages-list-view.component.scss',
 })
 export class MessagesListViewComponent implements OnInit {
-
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService);
@@ -40,6 +41,13 @@ export class MessagesListViewComponent implements OnInit {
   public messagesDates: Date[] = [];
   public noMessagesAvailable = true;
   public messageEditorOpen = false;
+
+  @Output() openThreadView = new EventEmitter<void>();
+
+  onOpenThreadView() {
+    console.log('MessagesListViewComponent: --> openThreadView called');
+    this.openThreadView.emit();
+  }
 
   @Input() currentObject!: Channel | Chat;
 
@@ -55,7 +63,7 @@ export class MessagesListViewComponent implements OnInit {
   constructor(
     private _cdr: ChangeDetectorRef,
     private searchService: SearchService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.messageScrollSubscription =
@@ -104,23 +112,33 @@ export class MessagesListViewComponent implements OnInit {
   private subscribeMessages(messagesPath: string | undefined) {
     if (this.unsubMessages) this.unsubMessages();
     if (messagesPath) {
-      this.unsubMessages = onSnapshot(collection(this.firestore, messagesPath), (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            let newMessage = new Message(change.doc.data(), messagesPath, change.doc.id);
-            this.messages.push(newMessage);
-            this.sortMessagesDate(newMessage.createdAt);
-          }
-          if (change.type === 'modified') {
-            const message = this.messages.find((message) => message.id === change.doc.id);
-            if (message) message.update(change.doc.data());
-          }
-          if (change.type === 'removed') {
-            this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
-          }
-        });
-        this._cdr.detectChanges();
-      }
+      this.unsubMessages = onSnapshot(
+        collection(this.firestore, messagesPath),
+        (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+              let newMessage = new Message(
+                change.doc.data(),
+                messagesPath,
+                change.doc.id
+              );
+              this.messages.push(newMessage);
+              this.sortMessagesDate(newMessage.createdAt);
+            }
+            if (change.type === 'modified') {
+              const message = this.messages.find(
+                (message) => message.id === change.doc.id
+              );
+              if (message) message.update(change.doc.data());
+            }
+            if (change.type === 'removed') {
+              this.messages = this.messages.filter(
+                (message) => message.id !== change.doc.data()['id']
+              );
+            }
+          });
+          this._cdr.detectChanges();
+        }
       );
     }
   }

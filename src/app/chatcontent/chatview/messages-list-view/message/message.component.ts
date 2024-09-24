@@ -1,7 +1,22 @@
-import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
-import { Message, StoredAttachment } from '../../../../shared/models/message.class';
+import {
+  Message,
+  StoredAttachment,
+} from '../../../../shared/models/message.class';
 import { MessageService } from '../../../../utils/services/message.service';
 import { UsersService } from '../../../../utils/services/user.service';
 import { CommonModule } from '@angular/common';
@@ -20,10 +35,12 @@ import { EmojipickerService } from '../../../../utils/services/emojipicker.servi
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
-export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked {
-
+export class MessageComponent
+  implements OnInit, AfterViewInit, AfterViewChecked
+{
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
-  @ViewChild('messageeditor', { static: false }) messageEditor!: MessageEditorComponent;
+  @ViewChild('messageeditor', { static: false })
+  messageEditor!: MessageEditorComponent;
 
   public userService = inject(UsersService);
   public navigationService = inject(NavigationService);
@@ -32,6 +49,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   public emojiService = inject(EmojipickerService);
 
   public _messageData!: Message;
+
   @Input() set messageData(newMessage: Message) {
     this._messageData = newMessage;
     this.fillMessageContentHTML();
@@ -43,6 +61,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   @Input() messages: Message[] = [];
 
   @Input() messageEditorOpen = false;
+
   @Output() messageEditorOpenChange = new EventEmitter<boolean>();
 
   messagefromUser = false;
@@ -52,15 +71,12 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   messageEditorModus = false;
   private needContentUpdate = false;
 
-
   ngOnInit(): void {
     this.sortMessages();
     this.getMessageCreatorObject();
   }
 
-
-  constructor(private _cdr: ChangeDetectorRef) { }
-
+  constructor(private _cdr: ChangeDetectorRef) {}
 
   ngAfterViewChecked(): void {
     if (this.messageDiv && this.needContentUpdate) {
@@ -69,7 +85,6 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     }
   }
 
-
   ngAfterViewInit(): void {
     this._messageData.changeMessage$.subscribe((message: Message) => {
       this.fillMessageContentHTML();
@@ -77,14 +92,12 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     });
   }
 
-
   fillMessageContentHTML() {
     if (this.messageDiv) {
       this.messageDiv.nativeElement.innerHTML = this._messageData.content;
       this.calculateMessageSpans();
     }
   }
-
 
   downloadPDF(attachment: StoredAttachment) {
     const link = document.createElement('a');
@@ -94,11 +107,9 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     link.click();
   }
 
-
   deleteAttachment(attachment: StoredAttachment) {
     this.messageService.deleteStoredAttachment(this._messageData, attachment);
   }
-
 
   calculateMessageSpans() {
     const spans = this.messageDiv.nativeElement.querySelectorAll('span');
@@ -115,7 +126,6 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     });
   }
 
-
   prepareChannelSpan(span: HTMLSpanElement) {
     const spanChannel = this.getChannelOnlyWhenNotCurrent(span.id);
     if (spanChannel) {
@@ -128,13 +138,14 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     }
   }
 
-
   getChannelOnlyWhenNotCurrent(channelID: string): Channel | undefined {
-    const channel = this.channelService.channels.find(channel => channel.id === channelID);
-    if (channel && this.navigationService.chatViewObject !== channel) return channel;
+    const channel = this.channelService.channels.find(
+      (channel) => channel.id === channelID
+    );
+    if (channel && this.navigationService.chatViewObject !== channel)
+      return channel;
     return undefined;
   }
-
 
   prepareUserSpan(span: HTMLSpanElement) {
     span.classList.add('highlight-item');
@@ -142,16 +153,24 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     span.addEventListener('click', (event) => {
       event.stopPropagation();
       this.setSelectedUserObject(span.id);
-      const popoverElement = document.getElementById(this.returnPopoverTarget(span.id));
+      const popoverElement = document.getElementById(
+        this.returnPopoverTarget(span.id)
+      );
       if (popoverElement) (popoverElement as any).showPopover();
     });
   }
 
-
   updateMessage() {
     const editorContent = this.messageEditor.getMessageAsHTML();
-    if (editorContent !== '<br></br>' && editorContent !== this._messageData.content) {
-      this.messageService.updateMessage(this._messageData, { content: editorContent, edited: true, editedAt: serverTimestamp() });
+    if (
+      editorContent !== '<br></br>' &&
+      editorContent !== this._messageData.content
+    ) {
+      this.messageService.updateMessage(this._messageData, {
+        content: editorContent,
+        edited: true,
+        editedAt: serverTimestamp(),
+      });
     }
     this.closeMessageEditor();
   }
@@ -170,11 +189,9 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     this._cdr.detectChanges();
   }
 
-
   getMessageCreatorObject() {
     return this.userService.getUserByID(this._messageData.creatorID);
   }
-
 
   sortMessages() {
     if (this.messages.length > 0) {
@@ -191,7 +208,6 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
       });
     }
   }
-
 
   identifyConsecutiveMessages(
     previousMessageDetails: { creatorId: string; messageDate: string },
@@ -220,11 +236,9 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     }
   }
 
-
   isFirstMessage(index: number) {
     return index === 0;
   }
-
 
   isSameCreatorAndDate(
     currentCreatorId: string,
@@ -238,7 +252,6 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     );
   }
 
-
   getFormatedMessageTime(messageTime: Date | undefined) {
     let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', {
       hour: '2-digit',
@@ -247,25 +260,21 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     return `${formatedMessageTime} Uhr`;
   }
 
-
   checkMessageWriterID(messageWriterID: string) {
     if (messageWriterID == this.userService.currentUser?.id) {
       this.messagefromUser = true;
     }
   }
 
-
   toggleEditMessagePopup() {
     this.showEditMessagePopup = !this.showEditMessagePopup;
   }
-
 
   toggleMessageEditor() {
     this.toggleEditMessagePopup();
     this.messageEditorModus = !this.messageEditorModus;
     this.messageEditorOpenChange.emit(this.messageEditorModus);
   }
-
 
   returnPopoverTarget(messageCreator: string) {
     if (messageCreator === this.userService.currentUser?.id) {
@@ -275,13 +284,13 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     }
   }
 
-
   showUserPopover(messageCreatorID: string) {
     this.setSelectedUserObject(messageCreatorID);
-    const popoverElement = document.getElementById(this.returnPopoverTarget(messageCreatorID));
+    const popoverElement = document.getElementById(
+      this.returnPopoverTarget(messageCreatorID)
+    );
     if (popoverElement) (popoverElement as any).showPopover();
   }
-
 
   setSelectedUserObject(messageCreatorID: string) {
     this.userService.updateSelectedUser(
@@ -289,11 +298,13 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     );
   }
 
+  @Output() openThreadView = new EventEmitter<void>();
 
   setThread(thread: Message) {
-    if (this._messageData.answerable) {
+    if (thread.answerable) {
       this.navigationService.setThreadViewObject(thread);
+      console.log('MessageComponent: --> openThreadView called');
+      this.openThreadView.emit();
     }
   }
-
 }

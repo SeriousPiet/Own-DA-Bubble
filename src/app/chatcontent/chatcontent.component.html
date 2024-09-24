@@ -6,17 +6,20 @@
 
 <section
   class="chatcontent"
-  [ngClass]="!isWorkspaceMenuVisible ? 'menu-hidden' : ''"
+  [ngClass]="[
+    currentLayout,
+    !isWorkspaceMenuVisible ? 'menu-hidden' : '',
+    !isThreadViewVisible ? 'thread-hidden' : ''
+  ]"
 >
   <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
-    @if (isWorkspaceMenuVisible) {
-    <div class="wsm-close"></div>
-    } @else if (!isWorkspaceMenuVisible) {
-    <div class="wsm-open"></div>
-    }
+    <div
+      [class.wsm-close]="isWorkspaceMenuVisible"
+      [class.wsm-open]="!isWorkspaceMenuVisible"
+    ></div>
     <span class="nunito-20-500"
       >Workspace-Menü
-      {{ isWorkspaceMenuVisible ? "öffnen" : "schließen" }}</span
+      {{ isWorkspaceMenuVisible ? "schließen" : "öffnen" }}</span
     >
   </button>
 
@@ -25,17 +28,22 @@
   </div>
   <div
     class="workspace-menu"
-    [@slideInOut]="isWorkspaceMenuVisible ? 'visible' : 'hidden'"
+    [class.visible]="isWorkspaceMenuVisible"
+    [class.hidden]="!isWorkspaceMenuVisible"
   >
     <app-workspacemenu />
   </div>
   <div class="chatview">
-    <app-chatview [currentContext]="navigationService.chatViewObject" />
+    <app-chatview
+      [currentContext]="navigationService.chatViewObject"
+      (toggleThread)="toggleThreadView()"
+    />
   </div>
   <div
     class="threadview"
-    [@slideInOut]="isThreadViewVisible ? 'visible' : 'hidden'"
+    [class.visible]="isThreadViewVisible"
+    [class.hidden]="!isThreadViewVisible"
   >
-    <app-threadview [toggleThreadView]="toggleThreadView" />
+    <app-threadview (closeThreadView)="toggleThreadView()" />
   </div>
 </section>
