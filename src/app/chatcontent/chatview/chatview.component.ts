@@ -1,4 +1,11 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { MessageDateComponent } from './messages-list-view/message-date/message-date.component';
 import { MessageTextareaComponent } from '../message-textarea/message-textarea.component';
 import { CommonModule } from '@angular/common';
@@ -36,6 +43,13 @@ import { BehaviorSubject } from 'rxjs';
   styleUrl: './chatview.component.scss',
 })
 export class ChatviewComponent implements OnInit {
+  @Output() toggleThread = new EventEmitter<void>();
+
+  openThread() {
+    console.log('ChatViewComponent: --> toggleThread called');
+    this.toggleThread.emit();
+  }
+
   @Input() set currentContext(value: Channel | Chat) {
     this.channelSubject.next(value);
   }

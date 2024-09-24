@@ -78,10 +78,11 @@
     >
       @if(currentContext.messagesCount > 0){
       <app-messages-list-view
-        [ngClass]="{ 'default-channel': isDefaultChannel }"
         [messagesPath]="navigationService.chatViewPath"
         [currentObject]="currentContext"
+        (openThreadView)="openThread()"
       ></app-messages-list-view>
+
       }@else{
       <section class="no-messages-ctn">
         @if(isAChannel){
