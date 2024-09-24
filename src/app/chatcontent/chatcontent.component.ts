@@ -64,11 +64,10 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
   adjustLayout() {
     switch (this.currentLayout) {
       case 'three-column':
-        // Alle Spalten können sichtbar sein, aber ThreadView ist initial ausgeblendet
-        this.isWorkspaceMenuVisible = true;
+        // Alle Spalten können potentiell sichtbar sein
         break;
       case 'two-column':
-        // Wenn ThreadView geöffnet wird, schließe WSM
+        // Wenn ThreadView geöffnet wird, schließe WSM und umgekehrt
         if (this.isThreadViewVisible) {
           this.isWorkspaceMenuVisible = false;
         }
@@ -93,6 +92,7 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
   }
 
   toggleThreadView() {
+    console.log('ChatContent: --> toggleThreadView called');
     this.isThreadViewVisible = !this.isThreadViewVisible;
     if (this.currentLayout !== 'three-column' && this.isThreadViewVisible) {
       this.isWorkspaceMenuVisible = false;

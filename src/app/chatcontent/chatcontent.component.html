@@ -32,13 +32,16 @@
     <app-workspacemenu />
   </div>
   <div class="chatview">
-    <app-chatview [currentContext]="navigationService.chatViewObject" />
+    <app-chatview
+      [currentContext]="navigationService.chatViewObject"
+      (toggleThread)="toggleThreadView()"
+    />
   </div>
   <div
     class="threadview"
     [class.visible]="isThreadViewVisible"
     [class.hidden]="!isThreadViewVisible"
   >
-    <app-threadview />
+    <app-threadview (closeThreadView)="toggleThreadView()" />
   </div>
 </section>
