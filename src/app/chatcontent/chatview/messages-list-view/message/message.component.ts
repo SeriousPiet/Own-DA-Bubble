@@ -47,6 +47,7 @@ export class MessageComponent
   public channelService = inject(ChannelService);
 
   public _messageData!: Message;
+
   @Input() set messageData(newMessage: Message) {
     this._messageData = newMessage;
     this.fillMessageContentHTML();
@@ -58,6 +59,7 @@ export class MessageComponent
   @Input() messages: Message[] = [];
 
   @Input() messageEditorOpen = false;
+
   @Output() messageEditorOpenChange = new EventEmitter<boolean>();
 
   messagefromUser = false;
@@ -286,9 +288,13 @@ export class MessageComponent
     );
   }
 
+  @Output() openThreadView = new EventEmitter<void>();
+
   setThread(thread: Message) {
-    if (this._messageData.answerable) {
+    if (thread.answerable) {
       this.navigationService.setThreadViewObject(thread);
+      console.log('MessageComponent: --> openThreadView called');
+      this.openThreadView.emit();
     }
   }
 }
