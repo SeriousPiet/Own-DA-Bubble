@@ -3,6 +3,7 @@ import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
 import { updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp, getDocs, where, query } from '@angular/fire/firestore';
 import { Auth, sendEmailVerification, user } from '@angular/fire/auth';
+import { EmojipickerService } from './emojipicker.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { Auth, sendEmailVerification, user } from '@angular/fire/auth';
 export class UsersService implements OnDestroy {
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
+  private emojiService = inject(EmojipickerService);
   private unsubUsers: any = null;
   private user$: any = null;
   private currentAuthUser: any = undefined;
@@ -158,6 +160,7 @@ export class UsersService implements OnDestroy {
     if (this.currentUser && user) return;
     this.currentUser = user;
     if (user.guest) this.currentGuestUserID = user.id;
+    await this.emojiService.loadUserEmojis(user.id);
     let userData: { online: boolean; lastLoginAt: any; emailVerified?: boolean } = { online: true, lastLoginAt: serverTimestamp() };
     if (this.currentAuthUser) userData.emailVerified = this.currentAuthUser.emailVerified;
     await this.updateCurrentUserDataOnFirestore(userData);

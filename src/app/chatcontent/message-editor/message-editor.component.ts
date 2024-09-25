@@ -1,18 +1,7 @@
 import { CommonModule } from '@angular/common';
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  inject,
-  Input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { QuillEditorComponent, QuillModule } from 'ngx-quill';
 import Quill from 'quill';
-import Inline from 'quill/blots/inline';
 import { Range as QuillRange } from 'quill/core/selection';
 import { Channel } from '../../shared/models/channel.class';
 import { User } from '../../shared/models/user.class';
@@ -21,36 +10,8 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
+import { LockedSpanBlot } from '../../shared/models/lockedspan.class';
 
-class LockedSpanBlot extends Inline {
-  static override blotName = 'lockedSpan';
-  static override tagName = 'span';
-
-  static override create(value: any) {
-    const node = super.create();
-    if (value.class)
-      node.setAttribute('class', value.class || 'highlight-user');
-    if (value.id) node.setAttribute('id', value.id);
-    node.setAttribute('contenteditable', 'false');
-    return node;
-  }
-
-  static override formats(node: any) {
-    return {
-      class: node.getAttribute('class'),
-      id: node.getAttribute('id'),
-    };
-  }
-
-  override format(name: string, value: any) {
-    if (name === 'lockedSpan') {
-      if (value.class) this.domNode.setAttribute('class', value.class);
-      if (value.id) this.domNode.setAttribute('id', value.id);
-    } else {
-      super.format(name, value);
-    }
-  }
-}
 
 @Component({
   selector: 'app-message-editor',
@@ -96,8 +57,7 @@ export class MessageEditorComponent implements AfterViewInit {
     keyboard: {
       bindings: {
         shift_enter: {
-          key: 13,
-          shiftKey: true,
+          key: 13, shiftKey: true,
           handler: (range: { index: number }, ctx: any) => {
             this.quill.insertText(range.index, '\n');
           },
@@ -105,12 +65,8 @@ export class MessageEditorComponent implements AfterViewInit {
         enter: {
           key: 13,
           handler: () => {
-            console.log('enter pressed on quill');
-            if (this.showPicker) {
-              this.handlePickerSelectionKeys('Select');
-            } else {
-              this.enterPressed.emit(this.getMessageAsHTML());
-            }
+            if (this.showPicker) this.handlePickerSelectionKeys('Select');
+            else this.enterPressed.emit(this.getMessageAsHTML());
           },
         },
       },
@@ -131,6 +87,7 @@ export class MessageEditorComponent implements AfterViewInit {
   choosenEmoji(emoji: string) {
     const position = this.getLastOrCurrentSelection();
     const emojiLength = emoji.length;
+    this.emojiService.addEmojiToUserEmojis(emoji);
     this.quill.insertText(position ? position.index : 0, emoji);
     this.quill.setSelection(
       position ? position.index + emojiLength : emojiLength,
@@ -175,27 +132,13 @@ export class MessageEditorComponent implements AfterViewInit {
         });
         if (this.quill) {
           const editorElement = this.quill.root;
-          editorElement.addEventListener('focus', () =>
-            this.onFocused(editorElement)
-          );
-          editorElement.addEventListener('blur', (event: FocusEvent) =>
-            this.onBlur(event)
-          );
+          editorElement.addEventListener('focus', () => this.onFocused(editorElement));
+          editorElement.addEventListener('blur', (event: FocusEvent) => this.onBlur(event));
           this.quill.on('text-change', (event) => this.onTextChange(event));
-          this.quill.keyboard.addBinding({ key: '@' }, () => {
-            this.openListPicker('@');
-            return true;
-          });
-          this.quill.keyboard.addBinding({ key: '#' }, () => {
-            this.openListPicker('#');
-            return true;
-          });
-          this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => {
-            return this.handlePickerSelectionKeys('ArrowDown');
-          });
-          this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => {
-            return this.handlePickerSelectionKeys('ArrowUp');
-          });
+          this.quill.keyboard.addBinding({ key: '@' }, () => { this.openListPicker('@'); return true; });
+          this.quill.keyboard.addBinding({ key: '#' }, () => { this.openListPicker('#'); return true; });
+          this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => { return this.handlePickerSelectionKeys('ArrowDown'); });
+          this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelectionKeys('ArrowUp'); });
           this.quill.keyboard.addBinding({ key: 'Escape' }, () => {
             if (!this.showPicker) {
               this.quill.blur();
@@ -206,10 +149,7 @@ export class MessageEditorComponent implements AfterViewInit {
           this.quill.keyboard.bindings['Enter'] = [];
           this.quill.focus();
         }
-        this.toolbar?.nativeElement.addEventListener(
-          'mouseenter',
-          (event: MouseEvent) => this.onToolbarClick(event)
-        );
+        this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
       });
     }
   }
@@ -222,21 +162,13 @@ export class MessageEditorComponent implements AfterViewInit {
   handlePickerSelectionKeys(key: string): boolean {
     if (!this.showPicker) return true;
     if (key === 'ArrowUp') {
-      this.setCurrentPickerIndex(
-        (this.currentPickerIndex - 1 + this.pickerItems.length) %
-          this.pickerItems.length
-      );
+      this.setCurrentPickerIndex((this.currentPickerIndex - 1 + this.pickerItems.length) % this.pickerItems.length);
       return false;
     } else if (key === 'ArrowDown') {
-      this.setCurrentPickerIndex(
-        (this.currentPickerIndex + 1) % this.pickerItems.length
-      );
+      this.setCurrentPickerIndex((this.currentPickerIndex + 1) % this.pickerItems.length);
       return false;
     } else if (key === 'Select') {
-      const currentItem =
-        this.currentPickerIndex === -1
-          ? this.lastItem
-          : this.pickerItems[this.currentPickerIndex];
+      const currentItem = this.currentPickerIndex === -1 ? this.lastItem : this.pickerItems[this.currentPickerIndex];
       if (currentItem) this.clickPickerItem(currentItem);
       return true;
     } else if (key === 'Escape') {
@@ -249,12 +181,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   onToolbarClick(event: MouseEvent) {
     const clickedElement = event.target as HTMLElement;
-    if (
-      this.showToolbar &&
-      !this.editor.quillEditor.root.contains(clickedElement) &&
-      !this.toolbar.nativeElement.contains(clickedElement)
-    )
-      this.showToolbar = false;
+    if (this.showToolbar && !this.editor.quillEditor.root.contains(clickedElement) && !this.toolbar.nativeElement.contains(clickedElement)) this.showToolbar = false;
   }
 
   onFocused(event: any) {
@@ -265,9 +192,7 @@ export class MessageEditorComponent implements AfterViewInit {
   onBlur(event: FocusEvent) {
     this.savedRange = this.quill.getSelection();
     const target = event.relatedTarget as HTMLElement;
-    if (!target || !this.toolbar.nativeElement.contains(target)) {
-      this.showToolbar = false;
-    }
+    if (!target || !this.toolbar.nativeElement.contains(target)) this.showToolbar = false;
     this.closeListPicker();
   }
 
@@ -324,29 +249,14 @@ export class MessageEditorComponent implements AfterViewInit {
 
   insertItemAsSpan(item: User | Channel) {
     const tagSign = item instanceof User ? '@' : '#';
-    const tagClass =
-      item instanceof User ? 'highlight-user' : 'highlight-channel';
+    const tagClass = item instanceof User ? 'highlight-user' : 'highlight-channel';
     let cursorPosition = this.removeWordAndSymbol(tagSign);
     if (cursorPosition === -1) cursorPosition = this.quill.getLength();
     const spanText = tagSign + item.name;
     const spanTextLength = spanText.length;
-    this.quill.insertText(
-      cursorPosition,
-      this.boundingKey + spanText + this.boundingKey
-    );
-    this.quill.formatText(
-      cursorPosition + this.boundingKey.length,
-      spanTextLength,
-      'lockedSpan',
-      {
-        class: tagClass,
-        id: item.id,
-      }
-    );
-    this.quill.setSelection(
-      this.boundingKey.length * 2 + cursorPosition + spanTextLength,
-      Quill.sources.SILENT
-    );
+    this.quill.insertText(cursorPosition, this.boundingKey + spanText + this.boundingKey);
+    this.quill.formatText(cursorPosition + this.boundingKey.length, spanTextLength, 'lockedSpan', { class: tagClass, id: item.id, });
+    this.quill.setSelection(this.boundingKey.length * 2 + cursorPosition + spanTextLength, Quill.sources.SILENT);
     this.quill.focus();
     this._cdr.detectChanges();
   }
@@ -360,19 +270,10 @@ export class MessageEditorComponent implements AfterViewInit {
 
   updatePickerItems(searchTerm: string) {
     if (this.pickersign === '@') {
-      this.pickerItems = this.userservice.users.filter(
-        (user) =>
-          !user.guest &&
-          (searchTerm === '' ||
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      this.pickerItems = this.userservice.users.filter((user) => !user.guest && (searchTerm === '' || user.name.toLowerCase().includes(searchTerm.toLowerCase())));
       this.setCurrentPickerIndex(-1);
     } else if (this.pickersign === '#') {
-      this.pickerItems = this.channelservice.channels.filter(
-        (channel) =>
-          !channel.defaultChannel &&
-          channel.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      this.pickerItems = this.channelservice.channels.filter((channel) => !channel.defaultChannel && channel.name.toLowerCase().includes(searchTerm.toLowerCase()));
       this.setCurrentPickerIndex(-1);
     }
   }

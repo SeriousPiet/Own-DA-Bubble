@@ -87,7 +87,7 @@ export class MessageComponent
   }
 
   ngAfterViewInit(): void {
-    this._messageData.changeMessage$.subscribe((message: Message) => {
+    this._messageData.changeMessage$.subscribe(() => {
       this.fillMessageContentHTML();
       this._cdr.detectChanges();
     });

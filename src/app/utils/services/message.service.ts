@@ -17,6 +17,7 @@ import { IReactions, Message, StoredAttachment } from '../../shared/models/messa
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
+import { EmojipickerService } from './emojipicker.service';
 
 export type MessageAttachment = {
   name: string;
@@ -32,6 +33,7 @@ export type MessageAttachment = {
 export class MessageService {
   private firestore = inject(Firestore);
   private userservice = inject(UsersService);
+  private emojiService = inject(EmojipickerService);
   private storage = getStorage();
 
 
@@ -119,9 +121,9 @@ export class MessageService {
   }
 
 
-  async toggleReactionToMessage(message: Message, reaction: string): Promise<boolean> {
+  async toggleReactionToMessage(message: Message, emoji: string): Promise<boolean> {
     try {
-      const newReactionArray = this.getModifiedReactionArray(message.emojies, reaction);
+      const newReactionArray = this.getModifiedReactionArray(message.emojies, emoji);
       await updateDoc(doc(this.firestore, message.messagePath), { emojies: newReactionArray, });
       console.warn('MessageService: reaction toggled - id:' + message.id);
       return true;
@@ -142,8 +144,12 @@ export class MessageService {
           const reactionIndex = reactionsArray.findIndex((currentReaction) => currentReaction.type === reaction);
           reactionsArray.splice(reactionIndex, 1);
         }
-      } else currentReaction.userIDs.push(currentUserID);
+      } else {
+        this.emojiService.addEmojiToUserEmojis(reaction);
+        currentReaction.userIDs.push(currentUserID);
+      }
     } else {
+      this.emojiService.addEmojiToUserEmojis(reaction);
       reactionsArray.push({ type: reaction, userIDs: [currentUserID] });
     }
     return reactionsArray.map((reaction) => JSON.stringify(reaction));

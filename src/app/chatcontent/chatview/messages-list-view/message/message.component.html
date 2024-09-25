@@ -47,7 +47,8 @@
         <div class="message-reactions">
             @for (reaction of _messageData.emojies; track $index) {
             @if(reaction.userIDs.length != 0){
-            <button [ngClass]="{ 'self-reaction': isReactionSelf(reaction), 'other-reaction': !isReactionSelf(reaction) }"
+            <button
+                [ngClass]="{ 'self-reaction': isReactionSelf(reaction), 'other-reaction': !isReactionSelf(reaction) }"
                 (click)="messageService.toggleReactionToMessage(_messageData, reaction.type)">
                 <div class="emoji-div">{{ reaction.type }}</div>
                 <span>{{ reaction.userIDs.length }}</span>
@@ -95,12 +96,19 @@
       'interact-ctn-popover': true
     }">
         <section>
+            @for(reaction of emojiService.getMostUsedEmojis(2); track $index) {
+            <div (click)=" messageService.toggleReactionToMessage(_messageData, reaction)" class="button-ctn">
+                <div class="emoji-div">{{ reaction }}</div>
+            </div>
+            }
+            @empty {
             <div (click)=" messageService.toggleReactionToMessage(_messageData, '✅')" class="button-ctn">
                 <div class="emoji-div">✅</div>
             </div>
             <div (click)="messageService.toggleReactionToMessage(_messageData, '🙌')" class="button-ctn">
                 <div class="emoji-div">🙌</div>
             </div>
+            }
             <div (click)="addReaction()" class="button-ctn" id="add-reaction-icon">
                 <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="" />
             </div>

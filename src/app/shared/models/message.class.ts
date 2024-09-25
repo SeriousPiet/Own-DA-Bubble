@@ -14,7 +14,7 @@ export type StoredAttachment = {
 };
 
 export class Message {
-  private changeMessage = new BehaviorSubject<Message>(this);
+  private changeMessage = new BehaviorSubject<void>(undefined);
   public changeMessage$ = this.changeMessage.asObservable();
 
   readonly id: string;
@@ -80,23 +80,15 @@ export class Message {
     this.id = id;
     this.collectionPath = collectionPath;
     this.creatorID = data.creatorID ? data.creatorID : '';
-    this.createdAt = data.createdAt
-      ? (data.createdAt as Timestamp).toDate()
-      : new Date();
+    this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
     if (data.emojies) this.calculateReaction(data.emojies);
     this._content = data.content ? data.content : '';
     this.answerable = data.answerable;
     this._answerCount = data.answerCount ? data.answerCount : 0;
-    this._lastAnswerAt = data.lastAnswerAt
-      ? (data.lastAnswerAt as Timestamp).toDate()
-      : new Date();
+    this._lastAnswerAt = data.lastAnswerAt ? (data.lastAnswerAt as Timestamp).toDate() : new Date();
     this._edited = data.edited ? data.edited : false;
-    this._editedAt = data.editedAt
-      ? (data.editedAt as Timestamp).toDate()
-      : undefined;
-    this.previousMessageFromSameUser = data.previousMessageFromSameUser
-      ? data.previousMessageFromSameUser
-      : false;
+    this._editedAt = data.editedAt ? (data.editedAt as Timestamp).toDate() : undefined;
+    this.previousMessageFromSameUser = data.previousMessageFromSameUser ? data.previousMessageFromSameUser : false;
     this._attachments = this.parseAttachments(data.attachments);
   }
 
@@ -110,9 +102,7 @@ export class Message {
   }
 
   parseAttachments(data: any): StoredAttachment[] {
-    if (data !== undefined && data !== '') {
-      return JSON.parse(data);
-    }
+    if (data !== undefined && data !== '') return JSON.parse(data);
     return [];
   }
 
@@ -120,11 +110,10 @@ export class Message {
     if (data.content) this._content = data.content;
     if (data.emojies) this.calculateReaction(data.emojies);
     if (data.answerCount) this._answerCount = data.answerCount;
-    if (data.lastAnswerAt)
-      this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
+    if (data.lastAnswerAt) this._lastAnswerAt = (data.lastAnswerAt as Timestamp).toDate();
     if (data.edited !== undefined) this._edited = data.edited;
     if (data.editedAt) this._editedAt = (data.editedAt as Timestamp).toDate();
     if (data.attachments) this._attachments = this.parseAttachments(data.attachments);
-    this.changeMessage.next(this);
+    this.changeMessage.next();
   }
 }
