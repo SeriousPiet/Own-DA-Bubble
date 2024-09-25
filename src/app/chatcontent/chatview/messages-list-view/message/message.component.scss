@@ -1,6 +1,29 @@
 @import "../../../../../styles.scss";
 @import "../../../../../mixins.scss";
 
+// 2.875rem at 1920px to 1.25rem at 1280px
+$p-left: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
+$p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
+$creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
+
+.emoji-div {
+  font-family: sans-serif, "Nunito";
+  font-size: 1.2rem;
+}
+
+.self-reaction {
+  border-radius: 1000px;
+  background-color: $primary;
+  border: 1px solid $mail;
+}
+
+.other-reaction {
+  border-radius: 1000px;
+  background-color: white;
+  border: $default-border;
+}
+
+
 .message-attachments {
   @include nunito(1, 400, black);
   display: flex;
@@ -61,16 +84,14 @@
   }
 }
 
-
 .message-ctn {
   display: flex;
-  padding: 0.625rem 0rem 0.625rem 2.8125rem;
+  padding: 0.625rem $p-right 0.625rem $p-left;
   gap: 1.875rem;
   position: relative;
   transition: $transition-popover;
 
   .message-avatar-ctn {
-
     .message-creator-avatar {
       cursor: pointer;
     }
@@ -91,8 +112,10 @@
       gap: 1.25rem;
 
       >.message-creator-name {
-        font-size: 1.125rem;
+        font-size: $creator-fs;
         font-weight: 700;
+        text-wrap: balance;
+        text-align: left;
 
         &:hover {
           color: $accent;
@@ -125,8 +148,6 @@
         padding: 5px 10px;
         @include flex(center, center);
         gap: 10px;
-        border: $default-border;
-        border-radius: 20px;
       }
 
       >img {
@@ -181,38 +202,30 @@
       >p {
         background-color: #ffffff;
       }
-
-      .message-reactions {
-        >button {
-          background-color: #ffffff;
-
-          &:hover {
-            border-color: $accent;
-          }
-        }
-      }
     }
   }
 
   &:hover {
     >section {
-      .message-reactions {
-        >button {
-          background-color: #ffffff;
-
-          &:hover {
-            border-color: $accent;
-          }
+      .self-reaction {
+        &:hover {
+          border: 1px solid $error;
+        }
+      }
+      .other-reaction {
+        background-color: #ffffff;
+        &:hover {
+          border-color: $accent;
         }
       }
     }
   }
 }
 
-
 .message-from-user {
   flex-direction: row-reverse;
-  padding: 0.625rem 2.8125rem 0.625rem 0;
+  // insert clamp() for padding-right here
+  padding: 0.625rem $p-left 0.625rem $p-right;
 
   >section {
     align-items: flex-end;
@@ -222,6 +235,7 @@
 
       >span {
         text-align: end;
+        text-wrap: nowrap;
       }
 
       .message-creator-name {

@@ -2,126 +2,125 @@
 @import "../../../styles.scss";
 
 section {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
 
-    .emoji-mart {
-        position: absolute;
-        z-index: 1000;
-        bottom: 100%;
-        right: 0;
+  .emoji-mart {
+    position: absolute;
+    z-index: 1000;
+    bottom: 100%;
+    right: 0;
+  }
+
+  .picker-list {
+    position: absolute;
+    z-index: 1000;
+    bottom: 100%;
+    border-radius: 0.625rem;
+    border: 1px solid #adb0d9;
+    background-color: white;
+    max-height: 13rem;
+    overflow-y: auto;
+
+    .picker-close {
+      @include iconBox;
     }
 
+    .picker-info {
+      position: sticky;
+      z-index: 1010;
+      top: 0;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      min-width: fit-content;
+      width: 100%;
+      border-bottom: 1px solid lightgray;
+      background-color: white;
 
-    .picker-list {
-        position: absolute;
-        z-index: 1000;
-        bottom: 100%;
+      div {
+        padding: 0.3rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.5rem;
+
+        img {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+      }
+    }
+
+    .picker-item-list {
+      padding: 0 0.3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 0.5rem;
+
+      .picker-item-select {
+        border: 1px solid #adb0d9;
+      }
+
+      .picker-item-nonselect {
+        border: 1px solid transparent;
+      }
+
+      .picker-item {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.5rem;
         border-radius: 0.625rem;
-        border: 1px solid #ADB0D9;
-        background-color: white;
-        max-height: 13rem;
-        overflow-y: auto;
+        cursor: pointer;
+        padding: 0.3rem;
 
-        .picker-close {
-            @include iconBox;
+        .picker-item-name {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: black;
         }
 
-        .picker-info {
-            position: sticky;
-            z-index: 1010;
-            top: 0;
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: space-between;
-            min-width: fit-content;
-            width: 100%;
-            border-bottom: 1px solid lightgray;
-            background-color: white;
-
-            div {
-                padding: 0.3rem;
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                gap: 0.5rem;
-
-                img {
-                    width: 1.5rem;
-                    height: 1.5rem;
-                }
-            }
+        &:hover {
+          background-color: #adb0d9;
         }
-
-        .picker-item-list {
-            padding: 0 0.3rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: stretch;
-            gap: 0.5rem;
-
-            .picker-item-select {
-                border: 1px solid #ADB0D9;
-            }
-
-            .picker-item-nonselect {
-                border: 1px solid transparent;
-            }
-
-            .picker-item {
-                display: flex;
-                width: 100%;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
-                gap: 0.5rem;
-                border-radius: 0.625rem;
-                cursor: pointer;
-                padding: 0.3rem;
-
-                .picker-item-name {
-                    font-size: 0.875rem;
-                    font-weight: 600;
-                    color: black;
-                }
-
-                &:hover {
-                    background-color: #ADB0D9;
-                }
-            }
-        }
+      }
     }
+  }
 
-    quill-editor {
-        width: 100%;
-        overflow-y: auto;
-        background-color: white;
-        color: black;
-        outline: none;
-        border: 1ps solid black;
-    }
+  quill-editor {
+    width: 100%;
+    overflow-y: auto;
+    background-color: white;
+    color: black;
+    outline: none;
+    border: 1ps solid black;
+  }
 
-    .editor-toolbar {
-        position: sticky;
-        top: 0;
-        width: 100%;
-        padding: 0;
-        transition: all 0.2s;
-        overflow: hidden;
-        border: none;
-    }
+  .editor-toolbar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 0;
+    transition: all 0.2s;
+    overflow: hidden;
+    border: none;
+  }
 
-    .show-editor-toolbar {
-        max-height: 3rem;
-        border-bottom: 1px solid #ADB0D9;
-    }
+  .show-editor-toolbar {
+    max-height: 3rem;
+    border-bottom: 1px solid #adb0d9;
+  }
 
-    .hide-editor-toolbar {
-        max-height: 0;
-        border-bottom: 1px solid transparent;
-    }
+  .hide-editor-toolbar {
+    max-height: 0;
+    border-bottom: 1px solid transparent;
+  }
 }

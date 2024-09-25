@@ -1,6 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
-import { MessageAttachment, MessageService } from '../../utils/services/message.service';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  Input,
+  ViewChild,
+} from '@angular/core';
+import {
+  MessageAttachment,
+  MessageService,
+} from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
@@ -14,13 +25,11 @@ import { Message } from '../../shared/models/message.class';
   standalone: true,
   imports: [CommonModule, FormsModule, QuillModule, MessageEditorComponent],
   templateUrl: './message-textarea.component.html',
-  styleUrls: [
-    './message-textarea.component.scss',
-  ]
+  styleUrls: ['./message-textarea.component.scss'],
 })
 export class MessageTextareaComponent {
-
-  @ViewChild('messageeditor', { static: true }) messageeditor!: MessageEditorComponent;
+  @ViewChild('messageeditor', { static: true })
+  messageeditor!: MessageEditorComponent;
 
   private _messagesCollectionObject!: Channel | Chat | Message;
   @Input() set messagesCollectionObject(value: Channel | Chat | Message) {
@@ -61,8 +70,7 @@ export class MessageTextareaComponent {
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
 
-
-  constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) { }
+  constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) {}
 
   // -----------------------------------------------------------------------------
   // Eventlistener for drag and drop
@@ -73,20 +81,17 @@ export class MessageTextareaComponent {
     this.highlightDropZone(true);
   }
 
-
   @HostListener('dragover', ['$event'])
   onDragOver(event: DragEvent) {
     event.preventDefault();
     this.highlightDropZone(true);
   }
 
-
   @HostListener('dragleave', ['$event'])
   onDragLeave(event: DragEvent) {
     event.preventDefault();
     if (this.isLeavingDropZone(event)) this.highlightDropZone(false);
   }
-
 
   @HostListener('drop', ['$event'])
   onDrop(event: DragEvent) {
@@ -95,19 +100,16 @@ export class MessageTextareaComponent {
     this.loadAttachments(event.dataTransfer);
   }
 
-
   private isLeavingDropZone(event: DragEvent): boolean {
     const dropZone = this.el.nativeElement;
     const relatedTarget = event.relatedTarget as Node;
     return !dropZone.contains(relatedTarget);
   }
 
-
   private highlightDropZone(highlight: boolean) {
     const nativeElement = this.el.nativeElement;
     this.dropzonehighlighted = highlight;
   }
-
 
   // -----------------------------------------------------------------------------
   // Add new message to the channel
@@ -118,11 +120,14 @@ export class MessageTextareaComponent {
     this.errorInfo = '';
     if (newHTMLMessage === '<p></p>' && this.attachments.length === 0) {
       this.handleErrors('Nachricht darf nicht leer sein.');
-    }
-    else if (await this.userservice.ifCurrentUserVerified()) {
+    } else if (await this.userservice.ifCurrentUserVerified()) {
       this.messageeditor.quill.disable();
       this.ifMessageUploading = true;
-      const error = await this.messageService.addNewMessageToCollection(this._messagesCollectionObject, newHTMLMessage, this.attachments)
+      const error = await this.messageService.addNewMessageToCollection(
+        this._messagesCollectionObject,
+        newHTMLMessage,
+        this.attachments
+      );
       if (error) {
         this.handleErrors(error);
       } else {
@@ -134,7 +139,6 @@ export class MessageTextareaComponent {
     }
     this._cdr.detectChanges();
   }
-
 
   private handleErrors(error: string) {
     this.errorInfo = error;
@@ -158,7 +162,7 @@ export class MessageTextareaComponent {
 
   private loadAttachments(fileList: any) {
     this.errorInfo = '';
-    if ((fileList.files.length + this.attachments.length) > 5) {
+    if (fileList.files.length + this.attachments.length > 5) {
       this.handleErrors('Maximal 5 Dateien erlaubt.');
       return;
     }
@@ -184,15 +188,16 @@ export class MessageTextareaComponent {
     }
   }
 
-
   private fileAllreadyAttached(file: any): boolean {
-    return this.attachments.find(a =>
-      a.name === file.name
-      && a.size === file.size
-      && a.lastModified === file.lastModified
-    ) ? true : false;
+    return this.attachments.find(
+      (a) =>
+        a.name === file.name &&
+        a.size === file.size &&
+        a.lastModified === file.lastModified
+    )
+      ? true
+      : false;
   }
-
 
   private readPDF(file: any): MessageAttachment {
     const reader = new FileReader();
@@ -205,7 +210,6 @@ export class MessageTextareaComponent {
     };
     return attachment;
   }
-
 
   private readPicture(file: any): MessageAttachment {
     const reader = new FileReader();
@@ -222,5 +226,4 @@ export class MessageTextareaComponent {
     reader.readAsDataURL(file);
     return attachment;
   }
-
 }
