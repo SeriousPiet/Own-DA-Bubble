@@ -47,11 +47,20 @@
         <div class="message-reactions">
             @for (reaction of _messageData.emojies; track $index) {
             @if(reaction.userIDs.length != 0){
-            <button
+            <button class="reaction-btn"
                 [ngClass]="{ 'self-reaction': isReactionSelf(reaction), 'other-reaction': !isReactionSelf(reaction) }"
                 (click)="messageService.toggleReactionToMessage(_messageData, reaction.type)">
                 <div class="emoji-div">{{ reaction.type }}</div>
                 <span>{{ reaction.userIDs.length }}</span>
+                <div class="reaction-hover-info">
+                    <p class="emoji-tag">{{ reaction.type }}</p>
+                    <p class="reaction-name">{{ getReactionUsers(reaction) }}</p>
+                    @if(reaction.userIDs.length > 1) {
+                    <p class="reaction-suffix">haben reagiert</p>
+                    } @else {
+                    <p class="reaction-suffix">{{ isReactionSelf(reaction) ? 'hast ' : 'hat '}}reagiert</p>
+                    }
+                </div>
             </button>
             }
             }

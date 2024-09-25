@@ -109,6 +109,21 @@ export class MessageComponent
   }
 
 
+  getReactionUsers(reaction: IReactions): string {
+    let resultString = '';
+    if (reaction.userIDs.includes(this.userService.currentUserID)) resultString = 'Du';
+    else {
+      const otherUserID = reaction.userIDs.find((userID) => userID !== this.userService.currentUserID && !this.userService.ifGuestUser(userID)) || '';
+      const otherUser = this.userService.getUserByID(otherUserID);
+      resultString = otherUser?.name || 'Unbekannter Nutzer';
+    }
+    if (reaction.userIDs.length > 1) {
+      resultString += ` und ${reaction.userIDs.length - 1} weitere`;
+    }
+    return resultString;
+  }
+
+
   fillMessageContentHTML() {
     if (this.messageDiv) {
       this.messageDiv.nativeElement.innerHTML = this._messageData.content;

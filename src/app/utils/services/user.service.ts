@@ -52,6 +52,12 @@ export class UsersService implements OnDestroy {
     return false;
   }
 
+  ifGuestUser(userID: string): boolean {
+    const user = this.users.find((user) => user.id === userID);
+    if (user && user.guest) return true;
+    return false;
+  }
+
   async updateCurrentUserDataOnFirestore(userChangeData: {}) {
     try {
       await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), userChangeData);

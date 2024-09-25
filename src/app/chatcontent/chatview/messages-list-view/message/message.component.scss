@@ -23,6 +23,52 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
   border: $default-border;
 }
 
+.reaction-btn {
+  position: relative;
+
+  .reaction-hover-info {
+    z-index: 10;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-width: 8rem;
+    background-color: $accent;
+    border-radius: 30px 30px 30px 0px;
+    padding: 0.5rem;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transition: opacity 0.125s ease-in-out, transform 0.125s ease-in-out, visibility 0s 0.125s;
+
+    .emoji-tag {
+      font-size: 1.5rem;
+    }
+
+    .reaction-name {
+      @include nunito(1.1, 700, white);
+    }
+
+    .reaction-suffix {
+      @include nunito(1, 400, white);
+    }
+  }
+
+  &:hover {
+    .reaction-hover-info {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.125s ease-in-out, transform 0.125s ease-in-out, visibility 0s;
+    }
+  }
+}
+
+
+
+
 
 .message-attachments {
   @include nunito(1, 400, black);
