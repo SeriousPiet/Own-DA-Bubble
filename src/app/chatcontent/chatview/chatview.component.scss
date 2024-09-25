@@ -199,6 +199,10 @@
   flex-direction: column;
 }
 
+#channel-member-overview-popover {
+  height: 50%;
+}
+
 @starting-style {
 
   #channel-member-overview-popover:popover-open,
