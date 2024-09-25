@@ -2,7 +2,9 @@
 @import "../../../mixins.scss";
 
 :host {
+  display: block;
   width: 100%;
+  height: 100%;
 }
 
 ::backdrop {
@@ -12,6 +14,7 @@
 .chatview-main-ctn {
   background-color: white;
   border-radius: 1.875rem;
+  height: 100%;
 
   display: flex;
   flex-direction: column;
@@ -28,8 +31,8 @@
 }
 
 .chatview-header {
-  position: relative;
-  z-index: 1;
+  position: sticky;
+  z-index: 3;
   @include flex(space-between, center);
   width: 100%;
   height: 6rem;
@@ -132,8 +135,8 @@
 }
 
 .chatview-content {
-  height: 44.5rem;
   width: 100%;
+  height: 100%;
   @include flex(normal, center);
   flex-direction: column;
   position: relative;
@@ -188,8 +191,7 @@
 }
 
 .no-messages {
-  @include flex(flex-end, center);
-  align-items: center;
+  @include flex(flex-end, flex-start);
   width: 90% !important;
 }
 
@@ -201,7 +203,7 @@
 }
 
 #channel-member-overview-popover {
-  height: 50%;
+  max-height: 50%;
 }
 
 @starting-style {
