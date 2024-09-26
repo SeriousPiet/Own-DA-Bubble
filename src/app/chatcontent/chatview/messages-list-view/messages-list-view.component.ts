@@ -75,23 +75,25 @@ export class MessagesListViewComponent implements OnInit {
   }
 
   private scrollToMessageInView(message: Message) {
+    console.log('scrollToMessageInView called with:', message);
+
     const maxAttempts = 5;
     let attempts = 0;
 
     const scrollToElement = () => {
-      const messageElement = document.getElementById(message.id);
-      if (messageElement) {
-        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        messageElement.classList.add('color-change');
+      const targetSelector = `app-message[ng-reflect-id="${message.id}"]`;
+      const targetElement = document.querySelector(targetSelector);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetElement.classList.add('color-change');
         setTimeout(() => {
-          messageElement.classList.remove('color-change');
+          targetElement.classList.remove('color-change');
         }, 1750);
       } else if (attempts < maxAttempts) {
         attempts++;
         setTimeout(scrollToElement, 500);
       }
     };
-
     setTimeout(scrollToElement, 100);
   }
 

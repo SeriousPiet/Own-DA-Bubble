@@ -13,10 +13,20 @@ import {
   serverTimestamp,
 } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
-import { IReactions, Message, StoredAttachment } from '../../shared/models/message.class';
+import {
+  IReactions,
+  Message,
+  StoredAttachment,
+} from '../../shared/models/message.class';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from '@angular/fire/storage';
 import { EmojipickerService } from './emojipicker.service';
 
 export type MessageAttachment = {
@@ -36,35 +46,60 @@ export class MessageService {
   private emojiService = inject(EmojipickerService);
   private storage = getStorage();
 
-
   private getMessagePath(collectionObject: Channel | Chat | Message): string {
-    return collectionObject instanceof Channel ? collectionObject.channelMessagesPath : collectionObject instanceof Chat ? collectionObject.chatMessagesPath : collectionObject.answerPath;
+    return collectionObject instanceof Channel
+      ? collectionObject.channelMessagesPath
+      : collectionObject instanceof Chat
+      ? collectionObject.chatMessagesPath
+      : collectionObject.answerPath;
   }
-
 
   private getObjectsPath(collectionObject: Channel | Chat | Message): string {
-    return collectionObject instanceof Channel ? 'channels/' + collectionObject.id : collectionObject instanceof Chat ? 'chats/' + collectionObject.id : collectionObject.messagePath;
+    return collectionObject instanceof Channel
+      ? 'channels/' + collectionObject.id
+      : collectionObject instanceof Chat
+      ? 'chats/' + collectionObject.id
+      : collectionObject.messagePath;
   }
 
-
-  async addNewMessageToCollection(collectionObject: Channel | Chat | Message, messageContent: string, attachments: MessageAttachment[] = []): Promise<string> {
+  async addNewMessageToCollection(
+    collectionObject: Channel | Chat | Message,
+    messageContent: string,
+    attachments: MessageAttachment[] = []
+  ): Promise<string> {
     const messagePath = this.getMessagePath(collectionObject);
     const objectPath = this.getObjectsPath(collectionObject);
     try {
       const messageCollectionRef = collection(this.firestore, messagePath);
       if (!messageCollectionRef)
-        throw new Error('Nachrichtenpfad "' + messagePath + '" ist nicht gefunden.');
+        throw new Error(
+          'Nachrichtenpfad "' + messagePath + '" ist nicht gefunden.'
+        );
       // add message to objectpath
-      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, collectionObject instanceof Message ? false : true));
+      const response = await addDoc(
+        messageCollectionRef,
+        this.createNewMessageObject(
+          messageContent,
+          collectionObject instanceof Message ? false : true
+        )
+      );
       // add attachments to storage and update message with attachments
       if (attachments.length > 0) {
-        const uploadedAttachments = await this.uploadAttachmentsToStorage(response.id, attachments);
+        const uploadedAttachments = await this.uploadAttachmentsToStorage(
+          response.id,
+          attachments
+        );
         if (uploadedAttachments.length > 0)
-          await updateDoc(doc(this.firestore, response.path), { attachments: JSON.stringify(uploadedAttachments), });
+          await updateDoc(doc(this.firestore, response.path), {
+            attachments: JSON.stringify(uploadedAttachments),
+          });
       }
       // calculate messagesCount or answerCount and update objectpath
       const messagesQuerySnapshot = await getDocs(messageCollectionRef);
-      const updateData = collectionObject instanceof Message ? { answerCount: messagesQuerySnapshot.size } : { messagesCount: messagesQuerySnapshot.size };
+      const updateData =
+        collectionObject instanceof Message
+          ? { answerCount: messagesQuerySnapshot.size }
+          : { messagesCount: messagesQuerySnapshot.size };
       await updateDoc(doc(this.firestore, objectPath), updateData);
       console.warn('MessageService: message added to ' + messagePath);
       return '';
@@ -74,14 +109,25 @@ export class MessageService {
     }
   }
 
-
-  public async deleteStoredAttachment(message: Message, storedAttachment: StoredAttachment): Promise<string> {
+  public async deleteStoredAttachment(
+    message: Message,
+    storedAttachment: StoredAttachment
+  ): Promise<string> {
     try {
       const storageRef = ref(this.storage, storedAttachment.path);
       await deleteObject(storageRef);
-      const updatedAttachments = message.attachments.filter(attachment => attachment.name !== storedAttachment.name);
-      await updateDoc(doc(this.firestore, message.messagePath), { attachments: JSON.stringify(updatedAttachments) });
-      console.warn('MessageService: attachment deleted - id: ' + message.id + ' / name: ' + storedAttachment.name);
+      const updatedAttachments = message.attachments.filter(
+        (attachment) => attachment.name !== storedAttachment.name
+      );
+      await updateDoc(doc(this.firestore, message.messagePath), {
+        attachments: JSON.stringify(updatedAttachments),
+      });
+      console.warn(
+        'MessageService: attachment deleted - id: ' +
+          message.id +
+          ' / name: ' +
+          storedAttachment.name
+      );
       return '';
     } catch (error) {
       console.error('MessageService: error deleting attachment', error);
@@ -89,25 +135,41 @@ export class MessageService {
     }
   }
 
-
-  private async uploadAttachmentsToStorage(messageID: string, attachments: MessageAttachment[]): Promise<StoredAttachment[]> {
+  private async uploadAttachmentsToStorage(
+    messageID: string,
+    attachments: MessageAttachment[]
+  ): Promise<StoredAttachment[]> {
     let uploadedAttachments: StoredAttachment[] = [];
     for (const attachment of attachments) {
-      const storagePath = 'message-attachments/' + messageID + '/' + attachment.name;
+      const storagePath =
+        'message-attachments/' + messageID + '/' + attachment.name;
       const storageRef = ref(this.storage, storagePath);
       try {
         const result = await uploadBytes(storageRef, attachment.file);
         const url = await getDownloadURL(storageRef);
-        const nameWithoutExtension = attachment.name.replace(/\.[^/.]+$/, "");
-        uploadedAttachments.push({ name: nameWithoutExtension, url: url, path: storagePath, type: attachment.file.type.startsWith('image') ? 'image' : 'pdf' });
+        const nameWithoutExtension = attachment.name.replace(/\.[^/.]+$/, '');
+        uploadedAttachments.push({
+          name: nameWithoutExtension,
+          url: url,
+          path: storagePath,
+          type: attachment.file.type.startsWith('image') ? 'image' : 'pdf',
+        });
       } catch (error) {
-        console.error('MessageService: error uploading attachment ', attachment.name, ' / ', error);
+        console.error(
+          'MessageService: error uploading attachment ',
+          attachment.name,
+          ' / ',
+          error
+        );
       }
     }
     return uploadedAttachments;
   }
 
-  async updateMessage(message: Message, updateData: { content?: string; edited?: boolean; editedAt?: any }) {
+  async updateMessage(
+    message: Message,
+    updateData: { content?: string; edited?: boolean; editedAt?: any }
+  ) {
     try {
       if (updateData.content && updateData.content != message.content) {
         updateData.edited = true;
@@ -120,11 +182,18 @@ export class MessageService {
     }
   }
 
-
-  async toggleReactionToMessage(message: Message, emoji: string): Promise<boolean> {
+  async toggleReactionToMessage(
+    message: Message,
+    emoji: string
+  ): Promise<boolean> {
     try {
-      const newReactionArray = this.getModifiedReactionArray(message.emojies, emoji);
-      await updateDoc(doc(this.firestore, message.messagePath), { emojies: newReactionArray, });
+      const newReactionArray = this.getModifiedReactionArray(
+        message.emojies,
+        emoji
+      );
+      await updateDoc(doc(this.firestore, message.messagePath), {
+        emojies: newReactionArray,
+      });
       console.warn('MessageService: reaction toggled - id:' + message.id);
       return true;
     } catch (error) {
@@ -133,15 +202,23 @@ export class MessageService {
     }
   }
 
-
-  private getModifiedReactionArray(reactionsArray: IReactions[], reaction: string) {
+  private getModifiedReactionArray(
+    reactionsArray: IReactions[],
+    reaction: string
+  ) {
     const currentUserID = this.userservice.currentUserID;
-    let currentReaction = reactionsArray.find((emoji) => emoji.type === reaction);
+    let currentReaction = reactionsArray.find(
+      (emoji) => emoji.type === reaction
+    );
     if (currentReaction) {
       if (currentReaction.userIDs.includes(currentUserID)) {
-        currentReaction.userIDs = currentReaction.userIDs.filter((userID) => userID !== currentUserID);
+        currentReaction.userIDs = currentReaction.userIDs.filter(
+          (userID) => userID !== currentUserID
+        );
         if (currentReaction.userIDs.length == 0) {
-          const reactionIndex = reactionsArray.findIndex((currentReaction) => currentReaction.type === reaction);
+          const reactionIndex = reactionsArray.findIndex(
+            (currentReaction) => currentReaction.type === reaction
+          );
           reactionsArray.splice(reactionIndex, 1);
         }
       } else {
@@ -174,6 +251,11 @@ export class MessageService {
    * @returns A Promise that resolves to an array of `Message` objects that match the search query.
    */
   async searchMessages(searchQuery: string): Promise<Message[]> {
+    console.log(
+      'MessageService: searchMessages called with query:',
+      searchQuery
+    );
+
     const messagesRef = collectionGroup(this.firestore, 'messages');
     const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(100));
 
