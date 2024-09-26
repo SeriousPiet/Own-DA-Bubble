@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { Firestore, collection, collectionGroup, query, orderBy, limit, doc, getDocs, addDoc, updateDoc, serverTimestamp } from '@angular/fire/firestore';
+import { Firestore, collection, collectionGroup, query, orderBy, limit, doc, getDocs, addDoc, updateDoc, serverTimestamp, deleteDoc } from '@angular/fire/firestore';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 import { UsersService } from './user.service';
 import { IReactions, Message, StoredAttachment } from '../../shared/models/message.class';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { EmojipickerService } from './emojipicker.service';
+import { CleanupService } from './cleanup.service';
 
 export type MessageAttachment = {
   name: string;
@@ -22,14 +23,15 @@ export class MessageService {
   private firestore = inject(Firestore);
   private userservice = inject(UsersService);
   private emojiService = inject(EmojipickerService);
+  private cleanupService = inject(CleanupService);
   private storage = getStorage();
 
   private getMessagePath(collectionObject: Channel | Chat | Message): string {
     return collectionObject instanceof Channel
       ? collectionObject.channelMessagesPath
       : collectionObject instanceof Chat
-      ? collectionObject.chatMessagesPath
-      : collectionObject.answerPath;
+        ? collectionObject.chatMessagesPath
+        : collectionObject.answerPath;
   }
 
 
@@ -37,8 +39,8 @@ export class MessageService {
     return collectionObject instanceof Channel
       ? 'channels/' + collectionObject.id
       : collectionObject instanceof Chat
-      ? 'chats/' + collectionObject.id
-      : collectionObject.messagePath;
+        ? 'chats/' + collectionObject.id
+        : collectionObject.messagePath;
   }
 
 
@@ -60,6 +62,38 @@ export class MessageService {
       return '';
     } catch (error) {
       console.error('MessageService: error adding message', error);
+      return (error as Error).message;
+    }
+  }
+
+
+  async deleteMessage(message: Message, collectionObject: Channel | Chat | Message): Promise<string> {
+    try {
+      if (message.answerable && message.answerCount > 0) this.deleteAllAnswersFromMessage(message);
+      await deleteDoc(doc(this.firestore, message.messagePath));
+      const messageCollectionRef = collection(this.firestore, this.getMessagePath(collectionObject))
+      const messagesQuerySnapshot = await getDocs(messageCollectionRef)
+      const updateData = collectionObject instanceof Message ? { answerCount: messagesQuerySnapshot.size } : { messagesCount: messagesQuerySnapshot.size }
+      await updateDoc(doc(this.firestore, this.getObjectsPath(collectionObject)), updateData)
+      console.warn('MessageService: message deleted - id: ' + message.id)
+      return ''
+    } catch (error) {
+      console.error('MessageService: error deleting message', error)
+      return (error as Error).message
+    }
+  }
+
+
+  private async deleteAllAnswersFromMessage(message: Message): Promise<string> {
+    try {
+      const answerCollectionRef = collection(this.firestore, message.answerPath);
+      const answersQuerySnapshot = await getDocs(answerCollectionRef);
+      const deletePromises = answersQuerySnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      console.warn('MessageService: answers deleted - id: ' + message.id);
+      return '';
+    } catch (error) {
+      console.error('MessageService: error deleting answers', error);
       return (error as Error).message;
     }
   }

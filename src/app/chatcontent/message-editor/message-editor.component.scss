@@ -8,13 +8,6 @@ section {
   justify-content: flex-start;
   align-items: stretch;
 
-  .emoji-mart {
-    position: absolute;
-    z-index: 1000;
-    bottom: 100%;
-    right: 0;
-  }
-
   .picker-list {
     position: absolute;
     z-index: 1000;
@@ -30,10 +23,12 @@ section {
     }
 
     .picker-info {
+      @include nunito(0.875rem, 600, black);
       position: sticky;
       z-index: 1010;
       top: 0;
       display: flex;
+      padding: 0.3rem;
       flex-wrap: nowrap;
       justify-content: space-between;
       min-width: fit-content;
@@ -49,14 +44,15 @@ section {
         gap: 0.5rem;
 
         img {
-          width: 1.5rem;
-          height: 1.5rem;
+          width: 1.1rem;
+          height: 1.1rem;
         }
+
       }
     }
 
     .picker-item-list {
-      padding: 0 0.3rem;
+      padding: 0.3rem;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -65,6 +61,7 @@ section {
 
       .picker-item-select {
         border: 1px solid #adb0d9;
+        background-color: $background;
       }
 
       .picker-item-nonselect {
@@ -78,7 +75,7 @@ section {
         justify-content: flex-start;
         align-items: center;
         gap: 0.5rem;
-        border-radius: 0.625rem;
+        border-radius: 1000rem;
         cursor: pointer;
         padding: 0.3rem;
 
@@ -89,7 +86,7 @@ section {
         }
 
         &:hover {
-          background-color: #adb0d9;
+          background-color: $background;
         }
       }
     }

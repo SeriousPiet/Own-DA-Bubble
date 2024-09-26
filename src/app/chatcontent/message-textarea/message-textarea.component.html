@@ -31,7 +31,7 @@
         [ngClass]="{ 'button-ctn': attachments.length < 5 }"
         class="button-ctn-size"
       >
-        <label class="addattachment" [for]="inputID">
+        <label class="addattachment" [for]="inputID" id="add-attachment-icon">
           <input
             [disabled]="ifMessageUploading || attachments.length >= 5"
             (change)="changeAttachmentFile($event)"
@@ -70,7 +70,7 @@
         />
       </div>
       <div
-        (click)="messageeditor.toggleListPicker()"
+        (click)="messageeditor.openListPicker('@')"
         id="tag-person-icon"
         class="button-ctn"
       >
@@ -85,6 +85,22 @@
           alt="@"
         />
       </div>
+      <div
+        (click)="messageeditor.openListPicker('#')"
+        id="tag-channel-icon"
+        class="button-ctn"
+      >
+      <img
+      [ngClass]="{ 'd-none': isActive }"
+      src="./assets/icons/chat/write-message/hashtag.svg"
+      alt="+"
+    />
+    <img
+      [ngClass]="{ 'd-none': !isActive }"
+      src="./assets/icons/chat/write-message/hashtag-active.svg"
+      alt="@"
+    />
+  </div>
     </div>
     @if(errorInfo !== '') {
     <span class="errorspan">{{ errorInfo }}</span>

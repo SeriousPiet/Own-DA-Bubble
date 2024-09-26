@@ -181,6 +181,12 @@
   }
 }
 
+#tag-channel-icon:hover {
+  > img {
+    content: url("../../../assets/icons/chat/write-message/hashtag-hover.svg");
+  }
+}
+
 #send-message-icon {
   cursor: pointer;
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { QuillEditorComponent, QuillModule } from 'ngx-quill';
 import Quill from 'quill';
 import { Range as QuillRange } from 'quill/core/selection';
@@ -23,10 +23,11 @@ import { LockedSpanBlot } from '../../shared/models/lockedspan.class';
 export class MessageEditorComponent implements AfterViewInit {
   @ViewChild('editor', { static: true }) editor!: QuillEditorComponent;
   @ViewChild('toolbar', { static: true }) toolbar!: ElementRef;
+  @ViewChildren('pickeritem') pickerList!: QueryList<ElementRef>;
 
   @Input() messageAsHTML = '';
   @Input() placeholder = 'Nachricht schreiben...';
-  @Input() minHeight_rem = 4;
+  @Input() minHeight_rem = 2;
   @Input() maxHeight_rem = 16;
 
   @Output() enterPressed = new EventEmitter<string>();
@@ -38,8 +39,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   // Quill Editor variables and configuration
   public quill!: Quill;
-  public toolbarID =
-    'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
+  public toolbarID ='editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
   private boundingKey = ' '; // sign bevor and after the span
@@ -147,6 +147,7 @@ export class MessageEditorComponent implements AfterViewInit {
             return this.handlePickerSelectionKeys('Escape');
           });
           this.quill.keyboard.bindings['Enter'] = [];
+          this.quill.clipboard.dangerouslyPasteHTML(this.messageAsHTML);
           this.quill.focus();
         }
         this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
@@ -265,7 +266,14 @@ export class MessageEditorComponent implements AfterViewInit {
     if (this.currentPickerIndex === -1) this.lastItem = null;
     else this.lastItem = this.pickerItems[this.currentPickerIndex];
     this.currentPickerIndex = index;
+    this.scrollToSelectedItem(index);
     this._cdr.detectChanges();
+  }
+
+
+  scrollToSelectedItem(index: number) {
+    const selectedItem = this.pickerList.toArray()[index];
+    if (selectedItem) selectedItem.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   updatePickerItems(searchTerm: string) {
@@ -278,16 +286,12 @@ export class MessageEditorComponent implements AfterViewInit {
     }
   }
 
-  toggleListPicker() {
-    if (this.showPicker) this.closeListPicker();
-    else this.openUserPicker();
-  }
-
   openListPicker(pickerSign: string) {
     if (this.showPicker) this.closeListPicker();
     else this.showPicker = true;
     this.pickersign = pickerSign;
-    this._cdr.detectChanges();
+    this.updatePickerItems('');
+    // this._cdr.detectChanges();
   }
 
   closeListPicker() {
