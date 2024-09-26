@@ -109,7 +109,7 @@
           <span>{{ _messageData.answerCount }}</span>
           <span>Antworten</span>
         </a>
-        <span>letzte Antwort: 14:56</span>
+        <span>letzte Antwort: {{ getLastAnsweredMessagedDateOrTime(_messageData.lastAnswerAt) }}</span>
       </div>
       } @if(_messageData.edited){
       <span>(Bearbeitet)</span>

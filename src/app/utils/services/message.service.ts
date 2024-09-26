@@ -1,32 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  collectionGroup,
-  query,
-  orderBy,
-  limit,
-  doc,
-  getDocs,
-  addDoc,
-  updateDoc,
-  serverTimestamp,
-} from '@angular/fire/firestore';
+import { Firestore, collection, collectionGroup, query, orderBy, limit, doc, getDocs, addDoc, updateDoc, serverTimestamp } from '@angular/fire/firestore';
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from '@angular/fire/storage';
 import { UsersService } from './user.service';
-import {
-  IReactions,
-  Message,
-  StoredAttachment,
-} from '../../shared/models/message.class';
+import { IReactions, Message, StoredAttachment } from '../../shared/models/message.class';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
-import {
-  deleteObject,
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from '@angular/fire/storage';
 import { EmojipickerService } from './emojipicker.service';
 
 export type MessageAttachment = {
@@ -54,6 +32,7 @@ export class MessageService {
       : collectionObject.answerPath;
   }
 
+
   private getObjectsPath(collectionObject: Channel | Chat | Message): string {
     return collectionObject instanceof Channel
       ? 'channels/' + collectionObject.id
@@ -62,44 +41,20 @@ export class MessageService {
       : collectionObject.messagePath;
   }
 
-  async addNewMessageToCollection(
-    collectionObject: Channel | Chat | Message,
-    messageContent: string,
-    attachments: MessageAttachment[] = []
-  ): Promise<string> {
+
+  async addNewMessageToCollection(collectionObject: Channel | Chat | Message, messageContent: string, attachments: MessageAttachment[] = []): Promise<string> {
     const messagePath = this.getMessagePath(collectionObject);
     const objectPath = this.getObjectsPath(collectionObject);
     try {
       const messageCollectionRef = collection(this.firestore, messagePath);
-      if (!messageCollectionRef)
-        throw new Error(
-          'Nachrichtenpfad "' + messagePath + '" ist nicht gefunden.'
-        );
-      // add message to objectpath
-      const response = await addDoc(
-        messageCollectionRef,
-        this.createNewMessageObject(
-          messageContent,
-          collectionObject instanceof Message ? false : true
-        )
-      );
-      // add attachments to storage and update message with attachments
+      if (!messageCollectionRef) throw new Error('Nachrichtenpfad "' + messagePath + '" ist nicht gefunden.');
+      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, !(collectionObject instanceof Message)));
       if (attachments.length > 0) {
-        const uploadedAttachments = await this.uploadAttachmentsToStorage(
-          response.id,
-          attachments
-        );
-        if (uploadedAttachments.length > 0)
-          await updateDoc(doc(this.firestore, response.path), {
-            attachments: JSON.stringify(uploadedAttachments),
-          });
+        const uploadedAttachments = await this.uploadAttachmentsToStorage(response.id, attachments);
+        if (uploadedAttachments.length > 0) await updateDoc(doc(this.firestore, response.path), { attachments: JSON.stringify(uploadedAttachments) });
       }
-      // calculate messagesCount or answerCount and update objectpath
       const messagesQuerySnapshot = await getDocs(messageCollectionRef);
-      const updateData =
-        collectionObject instanceof Message
-          ? { answerCount: messagesQuerySnapshot.size }
-          : { messagesCount: messagesQuerySnapshot.size };
+      const updateData = collectionObject instanceof Message ? { answerCount: messagesQuerySnapshot.size, lastAnswerAt: serverTimestamp() } : { messagesCount: messagesQuerySnapshot.size };
       await updateDoc(doc(this.firestore, objectPath), updateData);
       console.warn('MessageService: message added to ' + messagePath);
       return '';
@@ -109,128 +64,93 @@ export class MessageService {
     }
   }
 
-  public async deleteStoredAttachment(
-    message: Message,
-    storedAttachment: StoredAttachment
-  ): Promise<string> {
+
+  public async deleteStoredAttachment(message: Message, storedAttachment: StoredAttachment): Promise<string> {
     try {
-      const storageRef = ref(this.storage, storedAttachment.path);
-      await deleteObject(storageRef);
-      const updatedAttachments = message.attachments.filter(
-        (attachment) => attachment.name !== storedAttachment.name
-      );
-      await updateDoc(doc(this.firestore, message.messagePath), {
-        attachments: JSON.stringify(updatedAttachments),
-      });
-      console.warn(
-        'MessageService: attachment deleted - id: ' +
-          message.id +
-          ' / name: ' +
-          storedAttachment.name
-      );
-      return '';
+      const storageRef = ref(this.storage, storedAttachment.path)
+      await deleteObject(storageRef)
+      const updatedAttachments = message.attachments.filter(attachment => attachment.name !== storedAttachment.name)
+      await updateDoc(doc(this.firestore, message.messagePath), { attachments: JSON.stringify(updatedAttachments) })
+      console.warn('MessageService: attachment deleted - id: ' + message.id + ' / name: ' + storedAttachment.name)
+      return ''
     } catch (error) {
-      console.error('MessageService: error deleting attachment', error);
-      return (error as Error).message;
+      console.error('MessageService: error deleting attachment', error)
+      return (error as Error).message
     }
   }
 
-  private async uploadAttachmentsToStorage(
-    messageID: string,
-    attachments: MessageAttachment[]
-  ): Promise<StoredAttachment[]> {
-    let uploadedAttachments: StoredAttachment[] = [];
+
+  private async uploadAttachmentsToStorage(messageID: string, attachments: MessageAttachment[]): Promise<StoredAttachment[]> {
+    let uploadedAttachments: StoredAttachment[] = []
     for (const attachment of attachments) {
-      const storagePath =
-        'message-attachments/' + messageID + '/' + attachment.name;
-      const storageRef = ref(this.storage, storagePath);
+      const storagePath = 'message-attachments/' + messageID + '/' + attachment.name
+      const storageRef = ref(this.storage, storagePath)
       try {
-        const result = await uploadBytes(storageRef, attachment.file);
-        const url = await getDownloadURL(storageRef);
-        const nameWithoutExtension = attachment.name.replace(/\.[^/.]+$/, '');
+        const result = await uploadBytes(storageRef, attachment.file)
+        const url = await getDownloadURL(storageRef)
+        const nameWithoutExtension = attachment.name.replace(/\.[^/.]+$/, '')
         uploadedAttachments.push({
           name: nameWithoutExtension,
           url: url,
           path: storagePath,
-          type: attachment.file.type.startsWith('image') ? 'image' : 'pdf',
-        });
+          type: attachment.file.type.startsWith('image') ? 'image' : 'pdf'
+        })
       } catch (error) {
-        console.error(
-          'MessageService: error uploading attachment ',
-          attachment.name,
-          ' / ',
-          error
-        );
+        console.error('MessageService: error uploading attachment ', attachment.name, ' / ', error)
       }
     }
-    return uploadedAttachments;
+    return uploadedAttachments
   }
 
-  async updateMessage(
-    message: Message,
-    updateData: { content?: string; edited?: boolean; editedAt?: any }
-  ) {
+
+  async updateMessage(message: Message, updateData: { content?: string; edited?: boolean; editedAt?: any }) {
     try {
       if (updateData.content && updateData.content != message.content) {
-        updateData.edited = true;
-        updateData.editedAt = serverTimestamp();
+        updateData.edited = true
+        updateData.editedAt = serverTimestamp()
       }
-      await updateDoc(doc(this.firestore, message.messagePath), updateData);
-      console.warn('MessageService: message updated - id: ' + message.id);
+      await updateDoc(doc(this.firestore, message.messagePath), updateData)
+      console.warn('MessageService: message updated - id: ' + message.id)
     } catch (error) {
-      console.error('MessageService: error updating message', error);
+      console.error('MessageService: error updating message', error)
     }
   }
 
-  async toggleReactionToMessage(
-    message: Message,
-    emoji: string
-  ): Promise<boolean> {
+
+  async toggleReactionToMessage(message: Message, emoji: string): Promise<boolean> {
     try {
-      const newReactionArray = this.getModifiedReactionArray(
-        message.emojies,
-        emoji
-      );
-      await updateDoc(doc(this.firestore, message.messagePath), {
-        emojies: newReactionArray,
-      });
-      console.warn('MessageService: reaction toggled - id:' + message.id);
-      return true;
+      const newReactionArray = this.getModifiedReactionArray(message.emojies, emoji)
+      await updateDoc(doc(this.firestore, message.messagePath), { emojies: newReactionArray })
+      console.warn('MessageService: reaction toggled - id:' + message.id)
+      return true
     } catch (error) {
-      console.error('MessageService: error toggling reaction', error);
-      return false;
+      console.error('MessageService: error toggling reaction', error)
+      return false
     }
   }
 
-  private getModifiedReactionArray(
-    reactionsArray: IReactions[],
-    reaction: string
-  ) {
-    const currentUserID = this.userservice.currentUserID;
-    let currentReaction = reactionsArray.find(
-      (emoji) => emoji.type === reaction
-    );
+
+  private getModifiedReactionArray(reactionsArray: IReactions[], reaction: string) {
+    const currentUserID = this.userservice.currentUserID
+    let currentReaction = reactionsArray.find(emoji => emoji.type === reaction)
     if (currentReaction) {
       if (currentReaction.userIDs.includes(currentUserID)) {
-        currentReaction.userIDs = currentReaction.userIDs.filter(
-          (userID) => userID !== currentUserID
-        );
+        currentReaction.userIDs = currentReaction.userIDs.filter(userID => userID !== currentUserID)
         if (currentReaction.userIDs.length == 0) {
-          const reactionIndex = reactionsArray.findIndex(
-            (currentReaction) => currentReaction.type === reaction
-          );
-          reactionsArray.splice(reactionIndex, 1);
+          const reactionIndex = reactionsArray.findIndex(currentReaction => currentReaction.type === reaction)
+          reactionsArray.splice(reactionIndex, 1)
         }
       } else {
-        this.emojiService.addEmojiToUserEmojis(reaction);
-        currentReaction.userIDs.push(currentUserID);
+        this.emojiService.addEmojiToUserEmojis(reaction)
+        currentReaction.userIDs.push(currentUserID)
       }
     } else {
-      this.emojiService.addEmojiToUserEmojis(reaction);
-      reactionsArray.push({ type: reaction, userIDs: [currentUserID] });
+      this.emojiService.addEmojiToUserEmojis(reaction)
+      reactionsArray.push({ type: reaction, userIDs: [currentUserID] })
     }
-    return reactionsArray.map((reaction) => JSON.stringify(reaction));
+    return reactionsArray.map(reaction => JSON.stringify(reaction))
   }
+
 
   private createNewMessageObject(messageText: string, answerable: boolean) {
     return {
@@ -241,6 +161,7 @@ export class MessageService {
       answerable: answerable,
     };
   }
+
 
   // ################# MESSAGES SEARCH #################
 
