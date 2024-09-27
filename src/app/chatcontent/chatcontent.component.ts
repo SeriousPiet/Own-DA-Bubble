@@ -20,7 +20,7 @@ import { EmojipickerComponent } from './emojipicker/emojipicker.component';
     ChatviewComponent,
     ThreadviewComponent,
     WorkspacemenuComponent,
-    EmojipickerComponent
+    EmojipickerComponent,
   ],
   templateUrl: './chatcontent.component.html',
   styleUrl: './chatcontent.component.scss',
@@ -39,8 +39,8 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const layoutBreakpoints = {
       'three-column': '(min-width: 1200px)',
-      'two-column': '(min-width: 720px) and (max-width: 1199px)',
-      'one-column': '(max-width: 719px)',
+      'two-column': '(min-width: 640px) and (max-width: 1199px)',
+      'one-column': '(max-width: 639px)',
     };
 
     this.breakpointSubscription = this.breakpointObserver
