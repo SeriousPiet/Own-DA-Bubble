@@ -283,3 +283,8 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
     }
   }
 }
+
+app-message-greeting {
+  width: 100%;
+  background-image: linear-gradient(270deg, #444df23d 5%, #fff 95%);
+}
