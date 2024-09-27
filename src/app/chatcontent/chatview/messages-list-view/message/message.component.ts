@@ -44,7 +44,8 @@ import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
   styleUrl: './message.component.scss',
 })
 export class MessageComponent
-  implements OnInit, AfterViewInit, AfterViewChecked {
+  implements OnInit, AfterViewInit, AfterViewChecked
+{
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
   @ViewChild('messageeditor', { static: false })
   messageEditor!: MessageEditorComponent;
@@ -83,7 +84,7 @@ export class MessageComponent
     this.getMessageCreatorObject();
   }
 
-  constructor(private _cdr: ChangeDetectorRef) { }
+  constructor(private _cdr: ChangeDetectorRef) {}
 
   ngAfterViewChecked(): void {
     if (this.messageDiv && this.needContentUpdate) {
@@ -112,18 +113,30 @@ export class MessageComponent
   }
 
   getReactionUsers(reaction: IReactions): string {
-    let resultString = '';
-    if (reaction.userIDs.includes(this.userService.currentUserID))
-      resultString = 'Du';
-    else {
-      const otherUserID = reaction.userIDs.find((userID) => userID !== this.userService.currentUserID && !this.userService.ifGuestUser(userID)) || '';
-      const otherUser = this.userService.getUserByID(otherUserID);
-      resultString = otherUser?.name || 'Unbekannter Nutzer';
+    const currentUserReacted = reaction.userIDs.includes(
+      this.userService.currentUserID
+    );
+    const otherUsers = reaction.userIDs
+      .filter((id) => id !== this.userService.currentUserID)
+      .map(
+        (id) => this.userService.getUserByID(id)?.name || 'Unbekannter Nutzer'
+      );
+
+    if (currentUserReacted) {
+      if (otherUsers.length === 1) {
+        return `Du und ${otherUsers[0]}`;
+      } else if (otherUsers.length > 1) {
+        const lastUser = otherUsers.pop();
+        return `Du, ${otherUsers.join(', ')} und ${lastUser}`;
+      }
+      return 'Du';
+    } else {
+      if (otherUsers.length > 1) {
+        const lastUser = otherUsers.pop();
+        return `${otherUsers.join(', ')} und ${lastUser}`;
+      }
+      return otherUsers[0];
     }
-    if (reaction.userIDs.length > 1) {
-      resultString += ` und ${reaction.userIDs.length - 1} weitere`;
-    }
-    return resultString;
   }
 
   fillMessageContentHTML() {
@@ -241,13 +254,24 @@ export class MessageComponent
     }
   }
 
-  identifyConsecutiveMessages(previousMessageDetails: { creatorId: string; messageDate: string }, message: Message, index: number) {
+  identifyConsecutiveMessages(
+    previousMessageDetails: { creatorId: string; messageDate: string },
+    message: Message,
+    index: number
+  ) {
     if (this.isFirstMessage(index)) {
       message.previousMessageFromSameUser = false;
     } else {
       const currentCreatorId = message.creatorID;
       const currentMessageDate = new Date(message.createdAt).toDateString();
-      if (this.isSameCreatorAndDate(currentCreatorId, previousMessageDetails.creatorId, currentMessageDate, previousMessageDetails.messageDate)) {
+      if (
+        this.isSameCreatorAndDate(
+          currentCreatorId,
+          previousMessageDetails.creatorId,
+          currentMessageDate,
+          previousMessageDetails.messageDate
+        )
+      ) {
         message.previousMessageFromSameUser = true;
       } else {
         message.previousMessageFromSameUser = false;
@@ -261,7 +285,12 @@ export class MessageComponent
     return index === 0;
   }
 
-  isSameCreatorAndDate(currentCreatorId: string, previousCreatorId: string, currentMessageDate: string, previousMessageDate: string) {
+  isSameCreatorAndDate(
+    currentCreatorId: string,
+    previousCreatorId: string,
+    currentMessageDate: string,
+    previousMessageDate: string
+  ) {
     return (
       currentCreatorId === previousCreatorId &&
       currentMessageDate === previousMessageDate
@@ -275,7 +304,6 @@ export class MessageComponent
     });
     return `${formatedMessageTime} Uhr`;
   }
-
 
   getLastAnsweredMessagedDateOrTime(answerAt: Date) {
     const now = new Date();

@@ -131,6 +131,11 @@ section.chatcontent {
   box-shadow: $profile-box-shadow;
   transition: $transition-grid;
 
+  @media (width > 1920px) {
+    border-radius: 1.875rem;
+    padding: 1.4375rem 0.75rem;
+  }
+
   .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-close.svg");
     background-repeat: no-repeat;

@@ -82,16 +82,16 @@
       >
         <div class="emoji-div">{{ reaction.type }}</div>
         <span>{{ reaction.userIDs.length }}</span>
+
         <div class="reaction-hover-info">
-          <p class="emoji-tag">{{ reaction.type }}</p>
-          <p class="reaction-name">{{ getReactionUsers(reaction) }}</p>
-          @if(reaction.userIDs.length > 1) {
-          <p class="reaction-suffix">haben reagiert</p>
-          } @else {
-          <p class="reaction-suffix">
-            {{ isReactionSelf(reaction) ? "hast " : "hat " }}reagiert
+          <p>
+            {{ getReactionUsers(reaction) }}
+            @if (reaction.userIDs.length === 1 && isReactionSelf(reaction)) {
+            hast } @else if (reaction.userIDs.length === 1) { hat } @else {
+            haben } mit
+            <span class="emoji-tag">{{ reaction.type }}</span>
+            reagiert
           </p>
-          }
         </div>
       </button>
       } }

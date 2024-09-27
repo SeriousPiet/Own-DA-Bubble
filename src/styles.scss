@@ -83,6 +83,7 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 
 * {
   box-sizing: border-box;
+  font-family: "Nunito", sans-serif;
 }
 
 .d-none {
@@ -184,7 +185,7 @@ body {
   background: $background;
 
   font-family: "Nunito", sans-serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -205,4 +206,8 @@ body {
   @media (width <= 1440px) {
     font-size: 1rem;
   }
+}
+
+app-root {
+  position: relative;
 }
