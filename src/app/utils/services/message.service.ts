@@ -49,7 +49,9 @@ export class MessageService {
     const objectPath = this.getObjectsPath(collectionObject);
     try {
       const messageCollectionRef = collection(this.firestore, messagePath);
+      console.log('firstlog:', collectionObject);
       if (!messageCollectionRef) throw new Error('Nachrichtenpfad "' + messagePath + '" ist nicht gefunden.');
+      console.log('secondlog:', collectionObject);
       const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, !(collectionObject instanceof Message)));
       if (attachments.length > 0) {
         const uploadedAttachments = await this.uploadAttachmentsToStorage(response.id, attachments);

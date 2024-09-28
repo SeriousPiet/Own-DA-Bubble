@@ -101,15 +101,26 @@ export class ChatviewComponent implements OnInit {
 
   getChatPartner(object: Chat | Channel) {
     if (this.currentContext instanceof Chat) {
-      const chatPartnerID = object.memberIDs.find(
-        (id) => id !== this.userService.currentUser?.id
-      );
-      if (chatPartnerID) return this.userService.getUserByID(chatPartnerID);
-      if (this.isSelfChat())
-        return this.userService.getUserByID(object.memberIDs[0]);
+     object.memberIDs.forEach(member => {
+      if(member !== this.userService.currentUser?.id) {
+        this.userService.getUserByID(member)?.name;
+      }
+     });
     }
-    return undefined;
   }
+
+  // getChatPartner(object: Chat | Channel) {
+  //   if (this.currentContext instanceof Chat) {
+  //     const chatPartnerID = object.memberIDs.find(
+  //       (id) => id !== this.userService.currentUser?.id
+  //     );
+  //     console.log()
+  //     if (chatPartnerID) return this.userService.getUserByID(chatPartnerID);
+  //     if (this.isSelfChat())
+  //       return this.userService.getUserByID(object.memberIDs[0]);
+  //   }
+  //   return undefined;
+  // }
 
   returnChatPartnerName() {
     const chatPartner = this.currentContext.memberIDs.find(

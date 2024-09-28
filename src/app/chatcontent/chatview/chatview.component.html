@@ -58,7 +58,7 @@
     >
       <div
         appAvatar
-        [user]="getChatPartner(navigationService.chatViewObject)"
+        [user]="getChatPartner(currentContext)!"
         context="chat-dm-header"
       ></div>
       <span>{{ returnChatPartnerName() }}</span>
@@ -109,7 +109,7 @@
           >
             <div
               appAvatar
-              [user]="getChatPartner(navigationService.chatViewObject)"
+              [user]="getChatPartner(currentContext)!"
               context="thread-message"
             ></div>
             <span>{{ returnChatPartnerName() }}</span>

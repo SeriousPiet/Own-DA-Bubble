@@ -59,8 +59,12 @@ export class UsersService implements OnDestroy {
   }
 
   async updateCurrentUserDataOnFirestore(userChangeData: {}) {
+    await this.updateUserDataOnFirestore(this.currentUserID,userChangeData);
+  }
+
+  async updateUserDataOnFirestore(userID: string,userChangeData: {}) {
     try {
-      await updateDoc(doc(this.firestore, '/users/' + this.currentUserID), userChangeData);
+      await updateDoc(doc(this.firestore, '/users/' + userID), userChangeData);
     } catch (error) {
       console.error('userservice/firestore: ', (error as Error).message);
     }
