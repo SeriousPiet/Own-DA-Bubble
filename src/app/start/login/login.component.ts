@@ -15,8 +15,8 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./intro-animation.scss', './login.component.scss'],
 })
 export class LoginComponent implements OnDestroy, OnInit {
-  private readonly loginInfoStayTime = 3000;
-  private showLoginInfo: number | null = null;
+  private readonly loginInfoStayTime = 2000;
+  private showLoginInfoTime: number | null = null;
 
   public userservice = inject(UsersService);
   private firestore = inject(Firestore);
@@ -39,6 +39,7 @@ export class LoginComponent implements OnDestroy, OnInit {
   public loginFormShow = true;
 
   public showIntro = true;
+  private sessionWithIntro = true;
 
   passwordResetForm = new FormGroup({
     email: new FormControl('', [Validators.required, emailValidator()]),
@@ -62,6 +63,7 @@ export class LoginComponent implements OnDestroy, OnInit {
     const introPlayed = sessionStorage.getItem('introPlayed');
     if (introPlayed) {
       this.showIntro = false;
+      this.sessionWithIntro = false;
     } else {
       sessionStorage.setItem('introPlayed', 'true');
     }
@@ -201,24 +203,27 @@ export class LoginComponent implements OnDestroy, OnInit {
 
 
   initCurrentUserWatch() {
-    this.subCurrentUser = this.userservice.changeCurrentUser$.subscribe((user) => {
-      if (user) {
+    this.subCurrentUser = this.userservice.changeCurrentUser$.subscribe((changeType) => {
+      if ('login' === changeType) {
         this.loginFormShow = false;
-        this.showInfoMessage('Anmelden als ' + (user.guest ? 'Gast' : user.name), false);
-        if (this.showLoginInfo === null) this.showLoginInfo = new Date().getTime();
-        const timeElapsed = new Date().getTime() - this.showLoginInfo;
-        if (timeElapsed < this.loginInfoStayTime) {
-          setTimeout(() => { this.redirectToChatContent(); }, this.loginInfoStayTime - timeElapsed);
-        } else {
-          this.redirectToChatContent();
-        }
+        setTimeout(() => {
+          const userName = (this.userservice.currentUser?.guest ? 'Gast' : this.userservice.currentUser?.name);
+          this.showInfoMessage('Anmelden als ' + userName, false);
+          if (this.showLoginInfoTime === null) this.showLoginInfoTime = new Date().getTime();
+          const timeElapsed = new Date().getTime() - this.showLoginInfoTime;
+          if (timeElapsed < this.loginInfoStayTime) {
+            setTimeout(() => { this.redirectToChatContent(); }, this.loginInfoStayTime - timeElapsed);
+          } else {
+            this.redirectToChatContent();
+          }
+        }, this.sessionWithIntro ? 2000 : 0);
       }
     });
   }
 
 
   handleLoginSuccess(guestLogin: boolean = false) {
-    this.showLoginInfo = new Date().getTime();
+    this.showLoginInfoTime = new Date().getTime();
   }
 
 
