@@ -30,10 +30,12 @@
   </div>
 
   <!-- Signup Button -->
+  @if(loginFormShow) {
   <div class="signup-btn">
     <span>Neu bei DABubble?</span>
     <button [routerLink]="['/signup']">Konto erstellen</button>
   </div>
+  }
 
   <div id="infoPopover" popover>
     <div>
@@ -45,26 +47,14 @@
   </div>
 
   @if(passwordResetFormShow) {
-  <form
-    class="pw-reset-form"
-    [formGroup]="passwordResetForm"
-    (ngSubmit)="submitPasswordResetForm($event)"
-  >
-    <button
-      type="button"
-      class="return"
-      (click)="passwordResetFormShow = false"
-    >
+  <form class="pw-reset-form" [formGroup]="passwordResetForm" (ngSubmit)="submitPasswordResetForm($event)">
+    <button type="button" class="return" (click)="passwordResetFormShow = false">
       <img src="../../../assets/icons/start/go-back.svg" alt="" />
     </button>
     <span class="title">Passwort zurücksetzen</span>
     <div class="info">Bitte gib deine E-Mail-Adresse ein.</div>
     <div class="input-box mail">
-      <input
-        formControlName="email"
-        type="email"
-        placeholder="beispielname@email.com"
-      />
+      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
       } @else if(passwordResetForm.get('email')?.invalid &&
@@ -81,33 +71,20 @@
       @if(showSpinner) {
       <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
       }
-      <button
-        [disabled]="passwordResetForm.invalid"
-        type="submit"
-        class="blue-btn"
-      >
+      <button [disabled]="passwordResetForm.invalid" type="submit" class="blue-btn">
         E-Mail abschicken
       </button>
     </div>
   </form>
   } @else if(loginFormShow) {
-  <form
-    class="login-form"
-    [formGroup]="loginForm"
-    (ngSubmit)="submitLoginForm($event)"
-  >
+  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
     <span class="title">Anmeldung</span>
     <div class="info">
       Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
       verwendest.
     </div>
     <div class="input-box mail">
-      <input
-        id="email"
-        formControlName="email"
-        type="email"
-        placeholder="beispielname@email.com"
-      />
+      <input id="email" formControlName="email" type="email" placeholder="beispielname@email.com" />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
       } @else if(loginForm.get('email')?.invalid &&
@@ -116,19 +93,13 @@
       }
     </div>
     <div class="input-box pw">
-      <input
-        formControlName="password"
-        type="password"
-        placeholder="Passwort"
-      />
+      <input formControlName="password" type="password" placeholder="Passwort" />
       @if(errorPassword != '') {
       <span class="errorspan">{{ errorPassword }}</span>
       } @else if(loginForm.get('password')?.invalid &&
       (loginForm.get('password')?.dirty || loginForm.get('password')?.touched))
       {
-      <span class="errorspan"
-        >Passwort muss mindesten 8 Zeichen lang sein.</span
-      >
+      <span class="errorspan">Passwort muss mindesten 8 Zeichen lang sein.</span>
       }
     </div>
     <div class="password-missed">
@@ -142,11 +113,7 @@
       <div></div>
     </div>
     <div class="button-box">
-      <button
-        class="login-with-google"
-        (click)="signinWithGoogle()"
-        type="button"
-      >
+      <button class="login-with-google" (click)="signinWithGoogle()" type="button">
         <img src="../../../assets/icons/start/google.svg" alt="" />
         Anmelden mit Google
       </button>
@@ -159,11 +126,7 @@
         Anmelden
       </button>
       @if(showSpinner && !spinnerMobile) {
-      <img
-        class="spinner"
-        src="../../../assets/icons/svg-spinner-accent.svg"
-        alt=""
-      />
+      <img class="spinner" src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
       }
       <button (click)="loginGuest()" type="button" class="white-btn">
         Gäste-Login
@@ -171,17 +134,15 @@
     </div>
     @if(showSpinner && spinnerMobile ) {
     <div class="spinner-box">
-      <img
-        class="spinner"
-        src="../../../assets/icons/svg-spinner-accent.svg"
-        alt=""
-      />
+      <img class="spinner" src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
     </div>
     }
   </form>
   }
+  @if(loginFormShow) {
   <div class="mandatory-buttons">
     <button [routerLink]="['/imprint']">Impressum</button>
     <button [routerLink]="['/policy']">Datenschutz</button>
   </div>
+  }
 </section>

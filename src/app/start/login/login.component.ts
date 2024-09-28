@@ -102,25 +102,25 @@ export class LoginComponent implements OnDestroy, OnInit {
   }
 
 
-  async submitPasswordResetForm(event: Event) { 
-    event.preventDefault(); 
-    this.passwordResetForm.disable(); 
-    this.clearAllErrorSpans(); 
-    this.showSpinner = true; 
-    const email = this.passwordResetForm.value.email || null; 
-    const user = await this.getUserIDByEmail(email); 
-    if (user && email) { 
-      this.showInfoMessage('EMail gesendet', true); 
-      const auth = getAuth(); 
-      await sendPasswordResetEmail(auth, email); 
-      this.passwordResetForm.reset(); 
-      document.getElementById('infoPopover')?.showPopover(); 
-      setTimeout(() => { document.getElementById('infoPopover')?.hidePopover(); this.passwordResetFormShow = false; }, 3000); 
-    } else { 
-      this.errorEmail = 'Diese E-Mail-Adresse ist leider unbekannt.'; 
-    } 
-    this.showSpinner = false; 
-    this.passwordResetForm.enable(); 
+  async submitPasswordResetForm(event: Event) {
+    event.preventDefault();
+    this.passwordResetForm.disable();
+    this.clearAllErrorSpans();
+    this.showSpinner = true;
+    const email = this.passwordResetForm.value.email || null;
+    const user = await this.getUserIDByEmail(email);
+    if (user && email) {
+      this.showInfoMessage('EMail gesendet', true);
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      this.passwordResetForm.reset();
+      document.getElementById('infoPopover')?.showPopover();
+      setTimeout(() => { document.getElementById('infoPopover')?.hidePopover(); this.passwordResetFormShow = false; }, 3000);
+    } else {
+      this.errorEmail = 'Diese E-Mail-Adresse ist leider unbekannt.';
+    }
+    this.showSpinner = false;
+    this.passwordResetForm.enable();
   }
 
 
@@ -202,19 +202,22 @@ export class LoginComponent implements OnDestroy, OnInit {
 
   initCurrentUserWatch() {
     this.subCurrentUser = this.userservice.changeCurrentUser$.subscribe((user) => {
-      if (this.showLoginInfo === null) this.showLoginInfo = new Date().getTime();
-      const timeElapsed = new Date().getTime() - this.showLoginInfo;
-      if (timeElapsed < this.loginInfoStayTime) {
-        setTimeout(() => { this.redirectToChatContent(); }, this.loginInfoStayTime - timeElapsed);
-      } else {
-        this.redirectToChatContent();
+      if (user) {
+        this.loginFormShow = false;
+        this.showInfoMessage('Anmelden als ' + (user.guest ? 'Gast' : user.name), false);
+        if (this.showLoginInfo === null) this.showLoginInfo = new Date().getTime();
+        const timeElapsed = new Date().getTime() - this.showLoginInfo;
+        if (timeElapsed < this.loginInfoStayTime) {
+          setTimeout(() => { this.redirectToChatContent(); }, this.loginInfoStayTime - timeElapsed);
+        } else {
+          this.redirectToChatContent();
+        }
       }
     });
   }
 
 
   handleLoginSuccess(guestLogin: boolean = false) {
-    this.showInfoMessage('Anmelden' + (guestLogin ? ' als Gast' : ''), false);
     this.showLoginInfo = new Date().getTime();
   }
 

@@ -14,7 +14,7 @@ import {
   passwordValidator,
 } from '../../utils/form-validators';
 import { ChooesavatarComponent } from '../chooesavatar/chooesavatar.component';
-import { Auth, createUserWithEmailAndPassword, updateProfile } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
 import {
   addDoc,
   collection,
@@ -42,6 +42,7 @@ export class SignupComponent {
     if (formData) {
       this.signupForm.setValue(JSON.parse(formData));
     }
+    signOut(this.firebaseauth);
   }
 
   private firestore = inject(Firestore);
