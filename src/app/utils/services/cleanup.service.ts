@@ -9,7 +9,7 @@ import { NavigationService } from './navigation.service';
 @Injectable({
   providedIn: 'root'
 })
-export class CleanupService implements OnDestroy {
+export class CleanupService {
   private navigationservice = inject(NavigationService);
   private userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
@@ -17,7 +17,6 @@ export class CleanupService implements OnDestroy {
   private firebaseauth = inject(Auth);
 
   private docsToDelete: string[] = [];
-  private unsubUserList: any = null;
 
   constructor() {
     setTimeout(() => {
@@ -26,11 +25,6 @@ export class CleanupService implements OnDestroy {
     setTimeout(() => {
       this.deleteAllGuestData();
     }, 10000);
-  }
-
-
-  ngOnDestroy(): void {
-    if (this.unsubUserList) this.unsubUserList();
   }
 
 

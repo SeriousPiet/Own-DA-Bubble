@@ -16,7 +16,7 @@
   </div>
 
   <!-- DEBUG Section -->
-  <div class="debug-btn">
+  <div class="debug-btn d-none">
     <button [routerLink]="['/chatthreadtest']">DEBUG</button>
     <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
     @if(userservice.currentUser) { User: {{ userservice.currentUser.name }}
@@ -90,8 +90,7 @@
       </button>
     </div>
   </form>
-  } @else {
-
+  } @else if(loginFormShow) {
   <form
     class="login-form"
     [formGroup]="loginForm"
