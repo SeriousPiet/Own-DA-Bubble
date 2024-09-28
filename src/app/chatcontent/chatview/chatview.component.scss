@@ -208,10 +208,15 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
   opacity: 1;
   @include flex(center, center);
   flex-direction: column;
+ 
 }
 
 #channel-member-overview-popover {
-  height: 50%;
+  max-height: 50%;
+  max-width: 25rem;
+  @include flex(center, center);
+  flex-direction: column;
+  display: none;
 }
 
 @starting-style {
