@@ -31,9 +31,7 @@ import { isEmptyMessage } from '../../../../utils/quil/utility';
 export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
-  @ViewChild('messageeditor', { static: false })
-
-  messageEditor!: MessageEditorComponent;
+  @ViewChild('messageeditor', { static: false }) messageEditor!: MessageEditorComponent;
 
   public userService = inject(UsersService);
   public navigationService = inject(NavigationService);
@@ -48,20 +46,21 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     this.fillMessageContentHTML();
   }
   @Input() set messageWriter(messageWriterID: string) {
-    this.checkMessageWriterID(messageWriterID);
+    if (messageWriterID == this.userService.currentUser?.id) {
+      this.messagefromUser = true;
+    }
   }
-  @Input() id: string = '';
   @Input() messages: Message[] = [];
   @Input() isThreadView = false;
   @Input() messageEditorOpen = false;
 
   @Output() messageEditorOpenChange = new EventEmitter<boolean>();
 
-  messagefromUser = false;
-  messageCreator: User | undefined;
-  isHovered = false;
-  showEditMessagePopup = false;
-  messageEditorModus = false;
+  public messagefromUser = false;
+  public messageCreator: User | undefined;
+  public isHovered = false;
+  public showEditMessagePopup = false;
+  public messageEditorModus = false;
   private needContentUpdate = false;
 
   ngOnInit(): void {
@@ -280,11 +279,6 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     }
   }
 
-  checkMessageWriterID(messageWriterID: string) {
-    if (messageWriterID == this.userService.currentUser?.id) {
-      this.messagefromUser = true;
-    }
-  }
 
   toggleEditMessagePopup() {
     this.showEditMessagePopup = !this.showEditMessagePopup;

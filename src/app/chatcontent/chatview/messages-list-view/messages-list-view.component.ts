@@ -56,6 +56,7 @@ export class MessagesListViewComponent implements OnInit {
     this.messages = [];
     this.messagesDates = [];
     this.subscribeMessages(value);
+    this.messageEditorOpen = false;
   }
 
   private messageScrollSubscription: Subscription | undefined;

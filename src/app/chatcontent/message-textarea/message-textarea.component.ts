@@ -18,9 +18,8 @@ import { isEmptyMessage } from '../../utils/quil/utility';
 })
 export class MessageTextareaComponent {
 
-  @ViewChild('messageeditor', { static: true })
+  @ViewChild('messageeditor', { static: true }) messageeditor!: MessageEditorComponent;
 
-  private _messagesCollectionObject!: Channel | Chat | Message;
   @Input() set messagesCollectionObject(value: Channel | Chat | Message) {
     this._messagesCollectionObject = value;
     if (this.messageeditor && this.messageeditor.quill) {
@@ -29,9 +28,9 @@ export class MessageTextareaComponent {
       this.messageeditor.quill.focus();
     }
   }
-
-
-  messageeditor!: MessageEditorComponent;
+  
+  
+  private _messagesCollectionObject!: Channel | Chat | Message;
   isHovered = false;
   inputID = Math.random().toString(36).substring(2, 9);
   isActive = false;
