@@ -1,23 +1,7 @@
-import {
-  AfterViewChecked,
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild, } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
-import {
-  IReactions,
-  Message,
-  StoredAttachment,
-} from '../../../../shared/models/message.class';
+import { IReactions, Message, StoredAttachment, } from '../../../../shared/models/message.class';
 import { MessageService } from '../../../../utils/services/message.service';
 import { UsersService } from '../../../../utils/services/user.service';
 import { CommonModule } from '@angular/common';
@@ -29,6 +13,7 @@ import { ChannelService } from '../../../../utils/services/channel.service';
 import { Channel } from '../../../../shared/models/channel.class';
 import { EmojipickerService } from '../../../../utils/services/emojipicker.service';
 import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { isEmptyMessage } from '../../../../utils/quil/utility';
 
 @Component({
   selector: 'app-message',
@@ -43,11 +28,11 @@ import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
-export class MessageComponent
-  implements OnInit, AfterViewInit, AfterViewChecked
-{
+export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked {
+
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
   @ViewChild('messageeditor', { static: false })
+
   messageEditor!: MessageEditorComponent;
 
   public userService = inject(UsersService);
@@ -84,7 +69,7 @@ export class MessageComponent
     this.getMessageCreatorObject();
   }
 
-  constructor(private _cdr: ChangeDetectorRef) {}
+  constructor(private _cdr: ChangeDetectorRef) { }
 
   ngAfterViewChecked(): void {
     if (this.messageDiv && this.needContentUpdate) {
@@ -100,12 +85,8 @@ export class MessageComponent
     });
   }
 
-  isEmptyMessage(message: string) {
-    return message === '<p><br></p>' || message === '<p></p>';
-  }
-
   hasMessagetextContent() {
-    return !this.isEmptyMessage(this._messageData.content);
+    return !isEmptyMessage(this._messageData.content);
   }
 
   isReactionSelf(reaction: IReactions) {
@@ -162,13 +143,8 @@ export class MessageComponent
     const spans = this.messageDiv.nativeElement.querySelectorAll('span');
     spans.forEach((span: HTMLSpanElement) => {
       if (span.classList.length > 0) {
-        if (span.classList[0].endsWith('channel')) {
-          // channel
-          this.prepareChannelSpan(span);
-        } else if (span.classList[0].endsWith('user')) {
-          // user
-          this.prepareUserSpan(span);
-        }
+        if (span.classList[0].endsWith('channel')) this.prepareChannelSpan(span);
+        else if (span.classList[0].endsWith('user')) this.prepareUserSpan(span);
       }
     });
   }
@@ -210,7 +186,7 @@ export class MessageComponent
   updateMessage() {
     const editorContent = this.messageEditor.getMessageAsHTML();
     if (
-      !this.isEmptyMessage(editorContent) &&
+      !isEmptyMessage(editorContent) &&
       editorContent !== this._messageData.content
     ) {
       this.messageService.updateMessage(this._messageData, {
@@ -254,24 +230,13 @@ export class MessageComponent
     }
   }
 
-  identifyConsecutiveMessages(
-    previousMessageDetails: { creatorId: string; messageDate: string },
-    message: Message,
-    index: number
-  ) {
+  identifyConsecutiveMessages(previousMessageDetails: { creatorId: string; messageDate: string }, message: Message, index: number) {
     if (this.isFirstMessage(index)) {
       message.previousMessageFromSameUser = false;
     } else {
       const currentCreatorId = message.creatorID;
       const currentMessageDate = new Date(message.createdAt).toDateString();
-      if (
-        this.isSameCreatorAndDate(
-          currentCreatorId,
-          previousMessageDetails.creatorId,
-          currentMessageDate,
-          previousMessageDetails.messageDate
-        )
-      ) {
+      if (this.isSameCreatorAndDate(currentCreatorId, previousMessageDetails.creatorId, currentMessageDate, previousMessageDetails.messageDate)) {
         message.previousMessageFromSameUser = true;
       } else {
         message.previousMessageFromSameUser = false;
@@ -285,16 +250,8 @@ export class MessageComponent
     return index === 0;
   }
 
-  isSameCreatorAndDate(
-    currentCreatorId: string,
-    previousCreatorId: string,
-    currentMessageDate: string,
-    previousMessageDate: string
-  ) {
-    return (
-      currentCreatorId === previousCreatorId &&
-      currentMessageDate === previousMessageDate
-    );
+  isSameCreatorAndDate(currentCreatorId: string, previousCreatorId: string, currentMessageDate: string, previousMessageDate: string) {
+    return currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate;
   }
 
   getFormatedMessageTime(messageTime: Date | undefined) {
@@ -339,6 +296,7 @@ export class MessageComponent
     this.messageEditorOpenChange.emit(this.messageEditorModus);
   }
 
+
   returnPopoverTarget(messageCreator: string) {
     if (messageCreator === this.userService.currentUser?.id) {
       return 'profile-popover';
@@ -346,6 +304,7 @@ export class MessageComponent
       return 'popover-member-profile';
     }
   }
+
 
   showUserPopover(messageCreatorID: string) {
     this.setSelectedUserObject(messageCreatorID);
@@ -355,19 +314,18 @@ export class MessageComponent
     if (popoverElement) (popoverElement as any).showPopover();
   }
 
+
   setSelectedUserObject(messageCreatorID: string) {
     this.userService.updateSelectedUser(
       this.userService.getUserByID(messageCreatorID)
     );
   }
 
-  @Output() openThreadView = new EventEmitter<void>();
 
   setThread(thread: Message) {
     if (thread.answerable) {
       this.navigationService.setThreadViewObject(thread);
-      console.log('MessageComponent: --> openThreadView called');
-      this.openThreadView.emit();
+      console.log('Thread set ', thread);
     }
   }
 }

@@ -6,6 +6,21 @@ import { LockedSpanBlot } from '../../shared/models/lockedspan.class';
 
 
 /**
+ * Checks if the provided message is considered empty.
+ *
+ * A message is considered empty if it is either:
+ * - An HTML paragraph tag with a line break (`<p><br></p>`)
+ * - An empty HTML paragraph tag (`<p></p>`)
+ *
+ * @param message - The message string to check.
+ * @returns `true` if the message is empty, `false` otherwise.
+ */
+export function isEmptyMessage(message: string) {
+    return message === '<p><br></p>' || message === '<p></p>';
+}
+
+
+/**
  * Registers the LockedSpanBlot with Quill if it is not already registered.
  * This method checks if the 'lockedSpan' format is already imported in Quill.
  * If it is not, it registers the LockedSpanBlot format.
