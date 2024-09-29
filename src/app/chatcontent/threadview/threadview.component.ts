@@ -1,8 +1,10 @@
 import {
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   inject,
   Input,
+  Output,
   SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -41,6 +43,8 @@ export class ThreadviewComponent {
   public requiredAvatars: string[] = [];
   public messagesDates: Date[] = [];
 
+  @Output() closeThreadView = new EventEmitter<void>();
+
   @Input() currentChannel!: Channel | Chat;
 
   @Input()
@@ -60,9 +64,8 @@ export class ThreadviewComponent {
   @Input() toggleThreadView!: () => void;
 
   triggerToggleThreadView() {
-    if (this.toggleThreadView) {
-      this.toggleThreadView();
-    }
+    console.log('ThreadviewComponent: --> closeThreadView called');
+    this.closeThreadView.emit();
   }
 
   constructor(private cdr: ChangeDetectorRef) {}

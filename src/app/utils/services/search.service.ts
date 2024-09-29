@@ -89,7 +89,11 @@ export class SearchService {
     private channelService: ChannelService,
     private firestore: Firestore,
     private messageService: MessageService
-  ) {}
+  ) {
+    this.messageScrollRequested.subscribe((message) => {
+      console.log('messageScrollRequested emitted with:', message);
+    });
+  }
 
   // ############################################################################################################
   // State Management Methods
@@ -173,6 +177,7 @@ export class SearchService {
    * @param message - The message to scroll to.
    */
   private scrollToMessage(message: Message): void {
+    console.log('Scroll to message:', message);
     this.messageScrollRequested.emit(message);
   }
 
@@ -445,6 +450,8 @@ export class SearchService {
   ): Observable<
     { text: string; type: 'message'; hasChat: boolean; message: Message }[]
   > {
+    console.log('searchMessages called with query:', query);
+
     return from(this.messageService.searchMessages(query)).pipe(
       map((messages: Message[]) => {
         return messages.map((message: Message) => ({

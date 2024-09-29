@@ -11,6 +11,8 @@
 
   span.username {
     @include nunito(2, 700, black);
+    line-height: 100%;
+    text-align: left;
   }
 
   span,
@@ -24,6 +26,11 @@
 
   &:hover img.icon {
     content: url("../../../../assets/icons/modals/expand-down-hover.svg");
+  }
+
+  .avatar {
+    display: flex;
+    flex-shrink: 0;
   }
 }
 
@@ -126,7 +133,6 @@
         }
 
         .mail-verify {
-
           .mail-verify-link {
             @include buttonNoBorder;
           }

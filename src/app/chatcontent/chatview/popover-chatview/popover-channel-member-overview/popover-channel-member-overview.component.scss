@@ -11,16 +11,10 @@
   transition: $transition-popover;
 }
 
-main {
-  @include flex(center, center);
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  padding: 2.5rem;
-
-  >div {
+  .member-list-header {
     @include flex(space-between, center);
     width: 100%;
+    padding: 2.5rem 2.5rem 0 2.5rem; 
 
     h4 {
       margin: 0;
@@ -45,10 +39,12 @@ main {
   }
 
   .member-list {
-    @include flex(center, center);
-    flex-direction: column;
+   
     gap: 0.9375rem;
     width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1rem 2.5rem;
 
     .current-user {
       user-select: none;
@@ -62,6 +58,7 @@ main {
       @include flex(normal, center);
       gap: 0.8125rem;
       width: 100%;
+      margin-bottom: 0.9375rem;
 
       >span {
         @include nunito(1.125, 400)
@@ -115,7 +112,6 @@ main {
       }
     }
   }
-}
 
 .add-new-member-popover {
   @include flex(center, center);
@@ -179,6 +175,7 @@ main {
     border-radius: 1.875rem;
     border: $default-border;
     gap: 0.5rem;
+    width: 100%;
 
 
     >input {

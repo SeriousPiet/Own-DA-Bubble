@@ -20,4 +20,8 @@ export class Chat {
     return false;
   }
 
+  update(data: any) {
+    if (data.messagesCount) this.messagesCount = data.messagesCount;
+  }
+
 }

@@ -1,6 +1,9 @@
 @import "../../styles.scss";
 @import "../../mixins.scss";
 
+$wsm-width: clamp(18rem, 4.444vw + 14.667rem, 20rem);
+$thread-width: clamp(26rem, 13.333vw + 16rem, 32rem);
+
 #emailNotVerifiedPopover {
   transform: translateX(100vw);
   margin: auto 1.25rem 1.25rem auto;
@@ -34,21 +37,20 @@
 }
 
 section.chatcontent {
+  display: grid;
+  grid:
+    "top-bar top-bar top-bar" auto
+    "workspace-menu chatview threadview" 1fr
+    / auto 1fr auto;
+  grid-template-rows: 4.75rem auto;
+  gap: 1.25rem;
+
   width: 100%;
   max-width: 1920px;
   height: 100vh;
   padding: 1.5rem 1.25rem 1.25rem;
   background-color: $background;
-
-  display: grid;
-  grid:
-    "top-bar top-bar top-bar" auto
-    "workspace-menu chatview threadview" 1fr
-    / auto 1fr 20%;
-  grid-template-rows: fit-content auto;
-  gap: 1.25rem;
-
-  transition: $transition-standard;
+  transition: $transition-grid;
 
   &.menu-hidden {
     padding-left: 0;
@@ -65,12 +67,21 @@ section.chatcontent {
 
 .workspace-menu {
   grid-area: workspace-menu;
-  max-width: 20rem;
   border-radius: 1.875rem;
   background-color: #fff;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  transition: $transition-standard;
+  transition: $transition-grid;
+
+  &.hidden {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+  &.visible {
+    width: $wsm-width;
+    opacity: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
 }
 
 .chatview {
@@ -78,15 +89,28 @@ section.chatcontent {
   border-radius: 1.875rem;
   background-color: #fff;
   overflow-y: scroll;
-  transition: $transition-standard;
+  transition: $transition-grid;
 }
 
 .threadview {
   grid-area: threadview;
   border-radius: 1.875rem;
   background-color: #fff;
-  overflow-y: scroll;
-  transition: $transition-standard;
+  transition: $transition-grid;
+
+  &.hidden {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+  &.visible {
+    // clamp() 32rem bei 1920px / 26rem bei 1280px
+    width: $thread-width;
+
+    opacity: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
 }
 
 .hide_show_wsm {
@@ -105,7 +129,12 @@ section.chatcontent {
   background-color: #fff;
   border-radius: 0 1.875rem 1.875rem 0;
   box-shadow: $profile-box-shadow;
-  transition: $transition-standard;
+  transition: $transition-grid;
+
+  @media (width > 1920px) {
+    border-radius: 1.875rem;
+    padding: 1.4375rem 0.75rem;
+  }
 
   .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-close.svg");

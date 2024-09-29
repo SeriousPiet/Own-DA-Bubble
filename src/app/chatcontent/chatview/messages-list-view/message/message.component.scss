@@ -1,6 +1,70 @@
 @import "../../../../../styles.scss";
 @import "../../../../../mixins.scss";
 
+// 2.875rem at 1920px to 1.25rem at 1280px
+$p-left: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
+$p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
+$creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
+
+.emoji-div {
+  @include nunito(0.875, 400, black);
+}
+
+.self-reaction {
+  background-color: $secondary;
+  border-radius: 1000px;
+  border: 1px solid $accent;
+  color: #fff;
+}
+
+.other-reaction {
+  border-radius: 1000px;
+  background-color: white;
+  border: $default-border;
+}
+
+.reaction-btn {
+  position: relative;
+  width: fit-content;
+
+  &:hover {
+    .reaction-hover-info {
+      transform: translateY(0);
+      box-shadow: $profile-box-shadow;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+.reaction-hover-info {
+  position: absolute;
+  z-index: 10;
+  bottom: 105%;
+  left: 50%;
+  transform: translateY(-20px);
+  @include flex(center, center);
+  width: clamp(14ch, 100%, 32ch);
+
+  padding: 0.325rem 0.625rem;
+  background-color: $secondary;
+  border-radius: 1rem 1rem 1rem 0;
+
+  color: #fff;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: $transition-standard;
+
+  p {
+    text-align: left;
+  }
+
+  .emoji-tag {
+    font-size: 0.875rem;
+  }
+}
+
 .message-attachments {
   @include nunito(1, 400, black);
   display: flex;
@@ -48,11 +112,13 @@
     &:hover {
       .action-div {
         background-color: lightgray;
+
         img {
           opacity: 1;
 
           &:hover {
-            filter: invert(29%) sepia(96%) saturate(7480%) hue-rotate(180deg) brightness(100%) contrast(102%);
+            filter: invert(29%) sepia(96%) saturate(7480%) hue-rotate(180deg)
+              brightness(100%) contrast(102%);
           }
         }
       }
@@ -60,21 +126,24 @@
   }
 }
 
-
 .message-ctn {
   display: flex;
-  padding: 0.625rem 0rem 0.625rem 2.8125rem;
+  padding: 0.625rem $p-right 0.625rem $p-left;
   gap: 1.875rem;
   position: relative;
   transition: $transition-popover;
 
   .message-avatar-ctn {
-    >span {
+    .message-creator-avatar {
+      cursor: pointer;
+    }
+
+    > span {
       display: none;
     }
   }
 
-  >section {
+  > section {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -84,23 +153,25 @@
       @include flex(normal, center);
       gap: 1.25rem;
 
-      >.message-creator-name {
-        font-size: 1.125rem;
+      > .message-creator-name {
+        font-size: $creator-fs;
         font-weight: 700;
+        text-wrap: balance;
+        text-align: left;
 
         &:hover {
           color: $accent;
         }
       }
 
-      >span {
+      > span {
         font-size: 0.875rem;
         font-weight: 400;
         color: #686868;
       }
     }
 
-    >.message-text {
+    > .message-text {
       margin: 0;
       padding: 15px;
       border-radius: 0 1.875rem 1.875rem 1.875rem;
@@ -112,25 +183,23 @@
 
     .message-reactions {
       display: flex;
-      gap: 10px;
+      gap: 0.625rem;
       min-height: 2.25rem;
 
-      >button {
-        padding: 5px 10px;
+      > button {
         @include flex(center, center);
-        gap: 10px;
-        border: $default-border;
-        border-radius: 20px;
+        gap: 0.625rem;
+        padding: 0 0.875rem;
       }
 
-      >img {
+      > img {
         &:hover {
           content: url(../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
         }
       }
     }
 
-    >.message-info {
+    > .message-info {
       @include flex(flex-start, center);
       width: 100%;
       gap: 1.25rem;
@@ -139,7 +208,7 @@
         @include flex(normal, center);
         gap: 1.25rem;
 
-        >a {
+        > a {
           display: flex;
           gap: 0.375rem;
           font-size: 1.125rem;
@@ -153,13 +222,13 @@
           }
         }
 
-        >span {
+        > span {
           font-size: 0.875rem;
           font-weight: 400;
         }
       }
 
-      >span {
+      > span {
         font-size: 0.875rem;
         font-weight: 400;
       }
@@ -171,51 +240,44 @@
     cursor: pointer;
     background-color: $background;
 
-    >section {
-      >p {
+    > section {
+      > p {
         background-color: #ffffff;
-      }
-
-      .message-reactions {
-        >button {
-          background-color: #ffffff;
-
-          &:hover {
-            border-color: $accent;
-          }
-        }
       }
     }
   }
 
   &:hover {
-    >section {
-      .message-reactions {
-        >button {
-          background-color: #ffffff;
-
-          &:hover {
-            border-color: $accent;
-          }
+    > section {
+      .self-reaction {
+        &:hover {
+          border: 1px solid $error;
+        }
+      }
+      .other-reaction {
+        background-color: #ffffff;
+        &:hover {
+          border-color: $accent;
         }
       }
     }
   }
 }
 
-
 .message-from-user {
   flex-direction: row-reverse;
-  padding: 0.625rem 2.8125rem 0.625rem 0;
+  // insert clamp() for padding-right here
+  padding: 0.625rem $p-left 0.625rem $p-right;
 
-  >section {
+  > section {
     align-items: flex-end;
 
     .message-header {
       flex-direction: row-reverse;
 
-      >span {
+      > span {
         text-align: end;
+        text-wrap: nowrap;
       }
 
       .message-creator-name {
@@ -223,7 +285,7 @@
       }
     }
 
-    >.message-text {
+    > .message-text {
       border-radius: 1.875rem 0 1.875rem 1.875rem;
       background-color: $primary;
       color: white;
@@ -244,7 +306,7 @@
     left: 4.8125rem;
     right: unset;
 
-    >section {
+    > section {
       #edit-message-icon {
         display: flex;
       }
@@ -268,6 +330,7 @@
 
 .interact-ctn-popover {
   padding: 0.1875rem 0.9375rem 0.1875rem 1.25rem;
+  // padding: 0.1875rem 0.375rem 0.1875rem 0.325rem;
   border-radius: 1.5625rem 1.5625rem 0 1.5625rem;
   border: 1px solid #adb0d9;
   height: fit-content;
@@ -276,11 +339,11 @@
   right: 5.8125rem;
   background-color: white;
 
-  >section {
+  > section {
     @include flex(normal, center);
     gap: 0.3125rem;
 
-    >div {
+    > div {
       @include flex(center, center);
       padding: 8px;
       border-radius: 20px;
@@ -320,15 +383,15 @@
   }
 }
 
-#add-reaction-icon:hover>img {
+#add-reaction-icon:hover > img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg");
 }
 
-#comment-message-btn:hover>img {
+#comment-message-btn:hover > img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/comment-hover.svg");
 }
 
-#edit-message-icon:hover>img {
+#edit-message-icon:hover > img {
   content: url("../../../../../assets/icons/wsm/ws-write-hover.svg");
 }
 
@@ -344,7 +407,7 @@
   opacity: 0;
   display: none;
 
-  >span {
+  > span {
     padding: 0.625rem 1.25rem;
     border-radius: 0 1.875rem 1.875rem 1.875rem;
     min-width: 220px;
@@ -374,7 +437,7 @@
   flex-direction: column;
   justify-content: space-between;
 
-  >textarea {
+  > textarea {
     resize: none;
     width: 100%;
     border: none;
@@ -383,13 +446,13 @@
     font-size: 1rem;
   }
 
-  >div {
+  > div {
     @include flex(space-between, center);
   }
 }
 
 #emoji-picker-icon:hover {
-  >img {
+  > img {
     content: url("../../../../../assets/icons/chat/write-message/emoji-picker-hover.svg");
   }
 }
@@ -424,7 +487,7 @@
       display: none;
     }
 
-    >section {
+    > section {
       .message-header {
         display: none;
       }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-imprint',
@@ -8,4 +9,10 @@ import { RouterModule } from '@angular/router';
   templateUrl: './imprint.component.html',
   styleUrl: './imprint.component.scss',
 })
-export class ImprintComponent {}
+export class ImprintComponent {
+  constructor(private location: Location) {}
+
+  goBack() {
+    this.location.back();
+  }
+}

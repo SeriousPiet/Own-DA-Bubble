@@ -22,7 +22,7 @@ section {
   align-items: center;
 }
 
-@keyframes color-change {
+@keyframes colorChange {
   0% {
     background: $primary;
   }
@@ -33,5 +33,5 @@ section {
 }
 
 .color-change {
-  animation: color-change 1.5s linear alternate both;
+  animation: colorChange 1.5s linear alternate both;
 }
