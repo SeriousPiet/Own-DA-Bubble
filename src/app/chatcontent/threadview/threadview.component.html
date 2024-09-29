@@ -27,6 +27,7 @@
         />
 
         <app-message
+        [isThreadView]="true"
           [id]="navigationService.threadViewObject.id"
           [messageWriter]="navigationService.threadViewObject.creatorID"
           [messageData]="navigationService.threadViewObject"
