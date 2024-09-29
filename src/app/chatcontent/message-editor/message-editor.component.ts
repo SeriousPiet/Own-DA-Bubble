@@ -11,6 +11,7 @@ import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
 import { LockedSpanBlot } from '../../shared/models/lockedspan.class';
+import { getTextBeforePreviousSign, insertItemAsSpan, registerLockedSpanBlot } from '../../utils/quil/utility';
 
 
 @Component({
@@ -42,7 +43,6 @@ export class MessageEditorComponent implements AfterViewInit {
   public toolbarID = 'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
-  private boundingKey = ' '; // sign bevor and after the span
   public quillstyle = {
     minHeight: this.minHeight_rem + 'rem',
     maxHeight: this.maxHeight_rem + 'rem',
@@ -159,7 +159,7 @@ export class MessageEditorComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     if (this.editor) {
       this.editor.onEditorCreated.subscribe((quill: any) => {
-        this.registerLockedSpanBlot();
+        registerLockedSpanBlot();
         this.quill = this.editor!.quillEditor;
         this.addTextChangeController();
         this.addFocusController();
@@ -194,7 +194,7 @@ export class MessageEditorComponent implements AfterViewInit {
     });
     this.quill.on('text-change', (event) => {
       if (this.showPicker) {
-        const newSearchString = this.getTextBeforePreviousSign(this.pickersign);
+        const newSearchString = getTextBeforePreviousSign(this.quill, this.getLastOrCurrentSelection(), this.pickersign);
         if (newSearchString === null) this.closeListPicker();
         else this.updatePickerItems(newSearchString);
       }
@@ -256,17 +256,6 @@ export class MessageEditorComponent implements AfterViewInit {
 
 
   /**
-   * Registers the LockedSpanBlot with Quill if it is not already registered.
-   * This method checks if the 'lockedSpan' format is already imported in Quill.
-   * If it is not, it registers the LockedSpanBlot format.
-   */
-  registerLockedSpanBlot() {
-    const existingBlot = Quill.imports['formats/lockedSpan'];
-    if (!existingBlot) Quill.register(LockedSpanBlot);
-  }
-
-
-  /**
    * Handles key events for the picker selection.
    * 
    * @param key - The key that was pressed.
@@ -301,55 +290,6 @@ export class MessageEditorComponent implements AfterViewInit {
 
 
   /**
-   * Retrieves the text immediately following the last occurrence of a specified character
-   * before the current cursor position within the Quill editor.
-   *
-   * @param char - The character to search for before the cursor position.
-   * @returns The text immediately following the last occurrence of the specified character
-   *          before the cursor, or `null` if the character is not found or the text does not
-   *          match the specified regex pattern.
-   */
-  getTextBeforePreviousSign(char: string): string | null {
-    const range = this.getLastOrCurrentSelection();
-    if (!range) return null;
-    const cursorPosition = range.index;
-    const textBeforeCursor = this.quill.getText(0, cursorPosition + 1);
-    const lastCharIndex = textBeforeCursor.lastIndexOf(char);
-    if (lastCharIndex === -1) return null;
-    const result = textBeforeCursor.slice(lastCharIndex + 1, cursorPosition);
-    const regex = /^[a-zA-Z]*$/;
-    if (!regex.test(result)) return null;
-    return result;
-  }
-
-
-  /**
-   * Removes the word and symbol preceding the current selection in the editor.
-   * 
-   * @param searchSign - The symbol to search for in the text.
-   * @returns The index of the start of the removed word, or -1 if no word was removed.
-   */
-  removeWordAndSymbolFromEditor(searchSign: string): number {
-    const range = this.getLastOrCurrentSelection();
-    if (!range) return -1;
-    const text = this.quill.getText();
-    let startIndex = range.index;
-    let searchRange = text.substring(0, startIndex);
-    const atIndex = searchRange.lastIndexOf(searchSign);
-    if (atIndex === -1) return -1;
-    searchRange = searchRange.substring(atIndex + 1);
-    if (searchRange.includes(' ')) return -1;
-    const wordMatch = searchRange.match(/^\S+/);
-    let wordStartIndex = atIndex;
-    let wordEndIndex = wordStartIndex + 1;
-    if (wordMatch) wordEndIndex += wordMatch[0].length;
-    this.quill.deleteText(wordStartIndex, wordEndIndex - wordStartIndex);
-    this.quill.setSelection(wordStartIndex, Quill.sources.SILENT);
-    return wordStartIndex;
-  }
-
-
-  /**
    * Handles the selection of an item from the picker.
    * Depending on the type of the item (User or Channel), it inserts the item as a span
    * and then closes the list picker.
@@ -357,7 +297,7 @@ export class MessageEditorComponent implements AfterViewInit {
    * @param item - The selected item from the picker, which can be either a User or a Channel.
    */
   choosePickerItem(item: User | Channel) {
-    this.insertItemAsSpan(item);
+    insertItemAsSpan(this.quill, this.getLastOrCurrentSelection(), item);
     this.closeListPicker();
   }
 
@@ -372,29 +312,6 @@ export class MessageEditorComponent implements AfterViewInit {
     if (this.quill.hasFocus()) return this.quill.getSelection();
     if (this.savedRange) return this.savedRange;
     return null;
-  }
-
-
-  /**
-   * Inserts a span element representing a User or Channel into the Quill editor at the current cursor position.
-   * The span element is styled and tagged based on whether the item is a User or a Channel.
-   *
-   * @param item - The item to insert, which can be either a User or a Channel.
-   *               If the item is a User, it will be prefixed with '@' and styled with the 'highlight-user' class.
-   *               If the item is a Channel, it will be prefixed with '#' and styled with the 'highlight-channel' class.
-   */
-  insertItemAsSpan(item: User | Channel) {
-    const tagSign = item instanceof User ? '@' : '#';
-    const tagClass = item instanceof User ? 'highlight-user' : 'highlight-channel';
-    let cursorPosition = this.removeWordAndSymbolFromEditor(tagSign);
-    if (cursorPosition === -1) cursorPosition = this.quill.getLength();
-    const spanText = tagSign + item.name;
-    const spanTextLength = spanText.length;
-    this.quill.insertText(cursorPosition, this.boundingKey + spanText + this.boundingKey);
-    this.quill.formatText(cursorPosition + this.boundingKey.length, spanTextLength, 'lockedSpan', { class: tagClass, id: item.id, });
-    this.quill.setSelection(this.boundingKey.length * 2 + cursorPosition + spanTextLength, Quill.sources.SILENT);
-    this.quill.focus();
-    this._cdr.detectChanges();
   }
 
 

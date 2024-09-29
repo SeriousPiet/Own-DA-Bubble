@@ -15,7 +15,7 @@
       @for(item of pickerItems; track item){
       <div #pickeritem [ngClass]="currentPickerIndex === $index ? 'picker-item-select' : 'picker-item-nonselect'"
         class="picker-item">
-        @if(isUser(item)){
+        @if(isUser(item)) {
         <div appAvatar [user]="item" context="search"></div>
         } @else {
         <img src="../../../assets/icons/wsm/hashtag.svg" alt="" />
