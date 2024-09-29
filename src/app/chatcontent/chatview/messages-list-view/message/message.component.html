@@ -177,7 +177,7 @@
           alt=""
         />
       </div>
-      @if(_messageData.answerable) {
+      @if(_messageData.answerable || !isThreadView) {
       <div
         (click)="setThread(_messageData)"
         class="button-ctn"

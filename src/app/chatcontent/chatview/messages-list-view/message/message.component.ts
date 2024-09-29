@@ -67,7 +67,7 @@ export class MessageComponent
   }
   @Input() id: string = '';
   @Input() messages: Message[] = [];
-
+  @Input() isThreadView = false;
   @Input() messageEditorOpen = false;
 
   @Output() messageEditorOpenChange = new EventEmitter<boolean>();
