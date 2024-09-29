@@ -147,7 +147,7 @@ export class MessageEditorComponent implements AfterViewInit {
             return this.handlePickerSelectionKeys('Escape');
           });
           this.quill.keyboard.bindings['Enter'] = [];
-          this.quill.clipboard.dangerouslyPasteHTML(this.messageAsHTML);
+          this.quill.root.innerHTML = this.messageAsHTML;
           this.quill.focus();
         }
         this.toolbar?.nativeElement.addEventListener('mouseenter', (event: MouseEvent) => this.onToolbarClick(event));
