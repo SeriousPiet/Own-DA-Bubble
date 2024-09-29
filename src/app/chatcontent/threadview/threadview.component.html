@@ -21,13 +21,17 @@
   <section class="threadview-content">
     @if (navigationService.threadViewObject) {
     <div class="thread-messages-content">
-      <app-message-date [date]="navigationService.threadViewObject.createdAt" />
+      <div>
+        <app-message-date
+          [date]="navigationService.threadViewObject.createdAt"
+        />
 
-      <app-message
-        [id]="navigationService.threadViewObject.id"
-        [messageWriter]="navigationService.threadViewObject.creatorID"
-        [messageData]="navigationService.threadViewObject"
-      />
+        <app-message
+          [id]="navigationService.threadViewObject.id"
+          [messageWriter]="navigationService.threadViewObject.creatorID"
+          [messageData]="navigationService.threadViewObject"
+        />
+      </div>
       <app-messages-list-view
         class="thread-list-view"
         [messagesPath]="navigationService.threadViewPath"
