@@ -22,6 +22,8 @@ import { MessageGreetingComponent } from './messages-list-view/message-greeting/
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { PopoverMemberProfileComponent } from './popover-chatview/popover-member-profile/popover-member-profile.component';
 import { BehaviorSubject } from 'rxjs';
+import { ChannelService } from '../../utils/services/channel.service';
+import { User } from '../../shared/models/user.class';
 
 @Component({
   selector: 'app-chatview',
@@ -60,6 +62,7 @@ export class ChatviewComponent implements OnInit {
 
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService);
+  public channelService = inject(ChannelService);
   public isAChannel = false;
   public isAChat = false;
   public isDefaultChannel = true;
@@ -101,26 +104,15 @@ export class ChatviewComponent implements OnInit {
 
   getChatPartner(object: Chat | Channel) {
     if (this.currentContext instanceof Chat) {
-     object.memberIDs.forEach(member => {
-      if(member !== this.userService.currentUser?.id) {
-        this.userService.getUserByID(member)?.name;
-      }
-     });
+      const chatPartnerID = object.memberIDs.find(
+        (id) => id !== this.userService.currentUser?.id
+      );
+      if (chatPartnerID) return this.userService.getUserByID(chatPartnerID);
+      if (this.isSelfChat())
+        return this.userService.getUserByID(object.memberIDs[0]);
     }
+    return undefined;
   }
-
-  // getChatPartner(object: Chat | Channel) {
-  //   if (this.currentContext instanceof Chat) {
-  //     const chatPartnerID = object.memberIDs.find(
-  //       (id) => id !== this.userService.currentUser?.id
-  //     );
-  //     console.log()
-  //     if (chatPartnerID) return this.userService.getUserByID(chatPartnerID);
-  //     if (this.isSelfChat())
-  //       return this.userService.getUserByID(object.memberIDs[0]);
-  //   }
-  //   return undefined;
-  // }
 
   returnChatPartnerName() {
     const chatPartner = this.currentContext.memberIDs.find(
@@ -245,17 +237,30 @@ export class ChatviewComponent implements OnInit {
     return '';
   }
 
-  setSelectedUserObject(messageCreatorID: string) {
+  setSelectedUserObject(selectedUserID: string) {
     this.userService.updateSelectedUser(
-      this.userService.getUserByID(messageCreatorID)
+      this.userService.getUserByID(selectedUserID)
     );
   }
 
-  returnPopoverTarget(messageCreator: string) {
-    if (messageCreator === this.userService.currentUser?.id) {
+  returnPopoverTarget(selectedUser: string) {
+    if (selectedUser === this.userService.currentUser?.id) {
       return 'profile-popover';
     } else {
       return 'popover-member-profile';
     }
   }
+
+  getChatPartnerID(chat: Chat | Channel):string | undefined {
+    if (this.userService.currentUser) {
+      if (chat.memberIDs[0] === this.userService.currentUserID)
+        return chat.memberIDs[1];
+      else return chat.memberIDs[0];
+    }
+    return;
+  }
+
+
+
+
 }
