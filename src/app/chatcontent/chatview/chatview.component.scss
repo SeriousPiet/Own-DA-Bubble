@@ -168,6 +168,7 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
 .default-channel {
   @include flex(flex-start, flex-start);
   height: 100%;
+  background-image: linear-gradient(270deg, #444df23d 5%, #fff 95%);
 
   .chat-messages-content {
     height: 100%;
@@ -208,7 +209,6 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
   opacity: 1;
   @include flex(center, center);
   flex-direction: column;
- 
 }
 
 #channel-member-overview-popover {
@@ -291,5 +291,5 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
 
 app-message-greeting {
   width: 100%;
-  background-image: linear-gradient(270deg, #444df23d 5%, #fff 95%);
+  height: 100%;
 }
