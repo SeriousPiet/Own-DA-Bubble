@@ -3,6 +3,7 @@
 
 $wsm-width: clamp(18rem, 4.444vw + 14.667rem, 20rem);
 $thread-width: clamp(26rem, 13.333vw + 16rem, 32rem);
+$transition-grid: all 0.25s ease-out;
 
 #emailNotVerifiedPopover {
   transform: translateX(100vw);
@@ -36,81 +37,169 @@ $thread-width: clamp(26rem, 13.333vw + 16rem, 32rem);
   }
 }
 
+// Grundlegendes Grid-Layout für alle Varianten
 section.chatcontent {
   display: grid;
-  grid:
-    "top-bar top-bar top-bar" auto
-    "workspace-menu chatview threadview" 1fr
-    / auto 1fr auto;
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: 4.75rem auto;
-  gap: 1.25rem;
-
+  grid-template-areas:
+    "topBar topBar topBar"
+    "workspaceMenu chatView threadView";
+  column-gap: 1.25rem;
+  row-gap: 1.25rem;
   width: 100%;
   max-width: 1920px;
   height: 100vh;
-  padding: 1.5rem 1.25rem 1.25rem;
+  padding: 1.25rem;
   background-color: $background;
   transition: $transition-grid;
+}
 
-  &.menu-hidden {
+// Layout-Modi
+section.chatcontent.three-column,
+section.chatcontent.two-column {
+  .workspace-menu {
+    grid-column: 1 / 2;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .chatview {
+    grid-column: 2 / 3;
+
+    &.expanded {
+      width: 100%;
+    }
+  }
+
+  .threadview {
+    grid-column: 3 / 4;
+    width: $thread-width;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  &.single-column {
+    column-gap: 0;
+  }
+
+  &:has(.threadview.hidden) {
+    padding-right: 0;
+  }
+
+  &.single-column:has(.threadview.hidden) {
+    padding-right: 1.25rem;
+  }
+}
+
+section.chatcontent.two-column-interim {
+  grid-template-columns: auto auto auto;
+
+  .workspace-menu {
+    grid-column: 1 / 2;
+    max-width: $wsm-width;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .chatview {
+    grid-column: 2 / 3;
+    width: 100%;
+    transition: opacity 0s, overflow 0s, width 0.25s !important;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .threadview {
+    grid-column: 3 / 4;
+    width: 100%;
+    transition: opacity 0s, overflow 0s, width 0.25s !important;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  &.single-column {
+    column-gap: 0;
+  }
+
+  &:has(.threadview.hidden) {
+    padding-right: 0;
     padding-left: 0;
   }
 
-  &.thread-hidden {
-    padding-right: 0;
+  &:has(.chatview.hidden) {
+    column-gap: 0.625rem;
   }
+
+  &:has(.threadview.hidden):not(:has(.workspace-menu.hidden)) {
+    padding-right: 0;
+    padding-left: 1.25rem;
+  }
+
+  // &.single-column:has(.threadview.hidden) {
+  //   padding-right: 1.25rem;
+  // }
+}
+
+section.chatcontent.two-column:has(.workspace-menu.hidden):not(
+    :has(.threadview.hidden)
+  ) {
+  padding-left: 0;
+}
+
+// Gemeinsame Stile für alle Bereiche
+.workspace-menu,
+.chatview,
+.threadview {
+  background-color: #fff;
+  border-radius: 1.875rem;
+  transition: $transition-grid;
 }
 
 .top-bar {
-  grid-area: top-bar;
+  grid-area: topBar;
 }
 
 .workspace-menu {
-  grid-area: workspace-menu;
-  border-radius: 1.875rem;
-  background-color: #fff;
-  transition: $transition-grid;
-
-  &.hidden {
-    width: 0;
-    opacity: 0;
-    overflow: hidden;
-  }
-  &.visible {
-    width: $wsm-width;
-    opacity: 1;
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
+  grid-area: workspaceMenu;
+  width: $wsm-width;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  opacity: 1;
 }
 
 .chatview {
-  grid-area: chatview;
-  border-radius: 1.875rem;
-  background-color: #fff;
+  grid-area: chatView;
   overflow-y: scroll;
-  transition: $transition-grid;
+  overflow-x: hidden;
+  opacity: 1;
 }
 
 .threadview {
-  grid-area: threadview;
-  border-radius: 1.875rem;
-  background-color: #fff;
-  transition: $transition-grid;
-
-  &.hidden {
-    width: 0;
-    opacity: 0;
-    overflow: hidden;
-  }
-  &.visible {
-    // clamp() 32rem bei 1920px / 26rem bei 1280px
-    width: $thread-width;
-
-    opacity: 1;
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
+  grid-area: threadView;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  opacity: 1;
 }
 
 .hide_show_wsm {
@@ -129,7 +218,7 @@ section.chatcontent {
   background-color: #fff;
   border-radius: 0 1.875rem 1.875rem 0;
   box-shadow: $profile-box-shadow;
-  transition: $transition-grid;
+  transition: $transition-standard;
 
   @media (width > 1920px) {
     border-radius: 1.875rem;
