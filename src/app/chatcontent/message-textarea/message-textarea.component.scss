@@ -12,6 +12,7 @@
   padding: 1.25rem;
   background-color: #ffffff;
   border-radius: 0 0 1.875rem 1.875rem;
+  border: solid 1px $default-border;
 }
 
 .errorspan {
@@ -113,12 +114,13 @@
 
 .input-message {
   position: relative;
-  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
   gap: 0.5rem;
+  width: 100%;
+  border-top: $default-border;
   transition: box-shadow 0.3s ease;
 
   .input-message-toolbar {
@@ -183,7 +185,7 @@
 
 #tag-channel-icon:hover {
   > img {
-    content: url("../../../assets/icons/chat/write-message/hashtag-hover.svg");
+    content: url("../../../assets/icons/chat/write-message/hashtag-active.svg");
   }
 }
 
