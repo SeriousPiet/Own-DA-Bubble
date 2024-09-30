@@ -10,7 +10,6 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
-import { LockedSpanBlot } from '../../shared/models/lockedspan.class';
 import { getTextBeforePreviousSign, insertItemAsSpan, registerLockedSpanBlot } from '../../utils/quil/utility';
 
 
@@ -39,7 +38,10 @@ export class MessageEditorComponent implements AfterViewInit {
   private emojiService = inject(EmojipickerService);
 
   // Quill Editor variables and configuration
+  readonly maxMessageLength = 1000;
+  public messageLength = 0;
   public quill!: Quill;
+  public quillError = '';
   public toolbarID = 'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
@@ -165,6 +167,7 @@ export class MessageEditorComponent implements AfterViewInit {
         this.addFocusController();
         this.addKeyController();
         this.quill.root.innerHTML = this.messageAsHTML;
+        this.messageLength = this.quill.getLength();
         this.quill.focus();
       });
     }
@@ -189,7 +192,14 @@ export class MessageEditorComponent implements AfterViewInit {
       if (eventName === 'text-change') {
         const [delta, oldDelta, source] = args;
         const hasImage = delta.ops.some((op: any) => op.insert && op.insert.image);
+        this.messageLength = this.quill.getLength();
+        this.quillError = '';
         if (source === 'user' && hasImage) this.quill.history.undo();
+        else if (this.messageLength > this.maxMessageLength) {
+          this.quillError = 'Nachricht zu lang';
+          this.quill.deleteText(this.maxMessageLength, this.messageLength - this.maxMessageLength);
+        }
+        this._cdr.detectChanges();
       }
     });
     this.quill.on('text-change', (event) => {
@@ -209,7 +219,6 @@ export class MessageEditorComponent implements AfterViewInit {
    * When the editor loses focus, the current selection range is saved, and the toolbar is hidden
    * if the blur event's related target is not within the toolbar. Additionally, the list picker is closed.
    * 
-   * @private
    */
   addFocusController() {
     const editorElement = this.quill.root;
@@ -220,7 +229,6 @@ export class MessageEditorComponent implements AfterViewInit {
     editorElement.addEventListener('blur', (event: FocusEvent) => {
       this.savedRange = this.quill.getSelection();
       const target = event.relatedTarget as HTMLElement;
-      console.log('blur');
       if (!target || !this.toolbar.nativeElement.contains(target)) this.showToolbar = false;
       this.closeListPicker();
     });
@@ -310,8 +318,7 @@ export class MessageEditorComponent implements AfterViewInit {
    */
   getLastOrCurrentSelection(): QuillRange | null {
     if (this.quill.hasFocus()) return this.quill.getSelection();
-    if (this.savedRange) return this.savedRange;
-    return null;
+    return this.savedRange;
   }
 
 

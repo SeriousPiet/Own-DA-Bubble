@@ -64,6 +64,8 @@
         </svg>
       </button>
     </span>
+    <span class="ql-formats"><p class="quill-message-lenght">{{ messageLength }}/{{ maxMessageLength }}</p></span>
+    <span class="ql-formats"><p class="quill-error">{{ quillError }}</p></span>
   </div>
   <quill-editor #editor [styles]="quillstyle" [modules]="quillconfig" [theme]="'snow'"
     [placeholder]="placeholder"></quill-editor>
