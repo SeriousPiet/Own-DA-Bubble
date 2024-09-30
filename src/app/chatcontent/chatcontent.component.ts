@@ -28,9 +28,17 @@ import { EmojipickerComponent } from './emojipicker/emojipicker.component';
 export class ChatcontentComponent implements OnInit, OnDestroy {
   private breakpointSubscription: Subscription | undefined;
 
-  currentLayout: 'three-column' | 'two-column' | 'one-column' = 'three-column';
+  currentLayout:
+    | 'three-column'
+    | 'two-column'
+    | 'two-column-interim'
+    | 'one-column' = 'three-column';
+
   isWorkspaceMenuVisible = true;
   isThreadViewVisible = false;
+  isChatViewVisible = true;
+  isChatViewExpanded = false;
+  isSingleColumn = false;
 
   navigationService = inject(NavigationService);
 
@@ -39,8 +47,9 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const layoutBreakpoints = {
       'three-column': '(min-width: 1200px)',
-      'two-column': '(min-width: 640px) and (max-width: 1199px)',
-      'one-column': '(max-width: 639px)',
+      'two-column': '(min-width: 892px) and (max-width: 1199px)',
+      'two-column-interim': '(min-width: 716px) and (max-width: 891px)',
+      'one-column': '(max-width: 715px)',
     };
 
     this.breakpointSubscription = this.breakpointObserver
@@ -50,6 +59,8 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
           this.currentLayout = 'three-column';
         } else if (state.breakpoints[layoutBreakpoints['two-column']]) {
           this.currentLayout = 'two-column';
+        } else if (state.breakpoints[layoutBreakpoints['two-column-interim']]) {
+          this.currentLayout = 'two-column-interim';
         } else {
           this.currentLayout = 'one-column';
         }
@@ -66,38 +77,62 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
   adjustLayout() {
     switch (this.currentLayout) {
       case 'three-column':
-        // Alle Spalten können potentiell sichtbar sein
-        break;
       case 'two-column':
-        // Wenn ThreadView geöffnet wird, schließe WSM und umgekehrt
-        if (this.isThreadViewVisible) {
-          this.isWorkspaceMenuVisible = false;
-        }
+        this.adjustThreeColumnLayout();
+        break;
+      case 'two-column-interim':
+        this.adjustTwoColumnInterimLayout();
         break;
       case 'one-column':
-        // Nur eine Spalte sichtbar
-        if (this.isThreadViewVisible) {
-          this.isWorkspaceMenuVisible = false;
-        } else if (this.isWorkspaceMenuVisible) {
-          this.isThreadViewVisible = false;
-        }
+        // Implementierung folgt
         break;
     }
   }
 
-  toggleWorkspaceMenu() {
-    this.isWorkspaceMenuVisible = !this.isWorkspaceMenuVisible;
-    if (this.currentLayout !== 'three-column' && this.isWorkspaceMenuVisible) {
-      this.isThreadViewVisible = false;
+  adjustThreeColumnLayout() {
+    this.isChatViewExpanded =
+      !this.isWorkspaceMenuVisible || !this.isThreadViewVisible;
+    this.isSingleColumn =
+      !this.isWorkspaceMenuVisible && !this.isThreadViewVisible;
+  }
+
+  adjustTwoColumnInterimLayout() {
+    if (!this.isWorkspaceMenuVisible) {
+      // Wenn WSM ausgeblendet ist, zeige entweder ChatView oder ThreadView
+      this.isChatViewVisible = !this.isThreadViewVisible;
+    } else {
+      this.isChatViewVisible = !this.isThreadViewVisible;
+    }
+    this.isChatViewExpanded =
+      this.isChatViewVisible && !this.isWorkspaceMenuVisible;
+  }
+
+  toggleThreadView() {
+    this.isThreadViewVisible = !this.isThreadViewVisible;
+    if (this.currentLayout === 'two-column-interim') {
+      this.isChatViewVisible = !this.isThreadViewVisible;
+      // WSM-Status bleibt unverändert
+    } else if (
+      this.currentLayout !== 'three-column' &&
+      this.isThreadViewVisible
+    ) {
+      this.isWorkspaceMenuVisible = false;
     }
     this.adjustLayout();
   }
 
-  toggleThreadView() {
-    console.log('ChatContent: --> toggleThreadView called');
-    this.isThreadViewVisible = !this.isThreadViewVisible;
-    if (this.currentLayout !== 'three-column' && this.isThreadViewVisible) {
-      this.isWorkspaceMenuVisible = false;
+  toggleWorkspaceMenu() {
+    this.isWorkspaceMenuVisible = !this.isWorkspaceMenuVisible;
+    if (this.currentLayout === 'two-column-interim') {
+      if (this.isWorkspaceMenuVisible) {
+        this.isChatViewVisible = true;
+        this.isThreadViewVisible = false;
+      }
+    } else if (
+      this.currentLayout !== 'three-column' &&
+      this.isWorkspaceMenuVisible
+    ) {
+      this.isThreadViewVisible = false;
     }
     this.adjustLayout();
   }
