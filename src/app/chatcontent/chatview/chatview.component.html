@@ -52,13 +52,14 @@
     </div>
     }@else if(isAChat){
     <button
-      (click)="setSelectedUserObject(currentContext.memberIDs[1])"
-      [attr.popovertarget]="returnPopoverTarget(currentContext.memberIDs[1])"
-      class="chatview-chat-partner-name"
+      (click)="setSelectedUserObject(getChatPartnerID(currentContext)!)"
+      [attr.popovertarget]="
+      returnPopoverTarget(getChatPartnerID(currentContext)!)
+    "      class="chatview-chat-partner-name"
     >
       <div
         appAvatar
-        [user]="getChatPartner(currentContext)!"
+        [user]="getChatPartner(currentContext)"
         context="chat-dm-header"
       ></div>
       <span>{{ returnChatPartnerName() }}</span>
@@ -101,9 +102,9 @@
         }@else if(isAChat){
         <section class="no-pm-ctn">
           <button
-            (click)="setSelectedUserObject(currentContext.memberIDs[1])"
+          (click)="setSelectedUserObject(getChatPartnerID(currentContext)!)"
             [attr.popovertarget]="
-              returnPopoverTarget(currentContext.memberIDs[1])
+            returnPopoverTarget(getChatPartnerID(currentContext)!)
             "
             class="chat-partner-name"
           >
@@ -125,9 +126,9 @@
           <p>
             Dieser Unterhaltung findet nur zwischen
             <button
-              (click)="setSelectedUserObject(currentContext.memberIDs[1])"
+            (click)="setSelectedUserObject(getChatPartnerID(currentContext)!)"
               [attr.popovertarget]="
-                returnPopoverTarget(currentContext.memberIDs[1])
+              returnPopoverTarget(getChatPartnerID(currentContext)!)
               "
             >
               &#64;{{ returnChatPartnerName() }}

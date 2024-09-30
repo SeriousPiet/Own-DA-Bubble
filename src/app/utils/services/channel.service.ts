@@ -156,7 +156,6 @@ export class ChannelService implements OnDestroy {
       else selectedChat = this.chats.find((selectedChat) => selectedChat.memberIDs.includes(selectedUserID) && selectedChat.memberIDs.includes(this.userservice.currentUserID));
       console.log(selectedChat)
       if (selectedChat) return selectedChat;
-      // if (createChat) return await this.addChatWithUserOnFirestore(selectedUserID);
     }
     return;
   }
