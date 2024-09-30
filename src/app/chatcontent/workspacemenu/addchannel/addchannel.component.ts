@@ -64,11 +64,20 @@ export class AddchannelComponent implements AfterViewInit {
   }
 
   onSearchInput() {
+    this.searchService.updateSearchQuery(this.searchQuery);
+    const currentUserID = this.userservice.currentUserID;
     this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
       map((groupedResults: GroupedSearchResults) => {
-        return groupedResults.users.filter((suggestion) =>
-          suggestion.text.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
+        return groupedResults.users
+          .filter((suggestion) =>
+            suggestion.text
+              .toLowerCase()
+              .includes(this.searchQuery.toLowerCase())
+          )
+          .filter(
+            (suggestion) =>
+              this.getUserFromSuggestion(suggestion)?.id !== currentUserID
+          );
       })
     );
   }
