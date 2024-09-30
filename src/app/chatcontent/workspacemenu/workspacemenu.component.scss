@@ -84,18 +84,18 @@ section {
       padding: 0.25rem 0.325rem 0.25rem 0.25rem;
       margin-left: $chnl-ml;
       border-radius: $circled-border-radius;
-    }
 
-    li:hover {
-      background-color: #eceefe;
-      cursor: pointer;
+      &:hover {
+        background-color: #eceefe;
+        cursor: pointer;
+      }
 
       &:hover span {
         font-weight: 700;
         color: $accent;
       }
 
-      > .hashtag {
+      &:hover .hashtag {
         background-image: url("../../../assets/icons/wsm/hashtag-hover.svg");
       }
     }
@@ -259,7 +259,6 @@ section {
 
     span {
       text-align: left;
-      text-wrap: nowrap;
     }
   }
 
