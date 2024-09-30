@@ -1,77 +1,119 @@
 @if(memberList){
-    <div class="member-list-header">
-        <h4>Mitglieder</h4>
-        <button popovertargetaction="hide" popovertarget="channel-member-overview-popover">
-            <img src="assets\icons\chat\general\close.svg" alt="">
-        </button>
+<div class="member-list-header">
+  <h4>Mitglieder</h4>
+  <button
+    popovertargetaction="hide"
+    popovertarget="channel-member-overview-popover"
+  >
+    <img src="assets\icons\chat\general\close.svg" alt="" />
+  </button>
+</div>
+<section class="member-list">
+  @for (memberID of currentChannel.memberIDs; track memberID) {
+  <button
+    [ngClass]="{
+      'current-user': memberID === userService.currentUser?.id,
+      member: true
+    }"
+    (click)="setSelectedUserObject(memberID)"
+    [attr.popovertarget]="returnPopoverTarget(memberID)"
+  >
+    <div
+      appAvatar
+      [user]="userService.getUserByID(memberID)"
+      context="chat-channel-members-big"
+    ></div>
+    <span>{{ getMemberName(memberID) }}</span>
+  </button>
+  }
+  <button
+    (click)="openAddNewMemberPopover()"
+    [ngClass]="{
+      'no-edit-right': !isAllowedToAddMember(),
+      'add-member-btn': true
+    }"
+    [title]="showNoRightToEditInfo()"
+    [disabled]="!isAllowedToAddMember()"
+  >
+    <div>
+      <img src="assets/icons/chat/general/add-to-channel.svg" alt="" />
     </div>
-    <section class="member-list">
-        @for (memberID of currentChannel.memberIDs; track memberID) {
-        <button [ngClass]="{'current-user':memberID === userService.currentUser?.id, 'member': true}"
-            (click)="setSelectedUserObject(memberID)" [attr.popovertarget]="returnPopoverTarget(memberID)">
-            <div appAvatar [user]="userService.getUserByID(memberID)" context="chat-channel-members-big"></div>
-            <span>{{ getMemberName(memberID) }}</span>
-        </button>
-        }
-        <button (click)="openAddNewMemberPopover()"
-            [ngClass]="{'no-edit-right': !isAllowedToAddMember(), 'add-member-btn': true}"
-            [title]="showNoRightToEditInfo()" [disabled]="!isAllowedToAddMember()">
-            <div>
-                <img src="assets/icons/chat/general/add-to-channel.svg" alt="">
-            </div>
-            <span>Mitglieder hinzufügen</span>
-        </button>
-    </section>
-}
-
-@if(addMemberPopover){
+    <span>Mitglieder hinzufügen</span>
+  </button>
+</section>
+} @if(addMemberPopover){
 <main class="add-new-member-popover">
-    <section>
-        <div class="popover-title">
-            <h4>Leute hinzufügen</h4>
-            <button popovertargetaction="hide" popovertarget="channel-member-overview-popover"
-                (click)="resetAddmembers()">
-                <img src="assets\icons\chat\general\close.svg" alt="">
-            </button>
-        </div>
-        <div class="channel-name">
-            <img src="assets/icons/chat/general/hashtag.svg" alt="#" />
-            <span>{{ getTitle(navigationService.chatViewObject) }}</span>
-        </div>
-    </section>
+  <section>
+    <div class="popover-title">
+      <h4>Leute hinzufügen</h4>
+      <button
+        popovertargetaction="hide"
+        popovertarget="channel-member-overview-popover"
+        (click)="resetAddmembers()"
+      >
+        <img src="assets\icons\chat\general\close.svg" alt="" />
+      </button>
+    </div>
+    <div class="channel-name">
+      <img src="assets/icons/chat/general/hashtag.svg" alt="#" />
+      <span>{{ getTitle(navigationService.chatViewObject) }}</span>
+    </div>
+  </section>
 
-    @if (isUserSearchSelected) {
-    <div class="add-member-input-ctn">
-        @if (userAmount > 0) {
-        <div class="search-blocks">
-            @for (user of selectedUsers; track user) {
-            <div class="search-block-item">
-                <div appAvatar [user]="user" context="search"></div>
-                <span>{{ user.name }}</span>
-                <button class="remove-context" (click)="removeUserFromSelection(user)">
-                    <img src="assets/icons/modals/close-search-item.svg" alt="Remove" />
-                </button>
-            </div>
-            }
-        </div>
-        }
-
-        <input type="text" [(ngModel)]="searchQuery" (input)="onSearchInput()" (focus)="onFocus()" (blur)="onBlur()"
-            placeholder="Name eingeben" (change)="addOptionSelected(true)" />
-
-        @for (suggestion of suggestions$ | async; track suggestion) {
-        <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
-            @if(suggestion.type === 'user' && getUserFromSuggestion(suggestion)){
-            <div appAvatar [user]="getUserFromSuggestion(suggestion)!" context="search"></div>
-            <div>{{ suggestion.text }}</div>
-            }
-        </div>
-        }
+  @if (isUserSearchSelected) {
+  <div class="add-member-input-ctn">
+    @if (userAmount > 0) {
+    <div class="search-blocks">
+      @for (user of selectedUsers; track user) {
+      <div class="search-block-item">
+        <div appAvatar [user]="user" context="search"></div>
+        <span>{{ user.name }}</span>
+        <button class="remove-context" (click)="removeUserFromSelection(user)">
+          <img src="assets/icons/modals/close-search-item.svg" alt="Remove" />
+        </button>
+      </div>
+      }
     </div>
     }
-    <button [ngClass]="{'button-disabled': isAnyOptionSelected === false ||
-          (isUserSearchSelected && userAmount === 0), 'button-enable': true}" [disabled]="isAnyOptionSelected === false ||
-          (isUserSearchSelected && userAmount === 0)" (click)="addSelectedUserToChannel()">Hinzufügen
-    </button>
+
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="onSearchInput()"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      placeholder="Name eingeben"
+      (change)="addOptionSelected(true)"
+    />
+
+    @for (suggestion of suggestions$ | async; track suggestion) {
+    <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+      @if(suggestion.type === 'user' && getUserFromSuggestion(suggestion)){
+      <div
+        appAvatar
+        [user]="getUserFromSuggestion(suggestion)!"
+        context="search"
+      ></div>
+      <div>{{ suggestion.text }}</div>
+      }
+    </div>
+    }
+  </div>
+  }
+  <button
+    [ngClass]="{
+      'button-disabled':
+        isAnyOptionSelected === false ||
+        (isUserSearchSelected && userAmount === 0),
+      'button-enable': true
+    }"
+    [disabled]="
+      isAnyOptionSelected === false ||
+      (isUserSearchSelected && userAmount === 0)
+    "
+    (click)="addSelectedUserToChannel()"
+  >
+    Hinzufügen
+  </button>
 </main>
 }
