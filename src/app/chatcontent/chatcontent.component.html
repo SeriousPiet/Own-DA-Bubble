@@ -6,11 +6,7 @@
 
 <section
   class="chatcontent"
-  [ngClass]="[
-    currentLayout,
-    !isWorkspaceMenuVisible ? 'menu-hidden' : '',
-    !isThreadViewVisible ? 'thread-hidden' : ''
-  ]"
+  [ngClass]="[currentLayout, isSingleColumn ? 'single-column' : '']"
 >
   <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
     <div
@@ -26,24 +22,20 @@
   <div class="top-bar">
     <app-header />
   </div>
-  <div
-    class="workspace-menu"
-    [class.visible]="isWorkspaceMenuVisible"
-    [class.hidden]="!isWorkspaceMenuVisible"
-  >
+  <div class="workspace-menu" [class.hidden]="!isWorkspaceMenuVisible">
     <app-workspacemenu />
   </div>
-  <div class="chatview">
+  <div
+    class="chatview"
+    [class.expanded]="isChatViewExpanded"
+    [class.hidden]="isThreadViewVisible"
+  >
     <app-chatview
       [currentContext]="navigationService.chatViewObject"
       (toggleThread)="toggleThreadView()"
     />
   </div>
-  <div
-    class="threadview"
-    [class.visible]="isThreadViewVisible"
-    [class.hidden]="!isThreadViewVisible"
-  >
+  <div class="threadview" [class.hidden]="!isThreadViewVisible">
     <app-threadview (closeThreadView)="toggleThreadView()" />
   </div>
 </section>
