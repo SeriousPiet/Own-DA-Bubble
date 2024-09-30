@@ -12,7 +12,7 @@
     (ngSubmit)="submitSignUpForm($event)"
     class="mask-div"
   >
-    <button type="button" class="return" [routerLink]="['/']">
+    <button type="button" class="return" (click)="goBack()">
       <img src="../../../assets/icons/start/go-back.svg" alt="" />
     </button>
     <span class="headline">Konto erstellen</span>
@@ -71,7 +71,7 @@
 
         <span
           >Ich stimme der
-          <button type="button" [routerLink]="['/policy']">
+          <button type="button" (click)="goToPolicy()">
             Datenschutzerklärung
           </button>
           zu

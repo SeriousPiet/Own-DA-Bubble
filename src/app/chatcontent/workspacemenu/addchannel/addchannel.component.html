@@ -75,10 +75,12 @@
         <label for="specificPeople">Bestimmte Leute hinzufügen</label>
       </div>
       <div>
-        <div class="addUserSearchbar" *ngIf="isUserSearchSelected">
+        @if (isUserSearchSelected) {
+        <div class="addUserSearchbar">
           @if (userAmount > 0) {
           <div class="search-blocks">
-            <div *ngFor="let user of selectedUsers" class="search-block-item">
+            @for (user of selectedUsers; track user) {
+            <div class="search-block-item">
               <div appAvatar [user]="user" context="search"></div>
               <span>{{ user.name }}</span>
               <button
@@ -91,6 +93,7 @@
                 />
               </button>
             </div>
+            }
           </div>
           }
 
@@ -103,22 +106,21 @@
             placeholder="Search users..."
           />
 
-          <div
-            *ngFor="let suggestion of suggestions$ | async"
-            class="suggestion-item"
-            (click)="selectSuggestion(suggestion)"
-          >
+          @for (suggestion of suggestions$ | async; track suggestion) {
+          <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+            @if(suggestion.type === 'user' &&
+            getUserFromSuggestion(suggestion)){
             <div
-              *ngIf="
-                suggestion.type === 'user' && getUserFromSuggestion(suggestion)
-              "
               appAvatar
               [user]="getUserFromSuggestion(suggestion)!"
               context="search"
             ></div>
             <div>{{ suggestion.text }}</div>
+            }
           </div>
+          }
         </div>
+        }
       </div>
     </div>
     <div style="justify-content: end">

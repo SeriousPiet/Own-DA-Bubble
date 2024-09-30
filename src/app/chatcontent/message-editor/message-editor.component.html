@@ -15,12 +15,12 @@
       @for(item of pickerItems; track item){
       <div #pickeritem [ngClass]="currentPickerIndex === $index ? 'picker-item-select' : 'picker-item-nonselect'"
         class="picker-item">
-        @if(isUser(item)){
+        @if(isUser(item)) {
         <div appAvatar [user]="item" context="search"></div>
         } @else {
         <img src="../../../assets/icons/wsm/hashtag.svg" alt="" />
         }
-        <span class="picker-item-name" (click)="clickPickerItem(item)">{{
+        <span class="picker-item-name" (click)="choosePickerItem(item)">{{
           item.name
           }}</span>
       </div>
@@ -64,6 +64,8 @@
         </svg>
       </button>
     </span>
+    <span class="ql-formats"><p class="quill-message-lenght">{{ messageLength }}/{{ maxMessageLength }}</p></span>
+    <span class="ql-formats"><p class="quill-error">{{ quillError }}</p></span>
   </div>
   <quill-editor #editor [styles]="quillstyle" [modules]="quillconfig" [theme]="'snow'"
     [placeholder]="placeholder"></quill-editor>

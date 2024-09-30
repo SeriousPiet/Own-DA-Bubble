@@ -1,37 +1,25 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  HostListener,
-  inject,
-  Input,
-  ViewChild,
-} from '@angular/core';
-import {
-  MessageAttachment,
-  MessageService,
-} from '../../utils/services/message.service';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { MessageAttachment, MessageService } from '../../utils/services/message.service';
 import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
-import { QuillModule } from 'ngx-quill';
 import { MessageEditorComponent } from '../message-editor/message-editor.component';
 import { Message } from '../../shared/models/message.class';
+import { isEmptyMessage } from '../../utils/quil/utility';
 
 @Component({
   selector: 'app-message-textarea',
   standalone: true,
-  imports: [CommonModule, FormsModule, QuillModule, MessageEditorComponent],
+  imports: [CommonModule, FormsModule, MessageEditorComponent],
   templateUrl: './message-textarea.component.html',
   styleUrls: ['./message-textarea.component.scss'],
 })
 export class MessageTextareaComponent {
-  @ViewChild('messageeditor', { static: true })
-  messageeditor!: MessageEditorComponent;
 
-  private _messagesCollectionObject!: Channel | Chat | Message;
+  @ViewChild('messageeditor', { static: true }) messageeditor!: MessageEditorComponent;
+
   @Input() set messagesCollectionObject(value: Channel | Chat | Message) {
     this._messagesCollectionObject = value;
     if (this.messageeditor && this.messageeditor.quill) {
@@ -40,7 +28,9 @@ export class MessageTextareaComponent {
       this.messageeditor.quill.focus();
     }
   }
-
+  
+  
+  private _messagesCollectionObject!: Channel | Chat | Message;
   isHovered = false;
   inputID = Math.random().toString(36).substring(2, 9);
   isActive = false;
@@ -50,6 +40,18 @@ export class MessageTextareaComponent {
   ifMessageUploading = false;
   errorInfo = '';
 
+
+  /**
+   * An array of file validation rules used to validate file uploads.
+   * Each validator object contains:
+   * - `name`: The name of the validation rule.
+   * - `validator`: A function that takes a file object and returns a boolean indicating whether the file passes the validation.
+   * - `error`: An error message to be displayed if the file does not pass the validation.
+   * 
+   * Validation rules:
+   * - `maxFileSize`: Validates that the file size is less than or equal to 500KB.
+   * - `fileType`: Validates that the file type is one of the following: PNG, GIF, JPEG, or PDF.
+   */
   private fileValidators = [
     {
       name: 'maxFileSize',
@@ -70,7 +72,7 @@ export class MessageTextareaComponent {
   public messageService = inject(MessageService);
   private userservice = inject(UsersService);
 
-  constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) {}
+  constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) { }
 
   // -----------------------------------------------------------------------------
   // Eventlistener for drag and drop
@@ -111,23 +113,33 @@ export class MessageTextareaComponent {
     this.dropzonehighlighted = highlight;
   }
 
-  // -----------------------------------------------------------------------------
-  // Add new message to the channel
-  // -----------------------------------------------------------------------------
+
+  /**
+   * Asynchronously adds a new message to the collection.
+   * 
+   * This method first checks if a message is currently being uploaded. If so, it returns early.
+   * It then retrieves the message content as HTML and clears any existing error information.
+   * If the message content is empty and there are no attachments, it handles the error by displaying
+   * a message indicating that the message cannot be empty.
+   * 
+   * If the current user is verified, it disables the message editor, sets the uploading flag, and
+   * attempts to add the new message to the collection. If an error occurs during this process, it
+   * handles the error accordingly. Otherwise, it clears the message editor and resets the attachments.
+   * 
+   * Finally, it re-enables the message editor, resets the uploading flag, and triggers change detection.
+   * 
+   * @returns {Promise<void>} A promise that resolves when the message has been added or an error has been handled.
+   */
   async addNewMessage() {
     if (this.ifMessageUploading) return;
     const newHTMLMessage = this.messageeditor.getMessageAsHTML();
     this.errorInfo = '';
-    if (newHTMLMessage === '<p></p>' && this.attachments.length === 0) {
+    if (isEmptyMessage(newHTMLMessage) && this.attachments.length === 0) {
       this.handleErrors('Nachricht darf nicht leer sein.');
     } else if (await this.userservice.ifCurrentUserVerified()) {
       this.messageeditor.quill.disable();
       this.ifMessageUploading = true;
-      const error = await this.messageService.addNewMessageToCollection(
-        this._messagesCollectionObject,
-        newHTMLMessage,
-        this.attachments
-      );
+      const error = await this.messageService.addNewMessageToCollection(this._messagesCollectionObject, newHTMLMessage, this.attachments);
       if (error) {
         this.handleErrors(error);
       } else {
@@ -140,6 +152,12 @@ export class MessageTextareaComponent {
     this._cdr.detectChanges();
   }
 
+
+  /**
+   * Handles errors by setting the error information and clearing it after a timeout.
+   *
+   * @param error - The error message to be handled.
+   */
   private handleErrors(error: string) {
     this.errorInfo = error;
     setTimeout(() => {
@@ -147,19 +165,43 @@ export class MessageTextareaComponent {
     }, 8000);
   }
 
-  // -----------------------------------------------------------------------------
-  // methods for attachments
-  // -----------------------------------------------------------------------------
+
+  /**
+   * Removes a specified attachment from the list of attachments.
+   *
+   * @param {MessageAttachment} attachment - The attachment to be removed.
+   */
   removeAttachment(attachment: MessageAttachment) {
     this.attachments = this.attachments.filter((a) => a !== attachment);
   }
 
+
+  /**
+   * Handles the change event for the attachment file input.
+   * 
+   * @param event - The event object from the file input change event.
+   */
   changeAttachmentFile(event: any) {
     console.log(event);
     event.preventDefault();
     this.loadAttachments(event.target);
   }
 
+
+  /**
+   * Loads and validates attachments from the provided file list.
+   * 
+   * @param fileList - The list of files to be loaded as attachments.
+   * 
+   * @remarks
+   * - The method checks if the total number of files exceeds the allowed limit (5).
+   * - It validates each file using the provided validators.
+   * - If a file is already attached or fails validation, it is skipped.
+   * - Supported file types are images and PDFs.
+   * - Errors are accumulated in the `errorInfo` property.
+   * 
+   * @private
+   */
   private loadAttachments(fileList: any) {
     this.errorInfo = '';
     if (fileList.files.length + this.attachments.length > 5) {
@@ -169,15 +211,8 @@ export class MessageTextareaComponent {
     for (let i = 0; i < fileList.files.length; i++) {
       const file = fileList.files[i];
       if (this.fileAllreadyAttached(file)) continue;
-      if (
-        !this.fileValidators.every((validator) => validator.validator(file))
-      ) {
-        this.errorInfo +=
-          file.name +
-          ': ' +
-          (this.fileValidators.find((validator) => !validator.validator(file))
-            ?.error as string) +
-          '\n';
+      if (!this.fileValidators.every((validator) => validator.validator(file))) {
+        this.errorInfo += file.name + ': ' + (this.fileValidators.find((validator) => !validator.validator(file))?.error as string) + '\n';
         continue;
       }
       if (file.type.startsWith('image')) {
@@ -188,17 +223,24 @@ export class MessageTextareaComponent {
     }
   }
 
+
+  /**
+   * Checks if a file is already attached by comparing its name, size, and last modified date.
+   * 
+   * @param file - The file to check for attachment.
+   * @returns `true` if the file is already attached, otherwise `false`.
+   */
   private fileAllreadyAttached(file: any): boolean {
-    return this.attachments.find(
-      (a) =>
-        a.name === file.name &&
-        a.size === file.size &&
-        a.lastModified === file.lastModified
-    )
-      ? true
-      : false;
+    return this.attachments.some((a) => a.name === file.name && a.size === file.size && a.lastModified === file.lastModified);
   }
 
+
+  /**
+   * Reads a PDF file and returns a MessageAttachment object containing the file's metadata.
+   *
+   * @param file - The PDF file to be read.
+   * @returns A MessageAttachment object with the file's name, size, last modified date, source icon path, and the file itself.
+   */
   private readPDF(file: any): MessageAttachment {
     const reader = new FileReader();
     const attachment: MessageAttachment = {
@@ -211,6 +253,16 @@ export class MessageTextareaComponent {
     return attachment;
   }
 
+
+  /**
+   * Reads a picture file and returns a `MessageAttachment` object.
+   * 
+   * This method uses a `FileReader` to read the provided file and sets the `src` property
+   * of the `MessageAttachment` object to the data URL of the file once it is loaded.
+   * 
+   * @param file - The file to be read, typically an image file.
+   * @returns A `MessageAttachment` object containing metadata and the data URL of the file.
+   */
   private readPicture(file: any): MessageAttachment {
     const reader = new FileReader();
     const attachment: MessageAttachment = {

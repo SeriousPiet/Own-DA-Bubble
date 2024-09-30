@@ -64,11 +64,20 @@ export class AddchannelComponent implements AfterViewInit {
   }
 
   onSearchInput() {
+    this.searchService.updateSearchQuery(this.searchQuery);
+    const currentUserID = this.userservice.currentUserID;
     this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
       map((groupedResults: GroupedSearchResults) => {
-        return groupedResults.users.filter((suggestion) =>
-          suggestion.text.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
+        return groupedResults.users
+          .filter((suggestion) =>
+            suggestion.text
+              .toLowerCase()
+              .includes(this.searchQuery.toLowerCase())
+          )
+          .filter(
+            (suggestion) =>
+              this.getUserFromSuggestion(suggestion)?.id !== currentUserID
+          );
       })
     );
   }
@@ -159,10 +168,13 @@ export class AddchannelComponent implements AfterViewInit {
   }
 
   addNewChannel() {
+    const currentUserID = this.userservice.currentUserID;
     if (this.isUserSearchSelected) {
       this.userByIds = this.submitSelectedUsers();
     } else {
-      this.userByIds = this.userservice.getAllUserIDs();
+      this.userByIds = this.userservice
+        .getAllUserIDs()
+        .filter((id) => id !== currentUserID);
     }
     this.userByIds.push(this.userservice.currentUserID);
     this.channelservice.addNewChannelToFirestore(

@@ -3,6 +3,16 @@
 
 $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
 
+.threadview-main-ctn {
+  background-color: white;
+  border-radius: 1.875rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
 .threadview-header {
   position: relative;
   z-index: 20;
@@ -92,7 +102,7 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
   @include flex(normal, center);
   flex-direction: column;
   gap: 1.5rem;
-  height: 44.5rem;
+  height: 100%;
   width: 100%;
   overflow-y: scroll;
 

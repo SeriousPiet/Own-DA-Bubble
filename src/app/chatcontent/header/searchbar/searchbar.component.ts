@@ -52,7 +52,7 @@ export class SearchbarComponent implements OnInit {
 
   /**
    * Constructs the SearchbarComponent and subscribes to changes in the navigation service.
-   * When the 'chatViewObjectSet' event is emitted, it updates the welcome channel status.
+   * When the 'chatViewObjectSetAsChannel' event is emitted, it updates the welcome channel status.
    *
    * @param searchService - The SearchService instance.
    * @param navigationService - The NavigationService instance.
@@ -66,7 +66,7 @@ export class SearchbarComponent implements OnInit {
     private usersService: UsersService
   ) {
     this.navigationService.change$.subscribe((change: string) => {
-      if (change === 'chatViewObjectSet') {
+      if (change === 'chatViewObjectSetAsChannel') {
         this.updateWelcomeChannelStatus();
       }
     });
