@@ -5,16 +5,16 @@
 $p-left: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
 $p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
 $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
+$reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 
 .emoji-div {
   @include nunito(0.875, 400, black);
 }
 
 .self-reaction {
-  background-color: $secondary;
   border-radius: 1000px;
-  border: 1px solid $accent;
-  color: #fff;
+  border: 2px solid $selfReaction;
+  background-color: #fff;
 }
 
 .other-reaction {
@@ -40,7 +40,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
 .reaction-hover-info {
   position: absolute;
   z-index: 10;
-  bottom: 105%;
+  bottom: 112.5%;
   left: 50%;
   transform: translateY(-20px);
   @include flex(center, center);
@@ -183,13 +183,13 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
 
     .message-reactions {
       display: flex;
-      gap: 0.625rem;
-      min-height: 2.25rem;
+      gap: $reactions-gap;
+      flex-wrap: wrap;
 
       > button {
         @include flex(center, center);
         gap: 0.625rem;
-        padding: 0 0.875rem;
+        // padding: 0 0.75rem;
       }
 
       > img {
@@ -251,7 +251,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
     > section {
       .self-reaction {
         &:hover {
-          border: 1px solid $error;
+          border: 2px solid $selfReactionDelete;
         }
       }
       .other-reaction {
@@ -295,6 +295,7 @@ $creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
 
     .message-reactions {
       @include flex(flex-end, normal);
+      flex-wrap: wrap;
     }
 
     .message-info {
