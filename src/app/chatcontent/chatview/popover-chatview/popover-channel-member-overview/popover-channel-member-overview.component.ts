@@ -69,7 +69,7 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     return this.channelSubject.getValue() as Channel;
   }
 
-  constructor(private searchService: SearchService, private usersService: UsersService) { }
+  constructor(private searchService: SearchService) { }
 
   ngOnInit() {
     this.subscribeToChannel();
@@ -183,9 +183,9 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
   }
 
   public findUserByName(name: string): User | undefined {
-    const userIds = this.usersService.getAllUserIDs();
+    const userIds = this.userService.getAllUserIDs();
     for (const id of userIds) {
-      const user = this.usersService.getUserByID(id);
+      const user = this.userService.getUserByID(id);
       if (user && user.name === name) {
         return user;
       }
@@ -251,6 +251,11 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
 
   ngOnDestroy() {
     this.subscribeToChannel();
+  }
+
+  checkifUserIsGuest(memberID: string) {
+    const member = this.userService.getUserByID(memberID);
+    return member?.guest;
   }
 
 }
