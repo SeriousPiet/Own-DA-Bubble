@@ -116,13 +116,18 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
   saveEditedChannel() {
     this.channelNameEditor = false;
     this.channelDescriptionEditor = false;
+    if(!this.channelService.checkForDuplicateChannelName(this.updateChannelData.name!)){
     if (this.navigationService.chatViewObject instanceof Channel) {
       this.channelService.updateChannelOnFirestore(
         this.navigationService.chatViewObject,
         this.updateChannelData
       );
     }
+  }else{
+    this.updateChannelData.name = this.currentChannel.name;
+    alert('Dieser Kanalname ist bereits vergeben!');
   }
+}
 
   isChannelCreator() {
     if (this.currentChannel instanceof Channel)
