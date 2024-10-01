@@ -176,15 +176,11 @@ export class AddchannelComponent implements AfterViewInit {
         .getAllUserIDs()
         .filter((id) => id !== currentUserID);
     }
-    if(!this.channelservice.checkForDuplicateChannelName(this.name)) {
     this.userByIds.push(this.userservice.currentUserID);
     this.channelservice.addNewChannelToFirestore(
       this.name,
       this.description,
       this.userByIds
     );
-    }else{
-      alert('Channel name already exists');
-    }
   }
 }
