@@ -7,6 +7,7 @@ import { UsersService } from './user.service';
 import { User } from '../../shared/models/user.class';
 import { ChannelService } from './channel.service';
 
+type ChangeNavigation = 'unknow' | 'chatViewObjectSetAsChannel' | 'chatViewObjectSetAsChat' | 'threadViewObjectSet' | 'threadViewObjectCleared';
 @Injectable({
   providedIn: 'root',
 })
@@ -30,7 +31,7 @@ export class NavigationService {
   /**
    * Observable that emits whenever a change occurs.
    */
-  private changeSubject = new BehaviorSubject<string>('');
+  private changeSubject = new BehaviorSubject<ChangeNavigation>('unknow');
   public change$ = this.changeSubject.asObservable();
 
 
@@ -72,7 +73,7 @@ export class NavigationService {
    * @returns void
    */
   async setChatViewObject(object: Channel | User): Promise<void> {
-    
+
     if (object instanceof Channel) this.setChatViewObjectAsChannel(object);
     else this.setChatViewObjectAsChat(object);
 

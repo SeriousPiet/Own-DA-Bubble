@@ -66,6 +66,15 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
         }
         this.adjustLayout();
       });
+
+      this.navigationService.change$.subscribe((change) => {
+        if (change === 'threadViewObjectSet') {
+          this.isThreadViewVisible = true;
+        } else if (change === 'threadViewObjectCleared') {
+          this.isThreadViewVisible = false;
+        }
+        this.adjustLayout();
+      });
   }
 
   ngOnDestroy() {

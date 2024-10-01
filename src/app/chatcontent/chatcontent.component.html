@@ -32,10 +32,9 @@
   >
     <app-chatview
       [currentContext]="navigationService.chatViewObject"
-      (toggleThread)="toggleThreadView()"
     />
   </div>
   <div class="threadview" [class.hidden]="!isThreadViewVisible">
-    <app-threadview (closeThreadView)="toggleThreadView()" />
+    <app-threadview/>
   </div>
 </section>

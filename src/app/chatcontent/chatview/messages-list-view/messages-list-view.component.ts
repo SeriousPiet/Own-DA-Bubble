@@ -42,13 +42,6 @@ export class MessagesListViewComponent implements OnInit {
   public noMessagesAvailable = true;
   public messageEditorOpen = false;
 
-  @Output() openThreadView = new EventEmitter<void>();
-
-  onOpenThreadView() {
-    console.log('MessagesListViewComponent: --> openThreadView called');
-    this.openThreadView.emit();
-  }
-
   @Input() currentObject!: Channel | Chat;
 
   @Input()

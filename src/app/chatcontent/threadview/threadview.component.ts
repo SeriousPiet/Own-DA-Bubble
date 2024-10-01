@@ -1,12 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { NavigationService } from '../../utils/services/navigation.service';
@@ -34,39 +26,7 @@ import { MessageDateComponent } from '../chatview/messages-list-view/message-dat
   styleUrl: './threadview.component.scss',
 })
 export class ThreadviewComponent {
-  public messages: Message[] = [];
   public navigationService = inject(NavigationService);
-  public userService = inject(UsersService);
-  public isAChannel = false;
-  public isAChat = false;
-  public isDefaultChannel = true;
-  public requiredAvatars: string[] = [];
-  public messagesDates: Date[] = [];
-
-  @Output() closeThreadView = new EventEmitter<void>();
-
-  @Input() currentChannel!: Channel | Chat;
-
-  @Input()
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['currentChannel']) {
-      this.currentChannel = changes['currentChannel'].currentValue;
-      this.currentChannel instanceof Channel &&
-      this.currentChannel.defaultChannel
-        ? (this.isDefaultChannel = true)
-        : (this.isDefaultChannel = false);
-      this.setObjectType();
-      this.getRequiredAvatars();
-      console.log(this.currentChannel);
-    }
-  }
-
-  @Input() toggleThreadView!: () => void;
-
-  triggerToggleThreadView() {
-    console.log('ThreadviewComponent: --> closeThreadView called');
-    this.closeThreadView.emit();
-  }
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -75,14 +35,4 @@ export class ThreadviewComponent {
     return '';
   }
 
-  setObjectType() {
-    if (this.currentChannel instanceof Channel) this.isAChannel = true;
-    if (this.currentChannel instanceof Chat) this.isAChat = true;
-  }
-
-  getRequiredAvatars() {
-    if (this.currentChannel instanceof Channel) {
-      this.requiredAvatars = this.currentChannel.memberIDs.slice(0, 3);
-    }
-  }
 }

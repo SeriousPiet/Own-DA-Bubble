@@ -45,12 +45,6 @@ import { User } from '../../shared/models/user.class';
   styleUrl: './chatview.component.scss',
 })
 export class ChatviewComponent implements OnInit {
-  @Output() toggleThread = new EventEmitter<void>();
-
-  openThread() {
-    console.log('ChatViewComponent: --> toggleThread called');
-    this.toggleThread.emit();
-  }
 
   @Input() set currentContext(value: Channel | Chat) {
     this.channelSubject.next(value);
