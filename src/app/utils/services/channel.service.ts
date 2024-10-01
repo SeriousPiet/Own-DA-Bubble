@@ -235,6 +235,16 @@ export class ChannelService implements OnDestroy {
     }
   }
 
+
+  /**
+   * Checks if a channel with the given name already exists in the list of channels.
+   * @param channelName - The name of the channel to check for duplicates.
+   * @returns True if a channel with the same name already exists, false otherwise.
+   */
+  checkForDuplicateChannelName(channelName: string): boolean {
+    return this.channels.some((channel) => channel.name === channelName);
+  }
+
   /**
    * Lifecycle hook that is called when the component is about to be destroyed.
    * Unsubscribes from channels and unsubscribes from user list change subscription.
