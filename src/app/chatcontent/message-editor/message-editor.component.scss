@@ -11,8 +11,8 @@ section {
   .picker-list {
     position: absolute;
     z-index: 1000;
-    bottom: 100%;
-    border-radius: 0.625rem;
+    bottom: 105%;
+    border-radius: 1rem 1rem 0 1rem;
     border: 1px solid #adb0d9;
     background-color: white;
     max-height: 13rem;
