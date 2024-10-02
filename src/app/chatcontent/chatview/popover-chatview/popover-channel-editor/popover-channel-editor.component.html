@@ -11,22 +11,28 @@
     </div>
 
     <div class="channel-info-content">
-        <section class="channel-name">
+        <section [ngClass]="{'channel-name':true}">
             <div>
                 <span>Channel Name</span>
                 @if (!channelNameEditor) {
                 <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()"
                     [title]="showNoRightToEditInfo()" (click)="showChannelNameEditor()">Bearbeiten</button>
                 }@else {
-                <button (click)="saveEditedChannel()">Speichern</button>
+                <button (click)="saveEditedChannel()" [disabled]="channelService.checkForDuplicateChannelName(updateChannelData.name!, getTitle(navigationService.chatViewObject))">Speichern</button>
                 }
             </div>
             <div class="channel-name-input">
                 <img src="assets/icons/chat/general/hashtag.svg" alt="#">
                 <input [(ngModel)]="updateChannelData.name" [disabled]="!channelNameEditor" type="text"
                     placeholder="{{ getTitle(navigationService.chatViewObject) }} ">
-            </div>
+            </div>  
+            @if(channelNameEditor){
+                <span [ngClass]="{'duplicate-channel-error-msg': channelService.checkForDuplicateChannelName(updateChannelData.name!, getTitle(navigationService.chatViewObject)),
+                    'hide-duplicate-channel-error-msg': !channelService.checkForDuplicateChannelName(updateChannelData.name!, getTitle(navigationService.chatViewObject))
+                  }">Dieser Kanalname ist bereits vergeben!</span>    
+            }  
         </section>
+       
         <section class="channel-description">
             <div>
                 <span>Beschreibung</span>
