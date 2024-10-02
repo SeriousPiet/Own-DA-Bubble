@@ -235,14 +235,20 @@ export class ChannelService implements OnDestroy {
     }
   }
 
-
+   
   /**
-   * Checks if a channel with the given name already exists in the list of channels.
+   * Checks if a channel name is a duplicate of an existing channel name, optionally excluding the original channel name.
    * @param channelName - The name of the channel to check for duplicates.
-   * @returns True if a channel with the same name already exists, false otherwise.
+   * @param originalChannelName - The original name of the channel, used to determine if the new name is a change.
+   * @param originalChannelNameRequired - to difference when methode called by channel creation or edition.
+   * @returns True if the channel name is a duplicate, false otherwise.
    */
-  checkForDuplicateChannelName(channelName: string): boolean {
-    return this.channels.some((channel) => channel.name === channelName);
+  checkForDuplicateChannelName(channelName: string, originalChannelName: string, originalChannelNameRequired = true): boolean {
+    const isDuplicate = this.channels.some((channel) => channel.name.toLowerCase() === channelName.toLowerCase());
+    if(originalChannelNameRequired){
+    const isChanged = channelName.toLowerCase() !== originalChannelName.toLowerCase();
+    return isDuplicate && isChanged;  
+    }else return isDuplicate;
   }
 
   /**
