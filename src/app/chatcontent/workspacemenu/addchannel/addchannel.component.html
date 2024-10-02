@@ -22,8 +22,8 @@
       placeholder="# z.B. Kooperationsprojekte"
       class="nunito-18-400"
     />
-    <span [ngClass]="{'duplicate-channel-error-msg': channelservice.checkForDuplicateChannelName(name),
-      'hide-duplicate-channel-error-msg': !channelservice.checkForDuplicateChannelName(name)
+    <span [ngClass]="{'duplicate-channel-error-msg': channelservice.checkForDuplicateChannelName(name, name, false),
+      'hide-duplicate-channel-error-msg': !channelservice.checkForDuplicateChannelName(name, name, false)
     }">Dieser Kanalname ist bereits vergeben!</span>
     <div>
       <span class="nunito-18-700">Beschreibung <span>(optional)</span></span>
@@ -37,7 +37,7 @@
     <div style="justify-content: end">
       <button
         class="button-ctn nunito-18-700"
-        [disabled]="!name || name.trim().length === 0 || channelservice.checkForDuplicateChannelName(name)"
+        [disabled]="!name || name.trim().length === 0 || channelservice.checkForDuplicateChannelName(name, name, false)"
         (click)="toggleAddChannel()"
       >
         Erstellen
