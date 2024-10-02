@@ -12,7 +12,7 @@ section {
     position: absolute;
     z-index: 1000;
     bottom: 105%;
-    border-radius: 1rem 1rem 0 1rem;
+    border-radius: 1.5rem 1.5rem 0 1.5rem;
     border: 1px solid #adb0d9;
     background-color: white;
     max-height: 13rem;
@@ -109,12 +109,13 @@ section {
     overflow: hidden;
     border: none;
 
-    .quill-error {
-      @include nunito(0.75rem, 600, $error);
+    .quill-message-length {
+      @include nunito(1, 600, black);
+      padding-right: 1rem;
     }
 
-    .quill-message-length {
-      @include nunito(0.75rem, 600, black);
+    .quill-error {
+      @include nunito(1, 600, $error);
     }
   }
 

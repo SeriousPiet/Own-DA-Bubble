@@ -30,25 +30,25 @@
   }
   <div #toolbar class="editor-toolbar" [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'"
     [id]="toolbarID">
-    <span class="ql-formats">
+    <span class="ql-formats tb_section_1">
       <button class="ql-bold"></button>
       <button class="ql-italic"></button>
       <button class="ql-underline"></button>
       <button class="ql-strike"></button>
     </span>
-    <span class="ql-formats">
+    <span class="ql-formats tb_section_2">
       <button class="ql-header" value="1"></button>
       <button class="ql-header" value="2"></button>
       <button class="ql-header" value="3"></button>
     </span>
-    <span class="ql-formats">
+    <span class="ql-formats tb_section_3">
       <button class="ql-clean"></button>
     </span>
-    <span class="ql-formats">
+    <span class="ql-formats tb_section_4">
       <button class="ql-list" value="ordered"></button>
       <button class="ql-list" value="bullet"></button>
     </span>
-    <span class="ql-formats">
+    <span class="ql-formats tb_section_5">
       <button (click)="quill.history.undo()">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
           <path
@@ -64,8 +64,10 @@
         </svg>
       </button>
     </span>
-    <span class="ql-formats"><p class="quill-message-lenght">{{ messageLength }}/{{ maxMessageLength }}</p></span>
-    <span class="ql-formats"><p class="quill-error">{{ quillError }}</p></span>
+    <span class="ql-formats tb_section_6">
+      <span class="quill-message-length">{{ messageLength }}/{{ maxMessageLength }}</span>
+      <span class="quill-error">{{ quillError }}</span>
+    </span>
   </div>
   <quill-editor #editor [styles]="quillstyle" [modules]="quillconfig" [theme]="'snow'"
     [placeholder]="placeholder"></quill-editor>
