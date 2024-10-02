@@ -114,7 +114,9 @@ export class UsersService implements OnDestroy {
       collection(this.firestore, '/users'),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') this.users.push(new User(change.doc.data(), change.doc.id));
+          if (change.type === 'added'){
+            this.users.push(new User(change.doc.data(), change.doc.id));
+          }
           else if (change.type === 'modified') {
             const user = this.users.find((user) => user.id === change.doc.id);
             if (user) user.update(change.doc.data());

@@ -84,8 +84,6 @@ export class ProfileComponent implements OnInit {
     }
     this.checkCanEmailChange();
     this.reauthpasswordInfoReset();
-
-    console.log(this.isGoogleAccount, this.isGuestAccount);
   }
 
   private checkCanEmailChange() {

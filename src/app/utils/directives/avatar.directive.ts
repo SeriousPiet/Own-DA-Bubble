@@ -1,13 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Renderer2,
-  SimpleChanges,
-} from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges } from '@angular/core';
 import { User } from '../../shared/models/user.class';
 
 type AvatarContext =
@@ -106,9 +97,13 @@ export class AvatarDirective implements OnInit, OnChanges, OnDestroy {
 
   private getAvatarUrl(): string {
     if (this.user) {
-      if (this.user.pictureURL && this.user.pictureURL != '')
+      if (this.user.pictureURL && this.user.pictureURL != '') {
         return this.user.pictureURL;
-      else return `./assets/img/avatar-big/avatar-${this.user?.avatar}.png`;
+      }
+      else {
+        if(this.user.avatar === 0) return './assets/icons/start/profile-big.svg';
+        return `./assets/img/avatar-big/avatar-${this.user?.avatar}.png`;
+      }
     }
     return './assets/icons/start/profile-big.svg';
   }
