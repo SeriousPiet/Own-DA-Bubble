@@ -192,8 +192,13 @@ export class MessageEditorComponent implements AfterViewInit {
    */
   addTextChangeController() {
     this.quill.on('editor-change', (eventName: string, ...args: any[]) => {
-      if (eventName === 'text-change') {
-        const [delta, oldDelta, source] = args;
+      const [delta, oldDelta, source] = args;
+      if (source === 'user' && eventName === 'text-change') {
+        if (this.showPicker) {
+          const newSearchString = getTextBeforePreviousSign(this.quill, this.getLastOrCurrentSelection(), this.pickersign);
+          if (newSearchString === null) this.closeListPicker();
+          else this.updatePickerItems(newSearchString);
+        }
         const hasImage = delta.ops.some((op: any) => op.insert && op.insert.image);
         const messageLength = this.quill.getLength();
         if (source === 'user' && hasImage) this.quill.history.undo();
@@ -202,13 +207,6 @@ export class MessageEditorComponent implements AfterViewInit {
         }
         this.textLengthChanged.emit({ maxLength: this.maxMessageLength, textLength: messageLength });
         this._cdr.detectChanges();
-      }
-    });
-    this.quill.on('text-change', (event) => {
-      if (this.showPicker) {
-        const newSearchString = getTextBeforePreviousSign(this.quill, this.getLastOrCurrentSelection(), this.pickersign);
-        if (newSearchString === null) this.closeListPicker();
-        else this.updatePickerItems(newSearchString);
       }
     });
   }
@@ -225,10 +223,12 @@ export class MessageEditorComponent implements AfterViewInit {
   addFocusController() {
     const editorElement = this.quill.root;
     editorElement.addEventListener('focus', () => {
+      console.log('Focus event:', event);
       this.showToolbar = true;
       this.savedRange = null;
     });
     editorElement.addEventListener('blur', (event: FocusEvent) => {
+      console.log('Blur event:', event);
       this.savedRange = this.quill.getSelection();
       const target = event.relatedTarget as HTMLElement;
       if (!target || !this.toolbar.nativeElement.contains(target)) this.showToolbar = false;
@@ -294,7 +294,6 @@ export class MessageEditorComponent implements AfterViewInit {
       this.closeListPicker();
       return false;
     }
-    this._cdr.detectChanges();
     return true;
   }
 
@@ -307,6 +306,7 @@ export class MessageEditorComponent implements AfterViewInit {
    * @param item - The selected item from the picker, which can be either a User or a Channel.
    */
   choosePickerItem(item: User | Channel) {
+    console.log('Selected item:', item);
     insertItemAsSpan(this.quill, this.getLastOrCurrentSelection(), item);
     this.closeListPicker();
   }
@@ -335,11 +335,16 @@ export class MessageEditorComponent implements AfterViewInit {
    * After setting the new index, it scrolls to the selected item and triggers change detection.
    */
   setCurrentPickerIndex(index: number) {
-    if (this.currentPickerIndex === -1) this.lastItem = null;
-    else this.lastItem = this.pickerItems[this.currentPickerIndex];
-    this.currentPickerIndex = index;
-    this.scrollToSelectedItem(index);
-    this._cdr.detectChanges();
+    if (index === -1) {
+      this.lastItem = null;
+      this.currentPickerIndex = -1;
+    } else {
+      this.lastItem = this.pickerItems[this.currentPickerIndex];
+      this.currentPickerIndex = index;
+      this.scrollToSelectedItem(index);
+      this._cdr.detectChanges();
+      console.log('Current picker index:', this.currentPickerIndex);
+    }
   }
 
 
@@ -406,6 +411,7 @@ export class MessageEditorComponent implements AfterViewInit {
       this.pickersign = '';
       this.pickerItems = [];
       this.setCurrentPickerIndex(-1);
+      this.quill.focus();
     }
   }
 }

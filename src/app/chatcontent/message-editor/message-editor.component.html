@@ -1,6 +1,5 @@
 <section>
-  @if(showPicker) {
-  <div class="picker-list">
+  <div [ngClass]="showPicker ? '' : 'd-none'" class="picker-list">
     <div class="picker-info">
       <div class="picker-use-info">
         Wählen mit
@@ -9,27 +8,25 @@
         <span>ESC</span>
       </div>
       <div class="picker-close">
-        <img (click)="handlePickerSelectionKeys('Escape')"
-        src="./assets/icons/chat/general/close.svg" alt="" />
+        <img (click)="handlePickerSelectionKeys('Escape')" src="./assets/icons/chat/general/close.svg" alt="" />
       </div>
     </div>
     <div class="picker-item-list">
       @for(item of pickerItems; track item){
       <div #pickeritem [ngClass]="currentPickerIndex === $index ? 'picker-item-select' : 'picker-item-nonselect'"
-        class="picker-item">
+        (click)="choosePickerItem(item)" class="picker-item">
         @if(isUser(item)) {
         <div appAvatar [user]="item" context="search"></div>
         } @else {
         <img src="../../../assets/icons/wsm/hashtag.svg" alt="" />
         }
-        <span class="picker-item-name" (click)="choosePickerItem(item)">{{
+        <span class="picker-item-name">{{
           item.name
           }}</span>
       </div>
       }
     </div>
   </div>
-  }
   <div #toolbar class="editor-toolbar" [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'"
     [id]="toolbarID">
     <span class="ql-formats tb_section_1">

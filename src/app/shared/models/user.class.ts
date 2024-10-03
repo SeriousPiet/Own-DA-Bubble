@@ -126,7 +126,6 @@ export class User {
    * @param data.emailVerified - The email verification status of the user.
    */
   update(data: any): void {
-    console.log('Updating user:', data);
     if (data.name) this._name = data.name;
     if (data.email) this._email = data.email;
     if (data.avatar) this._avatar = data.avatar;
