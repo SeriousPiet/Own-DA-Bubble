@@ -53,7 +53,6 @@ export class MessageEditorComponent implements AfterViewInit {
     minHeight: this.minHeight_rem + 'rem',
     maxHeight: this.maxHeight_rem + 'rem',
     width: '100%',
-    backgroundColor: 'white',
     color: 'black',
     fontFamily: 'Nunito',
     border: 'none',

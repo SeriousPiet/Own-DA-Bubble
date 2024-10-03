@@ -1,4 +1,5 @@
-<div [ngClass]="{ 'drag-over': dropzonehighlighted }" class="input-message">
+<div class="input-message">
+  <div [ngClass]="{ 'drag-over': dropzonehighlighted }" class="drag-background"></div>
   <app-message-editor #messageeditor (enterPressed)="addNewMessage()"
     (textLengthChanged)="handleEditorTextLengthChanged($event)" [placeholder]="'Schreib etwas...'"></app-message-editor>
   @if(!ifMessageUploading && attachments.length > 0){

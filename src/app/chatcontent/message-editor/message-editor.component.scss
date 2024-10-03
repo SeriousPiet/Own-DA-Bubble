@@ -100,9 +100,10 @@ section {
   }
 
   quill-editor {
+    transition: all 0.5s;
     width: 100%;
     overflow-y: auto;
-    background-color: white;
+    background-color: transparent;
     color: black;
     outline: none;
     border: none;
