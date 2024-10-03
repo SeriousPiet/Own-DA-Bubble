@@ -116,6 +116,10 @@ section {
     .quill-message-length {
       @include nunito(0.75rem, 600, black);
     }
+
+    span.ql-formats {
+      margin-right: 0.325rem !important;
+    }
   }
 
   .show-editor-toolbar {
