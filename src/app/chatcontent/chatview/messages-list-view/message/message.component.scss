@@ -245,7 +245,6 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 
   &:not(.message-from-user):hover {
     transition: all 100ms ease-out;
-    cursor: pointer;
     background-color: $background;
 
     >section {
