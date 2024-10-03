@@ -15,6 +15,19 @@ export class EmojipickerService {
   private currentCallBackFunction: any = null;
   private userEmojis: EmojiUse[] = [];
   private userID: string = '';
+  private standartEmojis: EmojiUse[] = [
+    { emoji: '😊', count: 0 },
+    { emoji: '😂', count: 0 },
+    { emoji: '😍', count: 0 },
+    { emoji: '😭', count: 0 },
+    { emoji: '😒', count: 0 },
+    { emoji: '😔', count: 0 },
+    { emoji: '😘', count: 0 },
+    { emoji: '😩', count: 0 },
+    { emoji: '😏', count: 0 },
+    { emoji: '😉', count: 0 },
+    { emoji: '👍', count: 0 }
+  ];
 
 
   /**
@@ -28,6 +41,7 @@ export class EmojipickerService {
     let savedUserEmojis = await localStorage.getItem(userID + '-emojis');
     if (savedUserEmojis) {
       this.userEmojis = JSON.parse(savedUserEmojis);
+      this.userEmojis.sort((a, b) => b.count - a.count);
     }
   }
 
@@ -57,6 +71,7 @@ export class EmojipickerService {
     } else {
       this.userEmojis[emojiIndex].count++;
     }
+    this.userEmojis.sort((a, b) => b.count - a.count);
     this.saveUserEmojis();
   }
 
@@ -68,7 +83,7 @@ export class EmojipickerService {
    * @returns An array of the most used emojis as strings.
    */
   getMostUsedEmojis(arrayLength: number): string[] {
-    let emojis = this.userEmojis.sort((a, b) => b.count - a.count);
+    let emojis = [...this.userEmojis, ...this.standartEmojis];
     return emojis.slice(0, arrayLength).map(emoji => emoji.emoji);
   }
 

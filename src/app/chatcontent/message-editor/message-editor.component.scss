@@ -20,7 +20,14 @@ section {
     box-shadow: $modal-box-shadow;
 
     .picker-close {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       @include iconBox;
+
+      &:hover img {
+        content: url("../../../assets/icons/chat/general/close-hover.svg");
+      }
     }
 
     .picker-info {
@@ -37,7 +44,7 @@ section {
       border-bottom: 1px solid lightgray;
       background-color: white;
 
-      div {
+      .picker-use-info {
         padding: 0.3rem;
         display: flex;
         justify-content: flex-start;

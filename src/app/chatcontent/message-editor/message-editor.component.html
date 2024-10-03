@@ -2,14 +2,16 @@
   @if(showPicker) {
   <div class="picker-list">
     <div class="picker-info">
-      <div>
+      <div class="picker-use-info">
         Wählen mit
         <img src="./assets/icons/chat/write-message/updown.svg" alt="" />
         <img src="./assets/icons/chat/write-message/enter.svg" alt="" />
         <span>ESC</span>
       </div>
-      <img (click)="handlePickerSelectionKeys('Escape')" class="picker-close"
+      <div class="picker-close">
+        <img (click)="handlePickerSelectionKeys('Escape')"
         src="./assets/icons/chat/general/close.svg" alt="" />
+      </div>
     </div>
     <div class="picker-item-list">
       @for(item of pickerItems; track item){

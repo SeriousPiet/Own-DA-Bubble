@@ -121,7 +121,7 @@
       'interact-ctn-popover': true
     }">
     <section>
-      @for(reaction of emojiService.getMostUsedEmojis(2); track $index) {
+      @for(reaction of emojiService.getMostUsedEmojis(3); track $index) {
       <div (click)="messageService.toggleReactionToMessage(_messageData, reaction)" class="button-ctn">
         <div class="emoji-div">{{ reaction }}</div>
       </div>
