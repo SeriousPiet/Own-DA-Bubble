@@ -88,10 +88,13 @@ export class User {
       img.src = pictureURL;
       img.onload = () => {
         this._pictureURL = pictureURL;
+        this.changeUser.next(this);
       };
       img.onerror = () => {
         this.setUserPictureToDefault();
       };
+    } else {
+      this._pictureURL = undefined;
     }
   }
 
@@ -123,12 +126,13 @@ export class User {
    * @param data.emailVerified - The email verification status of the user.
    */
   update(data: any): void {
+    console.log('Updating user:', data);
     if (data.name) this._name = data.name;
     if (data.email) this._email = data.email;
     if (data.avatar) this._avatar = data.avatar;
     if (data.online !== undefined) this._online = data.online;
     if (data.chatIDs) this._chatIDs = data.chatIDs;
-    if (data.pictureURL !== undefined) this.setSavePictureURL(data.pictureURL);
+    this.setSavePictureURL(data.pictureURL);
     if (data.emailVerified !== undefined)
       this._emailVerified = data.emailVerified;
     this.changeUser.next(this);
