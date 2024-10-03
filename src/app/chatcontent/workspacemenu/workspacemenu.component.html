@@ -1,7 +1,10 @@
 <section>
   <div class="workspace">
     <div>
-      <img src="../../../assets/icons/wsm/devspace-logo.svg" alt="devspace-logo.svg" />
+      <img
+        src="../../../assets/icons/wsm/devspace-logo.svg"
+        alt="devspace-logo.svg"
+      />
       <span class="nunito-24-700">Devspace</span>
     </div>
     <div class="ws-write"></div>
@@ -14,14 +17,19 @@
             <div class="ws-channels"></div>
             <span class="nunito-20-700">Channels</span>
           </div>
-          <button class="add-channel-btn" (click)="toggleAddChannelPopover()"></button>
+          <button
+            class="add-channel-btn"
+            (click)="toggleAddChannelPopover()"
+          ></button>
         </div>
       </summary>
       <ul class="channel-list">
-        <li class="blue" (click)="setChat(channel)" *ngFor="let channel of channelservice.channels">
+        @for (channel of channelservice.channels; track channel) {
+        <li class="blue" (click)="setChat(channel)">
           <div class="hashtag"></div>
           <span class="nunito-18-400">{{ channel.name }}</span>
         </li>
+        }
       </ul>
       <button class="blue" (click)="toggleAddChannelPopover()">
         <div class="add-channel-2 blue"></div>
@@ -36,12 +44,21 @@
         <span class="nunito-20-700">Direktnachrichten</span>
       </summary>
       <ul>
-        <li class="dm-list-item" hoverElement (click)="setChat(userservice.currentUser)">
-          <div class="avatar" appAvatar [user]="userservice.currentUser" context="wsm-list"></div>
+        <li
+          class="dm-list-item"
+          hoverElement
+          (click)="setChat(userservice.currentUser)"
+        >
+          <div
+            class="avatar"
+            appAvatar
+            [user]="userservice.currentUser"
+            context="wsm-list"
+          ></div>
           <span>{{ userservice.currentUser?.name }} <br />(Du) </span>
         </li>
-        @for(user of userservice.users; track user) {
-        @if(!user.guest && user.id !== userservice.currentUserID) {
+        @for(user of userservice.users; track user) { @if(!user.guest && user.id
+        !== userservice.currentUserID) {
         <li class="dm-list-item" hoverElement (click)="setChat(user)">
           <div class="avatar" appAvatar [user]="user" context="wsm-list"></div>
           <span>{{ user.name }} </span>
