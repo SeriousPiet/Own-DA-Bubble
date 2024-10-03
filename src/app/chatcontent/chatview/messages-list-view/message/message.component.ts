@@ -48,8 +48,8 @@ import { isEmptyMessage } from '../../../../utils/quil/utility';
   styleUrl: './message.component.scss',
 })
 export class MessageComponent
-  implements OnInit, AfterViewInit, AfterViewChecked
-{
+  implements OnInit, AfterViewInit, AfterViewChecked {
+  @ViewChild('messagemaindiv', { static: false }) messageMainDiv!: ElementRef;
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
   @ViewChild('messageeditor', { static: false })
   messageEditor!: MessageEditorComponent;
@@ -91,7 +91,7 @@ export class MessageComponent
     this.getMessageCreatorObject();
   }
 
-  constructor(private _cdr: ChangeDetectorRef) {}
+  constructor(private _cdr: ChangeDetectorRef) { }
 
   handleEditorTextLengthChanged(event: EditedTextLength) {
     this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
@@ -338,6 +338,11 @@ export class MessageComponent
     this.toggleEditMessagePopup();
     this.messageEditorModus = !this.messageEditorModus;
     this.messageEditorOpenChange.emit(this.messageEditorModus);
+    setTimeout(() => {
+      if (this.messageMainDiv) {
+        this.messageMainDiv.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 500);
   }
 
   returnPopoverTarget(messageCreator: string) {
