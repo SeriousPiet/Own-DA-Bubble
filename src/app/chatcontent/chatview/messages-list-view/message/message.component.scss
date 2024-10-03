@@ -134,7 +134,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 
 .message-ctn {
   display: flex;
-  padding: 0.625rem $p-right 0.625rem $p-left;
+  padding: 0.625rem $p-right 0.625rem var(--message-padding-left, $p-left);
   gap: 1.875rem;
   position: relative;
   transition: $transition-popover;
@@ -207,8 +207,10 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 
     >.message-info {
       @include flex(flex-start, center);
+      flex-wrap: wrap;
+      column-gap: 1.25rem;
+      row-gap: 0.25rem;
       width: 100%;
-      gap: 1.25rem;
 
       div {
         @include flex(normal, center);
@@ -338,8 +340,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 }
 
 .interact-ctn-popover {
-  padding: 0.1875rem 0.9375rem 0.1875rem 1.25rem;
-  // padding: 0.1875rem 0.375rem 0.1875rem 0.325rem;
+  padding: 0.1875rem 0.325rem 0.1875rem 0.25rem;
   border-radius: 1.5625rem 1.5625rem 0 1.5625rem;
   border: 1px solid #adb0d9;
   height: fit-content;

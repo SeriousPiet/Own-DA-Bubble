@@ -9,10 +9,10 @@
   left: 0;
   display: flex;
   justify-content: center;
-  padding: 1.25rem;
   background-color: #ffffff;
   border-radius: 0 0 1.875rem 1.875rem;
-  border: solid 1px $default-border;
+  border: unset;
+  padding: 1.25rem 1.25rem 1.25rem var(--textarea-padding-left, 1.25rem);
 }
 
 .errorspan {
@@ -197,6 +197,7 @@
 }
 
 #send-message-icon {
+  @include flex(center, center);
   cursor: pointer;
 
   > img {

@@ -6,7 +6,16 @@
 
 <section
   class="chatcontent"
-  [ngClass]="[currentLayout, isSingleColumn ? 'single-column' : '']"
+  [ngClass]="[currentLayout]"
+  [class.no-padding]="
+    !isThreadViewVisible && !isWorkspaceMenuVisible && isChatViewVisible
+  "
+  [class.no-padding-left]="
+    isThreadViewVisible && isChatViewVisible && !isWorkspaceMenuVisible
+  "
+  [class.no-padding-right]="
+    (!isThreadViewVisible || !isChatViewVisible) && isWorkspaceMenuVisible
+  "
 >
   <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
     <div
@@ -25,16 +34,11 @@
   <div class="workspace-menu" [class.hidden]="!isWorkspaceMenuVisible">
     <app-workspacemenu />
   </div>
-  <div
-    class="chatview"
-    [class.expanded]="isChatViewExpanded"
-    [class.hidden]="isThreadViewVisible"
-  >
-    <app-chatview
-      [currentContext]="navigationService.chatViewObject"
-    />
+  <div class="chatview" [class.hidden]="!isChatViewVisible">
+    <app-chatview [currentContext]="navigationService.chatViewObject" />
   </div>
+
   <div class="threadview" [class.hidden]="!isThreadViewVisible">
-    <app-threadview/>
+    <app-threadview />
   </div>
 </section>

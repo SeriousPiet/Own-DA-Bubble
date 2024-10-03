@@ -75,8 +75,8 @@ export class MessagesListViewComponent implements OnInit {
     let attempts = 0;
 
     const scrollToElement = () => {
-      const targetSelector = `app-message[ng-reflect-id="${message.id}"]`;
-      const targetElement = document.querySelector(targetSelector);
+      const targetSelector = `${message.id}`;
+      const targetElement = document.getElementById(targetSelector);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         targetElement.classList.add('color-change');

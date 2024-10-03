@@ -5,8 +5,13 @@
 $wsm-gap: clamp(0rem, 2.083vw + -1.562rem, 0.9375rem);
 $chnl-ml: clamp(0.75rem, 2.222vw + -0.917rem, 1.75rem);
 $add-chnl-btn-pl: clamp(0.75rem, 4.444vw + -2.583rem, 2.75rem);
+
 $list-pr: clamp(0.75rem, 1.111vw + -0.083rem, 1.25rem);
+$list-pr-QUERY: clamp(1rem, 4.13vw + 0.029rem, 1.875rem);
+
 $workspace-pr: clamp(0.75rem, 2.5vw + -1.125rem, 1.875rem);
+$workspace-pr-QUERY: 1.875rem;
+
 $chnl-gap: clamp(0rem, 1.944vw + -1.458rem, 0.875rem);
 $dm-item-gap: clamp(0.625rem, 1.389vw + -0.417rem, 1.25rem);
 
@@ -47,23 +52,13 @@ section {
     box-shadow: $modal-box-shadow;
     overflow: visible;
 
+    @media (width < 716px) {
+      padding: 0 $workspace-pr-QUERY 0 1.875rem;
+    }
+
     div {
       @include display-standard;
       gap: 0.9375rem;
-    }
-
-    .ws-write {
-      gap: 0.625rem;
-      padding: 0.5rem;
-      background-image: url("../../../assets/icons/wsm/ws-write.svg");
-      @include background-properties;
-      border-radius: 1.25rem;
-    }
-
-    .ws-write:hover {
-      background-image: url("../../../assets/icons/wsm/ws-write-hover.svg");
-      background-color: #eceefe;
-      cursor: pointer;
     }
   }
 
@@ -107,6 +102,10 @@ section {
 
   .messagesChannels {
     padding: 0 $list-pr 2rem 1.875rem;
+
+    @media (width < 716px) {
+      padding: 0 $list-pr-QUERY 0 1.875rem;
+    }
   }
 
   .channels {
@@ -116,6 +115,10 @@ section {
     align-items: center;
     width: 100%;
     padding: 0 $list-pr 0 1.875rem;
+
+    @media (width < 716px) {
+      padding: 0 $list-pr-QUERY 0 1.875rem;
+    }
 
     > details {
       width: 100%;
