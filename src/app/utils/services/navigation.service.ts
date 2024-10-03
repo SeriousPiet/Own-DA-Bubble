@@ -26,7 +26,7 @@ export class NavigationService {
   private showProfileDetails = new BehaviorSubject<boolean>(false);
   public showProfileDetails$ = this.showProfileDetails.asObservable();
 
-  setProfileTarget(toggle: boolean){
+  setProfileTarget(toggle: boolean) {
     this.showProfileDetails.next(toggle);
   }
 
@@ -147,9 +147,11 @@ export class NavigationService {
    * @returns void
    */
   setThreadViewObject(message: Message): void {
-    this._threadViewPath = message.answerPath;
-    this._threadViewObject = message;
-    this.changeSubject.next('threadViewObjectSet');
+    if (message.answerable) {
+      this._threadViewPath = message.answerPath;
+      this._threadViewObject = message;
+      this.changeSubject.next('threadViewObjectSet');
+    }
   }
 
 

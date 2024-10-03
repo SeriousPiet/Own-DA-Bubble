@@ -17,6 +17,7 @@ section {
     background-color: white;
     max-height: 13rem;
     overflow-y: auto;
+    box-shadow: $modal-box-shadow;
 
     .picker-close {
       @include iconBox;

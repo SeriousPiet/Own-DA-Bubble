@@ -73,7 +73,7 @@
     <div class="message-info">
       @if(_messageData.answerCount > 0 && _messageData.answerable){
       <div id="message-answer-info">
-        <a (click)="setThread(_messageData)">
+        <a (click)="navigationService.setThreadViewObject(_messageData)">
           <span>{{ _messageData.answerCount }}</span>
           <span>Antworten</span>
         </a>
@@ -137,7 +137,7 @@
         <img src="./assets/icons/chat/message-hover-menu/add-reaction.svg" alt="" />
       </div>
       @if(_messageData.answerable && !isThreadView) {
-      <div (click)="setThread(_messageData)" class="button-ctn" id="comment-message-btn">
+      <div (click)="navigationService.setThreadViewObject(_messageData)" class="button-ctn" id="comment-message-btn">
         <img id="comment-icon" src="./assets/icons/chat/message-hover-menu/comment.svg" alt="" />
       </div>
       } @if(!messageEditorOpen) {
@@ -146,10 +146,5 @@
       </div>
       }
     </section>
-    <!-- removed -->
-    <!-- <div (click)="toggleMessageEditor()" class="edit-message-ctn"
-            [ngClass]="{'toggle-edit-message-popup':showEditMessagePopup}">
-            <span>Nachricht Bearbeiten</span>
-        </div> -->
   </div>
 </main>

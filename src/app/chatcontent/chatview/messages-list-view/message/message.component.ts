@@ -39,10 +39,10 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   public channelService = inject(ChannelService);
   public emojiService = inject(EmojipickerService);
 
-  public _messageData!: Message;
   public textLengthInfo: string = '0/0';
   public showTextLength: boolean = false;
-
+  
+  public _messageData!: Message;
   @Input() set messageData(newMessage: Message) {
     this._messageData = newMessage;
     this.fillMessageContentHTML();
@@ -79,7 +79,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     this._cdr.detectChanges();
   }
 
-  
+
   ngAfterViewChecked(): void {
     if (this.messageDiv && this.needContentUpdate) {
       this.needContentUpdate = false;
@@ -324,13 +324,5 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     this.userService.updateSelectedUser(
       this.userService.getUserByID(messageCreatorID)
     );
-  }
-
-
-  setThread(thread: Message) {
-    if (thread.answerable) {
-      this.navigationService.setThreadViewObject(thread);
-      console.log('Thread set ', thread);
-    }
   }
 }

@@ -91,8 +91,10 @@ export function insertItemAsSpan(quill: Quill, range: QuillRange | null, item: U
     const tagClass = item instanceof User ? 'highlight-user' : 'highlight-channel';
     const boundingKey = ' ';
     let cursorPosition = removeWordAndSymbolFromEditor(quill, range, tagSign);
-    if (cursorPosition === -1 && range === null) cursorPosition = quill.getLength();
-    else cursorPosition = range!.index;
+    if (cursorPosition === -1) {
+        if (range === null) cursorPosition = quill.getLength();
+        else cursorPosition = range!.index;
+    }
     const spanText = tagSign + item.name;
     const spanTextLength = spanText.length;
     quill.insertText(cursorPosition, boundingKey + spanText + boundingKey);
