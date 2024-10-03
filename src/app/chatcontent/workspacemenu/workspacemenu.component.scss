@@ -60,20 +60,6 @@ section {
       @include display-standard;
       gap: 0.9375rem;
     }
-
-    .ws-write {
-      gap: 0.625rem;
-      padding: 0.5rem;
-      background-image: url("../../../assets/icons/wsm/ws-write.svg");
-      @include background-properties;
-      border-radius: 1.25rem;
-    }
-
-    .ws-write:hover {
-      background-image: url("../../../assets/icons/wsm/ws-write-hover.svg");
-      background-color: #eceefe;
-      cursor: pointer;
-    }
   }
 
   .hashtag {
