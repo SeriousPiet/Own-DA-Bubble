@@ -142,27 +142,32 @@
   transition: $transition-standard;
 
   .input-message-toolbar {
+    z-index: 1;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     .message-action-button {
+      z-index: 1;
       display: flex;
       align-items: center;
       gap: 0.3125rem;
 
       > img {
+        z-index: 1;
         width: 1.5rem;
         height: 1.5rem;
       }
 
       > button {
+        z-index: 1;
         display: flex;
         align-items: center;
       }
 
       > span {
+        z-index: 1;
         font-size: 24px;
         font-weight: 100;
       }
@@ -171,6 +176,7 @@
 }
 
 .bottom-bar {
+  z-index: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;

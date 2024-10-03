@@ -57,8 +57,9 @@ export class MessagesListViewComponent implements OnInit {
   constructor(
     private _cdr: ChangeDetectorRef,
     private searchService: SearchService
-  ) {}
+  ) { }
 
+  
   ngOnInit(): void {
     this.messageScrollSubscription =
       this.searchService.messageScrollRequested.subscribe(
@@ -91,53 +92,48 @@ export class MessagesListViewComponent implements OnInit {
     setTimeout(scrollToElement, 100);
   }
 
-  sortMessagesDate(messageCreationDate: Date) {
-    this.messagesDates.push(messageCreationDate);
-    this.messagesDates.sort(
-      (a, b) => a.getMonth() - b.getMonth() || a.getDate() - b.getDate()
-    );
-    this.messagesDates = this.messagesDates.filter((date, index, array) => {
-      return index === 0 || date.getDate() !== array[index - 1].getDate();
-    });
 
-    this.messages.sort((a, b) => {
-      return a.createdAt.getTime() - b.createdAt.getTime();
-    });
+  ifDaySeparatorIsNeeded(index: number): boolean {
+    if (index === 0) return true;
+    return (
+      this.messages[index].createdAt.getDate() !==
+      this.messages[index - 1].createdAt.getDate()
+    );
   }
+
+
+  ifMessageFromSameUserAsPrevious(index: number): boolean {
+    if (index === 0) return false;
+    return this.messages[index].creatorID === this.messages[index - 1].creatorID;
+  }
+
 
   private subscribeMessages(messagesPath: string | undefined) {
     if (this.unsubMessages) this.unsubMessages();
     if (messagesPath) {
-      this.unsubMessages = onSnapshot(
-        collection(this.firestore, messagesPath),
-        (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-              let newMessage = new Message(
-                change.doc.data(),
-                messagesPath,
-                change.doc.id
-              );
-              this.messages.push(newMessage);
-              this.sortMessagesDate(newMessage.createdAt);
-            }
-            if (change.type === 'modified') {
-              const message = this.messages.find(
-                (message) => message.id === change.doc.id
-              );
-              if (message) message.update(change.doc.data());
-            }
-            if (change.type === 'removed') {
-              this.messages = this.messages.filter(
-                (message) => message.id !== change.doc.data()['id']
-              );
-            }
-          });
-          this._cdr.detectChanges();
+      this.unsubMessages = onSnapshot(collection(this.firestore, messagesPath), (snapshot) => {
+        let sortNeeded = false;
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
+            sortNeeded = true;
+            this.messages.push(new Message(change.doc.data(), messagesPath, change.doc.id));
+          }
+          if (change.type === 'modified') {
+            const message = this.messages.find((message) => message.id === change.doc.id);
+            if (message) message.update(change.doc.data());
+          }
+          if (change.type === 'removed') {
+            this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
+          }
+        });
+        if (sortNeeded) {
+          this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
         }
-      );
+        this._cdr.detectChanges();
+      });
     }
   }
+
 
   ngOnDestroy(): void {
     if (this.unsubMessages) {

@@ -1,17 +1,15 @@
 <section>
-  @for (date of messagesDates; track date) {
-  <app-message-date [date]="date"></app-message-date>
-
-  @for (message of messages; track message) { @if(date.getDate() ==
-  message.createdAt.getDate()){
-  <app-message
-    [messageEditorOpen]="messageEditorOpen"
-    (messageEditorOpenChange)="messageEditorOpen = $event"
-    [ngClass]="{ 'chat-view': true }"
-    [id]="message.id"
-    [messages]="messages"
-    [messageWriter]="message.creatorID"
-    [messageData]="message"
-  ></app-message>
-  } } }
+  @for (message of messages; track message) {
+  @if(ifDaySeparatorIsNeeded($index)) {
+  <app-message-date [date]="message.createdAt"></app-message-date>
+  <app-message [messageEditorOpen]="messageEditorOpen" (messageEditorOpenChange)="messageEditorOpen = $event"
+    [ngClass]="{ 'chat-view': true }" [id]="message.id"
+    [messageData]="message"></app-message>
+  } @else {
+  <app-message [previousMessageFromSameUser]="ifMessageFromSameUserAsPrevious($index)"
+    [messageEditorOpen]="messageEditorOpen" (messageEditorOpenChange)="messageEditorOpen = $event"
+    [ngClass]="{ 'chat-view': true }" [id]="message.id"
+    [messageData]="message"></app-message>
+  }
+  }
 </section>
