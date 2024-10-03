@@ -23,6 +23,13 @@ export class NavigationService {
   private navigationCompleteSubject = new BehaviorSubject<void>(undefined);
   public navigationComplete$ = this.navigationCompleteSubject.asObservable();
 
+  private showProfileDetails = new BehaviorSubject<boolean>(false);
+  public showProfileDetails$ = this.showProfileDetails.asObservable();
+
+  setProfileTarget(toggle: boolean){
+    this.showProfileDetails.next(toggle);
+  }
+
 
   private userService: UsersService = inject(UsersService);
   private channelService: ChannelService = inject(ChannelService);
