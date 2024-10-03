@@ -25,16 +25,11 @@ import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/
   styleUrl: './workspacemenu.component.scss',
 })
 export class WorkspacemenuComponent {
-
   addChannelId: HTMLElement | null = null;
 
   public userservice = inject(UsersService);
   public channelservice = inject(ChannelService);
   private navigationService = inject(NavigationService);
-
-  public onlineStatus: string = 'offline';
-  public onlineColor: string = '#92c83e';
-  public offlineColor: string = '#686868';
 
   @ViewChild(AddchannelComponent) addChannelComponent!: AddchannelComponent;
 
