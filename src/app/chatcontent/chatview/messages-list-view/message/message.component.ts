@@ -315,6 +315,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     const popoverElement = document.getElementById(
       this.returnPopoverTarget(messageCreatorID)
     );
+    this.navigationService.setProfileTarget(true);
     if (popoverElement) (popoverElement as any).showPopover();
   }
 

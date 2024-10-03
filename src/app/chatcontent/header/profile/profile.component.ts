@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { UsersService } from '../../../utils/services/user.service';
 import { User } from '../../../shared/models/user.class';
 
@@ -25,6 +25,7 @@ import {
   reauthenticateWithCredential,
   updateEmail,
 } from '@angular/fire/auth';
+import { NavigationService } from '../../../utils/services/navigation.service';
 
 @Component({
   selector: 'app-profile',
@@ -40,6 +41,9 @@ import {
   styleUrl: './profile.component.scss',
 })
 export class ProfileComponent implements OnInit {
+
+  private subProfileTarget: any = null;
+
   showProfileDetails = false;
   editMode = false;
   showChooseAvatarForm = false;
@@ -57,9 +61,11 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     public userservice: UsersService,
+    public navigationService: NavigationService,
     private cleanupservice: CleanupService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private cdRef: ChangeDetectorRef,
   ) {
     this.profileForm = this.fb.group({
       name: ['', [Validators.required, nameValidator()]],
@@ -84,6 +90,14 @@ export class ProfileComponent implements OnInit {
     }
     this.checkCanEmailChange();
     this.reauthpasswordInfoReset();
+    this.subProfileTarget = this.navigationService.showProfileDetails$.subscribe((show) => {
+      this.showProfileDetails = show;
+      this.cdRef.detectChanges();  // Manuelle Änderungserkennung nach Aktualisierung
+    });
+  }
+
+  ngOnDestroy() {
+   this.subProfileTarget.unsubscribe();
   }
 
   private checkCanEmailChange() {
@@ -125,6 +139,7 @@ export class ProfileComponent implements OnInit {
     this.showProfileDetails = false;
     this.editMode = false;
     this.showChooseAvatarForm = false;
+    this.navigationService.setProfileTarget(false);
   }
 
   showChooseAvatarComponent() {
