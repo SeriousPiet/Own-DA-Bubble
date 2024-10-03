@@ -5,6 +5,8 @@ import { updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp } fr
 import { Auth, sendEmailVerification, user } from '@angular/fire/auth';
 import { EmojipickerService } from './emojipicker.service';
 
+export type CurrentUserChange = 'init' | 'login' | 'logout' | 'update';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,7 +21,7 @@ export class UsersService implements OnDestroy {
   private changeUserListSubject = new BehaviorSubject<User[]>([]);
   public changeUserList$ = this.changeUserListSubject.asObservable();
 
-  private changeCurrentUserSubject = new BehaviorSubject<string>('');
+  private changeCurrentUserSubject = new BehaviorSubject<CurrentUserChange>('init');
   public changeCurrentUser$ = this.changeCurrentUserSubject.asObservable();
 
   private selectedUserObjectSubject = new BehaviorSubject<User | undefined>(undefined);

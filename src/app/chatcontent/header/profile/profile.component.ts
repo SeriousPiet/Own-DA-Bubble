@@ -75,10 +75,8 @@ export class ProfileComponent implements OnInit {
     this.userservice.currentUser?.changeUser$.subscribe((user) => {
       this.onlineStatus = user?.online ? 'online' : 'offline';
     });
+    this.checkCanEmailChange();
 
-    this.userservice.changeCurrentUser$.subscribe(() => {
-      this.checkCanEmailChange();
-    });
   }
 
   ngOnInit() {

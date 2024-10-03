@@ -34,6 +34,7 @@ export class AvatarDirective implements OnInit, OnChanges, OnDestroy {
   constructor(private el: ElementRef, private renderer: Renderer2) {}
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('changes', changes);
     if (changes['user'] && !changes['user'].firstChange) {
       this.subscribeUser();
       this.updateAvatar();
@@ -59,9 +60,11 @@ export class AvatarDirective implements OnInit, OnChanges, OnDestroy {
 
 
   private subscribeUser() {
+    console.log('subscribeUser', this.userSubscription);
     if(this.userSubscription) this.userSubscription.unsubscribe();
     this.userSubscription = this.user?.changeUser$.subscribe(
       (user: User | null) => {
+        console.log('user', user);
         if (user) {
           this.user = user;
           this.renderer.setAttribute(this._img, 'src', this.getAvatarUrl());

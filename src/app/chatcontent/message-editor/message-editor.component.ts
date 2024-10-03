@@ -33,7 +33,7 @@ export class MessageEditorComponent implements AfterViewInit {
   @Input() messageAsHTML = '';
   @Input() placeholder = 'Schreib etwas...';
   @Input() minHeight_rem = 2;
-  @Input() maxHeight_rem = 16;
+  @Input() maxHeight_rem = 10;
 
   @Output() enterPressed = new EventEmitter<string>();
   @Output() escapePressed = new EventEmitter<string>();
