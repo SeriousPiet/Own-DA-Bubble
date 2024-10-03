@@ -92,8 +92,6 @@ export class User {
       img.onerror = () => {
         this.setUserPictureToDefault();
       };
-    } else {
-      this.setUserPictureToDefault();
     }
   }
 

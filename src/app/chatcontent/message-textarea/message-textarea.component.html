@@ -41,14 +41,13 @@
       </div>
     </div>
     <div class="bottom-bar">
-      @if(errorInfo !== '') {
-      <span class="errorspan">{{ errorInfo }}</span>
+      @if(errorInfo !== '') { <span class="errorspan">{{ errorInfo }}</span>
       }
       @if(ifMessageUploading){
       <img src="./assets/icons/svg-spinner-accent.svg" alt="" />
       } @else {
       @if(showTextLength) {
-      <span class="textlength-info">{{ textLengthInfo }}</span>
+      <span class="errorspan">{{ textLengthInfo }}</span>
       }
       <button [disabled]="ifMessageUploading" (click)="addNewMessage()" id="send-message-icon"
         (mouseenter)="isActive = true" (mouseleave)="isActive = false">

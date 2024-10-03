@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { User } from '../../../../shared/models/user.class';
-import { MessageEditorComponent } from '../../../message-editor/message-editor.component';
+import { EditedTextLength, MessageEditorComponent } from '../../../message-editor/message-editor.component';
 import { ChannelService } from '../../../../utils/services/channel.service';
 import { Channel } from '../../../../shared/models/channel.class';
 import { EmojipickerService } from '../../../../utils/services/emojipicker.service';
@@ -40,6 +40,8 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   public emojiService = inject(EmojipickerService);
 
   public _messageData!: Message;
+  public textLengthInfo: string = '0/0';
+  public showTextLength: boolean = false;
 
   @Input() set messageData(newMessage: Message) {
     this._messageData = newMessage;
@@ -70,6 +72,14 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
 
   constructor(private _cdr: ChangeDetectorRef) { }
 
+
+  handleEditorTextLengthChanged(event: EditedTextLength) {
+    this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
+    this.showTextLength = event.textLength > event.maxLength * 0.8;
+    this._cdr.detectChanges();
+  }
+
+  
   ngAfterViewChecked(): void {
     if (this.messageDiv && this.needContentUpdate) {
       this.needContentUpdate = false;

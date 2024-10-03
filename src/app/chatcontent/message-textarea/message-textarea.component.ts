@@ -41,6 +41,7 @@ export class MessageTextareaComponent {
   dropzonehighlighted = false;
   ifMessageUploading = false;
   errorInfo = '';
+  errorInfoTimeout: any;
 
 
   /**
@@ -143,13 +144,13 @@ export class MessageTextareaComponent {
     const newHTMLMessage = this.messageeditor.getMessageAsHTML();
     this.errorInfo = '';
     if (isEmptyMessage(newHTMLMessage) && this.attachments.length === 0) {
-      this.handleErrors('Nachricht darf nicht leer sein.');
+      this.showErrorWithDelay('Nachricht darf nicht leer sein.');
     } else if (await this.userservice.ifCurrentUserVerified()) {
       this.messageeditor.quill.disable();
       this.ifMessageUploading = true;
       const error = await this.messageService.addNewMessageToCollection(this._messagesCollectionObject, newHTMLMessage, this.attachments);
       if (error) {
-        this.handleErrors(error);
+        this.showErrorWithDelay(error);
       } else {
         this.messageeditor.clearEditor();
         this.attachments = [];
@@ -166,11 +167,13 @@ export class MessageTextareaComponent {
    *
    * @param error - The error message to be handled.
    */
-  private handleErrors(error: string) {
+  private showErrorWithDelay(error: string, delay: number = 8000) {
+    if(this.errorInfoTimeout) clearTimeout(this.errorInfoTimeout);
     this.errorInfo = error;
-    setTimeout(() => {
+    this.errorInfoTimeout = setTimeout(() => {
       this.errorInfo = '';
-    }, 8000);
+      this.errorInfoTimeout = null;
+    }, delay);
   }
 
 
@@ -213,14 +216,14 @@ export class MessageTextareaComponent {
   private loadAttachments(fileList: any) {
     this.errorInfo = '';
     if (fileList.files.length + this.attachments.length > 5) {
-      this.handleErrors('Maximal 5 Dateien erlaubt.');
+      this.showErrorWithDelay('Maximal 5 Dateien erlaubt.');
       return;
     }
     for (let i = 0; i < fileList.files.length; i++) {
       const file = fileList.files[i];
       if (this.fileAllreadyAttached(file)) continue;
       if (!this.fileValidators.every((validator) => validator.validator(file))) {
-        this.errorInfo += file.name + ': ' + (this.fileValidators.find((validator) => !validator.validator(file))?.error as string) + '\n';
+        this.showErrorWithDelay(file.name + ': ' + (this.fileValidators.find((validator) => !validator.validator(file))?.error as string));
         continue;
       }
       if (file.type.startsWith('image')) {
