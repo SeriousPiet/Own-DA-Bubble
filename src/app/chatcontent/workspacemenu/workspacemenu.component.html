@@ -24,14 +24,12 @@
         </div>
       </summary>
       <ul class="channel-list">
-        <li
-          class="blue"
-          (click)="setChat(channel)"
-          *ngFor="let channel of channelservice.channels"
-        >
+        @for (channel of channelservice.channels; track channel) {
+        <li class="blue" (click)="setChat(channel)">
           <div class="hashtag"></div>
           <span class="nunito-18-400">{{ channel.name }}</span>
         </li>
+        }
       </ul>
       <button class="blue" (click)="toggleAddChannelPopover()">
         <div class="add-channel-2 blue"></div>
