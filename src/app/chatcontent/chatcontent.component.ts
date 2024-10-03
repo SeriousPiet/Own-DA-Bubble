@@ -29,52 +29,71 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
   private breakpointSubscription: Subscription | undefined;
 
   currentLayout:
-    | 'three-column'
-    | 'two-column'
-    | 'two-column-interim'
-    | 'one-column' = 'three-column';
+    | 'three-columns'
+    | 'two-broad-columns'
+    | 'two-narrow-columns'
+    | 'one-broad-column'
+    | 'one-narrow-column'
+    | 'one-slim-column' = 'three-columns';
 
   isWorkspaceMenuVisible = true;
   isThreadViewVisible = false;
   isChatViewVisible = true;
-  isChatViewExpanded = false;
   isSingleColumn = false;
-
+  isThreadViewFullWidth = false;
   navigationService = inject(NavigationService);
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
     const layoutBreakpoints = {
-      'three-column': '(min-width: 1200px)',
-      'two-column': '(min-width: 892px) and (max-width: 1199px)',
-      'two-column-interim': '(min-width: 716px) and (max-width: 891px)',
-      'one-column': '(max-width: 715px)',
+      'three-columns': '(min-width: 1200px)',
+      'two-broad-columns': '(min-width: 892px) and (max-width: 1199px)',
+      'two-narrow-columns': '(min-width: 716px) and (max-width: 891px)',
+      'one-broad-column': '(min-width: 480px) and (max-width: 715px)',
+      'one-narrow-column': ' (min-width: 376px) and (max-width: 479px)',
+      'one-slim-column': '(max-width: 375px)',
     };
 
     this.breakpointSubscription = this.breakpointObserver
       .observe(Object.values(layoutBreakpoints))
       .subscribe((state: BreakpointState) => {
-        if (state.breakpoints[layoutBreakpoints['three-column']]) {
-          this.currentLayout = 'three-column';
-        } else if (state.breakpoints[layoutBreakpoints['two-column']]) {
-          this.currentLayout = 'two-column';
-        } else if (state.breakpoints[layoutBreakpoints['two-column-interim']]) {
-          this.currentLayout = 'two-column-interim';
+        if (state.breakpoints[layoutBreakpoints['three-columns']]) {
+          this.currentLayout = 'three-columns';
+        } else if (state.breakpoints[layoutBreakpoints['two-broad-columns']]) {
+          this.currentLayout = 'two-broad-columns';
+        } else if (state.breakpoints[layoutBreakpoints['two-narrow-columns']]) {
+          this.currentLayout = 'two-narrow-columns';
         } else {
-          this.currentLayout = 'one-column';
+          this.currentLayout = 'one-broad-column';
         }
-        this.adjustLayout();
+        this.setLayout();
       });
 
-      this.navigationService.change$.subscribe((change) => {
-        if (change === 'threadViewObjectSet') {
-          this.isThreadViewVisible = true;
-        } else if (change === 'threadViewObjectCleared') {
+    this.navigationService.change$.subscribe((change) => {
+      if (change === 'threadViewObjectSet') {
+        this.isThreadViewVisible = true;
+        if (this.currentLayout === 'one-broad-column') {
+          this.isWorkspaceMenuVisible = false;
+          this.isChatViewVisible = false;
+        }
+      } else if (change === 'threadViewObjectCleared') {
+        this.isThreadViewVisible = false;
+        if (this.currentLayout === 'one-broad-column') {
+          this.isChatViewVisible = true;
+        }
+      } else if (
+        change === 'chatViewObjectSetAsChannel' ||
+        change === 'chatViewObjectSetAsChat'
+      ) {
+        this.isChatViewVisible = true;
+        if (this.currentLayout === 'one-broad-column') {
+          this.isWorkspaceMenuVisible = false;
           this.isThreadViewVisible = false;
         }
-        this.adjustLayout();
-      });
+      }
+      this.setLayout();
+    });
   }
 
   ngOnDestroy() {
@@ -83,66 +102,120 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
     }
   }
 
-  adjustLayout() {
+  setLayout() {
     switch (this.currentLayout) {
-      case 'three-column':
-      case 'two-column':
+      case 'three-columns':
         this.adjustThreeColumnLayout();
         break;
-      case 'two-column-interim':
-        this.adjustTwoColumnInterimLayout();
+      case 'two-broad-columns':
+        this.adjustTwoBroadColumnLayout();
         break;
-      case 'one-column':
-        // Implementierung folgt
+      case 'two-narrow-columns':
+        this.adjustTwoNarrowColumnLayout();
+        break;
+      case 'one-broad-column':
+        this.adjustOneBroadColumnLayout();
+        break;
+      case 'one-narrow-column':
+        // to be implemented
+
+        break;
+      case 'one-slim-column':
+        // to be implemented
         break;
     }
   }
-
   adjustThreeColumnLayout() {
-    this.isChatViewExpanded =
-      !this.isWorkspaceMenuVisible || !this.isThreadViewVisible;
     this.isSingleColumn =
       !this.isWorkspaceMenuVisible && !this.isThreadViewVisible;
   }
 
-  adjustTwoColumnInterimLayout() {
+  adjustTwoBroadColumnLayout() {
+    if (this.isThreadViewVisible) {
+      this.isWorkspaceMenuVisible = false;
+      this.isChatViewVisible = true;
+    } else {
+      this.isChatViewVisible = true;
+    }
+  }
+
+  adjustTwoNarrowColumnLayout() {
     if (!this.isWorkspaceMenuVisible) {
-      // Wenn WSM ausgeblendet ist, zeige entweder ChatView oder ThreadView
+      // Wenn WSM ausgeblendet ist, entweder ChatView oder ThreadView zeigen
       this.isChatViewVisible = !this.isThreadViewVisible;
     } else {
       this.isChatViewVisible = !this.isThreadViewVisible;
     }
-    this.isChatViewExpanded =
-      this.isChatViewVisible && !this.isWorkspaceMenuVisible;
+  }
+
+  adjustOneBroadColumnLayout() {
+    if (this.isThreadViewVisible) {
+      this.isWorkspaceMenuVisible = false;
+      this.isChatViewVisible = false;
+    } else if (this.isWorkspaceMenuVisible) {
+      this.isChatViewVisible = false;
+    } else {
+      this.isChatViewVisible = true;
+    }
   }
 
   toggleThreadView() {
     this.isThreadViewVisible = !this.isThreadViewVisible;
-    if (this.currentLayout === 'two-column-interim') {
+
+    if (this.currentLayout === 'two-broad-columns') {
+      if (this.isThreadViewVisible) {
+        this.isWorkspaceMenuVisible = false;
+      }
+      // ChatView bleibt immer sichtbar in diesem Layout
+      this.isChatViewVisible = true;
+    } else if (this.currentLayout === 'two-narrow-columns') {
       this.isChatViewVisible = !this.isThreadViewVisible;
       // WSM-Status bleibt unverändert
     } else if (
-      this.currentLayout !== 'three-column' &&
+      this.currentLayout !== 'three-columns' &&
       this.isThreadViewVisible
     ) {
       this.isWorkspaceMenuVisible = false;
+    } else if (this.currentLayout === 'one-broad-column') {
+      if (this.isThreadViewVisible) {
+        this.isWorkspaceMenuVisible = false;
+        this.isChatViewVisible = false;
+      } else {
+        this.isChatViewVisible = true;
+      }
     }
-    this.adjustLayout();
+
+    this.setLayout();
   }
 
   toggleWorkspaceMenu() {
     this.isWorkspaceMenuVisible = !this.isWorkspaceMenuVisible;
-    if (this.currentLayout === 'two-column-interim') {
+
+    if (this.currentLayout === 'two-broad-columns') {
+      if (this.isWorkspaceMenuVisible) {
+        this.isThreadViewVisible = false;
+      }
+      // ChatView bleibt immer sichtbar in diesem Layout
+      this.isChatViewVisible = true;
+    } else if (this.currentLayout === 'two-narrow-columns') {
       if (this.isWorkspaceMenuVisible) {
         this.isChatViewVisible = true;
         this.isThreadViewVisible = false;
       }
     } else if (
-      this.currentLayout !== 'three-column' &&
+      this.currentLayout !== 'three-columns' &&
       this.isWorkspaceMenuVisible
     ) {
       this.isThreadViewVisible = false;
+    } else if (this.currentLayout === 'one-broad-column') {
+      if (this.isWorkspaceMenuVisible) {
+        this.isChatViewVisible = false;
+        this.isThreadViewVisible = false;
+      } else {
+        this.isChatViewVisible = true;
+      }
     }
-    this.adjustLayout();
+
+    this.setLayout();
   }
 }
