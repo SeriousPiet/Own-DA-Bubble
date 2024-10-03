@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
-import { MessageEditorComponent } from '../message-editor/message-editor.component';
+import { EditedTextLength, MessageEditorComponent } from '../message-editor/message-editor.component';
 import { Message } from '../../shared/models/message.class';
 import { isEmptyMessage } from '../../utils/quil/utility';
 
@@ -28,12 +28,14 @@ export class MessageTextareaComponent {
       this.messageeditor.quill.focus();
     }
   }
-  
-  
+
+
   private _messagesCollectionObject!: Channel | Chat | Message;
   isHovered = false;
   inputID = Math.random().toString(36).substring(2, 9);
   isActive = false;
+  showTextLength = false;
+  textLengthInfo = '0/0';
 
   attachments: MessageAttachment[] = [];
   dropzonehighlighted = false;
@@ -73,6 +75,12 @@ export class MessageTextareaComponent {
   private userservice = inject(UsersService);
 
   constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) { }
+
+  handleEditorTextLengthChanged(event: EditedTextLength) {
+    this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
+    this.showTextLength = event.textLength > event.maxLength * 0.8;
+    this._cdr.detectChanges();
+  }
 
   // -----------------------------------------------------------------------------
   // Eventlistener for drag and drop

@@ -12,6 +12,11 @@ import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
 import { getTextBeforePreviousSign, insertItemAsSpan, registerLockedSpanBlot } from '../../utils/quil/utility';
 
+export type EditedTextLength = {
+  maxLength: number;
+  textLength: number;
+};
+
 
 @Component({
   selector: 'app-message-editor',
@@ -32,6 +37,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   @Output() enterPressed = new EventEmitter<string>();
   @Output() escapePressed = new EventEmitter<string>();
+  @Output() textLengthChanged = new EventEmitter<EditedTextLength>();
 
   public userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
@@ -39,9 +45,7 @@ export class MessageEditorComponent implements AfterViewInit {
 
   // Quill Editor variables and configuration
   readonly maxMessageLength = 1000;
-  public messageLength = 0;
   public quill!: Quill;
-  public quillError = '';
   public toolbarID = 'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
@@ -167,7 +171,6 @@ export class MessageEditorComponent implements AfterViewInit {
         this.addFocusController();
         this.addKeyController();
         this.quill.root.innerHTML = this.messageAsHTML;
-        this.messageLength = this.quill.getLength();
         this.quill.focus();
       });
     }
@@ -192,13 +195,12 @@ export class MessageEditorComponent implements AfterViewInit {
       if (eventName === 'text-change') {
         const [delta, oldDelta, source] = args;
         const hasImage = delta.ops.some((op: any) => op.insert && op.insert.image);
-        this.messageLength = this.quill.getLength();
-        this.quillError = '';
+        const messageLength = this.quill.getLength();
         if (source === 'user' && hasImage) this.quill.history.undo();
-        else if (this.messageLength > this.maxMessageLength) {
-          this.quillError = 'Nachricht zu lang';
-          this.quill.deleteText(this.maxMessageLength, this.messageLength - this.maxMessageLength);
+        else if (messageLength > this.maxMessageLength) {
+          this.quill.deleteText(this.maxMessageLength, messageLength - this.maxMessageLength);
         }
+        this.textLengthChanged.emit({ maxLength: this.maxMessageLength, textLength: messageLength });
         this._cdr.detectChanges();
       }
     });

@@ -152,6 +152,13 @@
   }
 }
 
+.bottom-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+
 .button-disabled {
   @include flex(center, center);
   width: 2.5rem;
@@ -163,6 +170,10 @@
 
 .button-ctn {
   @include iconBox;
+}
+
+.textlength-info {
+  @include nunito(1, 600, $error);
 }
 
 #add-attachment-icon:hover {
@@ -185,7 +196,7 @@
 
 #tag-channel-icon:hover {
   > img {
-    content: url("../../../assets/icons/chat/write-message/hashtag-active.svg");
+    content: url("../../../assets/icons/chat/write-message/hashtag-hover.svg");
   }
 }
 

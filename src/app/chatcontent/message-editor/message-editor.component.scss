@@ -108,15 +108,6 @@ section {
     transition: all 0.2s;
     overflow: hidden;
     border: none;
-
-    .quill-message-length {
-      @include nunito(1, 600, black);
-      padding-right: 1rem;
-    }
-
-    .quill-error {
-      @include nunito(1, 600, $error);
-    }
   }
 
   .show-editor-toolbar {
