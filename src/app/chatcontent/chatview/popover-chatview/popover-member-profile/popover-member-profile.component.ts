@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { User } from '../../../../shared/models/user.class';
 import { Subscription } from 'rxjs';
+import { NavigationService } from '../../../../utils/services/navigation.service';
 
 @Component({
   selector: 'app-popover-member-profile',
@@ -17,6 +18,7 @@ export class PopoverMemberProfileComponent implements OnInit, OnDestroy {
 
   private subscription!: Subscription
   userService = inject(UsersService);
+  navigationService = inject(NavigationService);
 
   selectedUser!: User | undefined;
 
@@ -40,6 +42,10 @@ export class PopoverMemberProfileComponent implements OnInit, OnDestroy {
       return this.userService.getUserByID(this.selectedUser.id);
     }
     return
+  }
+
+  setChat(chat: any) {
+    this.navigationService.setChatViewObject(chat);
   }
 
   ngOnDestroy() {
