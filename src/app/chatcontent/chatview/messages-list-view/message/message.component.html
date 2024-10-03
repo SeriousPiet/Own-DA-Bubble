@@ -1,4 +1,5 @@
-<main #messagemaindiv (mouseenter)="isHovered = true" (mouseleave)="isHovered = false; showEditMessagePopup = false" [ngClass]="{
+<main #messagemaindiv (mouseenter)="isHovered = true" (mouseleave)="isHovered = false; showEditMessagePopup = false"
+  [ngClass]="{
     'message-ctn': true,
     'message-from-user': messagefromUser,
     'editor-modus-bg-color': messageEditorModus,
@@ -86,29 +87,34 @@
   </section>
   }@else {
   <div (mouseenter)="isHovered = false" class="message-editor">
-    <app-message-editor #messageeditor (enterPressed)="updateMessage()" (escapePressed)="closeMessageEditor()" (textLengthChanged)="handleEditorTextLengthChanged($event)"
+    <app-message-editor #messageeditor (enterPressed)="updateMessage()" (escapePressed)="closeMessageEditor()"
+      (textLengthChanged)="handleEditorTextLengthChanged($event)"
       [messageAsHTML]="_messageData.content"></app-message-editor>
-    <div class="input-message-toolbar">
+    <div class="input-message-toolbar" (resized)="resizeToolBar($event)">
       <div (click)="messageEditor.openEmojiPicker()" id="emoji-picker-icon" class="button-ctn">
         <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+" />
       </div>
       <div class="input-message-toolbar-right">
         @if(showTextLength) {
-          <div>
-            <span class="errorspan">{{ textLengthInfo }}</span>
-          </div>
+        <div>
+          <span class="errorspan">{{ textLengthInfo }}</span>
+        </div>
         }
         <div class="message-editor-button">
+          @if(showBigButtons) {
+          <button class="abort-btn" (click)="closeMessageEditor()">
+            Abbrechen
+          </button>
+          <button class="save-btn" (click)="updateMessage()">Speichern</button>
+          }
+          @if(showSmallButtons) {
           <button class="button-ctn action-btn" (click)="closeMessageEditor()">
             <img id="btn-close" src="./assets/icons/chat/write-message/close.svg" alt="+" />
           </button>
           <button class="button-ctn action-btn" (click)="updateMessage()">
             <img id="btn-ok" src="./assets/icons/chat/write-message/ok.svg" alt="+" />
           </button>
-          <!-- <button class="abort-btn" (click)="closeMessageEditor()">
-            Abbrechen
-          </button>
-          <button class="save-btn" (click)="updateMessage()">Speichern</button> -->
+          }
         </div>
       </div>
     </div>

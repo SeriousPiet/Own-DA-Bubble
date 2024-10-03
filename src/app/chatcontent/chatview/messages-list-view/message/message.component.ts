@@ -5,6 +5,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   inject,
   Input,
   OnInit,
@@ -13,21 +14,14 @@ import {
 } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
-import {
-  IReactions,
-  Message,
-  StoredAttachment,
-} from '../../../../shared/models/message.class';
+import { IReactions, Message, StoredAttachment } from '../../../../shared/models/message.class';
 import { MessageService } from '../../../../utils/services/message.service';
 import { UsersService } from '../../../../utils/services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { User } from '../../../../shared/models/user.class';
-import {
-  EditedTextLength,
-  MessageEditorComponent,
-} from '../../../message-editor/message-editor.component';
+import { EditedTextLength, MessageEditorComponent } from '../../../message-editor/message-editor.component';
 import { ChannelService } from '../../../../utils/services/channel.service';
 import { Channel } from '../../../../shared/models/channel.class';
 import { EmojipickerService } from '../../../../utils/services/emojipicker.service';
@@ -47,8 +41,8 @@ import { isEmptyMessage } from '../../../../utils/quil/utility';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
-export class MessageComponent
-  implements OnInit, AfterViewInit, AfterViewChecked {
+export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked {
+
   @ViewChild('messagemaindiv', { static: false }) messageMainDiv!: ElementRef;
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
   @ViewChild('messageeditor', { static: false })
@@ -59,6 +53,9 @@ export class MessageComponent
   public messageService = inject(MessageService);
   public channelService = inject(ChannelService);
   public emojiService = inject(EmojipickerService);
+  private resizeobserver!: ResizeObserver;
+  public showSmallButtons = false;
+  public showBigButtons = false;
 
   public textLengthInfo: string = '0/0';
   public showTextLength: boolean = false;
@@ -86,12 +83,16 @@ export class MessageComponent
   public messageEditorModus = false;
   private needContentUpdate = false;
 
+  constructor(private _cdr: ChangeDetectorRef, private el: ElementRef) { }
+
   ngOnInit(): void {
     this.sortMessages();
     this.getMessageCreatorObject();
   }
 
-  constructor(private _cdr: ChangeDetectorRef) { }
+  resizeToolBar(event: Event) {
+    console.log('resizeToolBar', event);
+  }
 
   handleEditorTextLengthChanged(event: EditedTextLength) {
     this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
@@ -110,6 +111,12 @@ export class MessageComponent
     this._messageData.changeMessage$.subscribe(() => {
       this.fillMessageContentHTML();
       this._cdr.detectChanges();
+    });
+    this.resizeobserver = new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        this.showBigButtons = entry.contentRect.width > 700;
+        this.showSmallButtons = !this.showBigButtons;
+      });
     });
   }
 
@@ -338,11 +345,16 @@ export class MessageComponent
     this.toggleEditMessagePopup();
     this.messageEditorModus = !this.messageEditorModus;
     this.messageEditorOpenChange.emit(this.messageEditorModus);
-    setTimeout(() => {
-      if (this.messageMainDiv) {
-        this.messageMainDiv.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 500);
+    if (this.messageEditorModus) {
+      this.resizeobserver.observe(this.el.nativeElement);
+      setTimeout(() => {
+        if (this.messageMainDiv) {
+          this.messageMainDiv.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+    } else {
+      this.resizeobserver.unobserve(this.el.nativeElement);
+    }
   }
 
   returnPopoverTarget(messageCreator: string) {

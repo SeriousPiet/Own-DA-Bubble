@@ -222,12 +222,10 @@ export class MessageEditorComponent implements AfterViewInit {
   addFocusController() {
     const editorElement = this.quill.root;
     editorElement.addEventListener('focus', () => {
-      console.log('Focus event:', event);
       this.showToolbar = true;
       this.savedRange = null;
     });
     editorElement.addEventListener('blur', (event: FocusEvent) => {
-      console.log('Blur event:', event);
       this.savedRange = this.quill.getSelection();
       const target = event.relatedTarget as HTMLElement;
       if (!target || !this.toolbar.nativeElement.contains(target)) this.showToolbar = false;

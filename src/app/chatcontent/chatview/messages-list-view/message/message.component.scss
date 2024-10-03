@@ -425,10 +425,18 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 
   .input-message-toolbar {
     @include flex(space-between, center);
+    container-name: bottomtoolbar;
+    container-type: inline-size;
   }
 
   .input-message-toolbar-right {
     @include flex(flex-start, center);
+  }
+}
+
+@container  (width < 300px) {
+  .input-message-toolbar {
+    background-color: red;
   }
 }
 
@@ -455,12 +463,17 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
     }
   }
 
+  #btn-ok {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+
   .abort-btn {
-    // @include buttonEmpty();
+    @include buttonEmpty();
   }
 
   .save-btn {
-    // @include buttonFull();
+    @include buttonFull();
   }
 }
 
