@@ -33,6 +33,7 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
   channelService = inject(ChannelService);
   navigationService = inject(NavigationService);
 
+  showProfileDetails = false;
   isUserSearchSelected = true;
   userAmount: number = 0;
   selectedUsers: User[] = [];
@@ -126,6 +127,7 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
 
   setSelectedUserObject(messageCreatorID: string) {
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
+    this.navigationService.setProfileTarget(true);
   }
 
   getTitle(object: Channel | Chat | Message | undefined): string {
