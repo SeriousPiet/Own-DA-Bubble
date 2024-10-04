@@ -12,10 +12,13 @@
   @include flex(flex-start, flex-start);
   flex-direction: column;
   padding: 1.125rem;
-  // border: 1px solid $disabled;
   border-radius: 1.875rem;
   background-color: #fff;
   transition: $transition-standard;
+
+  @media (width < 426px) {
+    border-radius: 0;
+  }
 
   &:focus-within {
     box-shadow: $profile-box-shadow;
