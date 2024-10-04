@@ -62,11 +62,6 @@ section {
     }
   }
 
-  .hashtag {
-    background-image: url("../../../assets/icons/wsm/hashtag.svg");
-    @include background-properties;
-  }
-
   ul {
     gap: 0.8125rem;
     padding-left: 0;
@@ -80,18 +75,22 @@ section {
       margin-left: $chnl-ml;
       border-radius: $circled-border-radius;
 
-      &:hover {
+      .hashtag {
+        background-image: url("../../../assets/icons/wsm/hashtag.svg");
+        @include background-properties;
+      }
+
+      &:hover,
+      &.active {
         background-color: #eceefe;
         cursor: pointer;
-      }
-
-      &:hover span {
-        font-weight: 700;
-        color: $accent;
-      }
-
-      &:hover .hashtag {
-        background-image: url("../../../assets/icons/wsm/hashtag-hover.svg");
+        .hashtag {
+          background-image: url("../../../assets/icons/wsm/hashtag-hover.svg");
+        }
+        span {
+          font-weight: 700;
+          color: $accent;
+        }
       }
     }
   }

@@ -24,14 +24,18 @@
       </summary>
       <ul class="channel-list">
         @for (channel of channelservice.channels; track channel) {
-        <li class="blue" (click)="setChat(channel)">
+        <li
+          hoverElement
+          [class.active]="activeChannel === channel"
+          (click)="setChat(channel); activeChannel = channel"
+        >
           <div class="hashtag"></div>
           <span class="nunito-18-400">{{ channel.name }}</span>
         </li>
         }
       </ul>
-      <button class="blue" (click)="toggleAddChannelPopover()">
-        <div class="add-channel-2 blue"></div>
+      <button hoverElement (click)="toggleAddChannelPopover()">
+        <div class="add-channel-2"></div>
         <span class="nunito-18-400">Channel hinzufügen</span>
       </button>
     </details>
@@ -46,7 +50,11 @@
         <li
           class="dm-list-item"
           hoverElement
-          (click)="setChat(userservice.currentUser)"
+          [class.active]="activeUser === userservice.currentUser"
+          (click)="
+            setChat(userservice.currentUser);
+            activeUser = userservice.currentUser
+          "
         >
           <div
             class="avatar"
@@ -58,7 +66,12 @@
         </li>
         @for(user of userservice.users; track user) { @if(!user.guest && user.id
         !== userservice.currentUserID) {
-        <li class="dm-list-item" hoverElement (click)="setChat(user)">
+        <li
+          class="dm-list-item"
+          hoverElement
+          [class.active]="activeUser === user"
+          (click)="setChat(user); activeUser = user"
+        >
           <div class="avatar" appAvatar [user]="user" context="wsm-list"></div>
           <span>{{ user.name }} </span>
         </li>
