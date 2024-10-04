@@ -7,10 +7,10 @@ $chnl-ml: clamp(0.75rem, 2.222vw + -0.917rem, 1.75rem);
 $add-chnl-btn-pl: clamp(0.75rem, 4.444vw + -2.583rem, 2.75rem);
 
 $list-pr: clamp(0.75rem, 1.111vw + -0.083rem, 1.25rem);
-$list-pr-QUERY: clamp(1rem, 4.13vw + 0.029rem, 1.875rem);
+$list-pr-716: clamp(1rem, 4.13vw + 0.029rem, 1.875rem);
 
 $workspace-pr: clamp(0.75rem, 2.5vw + -1.125rem, 1.875rem);
-$workspace-pr-QUERY: 1.875rem;
+$workspace-pr-716: 1.875rem;
 
 $chnl-gap: clamp(0rem, 1.944vw + -1.458rem, 0.875rem);
 $dm-item-gap: clamp(0.625rem, 1.389vw + -0.417rem, 1.25rem);
@@ -38,7 +38,7 @@ section {
   gap: 1.5625rem;
   width: 100%;
 
-  .workspace {
+  .workspace-menu-header {
     position: sticky;
     z-index: 1;
     top: 0;
@@ -46,19 +46,28 @@ section {
     justify-content: space-between;
     width: 100%;
     padding: 0 $workspace-pr 0 1.875rem;
-    height: 6rem;
     min-height: 6rem;
+    max-height: 6rem;
     background: #fff;
     box-shadow: $modal-box-shadow;
     overflow: visible;
 
     @media (width < 716px) {
-      padding: 0 $workspace-pr-QUERY 0 1.875rem;
+      padding: 0 $workspace-pr-716 0 1.875rem;
+    }
+
+    @media (width < 716px) {
+      padding: 0 1.25rem;
     }
 
     div {
       @include display-standard;
       gap: 0.9375rem;
+
+      img {
+        width: 3.75rem;
+        aspect-ratio: 1 / 1;
+      }
     }
   }
 
@@ -105,7 +114,11 @@ section {
     padding: 0 $list-pr 2rem 1.875rem;
 
     @media (width < 716px) {
-      padding: 0 $list-pr-QUERY 0 1.875rem;
+      padding: 0 $list-pr-716 0 1.875rem;
+    }
+
+    @media (width < 426px) {
+      padding: 0 calc($list-pr-716 + 1.25rem) 0 2.875rem;
     }
   }
 
@@ -118,7 +131,11 @@ section {
     padding: 0 $list-pr 0 1.875rem;
 
     @media (width < 716px) {
-      padding: 0 $list-pr-QUERY 0 1.875rem;
+      padding: 0 $list-pr-716 0 1.875rem;
+    }
+
+    @media (width < 426px) {
+      padding: 0 calc($list-pr-716 + 1.25rem) 0 2.875rem;
     }
 
     > details {
@@ -140,7 +157,7 @@ section {
     }
 
     .channel-list li {
-      margin-bottom: 0.125rem;
+      margin-bottom: 0.25rem;
     }
 
     .add-channel-btn {
@@ -259,7 +276,7 @@ section {
     @include fontSizer(18, 400, black);
     gap: $dm-item-gap !important;
 
-    margin-bottom: 0.125rem;
+    margin-bottom: 0.25rem;
 
     color: black !important;
 
