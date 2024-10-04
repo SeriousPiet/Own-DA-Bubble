@@ -1,6 +1,7 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
+$username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
 // ##############################
 
 .profile {
@@ -9,10 +10,19 @@
   gap: 1.25rem;
   cursor: pointer;
 
+  @media (width < 716px) {
+    gap: 0.25rem;
+  }
+
   span.username {
     @include nunito(2, 700, black);
+    font-size: $username-fs !important;
     line-height: 100%;
     text-align: left;
+
+    @media (width < 716px) {
+      display: none;
+    }
   }
 
   span,
@@ -24,6 +34,12 @@
     color: $primary;
   }
 
+  .icon {
+    @media (width < 716px) {
+      display: none;
+    }
+  }
+
   &:hover img.icon {
     content: url("../../../../assets/icons/modals/expand-down-hover.svg");
   }
@@ -31,6 +47,11 @@
   .avatar {
     display: flex;
     flex-shrink: 0;
+
+    @media (width < 716px) {
+      width: 3.5rem !important;
+      height: 3.5rem !important;
+    }
   }
 }
 

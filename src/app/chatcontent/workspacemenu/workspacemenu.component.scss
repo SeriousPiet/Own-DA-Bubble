@@ -84,9 +84,11 @@ section {
       &.active {
         background-color: #eceefe;
         cursor: pointer;
+
         .hashtag {
           background-image: url("../../../assets/icons/wsm/hashtag-hover.svg");
         }
+
         span {
           font-weight: 700;
           color: $accent;
@@ -135,6 +137,10 @@ section {
           }
         }
       }
+    }
+
+    .channel-list li {
+      margin-bottom: 0.125rem;
     }
 
     .add-channel-btn {
@@ -252,6 +258,9 @@ section {
     @include buttonNoBorder;
     @include fontSizer(18, 400, black);
     gap: $dm-item-gap !important;
+
+    margin-bottom: 0.125rem;
+
     color: black !important;
 
     &:hover span {

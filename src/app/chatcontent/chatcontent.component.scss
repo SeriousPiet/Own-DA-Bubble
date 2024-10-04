@@ -46,13 +46,17 @@ section.chatcontent {
     "topBar topBar topBar"
     "workspaceMenu chatView threadView";
   column-gap: 1.25rem;
-  row-gap: 1.25rem;
+  row-gap: 1rem;
   width: 100%;
   max-width: 1920px;
   height: 100vh;
   padding: 1.25rem;
   background-color: $background;
   transition: $transition-grid;
+
+  @media (width < 560px) {
+    grid-template-rows: 8.5rem auto;
+  }
 }
 
 // Layout-Modi
@@ -147,7 +151,7 @@ section.chatcontent.two-narrow-columns {
     padding-left: 0;
     padding-right: 0;
     --message-padding-left: 2.25rem;
-    --textarea-padding-left: 1.875rem;
+    --textarea-padding-left: 2rem;
   }
 
   &.no-padding-left {
@@ -203,8 +207,8 @@ section.chatcontent.one-broad-column {
   }
 
   &.no-padding {
-    padding-left: 0;
-    padding-right: 0;
+    --message-padding-left: 2.25rem;
+    --textarea-padding-left: 2rem;
   }
 }
 
