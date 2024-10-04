@@ -20,12 +20,21 @@ section.header {
       padding: 0;
     }
 
+    @media (width < 426px) {
+      padding: 1rem 0;
+      row-gap: 0.625rem;
+    }
+
     .logo {
       @include flex(center, center);
 
       @media (width < 560px) {
         flex: 0 0 auto;
         padding-left: 0.5rem;
+      }
+
+      @media (width < 426px) {
+        padding-left: 1.125rem;
       }
 
       img {
@@ -72,6 +81,10 @@ section.header {
 
       @media (width < 560px) {
         padding-right: 0.5rem;
+      }
+
+      @media (width < 426px) {
+        padding-right: 1.125rem;
       }
     }
   }
