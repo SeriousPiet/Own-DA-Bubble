@@ -116,7 +116,7 @@ export class UsersService implements OnDestroy {
       collection(this.firestore, '/users'),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added'){
+          if (change.type === 'added') {
             this.users.push(new User(change.doc.data(), change.doc.id));
           }
           else if (change.type === 'modified') {
@@ -161,13 +161,8 @@ export class UsersService implements OnDestroy {
         if (user === this.currentAuthUser) return;
         this.currentAuthUser = user;
         const signinProvider = user.providerData[0].providerId;
-        console.warn('userservice/auth: Authentication successful: ', user.email, ' provider: ', signinProvider);
-        if (!user.emailVerified && signinProvider !== 'google.com') {
-          console.warn('userservice/auth: Email not verified');
-        }
         if (user.email) this.setCurrentUserByEMail(user.email);
       } else if (this.currentUser) {
-        console.warn('userservice: currentUser logout - ' + this.currentUser.email);
         this.setCurrentUserByEMail('');
       }
     });
@@ -193,12 +188,10 @@ export class UsersService implements OnDestroy {
       if (this.currentUser.emailVerified) return true;
       if (this.currentAuthUser) {
         await this.currentAuthUser.reload();
-        console.warn('userservice/auth: Checking email verification');
         if (this.currentAuthUser.emailVerified) {
           await this.updateCurrentUserDataOnFirestore({ emailVerified: true });
           return true;
         } else {
-          console.warn('userservice/auth: Email not verified');
           document.getElementById('emailNotVerifiedPopover')?.showPopover();
         }
       }
@@ -220,10 +213,7 @@ export class UsersService implements OnDestroy {
   public async sendEmailVerificationLink(): Promise<void> {
     try {
       const user = this.firebaseauth.currentUser;
-      if (user) {
-        console.warn('userservice/auth: Sending email verification to: ', user.email);
-        await sendEmailVerification(user);
-      }
+      if (user) await sendEmailVerification(user);
     } catch (error) {
       console.error('userservice/auth: ', (error as Error).message);
     }

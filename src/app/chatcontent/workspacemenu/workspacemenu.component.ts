@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
@@ -7,6 +7,8 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { NavigationService } from '../../utils/services/navigation.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/addchannel.component';
+import { Channel } from '../../shared/models/channel.class';
+import { User } from '../../shared/models/user.class';
 
 @Component({
   selector: 'app-workspacemenu',
@@ -23,16 +25,40 @@ import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/
   styleUrl: './workspacemenu.component.scss',
 })
 
-export class WorkspacemenuComponent {
-  addChannelId: HTMLElement | null = null;
+export class WorkspacemenuComponent implements OnInit, OnDestroy {
+
+
   public userservice = inject(UsersService);
   public channelservice = inject(ChannelService);
   private navigationService = inject(NavigationService);
-  activeChannel: any = this.channelservice.defaultChannel;
-  activeUser: any = null;
+
+  navigationChangeSubscription: any;
+  addChannelId: HTMLElement | null = null;
+  activeChannel: Channel | undefined = this.channelservice.defaultChannel;
+  activeUser: User | undefined = undefined;
 
 
   @ViewChild(AddchannelComponent) addChannelComponent!: AddchannelComponent;
+
+  ngOnInit(): void {
+    this.navigationChangeSubscription = this.navigationService.change$.subscribe((type) => {
+      if (type === 'chatViewObjectSetAsChannel') {
+        this.activeChannel = this.navigationService.chatViewObject as Channel;
+        this.activeUser = undefined;
+      } else if (type === 'chatViewObjectSetAsChat') {
+        this.activeUser = this.navigationService.getChatPartnerAsUser();
+        this.activeChannel = undefined;
+      }
+    });
+  }
+
+
+  ngOnDestroy(): void {
+    if (this.navigationChangeSubscription) {
+      this.navigationChangeSubscription.unsubscribe();
+    }
+  }
+
 
   toggleAddChannelPopover() {
     this.addChannelId = document.getElementById('addChannelId');
@@ -44,7 +70,17 @@ export class WorkspacemenuComponent {
     }
   }
 
-  setChat(chat: any) {
-    this.navigationService.setChatViewObject(chat);
+
+  setChat(user: User) {
+    this.navigationService.setChatViewObject(user);
+    // this.activeChannel = null;
+    // this.activeUser = user;
+  }
+
+
+  setChannel(channel: Channel) {
+    this.navigationService.setChatViewObject(channel);
+    // this.activeChannel = channel;
+    // this.activeUser = null
   }
 }

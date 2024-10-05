@@ -140,6 +140,16 @@ export class NavigationService {
   }
 
 
+  public getChatPartnerAsUser(): User | undefined {
+    if (this.chatViewObject instanceof Chat) {
+      if (this.chatViewObject.memberIDs[0] === this.chatViewObject.memberIDs[1]) return this.userService.currentUser;
+      const chatPartnerID = this.chatViewObject.memberIDs.find((id) => id !== this.userService.currentUser?.id);
+      return chatPartnerID ? this.userService.getUserByID(chatPartnerID) : undefined;
+    }
+    return undefined;
+  }
+
+
   /**
    * Sets the thread message path and updates the current message.
    *
@@ -228,4 +238,6 @@ export class NavigationService {
     }
     return undefined;
   }
+
+
 }
