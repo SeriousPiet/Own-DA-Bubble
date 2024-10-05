@@ -100,6 +100,10 @@ main {
         }
       }
     }
+
+    .member-list{
+      display: none;
+    }
   }
 }
 
@@ -244,6 +248,7 @@ main {
   user-select: none;
 }
 
+
 @media (width < 426px) {
   :host{
     top: 0;
@@ -253,12 +258,50 @@ main {
   main{
     .channel-info-content{
       justify-content: flex-start;
+      overflow: hidden;
+
+      .member-list {
+        display: flex;
+        gap: 0.9375rem;
+        width: 100%;
+        height: 33%;
+        overflow-y: auto;
+        padding: 1rem 2.5rem;
+      
+        .current-user {
+          user-select: none;
+      
+          &:hover {
+            cursor: default !important;
+          }
+        }
+      
+        >button {
+          @include flex(normal, center);
+          gap: 0.8125rem;
+          width: 100%;
+          margin-bottom: 0.9375rem;
+      
+          >span {
+            @include nunito(1.125, 400)
+          }
+        }
+      
+        .member {
+          padding: 0.25rem 1.25rem;
+      
+          &:hover {
+            background-color: $background;
+            cursor: pointer;
+            border-radius: 6.25rem;
+          }
+        }
+      }
     }
   }
 
   .channel-description{
     height: fit-content;
   }
- 
 
 }
