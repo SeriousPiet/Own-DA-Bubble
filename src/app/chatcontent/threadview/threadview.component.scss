@@ -13,6 +13,12 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
   align-items: stretch;
 }
 
+.headliner-message {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .threadview-header {
   position: relative;
   z-index: 20;
