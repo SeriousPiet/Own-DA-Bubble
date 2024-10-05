@@ -22,13 +22,15 @@ import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/
   templateUrl: './workspacemenu.component.html',
   styleUrl: './workspacemenu.component.scss',
 })
+
 export class WorkspacemenuComponent {
   addChannelId: HTMLElement | null = null;
-  activeChannel: any = null;
-  activeUser: any = null;
   public userservice = inject(UsersService);
   public channelservice = inject(ChannelService);
   private navigationService = inject(NavigationService);
+  activeChannel: any = this.channelservice.defaultChannel;
+  activeUser: any = null;
+
 
   @ViewChild(AddchannelComponent) addChannelComponent!: AddchannelComponent;
 
