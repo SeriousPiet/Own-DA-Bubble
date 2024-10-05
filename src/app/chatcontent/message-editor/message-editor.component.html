@@ -29,25 +29,25 @@
   </div>
   <div #toolbar class="editor-toolbar" [ngClass]="showToolbar ? 'show-editor-toolbar' : 'hide-editor-toolbar'"
     [id]="toolbarID">
-    <span class="ql-formats tb_section_1">
+    <span class="ql-formats tb_section_1" [ngClass]="showToolBarElements.includes(1) ? '' : 'd-none'">
       <button class="ql-bold"></button>
       <button class="ql-italic"></button>
       <button class="ql-underline"></button>
       <button class="ql-strike"></button>
     </span>
-    <span class="ql-formats tb_section_2">
+    <span class="ql-formats tb_section_2" [ngClass]="showToolBarElements.includes(2) ? '' : 'd-none'">
       <button class="ql-header" value="1"></button>
       <button class="ql-header" value="2"></button>
       <button class="ql-header" value="3"></button>
     </span>
-    <span class="ql-formats tb_section_3">
+    <span class="ql-formats tb_section_3" [ngClass]="showToolBarElements.includes(3) ? '' : 'd-none'">
       <button class="ql-clean"></button>
     </span>
-    <span class="ql-formats tb_section_4">
+    <span class="ql-formats tb_section_4" [ngClass]="showToolBarElements.includes(4) ? '' : 'd-none'">
       <button class="ql-list" value="ordered"></button>
       <button class="ql-list" value="bullet"></button>
     </span>
-    <span class="ql-formats tb_section_5">
+    <span class="ql-formats tb_section_5" [ngClass]="showToolBarElements.includes(5) ? '' : 'd-none'">
       <button (click)="quill.history.undo()">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
           <path

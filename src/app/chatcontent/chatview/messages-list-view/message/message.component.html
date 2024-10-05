@@ -90,7 +90,7 @@
     <app-message-editor #messageeditor (enterPressed)="updateMessage()" (escapePressed)="closeMessageEditor()"
       (textLengthChanged)="handleEditorTextLengthChanged($event)"
       [messageAsHTML]="_messageData.content"></app-message-editor>
-    <div class="input-message-toolbar" (resized)="resizeToolBar($event)">
+    <div class="input-message-toolbar">
       <div (click)="messageEditor.openEmojiPicker()" id="emoji-picker-icon" class="button-ctn">
         <img src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+" />
       </div>
@@ -127,16 +127,9 @@
       'interact-ctn-popover': true
     }">
     <section>
-      @for(reaction of emojiService.getMostUsedEmojis(3); track $index) {
+      @for(reaction of emojiService.getMostUsedEmojis(showMostUsedEmojisCount); track $index) {
       <div (click)="messageService.toggleReactionToMessage(_messageData, reaction)" class="button-ctn">
         <div class="emoji-div">{{ reaction }}</div>
-      </div>
-      } @empty {
-      <div (click)="messageService.toggleReactionToMessage(_messageData, '✅')" class="button-ctn">
-        <div class="emoji-div">✅</div>
-      </div>
-      <div (click)="messageService.toggleReactionToMessage(_messageData, '🙌')" class="button-ctn">
-        <div class="emoji-div">🙌</div>
       </div>
       }
       <div (click)="addReaction()" class="button-ctn" id="add-reaction-icon">

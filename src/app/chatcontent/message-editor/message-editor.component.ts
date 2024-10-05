@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { QuillEditorComponent, QuillModule } from 'ngx-quill';
 import Quill from 'quill';
 import { Range as QuillRange } from 'quill/core/selection';
@@ -25,7 +25,7 @@ export type EditedTextLength = {
   templateUrl: './message-editor.component.html',
   styleUrl: './message-editor.component.scss',
 })
-export class MessageEditorComponent implements AfterViewInit {
+export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   @ViewChild('editor', { static: true }) editor!: QuillEditorComponent;
   @ViewChild('toolbar', { static: true }) toolbar!: ElementRef;
   @ViewChildren('pickeritem') pickerList!: QueryList<ElementRef>;
@@ -42,11 +42,13 @@ export class MessageEditorComponent implements AfterViewInit {
   public userservice = inject(UsersService);
   private channelservice = inject(ChannelService);
   private emojiService = inject(EmojipickerService);
+  private resizeobserver!: ResizeObserver;
 
   // Quill Editor variables and configuration
   readonly maxMessageLength = 1000;
   public quill!: Quill;
   public toolbarID = 'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
+  public showToolBarElements: number[] = [];
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
   public quillstyle = {
@@ -87,6 +89,10 @@ export class MessageEditorComponent implements AfterViewInit {
 
 
   constructor(private _cdr: ChangeDetectorRef) { }
+
+  ngOnDestroy(): void {
+    if (this.resizeobserver) this.resizeobserver.disconnect();
+  }
 
 
   /**
@@ -173,6 +179,19 @@ export class MessageEditorComponent implements AfterViewInit {
         this.quill.focus();
       });
     }
+    this.resizeobserver = new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        this.handleToolBarResize(entry.contentRect.width);
+      });
+    });
+    this.resizeobserver.observe(this.toolbar.nativeElement);
+  }
+
+
+  private handleToolBarResize(width: number) {
+    if (width < 300) this.showToolBarElements = [1, 3, 5];
+    else if (width < 400) this.showToolBarElements = [1, 3, 4, 5];
+    else this.showToolBarElements = [1, 2, 3, 4, 5];
   }
 
 

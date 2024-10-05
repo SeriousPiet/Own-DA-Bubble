@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild, } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, inject, Input, OnDestroy, OnInit, Output, ViewChild, } from '@angular/core';
 import { serverTimestamp } from '@angular/fire/firestore';
 import { NavigationService } from '../../../../utils/services/navigation.service';
 import { IReactions, Message, StoredAttachment } from '../../../../shared/models/message.class';
@@ -28,7 +28,7 @@ import { isEmptyMessage } from '../../../../utils/quil/utility';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
-export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
 
   @ViewChild('messagemaindiv', { static: false }) messageMainDiv!: ElementRef;
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
@@ -42,6 +42,7 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   private resizeobserver!: ResizeObserver;
   public showSmallButtons = false;
   public showBigButtons = false;
+  public showMostUsedEmojisCount = 3;
 
   public textLengthInfo: string = '0/0';
   public showTextLength: boolean = false;
@@ -66,18 +67,21 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   public messageEditorModus = false;
   private needContentUpdate = false;
 
+  getMessageCreatorObject() {
+    return this.userService.getUserByID(this._messageData.creatorID);
+  }
+
+
   constructor(private _cdr: ChangeDetectorRef, private el: ElementRef) { }
 
-
+  
   ngOnInit(): void {
-    this.getMessageCreatorObject();
   }
 
-
-  resizeToolBar(event: Event) {
-    console.log('resizeToolBar', event);
+  
+  ngOnDestroy(): void {
+    if (this.resizeobserver) this.resizeobserver.disconnect();
   }
-
 
   handleEditorTextLengthChanged(event: EditedTextLength) {
     this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
@@ -101,11 +105,27 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     });
     this.resizeobserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
-        this.showBigButtons = entry.contentRect.width > 700;
-        this.showSmallButtons = !this.showBigButtons;
+        if(this.messageEditorOpen) this.handleEditorResize(entry.contentRect.width);
+        this.handleMostUsedEmojisCountChange(entry.contentRect.width);
       });
     });
+    this.resizeobserver.observe(this.el.nativeElement);
+    this.handleEditorResize(this.el.nativeElement.clientWidth);
   }
+
+
+  handleEditorResize(width: number) {
+    this.showBigButtons = width > 700;
+    this.showSmallButtons = !this.showBigButtons;
+  }
+
+
+  handleMostUsedEmojisCountChange(width: number) {
+    if (width < 550) this.showMostUsedEmojisCount = 0;
+    else if (width < 700) this.showMostUsedEmojisCount = 2;
+    else if (width < 850) this.showMostUsedEmojisCount = 3;
+    else this.showMostUsedEmojisCount = 4;
+}
 
 
   hasMessagetextContent() {
@@ -241,11 +261,6 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
   }
 
 
-  getMessageCreatorObject() {
-    return this.userService.getUserByID(this._messageData.creatorID);
-  }
-
-
 
   isFirstMessage(index: number) {
     return index === 0;
@@ -286,14 +301,14 @@ export class MessageComponent implements OnInit, AfterViewInit, AfterViewChecked
     this.messageEditorModus = !this.messageEditorModus;
     this.messageEditorOpenChange.emit(this.messageEditorModus);
     if (this.messageEditorModus) {
-      this.resizeobserver.observe(this.el.nativeElement);
       setTimeout(() => {
         if (this.messageMainDiv) {
           this.messageMainDiv.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }, 500);
     } else {
-      this.resizeobserver.unobserve(this.el.nativeElement);
+      this.showBigButtons = false;
+      this.showSmallButtons = false;
     }
   }
 
