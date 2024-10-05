@@ -15,6 +15,14 @@ export class MessageDateComponent {
     this.formatDate(date);
   };
 
+  /**
+   * Formats the provided date and returns the formatted date string.
+   * If the formatted date matches the current date, returns the string "Heute" (German for "Today").
+   * Otherwise, returns the formatted date string.
+   *
+   * @param date - The date to be formatted.
+   * @returns The formatted date string.
+   */
   formatDate(date: Date) {
     let formatedMessageDate = date.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
     if (formatedMessageDate == this.isToday()) return this.messageDate = "Heute";
@@ -23,6 +31,13 @@ export class MessageDateComponent {
     }
   }
 
+
+  /**
+   * Returns the formatted date string for the current date.
+   * The date is formatted as a long weekday, day, and month in German locale.
+   * Used in methode formatDate to check if the formatted date matches the current date.
+   * @returns The formatted date string for the current date.
+   */
   isToday() {
     const today = new Date();
     let formatedTodaysDate = today.toLocaleString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });

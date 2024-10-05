@@ -243,3 +243,22 @@ main {
   margin-top: -0.5rem;
   user-select: none;
 }
+
+@media (width < 426px) {
+  :host{
+    top: 0;
+    border-radius: unset;
+  }
+
+  main{
+    .channel-info-content{
+      justify-content: flex-start;
+    }
+  }
+
+  .channel-description{
+    height: fit-content;
+  }
+ 
+
+}
