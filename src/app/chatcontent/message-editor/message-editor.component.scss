@@ -8,6 +8,11 @@ section {
   justify-content: flex-start;
   align-items: stretch;
 
+  .picker-hide {
+    max-height: 0 !important;
+    border: none !important;
+  }
+
   .picker-list {
     position: absolute;
     z-index: 1000;
@@ -18,6 +23,7 @@ section {
     max-height: 13rem;
     overflow-y: auto;
     box-shadow: $modal-box-shadow;
+    transition: $transition-standard;
 
     .picker-close {
       display: flex;

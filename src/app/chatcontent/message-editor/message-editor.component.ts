@@ -303,7 +303,6 @@ export class MessageEditorComponent implements AfterViewInit {
    * @param item - The selected item from the picker, which can be either a User or a Channel.
    */
   choosePickerItem(item: User | Channel) {
-    console.log('Selected item:', item);
     insertItemAsSpan(this.quill, this.getLastOrCurrentSelection(), item);
     this.closeListPicker();
   }
@@ -340,7 +339,6 @@ export class MessageEditorComponent implements AfterViewInit {
       this.currentPickerIndex = index;
       this.scrollToSelectedItem(index);
       this._cdr.detectChanges();
-      console.log('Current picker index:', this.currentPickerIndex);
     }
   }
 
@@ -408,6 +406,7 @@ export class MessageEditorComponent implements AfterViewInit {
       this.pickersign = '';
       this.pickerItems = [];
       this.setCurrentPickerIndex(-1);
+      this._cdr.detectChanges();
       this.quill.focus();
     }
   }
