@@ -18,11 +18,12 @@ import { ChannelService } from '../../../../utils/services/channel.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
+import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 
 @Component({
   selector: 'app-popover-channel-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AvatarDirective],
   templateUrl: './popover-channel-editor.component.html',
   styleUrl: './popover-channel-editor.component.scss',
 })
@@ -158,6 +159,39 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
       this.updatedChannel.emit(this.currentChannel);
       this.channelSubject.next(this.currentChannel);
     }
+  }
+
+  checkifUserIsGuest(memberID: string) {
+    const member = this.userService.getUserByID(memberID);
+    return member?.guest;
+  }
+
+  setSelectedUserObject(messageCreatorID: string) {
+    this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
+    this.navigationService.setProfileTarget(true);
+  }
+
+  isAllowedToAddMember() {
+    if (this.currentChannel instanceof Channel) {
+      return this.currentChannel.creatorID === this.userService.currentUserID ||
+        this.currentChannel.memberIDs.includes(this.userService.currentUserID)
+    }
+    return;
+  }
+
+  returnPopoverTarget(messageCreator: string) {
+    if (messageCreator === this.userService.currentUser?.id) {
+      return 'profile-popover';
+    } else {
+      return 'popover-member-profile';
+    }
+  }
+
+  getMemberName(memberID: string) {
+    const member = this.userService.getUserByID(memberID);
+    return member?.id === this.userService.currentUser?.id
+      ? `${member?.name} (Du)`
+      : member?.name;
   }
 
   ngOnDestroy() {

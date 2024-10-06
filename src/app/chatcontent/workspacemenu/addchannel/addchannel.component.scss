@@ -2,6 +2,17 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
+.fullscreen {
+  width: 100vw;
+  gap: 0.5rem !important;
+
+  .addChannelSection,
+  .addUserToChannel {
+    width: 100% !important;
+    border: none;
+  }
+}
+
 #addChannelId {
   display: none;
   border: 0rem;
@@ -17,7 +28,7 @@
   transform: translateY(0rem);
 }
 
-@starting-style {
+%starting-style {
   #addChannelId:popover-open {
     opacity: 0;
     transform: translateY(-3rem);
@@ -49,7 +60,7 @@
   gap: 1.25rem;
   > div {
     display: flex;
-    width: 49.5rem;
+    width: 100%;
   }
 
   .headline {
@@ -78,7 +89,7 @@
   }
 
   input {
-    width: 49.5rem;
+    width: 100%;
     height: 3.75rem;
     border-radius: 2.5rem;
     border: 0.0625rem solid #adb0d9;
@@ -95,7 +106,7 @@
   }
 }
 
-.duplicate-channel-error-msg{
+.duplicate-channel-error-msg {
   color: #f00;
   font-size: 0.875rem;
   text-align: start;
@@ -105,7 +116,7 @@
   transition: $transition-standard;
 }
 
-.hide-duplicate-channel-error-msg{
+.hide-duplicate-channel-error-msg {
   opacity: 0;
   color: #f00;
   font-size: 0.875rem;
@@ -117,6 +128,7 @@
 .addUserToChannel {
   display: flex;
   flex-direction: column;
+  width: 45rem;
   padding: 2.2rem;
   border-radius: 1rem;
   background-color: #fff;
@@ -126,7 +138,7 @@
   > div {
     display: flex;
     justify-content: space-between;
-    width: 39.375rem;
+    width: 100%;
     gap: 1.25rem;
     > div {
       display: flex;

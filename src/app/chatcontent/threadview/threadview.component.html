@@ -21,13 +21,13 @@
   <section class="threadview-content">
     @if (navigationService.threadViewObject) {
     <div class="thread-messages-content">
-      <div>
+      <div class="headliner-message">
         <app-message-date
           [date]="navigationService.threadViewObject.createdAt"
         />
 
         <app-message
-        [isThreadView]="true"
+          [isThreadView]="true"
           [id]="navigationService.threadViewObject.id"
           [messageData]="navigationService.threadViewObject"
         />

@@ -1,4 +1,10 @@
-import { Component, inject, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  AfterViewInit,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { ChannelService } from '../../../utils/services/channel.service';
 import { UsersService } from '../../../utils/services/user.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -6,12 +12,15 @@ import { RouterModule } from '@angular/router';
 import { AvatarDirective } from '../../../utils/directives/avatar.directive';
 import { SearchService } from '../../../utils/services/search.service';
 import { SearchSuggestion } from '../../../utils/services/search.service';
-
 import { GroupedSearchResults } from '../../../utils/services/search.service';
-
 import { User } from '../../../shared/models/user.class';
 import { CommonModule } from '@angular/common';
-import { Observable, map } from 'rxjs';
+import { Observable, map, Subscription } from 'rxjs';
+import {
+  BreakpointObserver,
+  Breakpoints,
+  BreakpointState,
+} from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-addchannel',
@@ -26,7 +35,7 @@ import { Observable, map } from 'rxjs';
   templateUrl: './addchannel.component.html',
   styleUrl: './addchannel.component.scss',
 })
-export class AddchannelComponent implements AfterViewInit {
+export class AddchannelComponent implements AfterViewInit, OnInit, OnDestroy {
   userByIds: string[] = [];
   addChannelId: HTMLElement | null = null;
   toggleAddChannelPopover = true;
@@ -37,6 +46,8 @@ export class AddchannelComponent implements AfterViewInit {
   suggestions$!: Observable<{ text: string; type: string }[]>;
   isDropdownVisible = false;
   selectedUsers: User[] = [];
+  isFullscreen = false;
+  private breakpointSubscription: Subscription = new Subscription();
   public channelservice = inject(ChannelService);
   public userservice = inject(UsersService);
   public name: string = '';
@@ -54,9 +65,22 @@ export class AddchannelComponent implements AfterViewInit {
   }
 
   constructor(
+    private breakpointObserver: BreakpointObserver,
     private searchService: SearchService,
     private usersService: UsersService
   ) {}
+
+  ngOnInit(): void {
+    this.breakpointSubscription = this.breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.XSmall])
+      .subscribe((result) => {
+        this.isFullscreen = result.matches;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.breakpointSubscription.unsubscribe();
+  }
 
   addOptionSelected(isUserSearchSelected: boolean) {
     this.isUserSearchSelected = isUserSearchSelected;

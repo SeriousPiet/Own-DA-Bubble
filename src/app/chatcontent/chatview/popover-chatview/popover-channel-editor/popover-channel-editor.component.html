@@ -50,6 +50,28 @@
                 <span id="channel-creator-name">{{ getChannelCreator(navigationService.chatViewObject) }}</span>
             </div>
         </section>
+
+        <section class="member-list">
+            @for (memberID of currentChannel.memberIDs; track memberID) {
+              @if(!checkifUserIsGuest(memberID)){
+            <button
+              [ngClass]="{
+                'current-user': memberID === userService.currentUser?.id,
+                member: true
+              }"
+              (click)="setSelectedUserObject(memberID)"
+              [attr.popovertarget]="returnPopoverTarget(memberID)"
+            >
+              <div
+                appAvatar
+                [user]="userService.getUserByID(memberID)"
+                context="chat-channel-members-big"
+              ></div>
+              <span>{{ getMemberName(memberID) }}</span>
+            </button>
+            }
+            }
+          </section>
         <button [disabled]="!isChannelMember()" popovertarget="confirmation-popup"
             [ngClass]="{'leave-channel-button':true, 'no-edit-right':!isChannelMember()}">Channel Verlassen</button>
     </div>
