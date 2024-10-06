@@ -219,8 +219,6 @@ export class SearchbarComponent implements OnInit {
    * @returns {Promise<void>} A Promise that resolves when the suggestion handling is complete.
    */
   async selectSuggestion(suggestion: SearchSuggestion): Promise<void> {
-    console.log('selectSuggestion called with:', suggestion);
-
     switch (suggestion.type) {
       case 'user':
         await this.handleUserSuggestion(suggestion);
@@ -276,8 +274,6 @@ export class SearchbarComponent implements OnInit {
    * @returns {Promise<void>} A Promise that resolves when the message suggestion handling is complete.
    */
   private async handleMessageSuggestion(suggestion: SearchSuggestion) {
-    console.log('handleMessageSuggestion called with:', suggestion);
-
     if (suggestion.message) {
       const targetId = suggestion.message.collectionPath.split('/')[1];
       if (suggestion.message.collectionPath.startsWith('channels/')) {
@@ -317,8 +313,6 @@ export class SearchbarComponent implements OnInit {
    * @param message - The message to scroll to.
    */
   private scrollToMessage(message: Message) {
-    console.log('scrollToMessage called with:', message);
-
     this.navigationService.navigationComplete$
       .pipe(
         take(1),
@@ -453,12 +447,7 @@ export class SearchbarComponent implements OnInit {
    * @param suggestion - The search suggestion object containing information about the suggestion.
    * @returns The message context, or an empty string if the suggestion is not a message.
    */
-  getMessageContext(suggestion: { // unused !?
-    text: string;
-    type: string;
-    hasChat: boolean;
-    message?: Message;
-  }): string {
+  getMessageContext(suggestion: { text: string; type: string; hasChat: boolean; message?: Message; }): string {
     if (suggestion.type === 'message' && suggestion.message) {
       return suggestion.message.content.replace(/<\/?[^>]+(>|$)/g, "");
     }

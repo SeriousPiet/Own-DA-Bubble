@@ -83,7 +83,6 @@ export class MessageService {
       const messagesQuerySnapshot = await getDocs(messageCollectionRef);
       const updateData = collectionObject instanceof Message ? { answerCount: messagesQuerySnapshot.size, lastAnswerAt: serverTimestamp() } : { messagesCount: messagesQuerySnapshot.size };
       await updateDoc(doc(this.firestore, objectPath), updateData);
-      console.warn('MessageService: message added to ' + messagePath);
       return '';
     } catch (error) {
       console.error('MessageService: error adding message', error);
@@ -143,7 +142,6 @@ export class MessageService {
       const messagesQuerySnapshot = await getDocs(messageCollectionRef)
       const updateData = collectionObject instanceof Message ? { answerCount: messagesQuerySnapshot.size } : { messagesCount: messagesQuerySnapshot.size }
       await updateDoc(doc(this.firestore, this.getObjectsPath(collectionObject)), updateData)
-      console.warn('MessageService: message deleted - id: ' + message.id)
       return ''
     } catch (error) {
       console.error('MessageService: error deleting message', error)
@@ -166,7 +164,6 @@ export class MessageService {
       const answersQuerySnapshot = await getDocs(answerCollectionRef);
       const deletePromises = answersQuerySnapshot.docs.map(doc => deleteDoc(doc.ref));
       await Promise.all(deletePromises);
-      console.warn('MessageService: answers deleted - id: ' + message.id);
       return '';
     } catch (error) {
       console.error('MessageService: error deleting answers', error);
@@ -190,7 +187,6 @@ export class MessageService {
       await deleteObject(storageRef)
       const updatedAttachments = message.attachments.filter(attachment => attachment.name !== storedAttachment.name)
       await updateDoc(doc(this.firestore, message.messagePath), { attachments: JSON.stringify(updatedAttachments) })
-      console.warn('MessageService: attachment deleted - id: ' + message.id + ' / name: ' + storedAttachment.name)
       return ''
     } catch (error) {
       console.error('MessageService: error deleting attachment', error)
@@ -251,7 +247,6 @@ export class MessageService {
         updateData.editedAt = serverTimestamp();
         updateData.plainContent = this.removeAllHTMLTagsFromString(updateData.content);
         await updateDoc(doc(this.firestore, message.messagePath), updateData)
-        console.warn('MessageService: message updated - id: ' + message.id)
       }
     } catch (error) {
       console.error('MessageService: error updating message', error)
@@ -272,7 +267,6 @@ export class MessageService {
     try {
       const newReactionArray = this.getModifiedReactionArray(message.emojies, emoji)
       await updateDoc(doc(this.firestore, message.messagePath), { emojies: newReactionArray })
-      console.warn('MessageService: reaction toggled - id:' + message.id)
       return true
     } catch (error) {
       console.error('MessageService: error toggling reaction', error)
@@ -356,14 +350,8 @@ export class MessageService {
    * @returns A Promise that resolves to an array of `Message` objects that match the search query.
    */
   async searchMessages(searchQuery: string): Promise<Message[]> {
-    console.log(
-      'MessageService: searchMessages called with query:',
-      searchQuery
-    );
-
     const messagesRef = collectionGroup(this.firestore, 'messages');
     const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(100));
-
     const querySnapshot = await getDocs(q);
     const results: Message[] = [];
 

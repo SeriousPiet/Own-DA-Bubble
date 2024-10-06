@@ -367,8 +367,8 @@ export class SearchService {
           messages:
             state.query.trim().length >= 3
               ? this.searchMessages(state.query).pipe(
-                  map((messages) => messages.slice(0, 5))
-                )
+                map((messages) => messages.slice(0, 5))
+              )
               : of([]),
         });
       })
@@ -404,12 +404,12 @@ export class SearchService {
             const user = this.usersService.getUserByID(id);
             return user
               ? {
-                  text: `@${user.name}`,
-                  type: 'user' as const,
-                  hasChat:
-                    this.channelService.getChatWithUserByID(id, false) !==
-                    undefined,
-                }
+                text: `@${user.name}`,
+                type: 'user' as const,
+                hasChat:
+                  this.channelService.getChatWithUserByID(id, false) !==
+                  undefined,
+              }
               : null;
           })
           .filter(
@@ -445,17 +445,11 @@ export class SearchService {
    * @param query - The search query to use for finding messages.
    * @returns An Observable that emits an array of objects containing the truncated message content, message type, whether the user has a chat in that channel, and the original message object.
    */
-  public searchMessages(
-    query: string
-  ): Observable<
-    { text: string; type: 'message'; hasChat: boolean; message: Message }[]
-  > {
-    console.log('searchMessages called with query:', query);
-
+  public searchMessages(query: string): Observable<{ text: string; type: 'message'; hasChat: boolean; message: Message }[]> {
     return from(this.messageService.searchMessages(query)).pipe(
       map((messages: Message[]) => {
         return messages.map((message: Message) => {
-          const contentWithoutHtml = message.content.replace(/<\/?[^>]+(>|$)/g, "");
+          const contentWithoutHtml = message.content.replace(/<\/?[^>]+(>|$)/g, " ");
           return {
             text: this.truncateMessageContent(contentWithoutHtml, query),
             type: 'message' as const,
