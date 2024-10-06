@@ -123,7 +123,7 @@ export class MessagesListViewComponent implements OnInit {
             if (message) message.update(change.doc.data());
           }
           if (change.type === 'removed') {
-            this.messages = this.messages.filter((message) => message.id !== change.doc.data()['id']);
+            this.messages = this.messages.filter((message) => message.id !== change.doc.id);
           }
         });
         if (sortNeeded) {
