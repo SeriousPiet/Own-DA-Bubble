@@ -22,17 +22,28 @@
 
     @if(hasMessagetextContent()) {
     <div #messagediv class="message-text"></div>
-    } @if(_messageData.attachments.length > 0){
+    }
+    @if(_messageData.attachments.length > 0){
     <div class="message-attachments">
       @for(attachment of _messageData.attachments; track $index){
-      <div class="attachment">
-        <div class="action-div">
-          <div class="pdf-actions">
-            <img (click)="downloadPDF(attachment)" src="./assets/icons/chat/general/download.svg" alt="" />
+      <div class="attachment" (mouseenter)="isAttachmentsHovered[$index] = true"
+        (mouseleave)="isAttachmentsHovered[$index] = false">
+        <div [ngClass]="{
+          'interact-ctn-popover-slide-out-animation': !isAttachmentsHovered[$index],
+          'interact-ctn-popover-slide-in-animation': isAttachmentsHovered[$index],
+          'interact-ctn-popover': true,
+          'attachment-ctn-popover': true
+        }">
+          <section>
+            <div class="attachment-action-btn">
+              <img (click)="downloadAttachment(attachment)" src="./assets/icons/chat/general/download.svg" alt="" />
+            </div>
             @if(_messageData.creatorID == userService.currentUserID) {
-            <img (click)="deleteAttachment(attachment)" src="./assets/icons/chat/general/trash.svg" alt="" />
+            <div class="attachment-action-btn">
+              <img (click)="deleteAttachment(attachment)" src="./assets/icons/chat/general/trash.svg" alt="" />
+            </div>
             }
-          </div>
+          </section>
         </div>
         @if(attachment.type == 'image'){
         <img class="type-image" src="{{ attachment.url }}" alt="" />

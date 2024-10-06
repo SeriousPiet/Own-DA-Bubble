@@ -28,7 +28,7 @@ import { isEmptyMessage } from '../../../../utils/quil/utility';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
-export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
+export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChecked {
 
   @ViewChild('messagemaindiv', { static: false }) messageMainDiv!: ElementRef;
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
@@ -50,6 +50,7 @@ export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, After
   public _messageData!: Message;
   @Input() set messageData(newMessage: Message) {
     this._messageData = newMessage;
+    this.initMessageChangeSubscription();
     this.messagefromUser = newMessage.creatorID === this.userService.currentUserID;
     this.fillMessageContentHTML();
   }
@@ -62,7 +63,9 @@ export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, After
 
   public messagefromUser = false;
   public messageCreator: User | undefined;
+  private messageChangeSubscription: any;
   public isHovered = false;
+  public isAttachmentsHovered: boolean[] = [];
   public showEditMessagePopup = false;
   public messageEditorModus = false;
   private needContentUpdate = false;
@@ -74,14 +77,17 @@ export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, After
 
   constructor(private _cdr: ChangeDetectorRef, private el: ElementRef) { }
 
-  
-  ngOnInit(): void {
+
+  debugConsoleLog(text: string) {
+    console.log(text);
   }
 
-  
+
   ngOnDestroy(): void {
     if (this.resizeobserver) this.resizeobserver.disconnect();
+    if (this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
   }
+
 
   handleEditorTextLengthChanged(event: EditedTextLength) {
     this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
@@ -99,18 +105,25 @@ export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, After
 
 
   ngAfterViewInit(): void {
-    this._messageData.changeMessage$.subscribe(() => {
-      this.fillMessageContentHTML();
-      this._cdr.detectChanges();
-    });
+    this.initMessageChangeSubscription();
     this.resizeobserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
-        if(this.messageEditorOpen) this.handleEditorResize(entry.contentRect.width);
+        if (this.messageEditorOpen) this.handleEditorResize(entry.contentRect.width);
         this.handleMostUsedEmojisCountChange(entry.contentRect.width);
       });
     });
     this.resizeobserver.observe(this.el.nativeElement);
     this.handleEditorResize(this.el.nativeElement.clientWidth);
+  }
+
+
+  initMessageChangeSubscription() {
+    if(this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
+    this.messageChangeSubscription = this._messageData.changeMessage$.subscribe(() => {
+      this.isAttachmentsHovered = new Array(this._messageData.attachments.length).fill(false);
+      this.fillMessageContentHTML();
+      this._cdr.detectChanges();
+    });
   }
 
 
@@ -125,7 +138,7 @@ export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, After
     else if (width < 700) this.showMostUsedEmojisCount = 2;
     else if (width < 850) this.showMostUsedEmojisCount = 3;
     else this.showMostUsedEmojisCount = 4;
-}
+  }
 
 
   hasMessagetextContent() {
@@ -168,7 +181,7 @@ export class MessageComponent implements OnInit, OnDestroy, AfterViewInit, After
   }
 
 
-  downloadPDF(attachment: StoredAttachment) {
+  downloadAttachment(attachment: StoredAttachment) {
     const link = document.createElement('a');
     link.href = attachment.url;
     link.download = attachment.name;

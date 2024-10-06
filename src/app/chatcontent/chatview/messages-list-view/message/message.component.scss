@@ -80,13 +80,13 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   margin-top: 0.625rem;
 
   .type-pdf {
-    width: 3rem;
-    height: 3rem;
+    width: 5rem;
+    height: 5rem;
   }
 
   .type-image {
-    height: 5rem;
-    width: auto;
+    height: auto;
+    width: 10rem;
   }
 
   .attachment {
@@ -98,34 +98,23 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
     background-color: #f5f5f5;
     color: #686868;
 
-    .action-div {
-      position: absolute;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5rem;
-      top: 0.8rem;
-      right: 0.8rem;
-      border-radius: 0.5rem;
 
-      img {
-        width: 1.5rem;
-        height: 1.5rem;
-        opacity: 0;
-        transition: all 0.1s ease-out;
+    .attachment-action-btn {
+      @include iconBox;
+
+      &:hover {
+        img {
+          transform: scale(1.1);
+            filter: invert(48%) sepia(100%) saturate(746%) hue-rotate(202deg) brightness(102%) contrast(101%);
+        }
       }
     }
 
     &:hover {
       .action-div {
-        background-color: lightgray;
-
-        img {
+        .attachment-action-btn {
+          pointer-events: all;
           opacity: 1;
-
-          &:hover {
-            filter: invert(29%) sepia(96%) saturate(7480%) hue-rotate(180deg) brightness(100%) contrast(102%);
-          }
         }
       }
     }
@@ -323,6 +312,11 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
     }
   }
 
+  .attachment-ctn-popover {
+    left: unset !important;
+    right: -2.5rem !important;
+  }
+
   .interact-ctn-popover-slide-out-animation {
     transform: translateX(3rem);
   }
@@ -375,6 +369,11 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   transition: $transition-popover;
   display: block;
   opacity: 1;
+}
+
+.attachment-ctn-popover {
+  left: -3rem !important;
+  right: unset !important;
 }
 
 .button-ctn {
@@ -434,7 +433,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   }
 }
 
-@container  (width < 300px) {
+@container (width < 300px) {
   .input-message-toolbar {
     background-color: red;
   }
