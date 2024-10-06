@@ -453,14 +453,14 @@ export class SearchbarComponent implements OnInit {
    * @param suggestion - The search suggestion object containing information about the suggestion.
    * @returns The message context, or an empty string if the suggestion is not a message.
    */
-  getMessageContext(suggestion: {
+  getMessageContext(suggestion: { // unused !?
     text: string;
     type: string;
     hasChat: boolean;
     message?: Message;
   }): string {
     if (suggestion.type === 'message' && suggestion.message) {
-      return suggestion.message.content;
+      return suggestion.message.content.replace(/<\/?[^>]+(>|$)/g, "");
     }
     return '';
   }

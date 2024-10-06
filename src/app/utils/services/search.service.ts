@@ -454,12 +454,15 @@ export class SearchService {
 
     return from(this.messageService.searchMessages(query)).pipe(
       map((messages: Message[]) => {
-        return messages.map((message: Message) => ({
-          text: this.truncateMessageContent(message.content, query),
-          type: 'message' as const,
-          hasChat: true,
-          message: message,
-        }));
+        return messages.map((message: Message) => {
+          const contentWithoutHtml = message.content.replace(/<\/?[^>]+(>|$)/g, "");
+          return {
+            text: this.truncateMessageContent(contentWithoutHtml, query),
+            type: 'message' as const,
+            hasChat: true,
+            message: message,
+          };
+        });
       })
     );
   }

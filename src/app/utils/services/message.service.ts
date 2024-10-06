@@ -369,7 +369,7 @@ export class MessageService {
 
     querySnapshot.forEach((doc) => {
       const messageData = doc.data();
-      const content = messageData['content'].toLowerCase();
+      const content = this.removeAllHTMLTagsFromString(messageData['content']).toLowerCase();
       const searchLower = searchQuery.toLowerCase();
 
       if (content.includes(searchLower)) {
