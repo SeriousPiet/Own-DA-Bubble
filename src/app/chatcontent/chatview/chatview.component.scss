@@ -236,7 +236,7 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
   }
 }
 
-@starting-style {
+%starting-style {
   #channel-member-overview-popover:popover-open,
   #channel-editor-popover:popover-open {
     opacity: 0;

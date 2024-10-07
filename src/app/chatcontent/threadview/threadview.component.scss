@@ -17,6 +17,7 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding-top: 0.625rem;
 }
 
 .threadview-header {
@@ -121,12 +122,13 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
 
   .thread-messages-content {
     width: 100%;
-    height: 75%;
+    height: 100%;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    justify-content: start;
+    align-items: stretch;
     gap: 0.75rem;
-    padding: 0.625rem 0rem 1.875rem 0rem;
     .thread-list-view {
       overflow-x: hidden;
     }
