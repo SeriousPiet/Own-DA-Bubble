@@ -229,7 +229,7 @@ main {
 }
 
 .duplicate-channel-error-msg {
-  color: #f00;
+  color: $error;
   font-size: 0.875rem;
   text-align: start;
   width: 100%;
@@ -240,7 +240,7 @@ main {
 
 .hide-duplicate-channel-error-msg {
   opacity: 0;
-  color: #f00;
+  color: $error;
   font-size: 0.875rem;
   text-align: start;
   width: 100%;
