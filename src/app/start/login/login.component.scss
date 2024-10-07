@@ -53,6 +53,10 @@ section {
   padding: 1.25rem;
   background-color: $background;
 
+  @media (width < 426px) {
+    padding: 1.25rem 0;
+  }
+
   .debug-btn {
     position: absolute;
     top: 6rem;
@@ -150,8 +154,9 @@ section {
       margin: 6rem auto 14rem auto;
     }
 
-    @media (width <= 425px) {
+    @media (width < 426px) {
       gap: 1.75rem;
+      border-radius: 0;
     }
 
     @media (width <= 375px) {
