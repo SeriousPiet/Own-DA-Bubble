@@ -95,7 +95,7 @@ export class SearchbarComponent implements OnInit {
   @ViewChild('dateInput') dateInput!: ElementRef<HTMLInputElement>;
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef<HTMLInputElement>;
 
-  
+
   /**
    * Toggles the visibility of the date picker input field.
    * If the date picker is made visible, it will automatically show the date picker UI.
@@ -133,10 +133,8 @@ export class SearchbarComponent implements OnInit {
    */
   onSearchInput(searchQuery: string) {
     this.searchService.updateSearchQuery(searchQuery);
-    console.log('Current search restriction:', this.searchService.getSearchRestrictions());
     this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
       map((groupedResults) => {
-        console.log('Grouped results:', groupedResults);
         if (searchQuery.startsWith('@')) {
           return groupedResults.users;
         } else if (searchQuery.startsWith('#')) {

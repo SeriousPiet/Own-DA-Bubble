@@ -1,7 +1,7 @@
 <main
   #messagemaindiv
-  (mouseenter)="isHovered = true"
-  (mouseleave)="isHovered = false; showEditMessagePopup = false"
+  (mouseenter)="_isHovered = true"
+  (mouseleave)="_isHovered = false; showEditMessagePopup = false"
   [ngClass]="{
     'message-ctn': true,
     'message-from-user': messagefromUser,
@@ -140,7 +140,7 @@
     </div>
   </section>
   }@else {
-  <div (mouseenter)="isHovered = false" class="message-editor">
+  <div (mouseenter)="_isHovered = false" class="message-editor">
     <app-message-editor
       #messageeditor
       (enterPressed)="updateMessage()"

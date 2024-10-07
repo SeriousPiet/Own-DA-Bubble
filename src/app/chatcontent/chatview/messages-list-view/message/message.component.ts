@@ -64,7 +64,10 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   public messagefromUser = false;
   public messageCreator: User | undefined;
   private messageChangeSubscription: any;
-  public isHovered = false;
+  public _isHovered = false;
+  get isHovered() {
+    return this._isHovered && this.isAttachmentsHovered.every((hovered) => !hovered);
+  }
   public isAttachmentsHovered: boolean[] = [];
   public showEditMessagePopup = false;
   public messageEditorModus = false;
