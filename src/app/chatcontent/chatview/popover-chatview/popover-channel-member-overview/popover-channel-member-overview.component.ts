@@ -132,8 +132,6 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
 
   getTitle(object: Channel | Chat | Message | undefined): string {
     if (object instanceof Channel) return object.name;
-    // if (object instanceof Message) return 'Thread from ' + this.userservice.getUserByID(object.creatorID)?.name;
-    // if (object instanceof Chat) return 'Chat with ' + this.getChatPartner(object);
     return '';
   }
 
@@ -181,7 +179,6 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
       }
       this.isDropdownVisible = false;
     }
-
   }
 
   public findUserByName(name: string): User | undefined {
