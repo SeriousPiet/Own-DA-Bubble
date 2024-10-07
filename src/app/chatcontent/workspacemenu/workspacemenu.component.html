@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="channels">
-    <details #channelsDetails (toggle)="toggleDetails(channelsDetails)">
+    <details #channelsDetails (toggle)="toggleDetails(channelsDetails)" open>
       <summary class="blue">
         <div>
           <div>
@@ -41,7 +41,7 @@
     </details>
   </div>
   <div class="messagesChannels">
-    <details #dmDetails (toggle)="toggleDetails(dmDetails)">
+    <details #dmDetails (toggle)="toggleDetails(dmDetails)" open>
       <summary class="blue">
         <div class="dm-symbol"></div>
         <span class="nunito-20-700">Direktnachrichten</span>
