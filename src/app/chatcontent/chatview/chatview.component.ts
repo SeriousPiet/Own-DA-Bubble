@@ -232,9 +232,8 @@ export class ChatviewComponent implements OnInit {
   }
 
   setSelectedUserObject(selectedUserID: string) {
-    this.userService.updateSelectedUser(
-      this.userService.getUserByID(selectedUserID)
-    );
+    this.userService.updateSelectedUser(this.userService.getUserByID(selectedUserID));
+    this.navigationService.setProfileTarget(true);
   }
 
   returnPopoverTarget(selectedUser: string) {
