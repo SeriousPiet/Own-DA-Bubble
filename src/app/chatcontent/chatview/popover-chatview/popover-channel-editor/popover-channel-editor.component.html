@@ -15,7 +15,7 @@
             <div>
                 <span>Channel Name</span>
                 @if (!channelNameEditor) {
-                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()"
+                <button [ngClass]="{'channel-edit-btn':true, 'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()"
                     [title]="showNoRightToEditInfo()" (click)="showChannelNameEditor()">Bearbeiten</button>
                 }@else {
                 <button (click)="saveEditedChannel()" [disabled]="channelService.checkForDuplicateChannelName(updateChannelData.name!, getTitle(navigationService.chatViewObject))">Speichern</button>
@@ -37,7 +37,7 @@
             <div>
                 <span>Beschreibung</span>
                 @if (!channelDescriptionEditor) {
-                <button [ngClass]="{'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()"
+                <button [ngClass]="{'channel-edit-btn':true, 'no-edit-right': !isChannelCreator()}" [disabled]="!isChannelCreator()"
                     [title]="showNoRightToEditInfo()" (click)="showChannelDescriptionEditor()">Bearbeiten</button>
                 }@else {
                 <button (click)="saveEditedChannel()">Speichern</button>

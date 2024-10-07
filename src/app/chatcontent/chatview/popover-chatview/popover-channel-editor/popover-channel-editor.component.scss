@@ -190,7 +190,6 @@ main {
 .no-edit-right {
   user-select: none !important;
   cursor: default !important;
-  color: $disabled !important;
 }
 
 .leave-channel-button {
@@ -344,6 +343,10 @@ main {
       }
     }
   }
+}
+
+.channel-edit-btn.no-edit-right{
+  color: $disabled !important;
 }
 
 #add-member-to-channel-mobile-popover {
