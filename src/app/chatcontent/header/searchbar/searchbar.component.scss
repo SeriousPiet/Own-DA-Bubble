@@ -1,6 +1,11 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
+.searchbar-open {
+  box-shadow: $profile-box-shadow;
+}
+
+
 .searchbar {
   position: absolute;
   z-index: 15;
@@ -20,9 +25,6 @@
     border-radius: 0;
   }
 
-  &:focus-within {
-    box-shadow: $profile-box-shadow;
-  }
 
   input {
     width: 100%;

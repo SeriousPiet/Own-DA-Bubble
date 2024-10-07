@@ -146,7 +146,8 @@ export class ChannelService implements OnDestroy {
     return undefined;
   }
 
-  async getChatWithUserByID(selectedUserID: string, createChat: boolean = true): Promise<Chat | undefined> {
+
+  getChatWithUserByID(selectedUserID: string): Chat | undefined {
     if (this.userservice.currentUser) {
       let selectedChat: Chat | undefined = undefined;
       if (this.userservice.currentUserID === selectedUserID)
@@ -154,47 +155,71 @@ export class ChannelService implements OnDestroy {
           (selectedChat) => selectedChat.memberIDs[0] === selectedUserID && selectedChat.memberIDs[1] === selectedUserID
         );
       else selectedChat = this.chats.find((selectedChat) => selectedChat.memberIDs.includes(selectedUserID) && selectedChat.memberIDs.includes(this.userservice.currentUserID));
-      console.log(selectedChat)
       if (selectedChat) return selectedChat;
     }
     return;
   }
 
+
+  getChatWithUserByName(selectedUserName: string): Chat | undefined {
+    const selectedUser = this.userservice.getUserByName(selectedUserName);
+    if (selectedUser) return this.getChatWithUserByID(selectedUser.id);
+    return;
+  }
+
+
+  getChannelByName(channelName: string): Channel | undefined {
+    return this.channels.find((channel) => channel.name === channelName) || undefined;
+  }
+
+
+  ifCurrentUserMemberOfChannelByName(channel: string): boolean {
+    const channelObj = this.getChannelByName(channel);
+    if (channelObj) return channelObj.memberIDs.includes(this.userservice.currentUserID);
+    return false;
+  }
+
+
+  /**
+   * Adds a new chat with a specified user to Firestore.
+   * 
+   * This method creates a new chat document in the Firestore 'chats' collection,
+   * including the current user's ID and the specified user's ID. It also updates
+   * the current user's and the specified user's chat IDs in Firestore.
+   * 
+   * @param userID - The ID of the user to chat with.
+   * @returns A promise that resolves to the chat ID if the chat is successfully created, or undefined if an error occurs.
+   * 
+   * @throws Will log an error message if there is an issue adding the chat to Firestore.
+   */
   async addChatWithUserOnFirestore(userID: string): Promise<string | undefined> {
     try {
       const chatRef = collection(this.firestore, '/chats');
-      const chatObj = {
-        memberIDs: [this.userservice.currentUserID, userID],
-        createdAt: serverTimestamp(),
-      };
+      const chatObj = { memberIDs: [this.userservice.currentUserID, userID], createdAt: serverTimestamp() };
       const chat = await addDoc(chatRef, chatObj);
-      this.userservice.updateCurrentUserDataOnFirestore({
-        chatIDs: [...(this.userservice.currentUser?.chatIDs || []), chat.id],
-      });
+      this.userservice.updateCurrentUserDataOnFirestore({ chatIDs: [...(this.userservice.currentUser?.chatIDs || []), chat.id] });
       if (this.userservice.currentUserID !== userID) {
         const user = this.userservice.getUserByID(userID);
         let userChatIDs = user?.chatIDs;
         userChatIDs?.push(chat.id);
         console.log('other user chatid update ' + user + ' chatIDs:' + userChatIDs);
-        this.userservice.updateUserDataOnFirestore(userID,{
-          chatIDs: userChatIDs,
-        });
+        this.userservice.updateUserDataOnFirestore(userID, { chatIDs: userChatIDs });
       }
       return chat.id;
     } catch (error) {
-      console.error(
-        'userservice/chat: Error adding chat(' + (error as Error).message + ')'
-      );
+      console.error('userservice/chat: Error adding chat(' + (error as Error).message + ')');
       return undefined;
     }
   }
 
+
   /**
-   * @method addNewChannelToFirestore
-   * @description Adds a new channel to the database.
-   * @param {string} name - The name of the channel.
-   * @param {string} description - The description of the channel.
-   * @param {string[]} membersIDs - The ids of the members of the channel.
+   * Adds a new channel to Firestore with the specified name, description, and member IDs.
+   *
+   * @param {string} name - The name of the new channel.
+   * @param {string} description - A brief description of the new channel.
+   * @param {string[]} membersIDs - An array of user IDs who will be members of the new channel.
+   * @returns {Promise<boolean>} - A promise that resolves to `true` if the channel was added successfully, or `false` if there was an error.
    */
   async addNewChannelToFirestore(name: string, description: string, membersIDs: string[]): Promise<boolean> {
     const newchannel = {
@@ -204,9 +229,8 @@ export class ChannelService implements OnDestroy {
       createdAt: serverTimestamp(),
       creatorID: this.userservice.currentUserID,
     };
-    const channelCollectionref = collection(this.firestore, '/channels');
     try {
-      await addDoc(channelCollectionref, newchannel);
+      await addDoc(collection(this.firestore, '/channels'), newchannel);
       return true;
     } catch (error) {
       console.error('ChannelService: addNewChannelToFirestore: error adding channel' + newchannel.name + ' # ', error);
@@ -214,19 +238,19 @@ export class ChannelService implements OnDestroy {
     }
   }
 
+
   /**
-   * @method updateChannelOnFirestore
-   * @description Updates a channel in the database.
-   * @param {Channel} channel - The channel to update.
-   * @param {Object} updateData - The data to update in the channel.
-   * @param {string} updateData.name - The new name of the channel.
-   * @param {string} updateData.description - The new description of the channel.
-   * @param {string[]} updateData.memberIDs - The new member IDs of the channel.
+   * Updates a channel document in Firestore with the provided update data.
+   *
+   * @param channel - The channel object containing the ID of the channel to update.
+   * @param updateData - An object containing the fields to update. Possible fields are:
+   *  - `name` (optional): The new name of the channel.
+   *  - `description` (optional): The new description of the channel.
+   *  - `memberIDs` (optional): An array of member IDs to update the channel with.
+   * @returns A promise that resolves when the update operation is complete.
+   * @throws Will log an error message if the update operation fails.
    */
-  async updateChannelOnFirestore(
-    channel: Channel,
-    updateData: { name?: string; description?: string; memberIDs?: string[] }
-  ) {
+  async updateChannelOnFirestore(channel: Channel, updateData: { name?: string; description?: string; memberIDs?: string[] }) {
     const channelDocRef = doc(this.firestore, '/channels', channel.id);
     try {
       await updateDoc(channelDocRef, updateData);
@@ -250,6 +274,7 @@ export class ChannelService implements OnDestroy {
     return isDuplicate && isChanged;  
     }else return isDuplicate;
   }
+
 
   /**
    * Lifecycle hook that is called when the component is about to be destroyed.

@@ -194,7 +194,6 @@ export class NavigationService {
   getSearchContext(): string {
     if (this.chatViewObject instanceof Chat) {
       const chatPartner = this.getChatPartnerName();
-
       if (chatPartner) {
         return `in:@${chatPartner}`;
       } else if (this.isSelfChat()) {

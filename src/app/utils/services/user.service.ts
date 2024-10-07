@@ -64,6 +64,17 @@ export class UsersService implements OnDestroy {
 
 
   /**
+   * Retrieves a user by their name.
+   *
+   * @param name - The name of the user to retrieve.
+   * @returns The user object if found, otherwise `undefined`.
+   */
+  getUserByName(name: string): User | undefined {
+    return this.users.find((user) => user.name === name);
+  }
+
+
+  /**
    * Updates the current user's data on Firestore.
    *
    * This method takes an object containing the user data changes and updates

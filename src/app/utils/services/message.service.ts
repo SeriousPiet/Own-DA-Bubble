@@ -119,20 +119,6 @@ export class MessageService {
    * - The message is then deleted from Firestore.
    * - The related collection object is updated with the new count of messages or answers.
    * 
-   * @example
-   * ```typescript
-   * const message: Message = { ... };
-   * const channel: Channel = { ... };
-   * 
-   * messageService.deleteMessage(message, channel)
-   *   .then(result => {
-   *     if (result === '') {
-   *       console.log('Message deleted successfully');
-   *     } else {
-   *       console.error('Error deleting message:', result);
-   *     }
-   *   });
-   * ```
    */
   async deleteMessage(message: Message, collectionObject: Channel | Chat | Message): Promise<string> {
     try {
@@ -343,29 +329,38 @@ export class MessageService {
 
   // ################# MESSAGES SEARCH #################
 
+
   /**
    * Searches for messages in the Firestore database that match the provided search query.
    *
    * @param searchQuery - The search query to use for finding matching messages.
    * @returns A Promise that resolves to an array of `Message` objects that match the search query.
    */
-  async searchMessages(searchQuery: string): Promise<Message[]> {
-    const messagesRef = collectionGroup(this.firestore, 'messages');
-    const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(100));
-    const querySnapshot = await getDocs(q);
-    const results: Message[] = [];
+  async searchMessages(searchQuery: string, messagesPath: string): Promise<Message[]> {
+    const searchLower = searchQuery.toLowerCase();
+    if (messagesPath === '') {
+      const messagesRef = collectionGroup(this.firestore, 'messages');
+      const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(100));
+      const querySnapshot = await getDocs(q);
+      return await this.getMessagesFromQuerySnapshot(querySnapshot, searchLower);
+    } else {
+      const colRef = collection(this.firestore, messagesPath);
+      const allDocs = await getDocs(colRef);
+      return await this.getMessagesFromQuerySnapshot(allDocs, searchLower);
+    }
+  }
 
-    querySnapshot.forEach((doc) => {
+
+  private async getMessagesFromQuerySnapshot(querySnapshot: any, searchLower: string): Promise<Message[]> {
+    const results: Message[] = [];
+    querySnapshot.forEach((doc: any) => {
       const messageData = doc.data();
       const content = this.removeAllHTMLTagsFromString(messageData['content']).toLowerCase();
-      const searchLower = searchQuery.toLowerCase();
-
       if (content.includes(searchLower)) {
         const message = new Message(messageData, doc.ref.parent.path, doc.id);
         results.push(message);
       }
     });
-
     return results;
   }
 }

@@ -1,41 +1,19 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { BehaviorSubject, Observable, of, forkJoin, from } from 'rxjs';
-import {
-  map,
-  switchMap,
-  debounceTime,
-  distinctUntilChanged,
-} from 'rxjs/operators';
-
+import { map, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NavigationService } from './navigation.service';
 import { UsersService } from './user.service';
 import { ChannelService } from './channel.service';
 import { MessageService } from './message.service';
 import { Message } from '../../shared/models/message.class';
-
-import {
-  Firestore,
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
-  startAt,
-  collectionGroup,
-} from '@angular/fire/firestore';
-
-import { collectionData } from 'rxfire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, getDocs, startAt, collectionGroup } from '@angular/fire/firestore';
+import { Chat } from '../../shared/models/chat.class';
+import { Channel } from '../../shared/models/channel.class';
 
 export interface GroupedSearchResults {
   users: { text: string; type: 'user'; hasChat: boolean }[];
   channels: { text: string; type: 'channel'; hasChat: boolean }[];
-  messages: {
-    text: string;
-    type: 'message';
-    hasChat: boolean;
-    message: Message;
-  }[];
+  messages: { text: string; type: 'message'; hasChat: boolean; message: Message; }[];
 }
 
 export interface SearchSuggestion {
@@ -43,6 +21,7 @@ export interface SearchSuggestion {
   type: string;
   hasChat?: boolean;
   message?: Message;
+  messagePath?: string;
 }
 
 @Injectable({
@@ -67,9 +46,11 @@ export class SearchService {
   private searchStateSubject = new BehaviorSubject<{
     query: string;
     context: string | null;
+    contextObjectPath: string;
   }>({
     query: '',
     context: null,
+    contextObjectPath: '',
   });
 
   /**
@@ -89,11 +70,7 @@ export class SearchService {
     private channelService: ChannelService,
     private firestore: Firestore,
     private messageService: MessageService
-  ) {
-    this.messageScrollRequested.subscribe((message) => {
-      console.log('messageScrollRequested emitted with:', message);
-    });
-  }
+  ) { }
 
   // ############################################################################################################
   // State Management Methods
@@ -113,6 +90,7 @@ export class SearchService {
     });
   }
 
+
   /**
    * Adds a context restriction to the current search state.
    *
@@ -121,12 +99,14 @@ export class SearchService {
    *
    * @param context - The context to add to the search state.
    */
-  addContextRestriction(context: string) {
+  addContextRestriction(context: string, contextObject: Channel | Chat) {
     this.searchStateSubject.next({
       ...this.searchStateSubject.value,
       context,
+      contextObjectPath: contextObject instanceof Channel ? contextObject.channelMessagesPath : contextObject.chatMessagesPath,
     });
   }
+
 
   /**
    * Removes the current context restriction from the search state.
@@ -138,6 +118,7 @@ export class SearchService {
     this.searchStateSubject.next({
       ...this.searchStateSubject.value,
       context: null,
+      contextObjectPath: '',
     });
   }
 
@@ -167,6 +148,7 @@ export class SearchService {
     }
   }
 
+
   /**
    * Emits an event to scroll the UI to the provided message.
    *
@@ -177,9 +159,9 @@ export class SearchService {
    * @param message - The message to scroll to.
    */
   private scrollToMessage(message: Message): void {
-    console.log('Scroll to message:', message);
     this.messageScrollRequested.emit(message);
   }
+
 
   /**
    * Retrieves the collection path based on the provided search context.
@@ -196,15 +178,11 @@ export class SearchService {
   private async getCollectionPath(context: string): Promise<string | null> {
     if (context.startsWith('in:#')) {
       const channelName = context.slice(4);
-      const channel = this.channelService.channels.find(
-        (c) => c.name === channelName
-      );
+      const channel = this.channelService.channels.find((c) => c.name === channelName);
       return channel ? `channels/${channel.id}/messages` : null;
     } else if (context.startsWith('in:@')) {
       const userName = context.slice(4);
-      const user = this.usersService
-        .getAllUserIDs()
-        .find((id) => this.usersService.getUserByID(id)?.name === userName);
+      const user = this.usersService.getAllUserIDs().find((id) => this.usersService.getUserByID(id)?.name === userName);
       if (user) {
         const chatId = await this.getChatIdWithUser(user);
         return chatId ? `chats/${chatId}/messages` : null;
@@ -212,6 +190,7 @@ export class SearchService {
     }
     return null;
   }
+
 
   /**
    * Retrieves the chat ID for the chat that includes the specified user.
@@ -229,11 +208,10 @@ export class SearchService {
     const chatsRef = collection(this.firestore, 'chats');
     const q = query(chatsRef, where('memberIDs', 'array-contains', userId));
     const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      return querySnapshot.docs[0].id;
-    }
+    if (!querySnapshot.empty) return querySnapshot.docs[0].id;
     return null;
   }
+
 
   /**
    * Finds the nearest message to the specified target date in the given collection path.
@@ -244,36 +222,23 @@ export class SearchService {
    * @param targetDate - The target date to find the nearest message for.
    * @returns The nearest message to the target date, or `null` if no such message is found.
    */
-  private async findNearestMessage(
-    collectionPath: string,
-    targetDate: Date
-  ): Promise<Message | null> {
+  private async findNearestMessage(collectionPath: string, targetDate: Date): Promise<Message | null> {
     const messagesRef = collection(this.firestore, collectionPath);
-    const qBefore = query(
-      messagesRef,
-      orderBy('createdAt', 'desc'),
-      startAt(targetDate),
-      limit(1)
-    );
+    const qBefore = query(messagesRef, orderBy('createdAt', 'desc'), startAt(targetDate), limit(1));
     const querySnapshotBefore = await getDocs(qBefore);
 
     if (!querySnapshotBefore.empty) {
       return this.createMessageFromDoc(querySnapshotBefore.docs[0]);
     }
-    const qAfter = query(
-      messagesRef,
-      orderBy('createdAt'),
-      startAt(targetDate),
-      limit(1)
-    );
+    const qAfter = query(messagesRef, orderBy('createdAt'), startAt(targetDate), limit(1));
     const querySnapshotAfter = await getDocs(qAfter);
 
     if (!querySnapshotAfter.empty) {
       return this.createMessageFromDoc(querySnapshotAfter.docs[0]);
     }
-
     return null;
   }
+
 
   /**
    * Creates a new `Message` instance from the provided Firestore document.
@@ -287,6 +252,7 @@ export class SearchService {
     const data = doc.data();
     return new Message(data, doc.ref.parent.path, doc.id);
   }
+
 
   /**
    * Adds a new search term to the list of recent searches.
@@ -307,6 +273,7 @@ export class SearchService {
     localStorage.setItem(this.RECENT_SEARCHES_KEY, JSON.stringify(searches));
   }
 
+
   /**
    * Retrieves the list of recent search suggestions from local storage.
    *
@@ -322,6 +289,7 @@ export class SearchService {
     return searches ? JSON.parse(searches) : [];
   }
 
+
   /**
    * Removes the specified search term from the list of recent searches.
    *
@@ -335,109 +303,78 @@ export class SearchService {
     this.recentSearches = this.recentSearches.filter((t) => t !== term);
   }
 
+
   getSearchSuggestions(): Observable<GroupedSearchResults> {
     return this.searchState$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((state) => {
+      debounceTime(300), distinctUntilChanged(), switchMap((state) => {
         if (state.query.startsWith('@')) {
-          const userQuery = state.query.slice(1);
-          return forkJoin({
-            users: this.searchUsers(userQuery),
-            channels: of([]),
-            messages: of([]),
-          });
-        } else if (state.query.startsWith('#')) {
-          const channelQuery = state.query.slice(1);
-          return forkJoin({
-            users: of([]),
-            channels: this.searchChannels(channelQuery),
-            messages: of([]),
-          });
-        } else if (!state.query || state.query.trim().length < 3) {
+          return forkJoin({ users: this.searchUsers(state.query.slice(1)), channels: of([]), messages: of([]) });
+        }
+        else if (state.query.startsWith('#')) {
+          return forkJoin({ users: of([]), channels: this.searchChannels(state.query.slice(1)), messages: of([]) });
+        }
+        else if (!state.query || state.query.trim().length < 3) {
           return of({ users: [], channels: [], messages: [] });
         }
-        return forkJoin({
-          users: this.searchUsers(state.query).pipe(
-            map((users) => users.slice(0, 5))
-          ),
-          channels: this.searchChannels(state.query).pipe(
-            map((channels) => channels.slice(0, 5))
-          ),
-          messages:
-            state.query.trim().length >= 3
-              ? this.searchMessages(state.query).pipe(
-                map((messages) => messages.slice(0, 5))
-              )
-              : of([]),
-        });
+        else if (state.context !== null) {
+          return forkJoin({
+            users: of([]),
+            channels: of([]),
+            messages: state.query.trim().length >= 3 ? this.searchMessages(state.query, state.contextObjectPath).pipe(map((messages) => messages.slice(0, 5))) : of([]),
+          });
+        }
+        else {
+          return forkJoin({
+            users: this.searchUsers(state.query).pipe(map((users) => users.slice(0, 5))),
+            channels: this.searchChannels(state.query).pipe(map((channels) => channels.slice(0, 5))),
+            messages: state.query.trim().length >= 3 ? this.searchMessages(state.query, '').pipe(map((messages) => messages.slice(0, 5))) : of([]),
+          });
+        }
       })
     );
   }
 
+
   /**
-   * Finds a message by its content in the Firestore database.
+   * Searches for users based on the provided query string.
    *
-   * @param content - The content of the message to search for.
-   * @returns A Promise that resolves to the found message, or `undefined` if no message was found.
+   * @param query - The search query string.
+   * @returns An Observable that emits an array of objects containing user information.
+   * Each object includes:
+   * - `text`: The user's name prefixed with '@'.
+   * - `type`: A constant string 'user'.
+   * - `hasChat`: A boolean indicating whether there is an existing chat with the user.
    */
-  async findMessageByContent(content: string): Promise<Message | undefined> {
-    const messagesRef = collectionGroup(this.firestore, 'messages');
-    const q = query(messagesRef, where('content', '==', content), limit(1));
-
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      const doc = querySnapshot.docs[0];
-      return new Message(doc.data(), doc.ref.parent.path, doc.id);
-    }
-
-    return undefined;
-  }
-
-  private searchUsers(
-    query: string
-  ): Observable<{ text: string; type: 'user'; hasChat: boolean }[]> {
+  private searchUsers(query: string): Observable<{ text: string; type: 'user'; hasChat: boolean }[]> {
     return of(this.usersService.getAllUserIDs()).pipe(
-      map((userIds) =>
-        userIds
-          .map((id) => {
-            const user = this.usersService.getUserByID(id);
-            return user
-              ? {
-                text: `@${user.name}`,
-                type: 'user' as const,
-                hasChat:
-                  this.channelService.getChatWithUserByID(id, false) !==
-                  undefined,
-              }
-              : null;
-          })
-          .filter(
-            (user): user is { text: string; type: 'user'; hasChat: boolean } =>
-              user !== null &&
-              user.text.toLowerCase().includes(query.toLowerCase())
-          )
+      map((userIds) => userIds
+        .map((id) => {
+          const user = this.usersService.getUserByID(id);
+          return user ? { text: `@${user.name}`, type: 'user' as const, hasChat: this.channelService.getChatWithUserByID(id) !== undefined } : null;
+        })
+        .filter((user): user is { text: string; type: 'user'; hasChat: boolean } => user !== null && user.text.toLowerCase().includes(query.toLowerCase()))
       )
     );
   }
 
-  private searchChannels(
-    query: string
-  ): Observable<{ text: string; type: 'channel'; hasChat: boolean }[]> {
+
+  /**
+   * Searches for channels that match the given query string.
+   *
+   * @param query - The search query string to filter channels.
+   * @returns An Observable that emits an array of objects containing channel information.
+   * Each object includes the channel's text (name prefixed with '#'), type ('channel'), and a boolean indicating if it has chat.
+   */
+  private searchChannels(query: string): Observable<{ text: string; type: 'channel'; hasChat: boolean }[]> {
     return of(this.channelService.channels).pipe(
       map((channels) =>
         channels
-          .map((channel) => ({
-            text: `#${channel.name}`,
-            type: 'channel' as const,
-            hasChat: true,
-          }))
-          .filter((channel) =>
-            channel.text.toLowerCase().includes(query.toLowerCase())
-          )
+          .map((channel) => ({ text: `#${channel.name}`, type: 'channel' as const, hasChat: true }))
+          .filter((channel) => channel.text.toLowerCase().includes(query.toLowerCase()))
       )
     );
   }
+
 
   /**
    * Searches for messages based on the provided query string.
@@ -445,8 +382,8 @@ export class SearchService {
    * @param query - The search query to use for finding messages.
    * @returns An Observable that emits an array of objects containing the truncated message content, message type, whether the user has a chat in that channel, and the original message object.
    */
-  public searchMessages(query: string): Observable<{ text: string; type: 'message'; hasChat: boolean; message: Message }[]> {
-    return from(this.messageService.searchMessages(query)).pipe(
+  public searchMessages(query: string, path: string): Observable<{ text: string; type: 'message'; hasChat: boolean; message: Message }[]> {
+    return from(this.messageService.searchMessages(query, path)).pipe(
       map((messages: Message[]) => {
         return messages.map((message: Message) => {
           const contentWithoutHtml = message.content.replace(/<\/?[^>]+(>|$)/g, " ");
@@ -455,6 +392,7 @@ export class SearchService {
             type: 'message' as const,
             hasChat: true,
             message: message,
+            messagePath: path,
           };
         });
       })
@@ -473,11 +411,7 @@ export class SearchService {
    * @param maxLength - The maximum length of the truncated content (default is 60 characters).
    * @returns The truncated message content with the search query highlighted.
    */
-  private truncateMessageContent(
-    content: string,
-    query: string,
-    maxLength: number = 60
-  ): string {
+  private truncateMessageContent(content: string, query: string, maxLength: number = 60): string {
     const lowerContent = content.toLowerCase();
     const lowerQuery = query.toLowerCase();
     const index = lowerContent.indexOf(lowerQuery);
@@ -488,10 +422,7 @@ export class SearchService {
     } else if (content.length <= maxLength) {
       result = content;
     } else {
-      let start = Math.max(
-        0,
-        index - Math.floor((maxLength - query.length) / 2)
-      );
+      let start = Math.max(0, index - Math.floor((maxLength - query.length) / 2));
       let end = Math.min(content.length, start + maxLength);
 
       if (end === content.length) {
@@ -502,12 +433,9 @@ export class SearchService {
       if (start > 0) result = '...' + result;
       if (end < content.length) result = result + '...';
     }
-
-    return result.replace(
-      new RegExp(query, 'gi'),
-      (match) => `<strong>${match}</strong>`
-    );
+    return result.replace(new RegExp(query, 'gi'), (match) => `<strong>${match}</strong>`);
   }
+
 
   /**
    * Sets whether context search is enabled.
@@ -518,6 +446,7 @@ export class SearchService {
     this._isContextSearchEnabled = enabled;
   }
 
+
   /**
    * Gets the current search context.
    *
@@ -527,6 +456,7 @@ export class SearchService {
     return this.navigationService.getSearchContext();
   }
 
+
   /**
    * Gets the current search restrictions.
    *
@@ -535,6 +465,7 @@ export class SearchService {
   getSearchRestrictions() {
     return this.searchStateSubject.value;
   }
+
 
   /**
    * Gets a list of all registered user names.
@@ -548,6 +479,7 @@ export class SearchService {
       return user ? user.name : 'Unbekannter Benutzer';
     });
   }
+
 
   /**
    * Gets the members of the current search context, if the context is a channel.
@@ -565,6 +497,7 @@ export class SearchService {
     }
     return [];
   }
+
 
   /**
    * Gets a list of user names for the provided user IDs.
