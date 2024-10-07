@@ -1,5 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  OnDestroy,
+  Output,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { QuillEditorComponent, QuillModule } from 'ngx-quill';
 import Quill from 'quill';
 import { Range as QuillRange } from 'quill/core/selection';
@@ -10,13 +23,16 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
-import { getTextBeforePreviousSign, insertItemAsSpan, registerLockedSpanBlot } from '../../utils/quil/utility';
+import {
+  getTextBeforePreviousSign,
+  insertItemAsSpan,
+  registerLockedSpanBlot,
+} from '../../utils/quil/utility';
 
 export type EditedTextLength = {
   maxLength: number;
   textLength: number;
 };
-
 
 @Component({
   selector: 'app-message-editor',
@@ -32,7 +48,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
 
   @Input() messageAsHTML = '';
   @Input() placeholder = 'Schreib etwas...';
-  @Input() minHeight_rem = 2;
+  @Input() minHeight_rem = 3.325;
   @Input() maxHeight_rem = 10;
 
   @Output() enterPressed = new EventEmitter<string>();
@@ -47,7 +63,8 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   // Quill Editor variables and configuration
   readonly maxMessageLength = 1000;
   public quill!: Quill;
-  public toolbarID = 'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
+  public toolbarID =
+    'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   public showToolBarElements: number[] = [];
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
@@ -64,7 +81,8 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     keyboard: {
       bindings: {
         shift_enter: {
-          key: 13, shiftKey: true,
+          key: 13,
+          shiftKey: true,
           handler: (range: { index: number }, ctx: any) => {
             this.quill.insertText(range.index, '\n');
           },
@@ -87,24 +105,22 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   private lastItem: User | Channel | null = null;
   public currentPickerIndex = -1;
 
-
-  constructor(private _cdr: ChangeDetectorRef) { }
+  constructor(private _cdr: ChangeDetectorRef) {}
 
   ngOnDestroy(): void {
     if (this.resizeobserver) this.resizeobserver.disconnect();
   }
 
-
   /**
    * Opens the emoji picker and inserts the selected emoji into the editor at the current cursor position.
-   * 
+   *
    * This method uses the `emojiService` to display the emoji picker. When an emoji is selected, it:
    * 1. Retrieves the current cursor position.
    * 2. Adds the selected emoji to the user's frequently used emojis.
    * 3. Inserts the emoji at the cursor position in the Quill editor.
    * 4. Updates the cursor position to be after the inserted emoji.
    * 5. Focuses the Quill editor.
-   * 
+   *
    * @remarks
    * The method ensures that the emoji is inserted silently without triggering any Quill events.
    */
@@ -122,7 +138,6 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-
   /**
    * Determines if the given item is an instance of the User class.
    *
@@ -133,7 +148,6 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     return item instanceof User;
   }
 
-
   /**
    * Retrieves the current message content from the Quill editor as semantic HTML.
    *
@@ -142,7 +156,6 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   getMessageAsHTML() {
     return this.quill.getSemanticHTML();
   }
-
 
   /**
    * Clears the text editor by setting its content to an empty string
@@ -153,10 +166,9 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.quill.history.clear();
   }
 
-
   /**
    * Lifecycle hook that is called after a component's view has been fully initialized.
-   * 
+   *
    * This method subscribes to the `onEditorCreated` event of the editor, which is triggered
    * when the Quill editor instance is created. Once the editor is created, it performs the following actions:
    * - Registers a custom blot for locked spans.
@@ -164,7 +176,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
    * - Adds controllers for text changes, focus, and key events.
    * - Sets the initial HTML content of the editor.
    * - Focuses the editor.
-   * 
+   *
    * @memberof MessageEditorComponent
    */
   ngAfterViewInit(): void {
@@ -187,22 +199,20 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.resizeobserver.observe(this.toolbar.nativeElement);
   }
 
-
   private handleToolBarResize(width: number) {
     if (width < 300) this.showToolBarElements = [1, 3, 5];
     else if (width < 400) this.showToolBarElements = [1, 3, 4, 5];
     else this.showToolBarElements = [1, 2, 3, 4, 5];
   }
 
-
   /**
    * Adds event listeners to the Quill editor instance to handle text changes.
-   * 
+   *
    * - Listens for 'editor-change' events and checks if the change includes an image insertion.
    *   If an image is inserted by the user, it undoes the change.
    * - Listens for 'text-change' events to manage the state of a picker component.
    *   If the picker is shown, it updates the picker items based on the text before a specified sign.
-   * 
+   *
    * @remarks
    * This method assumes that `this.quill` is an instance of a Quill editor and that
    * `this.showPicker`, `this.pickersign`, `this.getTextBeforePreviousSign`, `this.closeListPicker`,
@@ -213,30 +223,41 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
       const [delta, oldDelta, source] = args;
       if (source === 'user' && eventName === 'text-change') {
         if (this.showPicker) {
-          const newSearchString = getTextBeforePreviousSign(this.quill, this.getLastOrCurrentSelection(), this.pickersign);
+          const newSearchString = getTextBeforePreviousSign(
+            this.quill,
+            this.getLastOrCurrentSelection(),
+            this.pickersign
+          );
           if (newSearchString === null) this.closeListPicker();
           else this.updatePickerItems(newSearchString);
         }
-        const hasImage = delta.ops.some((op: any) => op.insert && op.insert.image);
+        const hasImage = delta.ops.some(
+          (op: any) => op.insert && op.insert.image
+        );
         const messageLength = this.quill.getLength();
         if (source === 'user' && hasImage) this.quill.history.undo();
         else if (messageLength > this.maxMessageLength) {
-          this.quill.deleteText(this.maxMessageLength, messageLength - this.maxMessageLength);
+          this.quill.deleteText(
+            this.maxMessageLength,
+            messageLength - this.maxMessageLength
+          );
         }
-        this.textLengthChanged.emit({ maxLength: this.maxMessageLength, textLength: messageLength });
+        this.textLengthChanged.emit({
+          maxLength: this.maxMessageLength,
+          textLength: messageLength,
+        });
         this._cdr.detectChanges();
       }
     });
   }
 
-
   /**
    * Adds focus and blur event listeners to the Quill editor element.
-   * 
+   *
    * When the editor gains focus, the toolbar is shown and the saved range is reset.
    * When the editor loses focus, the current selection range is saved, and the toolbar is hidden
    * if the blur event's related target is not within the toolbar. Additionally, the list picker is closed.
-   * 
+   *
    */
   addFocusController() {
     const editorElement = this.quill.root;
@@ -247,29 +268,39 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     editorElement.addEventListener('blur', (event: FocusEvent) => {
       this.savedRange = this.quill.getSelection();
       const target = event.relatedTarget as HTMLElement;
-      if (!target || !this.toolbar.nativeElement.contains(target)) this.showToolbar = false;
+      if (!target || !this.toolbar.nativeElement.contains(target))
+        this.showToolbar = false;
       this.closeListPicker();
     });
   }
 
-
   /**
    * Adds custom key bindings to the Quill editor instance.
-   * 
+   *
    * This method binds specific keys to custom handlers:
    * - `@`: Opens the list picker with '@' as the trigger.
    * - `#`: Opens the list picker with '#' as the trigger.
    * - `ArrowDown`: Handles the 'ArrowDown' key for picker selection.
    * - `ArrowUp`: Handles the 'ArrowUp' key for picker selection.
    * - `Escape`: Handles the 'Escape' key to blur the editor and emit an escape event if the picker is not shown.
-   * 
+   *
    * Additionally, it clears any existing bindings for the 'Enter' key.
    */
   addKeyController() {
-    this.quill.keyboard.addBinding({ key: '@' }, () => { this.openListPicker('@'); return true; });
-    this.quill.keyboard.addBinding({ key: '#' }, () => { this.openListPicker('#'); return true; });
-    this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => { return this.handlePickerSelectionKeys('ArrowDown'); });
-    this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => { return this.handlePickerSelectionKeys('ArrowUp'); });
+    this.quill.keyboard.addBinding({ key: '@' }, () => {
+      this.openListPicker('@');
+      return true;
+    });
+    this.quill.keyboard.addBinding({ key: '#' }, () => {
+      this.openListPicker('#');
+      return true;
+    });
+    this.quill.keyboard.addBinding({ key: 'ArrowDown' }, () => {
+      return this.handlePickerSelectionKeys('ArrowDown');
+    });
+    this.quill.keyboard.addBinding({ key: 'ArrowUp' }, () => {
+      return this.handlePickerSelectionKeys('ArrowUp');
+    });
     this.quill.keyboard.addBinding({ key: 'Escape' }, () => {
       if (!this.showPicker) {
         this.quill.blur();
@@ -280,13 +311,12 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.quill.keyboard.bindings['Enter'] = [];
   }
 
-
   /**
    * Handles key events for the picker selection.
-   * 
+   *
    * @param key - The key that was pressed.
    * @returns A boolean indicating whether the event should propagate.
-   * 
+   *
    * - If the picker is not shown, returns `true`.
    * - If the `ArrowUp` key is pressed, moves the selection up and returns `false`.
    * - If the `ArrowDown` key is pressed, moves the selection down and returns `false`.
@@ -297,13 +327,21 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   handlePickerSelectionKeys(key: string): boolean {
     if (!this.showPicker) return true;
     if (key === 'ArrowUp') {
-      this.setCurrentPickerIndex((this.currentPickerIndex - 1 + this.pickerItems.length) % this.pickerItems.length);
+      this.setCurrentPickerIndex(
+        (this.currentPickerIndex - 1 + this.pickerItems.length) %
+          this.pickerItems.length
+      );
       return false;
     } else if (key === 'ArrowDown') {
-      this.setCurrentPickerIndex((this.currentPickerIndex + 1) % this.pickerItems.length);
+      this.setCurrentPickerIndex(
+        (this.currentPickerIndex + 1) % this.pickerItems.length
+      );
       return false;
     } else if (key === 'Select') {
-      const currentItem = this.currentPickerIndex === -1 ? this.lastItem : this.pickerItems[this.currentPickerIndex];
+      const currentItem =
+        this.currentPickerIndex === -1
+          ? this.lastItem
+          : this.pickerItems[this.currentPickerIndex];
       if (currentItem) this.choosePickerItem(currentItem);
       return true;
     } else if (key === 'Escape') {
@@ -312,7 +350,6 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     }
     return true;
   }
-
 
   /**
    * Handles the selection of an item from the picker.
@@ -326,10 +363,9 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.closeListPicker();
   }
 
-
   /**
    * Retrieves the last or current selection range in the Quill editor.
-   * 
+   *
    * @returns {QuillRange | null} The current selection range if the editor has focus,
    *                              the saved selection range if available, or null if neither is present.
    */
@@ -338,15 +374,14 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     return this.savedRange;
   }
 
-
   /**
    * Sets the current picker index and updates the UI accordingly.
-   * 
+   *
    * @param index - The new index to set as the current picker index.
-   * 
+   *
    * If the current picker index is -1, it resets the last item to null.
    * Otherwise, it updates the last item to the item at the current picker index.
-   * 
+   *
    * After setting the new index, it scrolls to the selected item and triggers change detection.
    */
   setCurrentPickerIndex(index: number) {
@@ -361,7 +396,6 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-
   /**
    * Scrolls the view to the selected item in the picker list.
    *
@@ -369,37 +403,48 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
    */
   scrollToSelectedItem(index: number) {
     const selectedItem = this.pickerList.toArray()[index];
-    if (selectedItem) selectedItem.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (selectedItem)
+      selectedItem.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
   }
-
 
   /**
    * Updates the picker items based on the search term and the current picker sign.
-   * 
+   *
    * If the picker sign is '@', it filters the users from the user service to exclude guests
    * and includes users whose names match the search term (case insensitive).
-   * 
+   *
    * If the picker sign is '#', it filters the channels from the channel service to exclude
    * default channels and includes channels whose names match the search term (case insensitive).
-   * 
+   *
    * After filtering, it resets the current picker index to -1.
-   * 
+   *
    * @param searchTerm - The term to filter users or channels by.
    */
   updatePickerItems(searchTerm: string) {
     if (this.pickersign === '@') {
-      this.pickerItems = this.userservice.users.filter((user) => !user.guest && (searchTerm === '' || user.name.toLowerCase().includes(searchTerm.toLowerCase())));
+      this.pickerItems = this.userservice.users.filter(
+        (user) =>
+          !user.guest &&
+          (searchTerm === '' ||
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
       this.setCurrentPickerIndex(-1);
     } else if (this.pickersign === '#') {
-      this.pickerItems = this.channelservice.channels.filter((channel) => !channel.defaultChannel && channel.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      this.pickerItems = this.channelservice.channels.filter(
+        (channel) =>
+          !channel.defaultChannel &&
+          channel.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
       this.setCurrentPickerIndex(-1);
     }
   }
 
-
   /**
    * Toggles the visibility of the list picker and updates the picker items.
-   * 
+   *
    * @param pickerSign - A string that indicates the type of picker to be displayed.
    */
   openListPicker(pickerSign: string) {
@@ -409,10 +454,9 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.updatePickerItems('');
   }
 
-
   /**
    * Closes the list picker if it is currently shown.
-   * 
+   *
    * This method performs the following actions:
    * - Sets `showPicker` to `false` to hide the picker.
    * - Resets `pickersign` to an empty string.

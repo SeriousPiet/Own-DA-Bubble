@@ -8,7 +8,11 @@
   background-color: #ffffff;
   border-radius: 0 0 1.875rem 1.875rem;
   border: unset;
-  padding: 1.25rem 1.25rem 1.25rem var(--textarea-padding-left, 1.25rem);
+  padding: 0.5rem 1.25rem 0.75rem var(--textarea-padding-left, 1.25rem);
+
+  @media (width < 426px) {
+    padding: 0.5rem 1.25rem 0.75rem 1.25rem;
+  }
 }
 
 .errorspan {
@@ -143,6 +147,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    @media (width < 426px) {
+      padding-left: var(--textarea-padding-left, 2rem);
+    }
 
     .message-action-button {
       z-index: 1;

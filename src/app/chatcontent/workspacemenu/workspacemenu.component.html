@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="channels">
-    <details open>
+    <details #channelsDetails (toggle)="toggleDetails(channelsDetails)">
       <summary class="blue">
         <div>
           <div>
@@ -41,16 +41,25 @@
     </details>
   </div>
   <div class="messagesChannels">
-    <details open>
+    <details #dmDetails (toggle)="toggleDetails(dmDetails)">
       <summary class="blue">
         <div class="dm-symbol"></div>
         <span class="nunito-20-700">Direktnachrichten</span>
       </summary>
       <ul>
         @if(userservice.currentUser) {
-          <li class="dm-list-item" hoverElement [class.active]="activeUser === userservice.currentUser"
-          (click)="setChat(userservice.currentUser);">
-          <div class="avatar" appAvatar [user]="userservice.currentUser" context="wsm-list"></div>
+        <li
+          class="dm-list-item"
+          hoverElement
+          [class.active]="activeUser === userservice.currentUser"
+          (click)="setChat(userservice.currentUser)"
+        >
+          <div
+            class="avatar"
+            appAvatar
+            [user]="userservice.currentUser"
+            context="wsm-list"
+          ></div>
           <span>{{ userservice.currentUser.name }} <br />(Du) </span>
         </li>
         } @for(user of userservice.users; track user) { @if(!user.guest &&

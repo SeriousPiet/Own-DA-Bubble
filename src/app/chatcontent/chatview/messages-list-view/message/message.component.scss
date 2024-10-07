@@ -13,7 +13,6 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   margin-right: 1rem;
 }
 
-
 .emoji-div {
   @include nunito(0.875, 400, black);
 }
@@ -98,24 +97,21 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
     background-color: #f5f5f5;
     color: #686868;
 
-
     .attachment-action-btn {
       @include iconBox;
 
-      &:hover {
-        img {
-          transform: scale(1.1);
-            filter: invert(48%) sepia(100%) saturate(746%) hue-rotate(202deg) brightness(102%) contrast(101%);
-        }
-      }
-    }
+      &.trash-icon:hover img {
+        transform: scale(1.1);
 
-    &:hover {
-      .action-div {
-        .attachment-action-btn {
-          pointer-events: all;
-          opacity: 1;
-        }
+        filter: invert(26%) sepia(58%) saturate(5610%) hue-rotate(320deg)
+          brightness(94%) contrast(98%) !important;
+      }
+
+      &.download-icon:hover img {
+        transform: scale(1.1);
+
+        filter: invert(26%) sepia(37%) saturate(4864%) hue-rotate(231deg)
+          brightness(95%) contrast(100%);
       }
     }
   }
@@ -133,12 +129,12 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
       cursor: pointer;
     }
 
-    >span {
+    > span {
       display: none;
     }
   }
 
-  >section {
+  > section {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -148,7 +144,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
       @include flex(normal, center);
       gap: 1.25rem;
 
-      >.message-creator-name {
+      > .message-creator-name {
         font-size: $creator-fs;
         font-weight: 700;
         text-wrap: balance;
@@ -159,14 +155,14 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
         }
       }
 
-      >span {
+      > span {
         font-size: 0.875rem;
         font-weight: 400;
         color: #686868;
       }
     }
 
-    >.message-text {
+    > .message-text {
       margin: 0;
       padding: 15px;
       border-radius: 0 1.875rem 1.875rem 1.875rem;
@@ -181,20 +177,20 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
       gap: $reactions-gap;
       flex-wrap: wrap;
 
-      >button {
+      > button {
         @include flex(center, center);
         gap: 0.625rem;
         // padding: 0 0.75rem;
       }
 
-      >img {
+      > img {
         &:hover {
           content: url(../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
         }
       }
     }
 
-    >.message-info {
+    > .message-info {
       @include flex(flex-start, center);
       flex-wrap: wrap;
       column-gap: 1.25rem;
@@ -205,7 +201,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
         @include flex(normal, center);
         gap: 1.25rem;
 
-        >a {
+        > a {
           display: flex;
           gap: 0.375rem;
           font-size: 1.125rem;
@@ -219,13 +215,13 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
           }
         }
 
-        >span {
+        > span {
           font-size: 0.875rem;
           font-weight: 400;
         }
       }
 
-      >span {
+      > span {
         font-size: 0.875rem;
         font-weight: 400;
       }
@@ -236,15 +232,15 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
     transition: all 100ms ease-out;
     background-color: $background;
 
-    >section {
-      >p {
+    > section {
+      > p {
         background-color: #ffffff;
       }
     }
   }
 
   &:hover {
-    >section {
+    > section {
       .self-reaction {
         &:hover {
           border: 2px solid $selfReactionDelete;
@@ -267,13 +263,13 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   // insert clamp() for padding-right here
   padding: 0.625rem $p-left 0.625rem $p-right;
 
-  >section {
+  > section {
     align-items: flex-end;
 
     .message-header {
       flex-direction: row-reverse;
 
-      >span {
+      > span {
         text-align: end;
         text-wrap: nowrap;
       }
@@ -283,7 +279,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
       }
     }
 
-    >.message-text {
+    > .message-text {
       border-radius: 1.875rem 0 1.875rem 1.875rem;
       background-color: $primary;
       color: white;
@@ -305,7 +301,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
     left: 4.8125rem;
     right: unset;
 
-    >section {
+    > section {
       #edit-message-icon {
         display: flex;
       }
@@ -318,11 +314,11 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   }
 
   .interact-ctn-popover-slide-out-animation {
-    transform: translateX(3rem);
+    transform: translateX(2.5rem);
   }
 
   .interact-ctn-popover-slide-in-animation {
-    transform: translateX(-3rem);
+    transform: translateX(-2.5rem);
   }
 
   &:not(section .message-header .message-creator-name):hover {
@@ -342,11 +338,11 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   right: 5.8125rem;
   background-color: white;
 
-  >section {
+  > section {
     @include flex(normal, center);
     gap: 0.3125rem;
 
-    >div {
+    > div {
       @include flex(center, center);
       padding: 8px;
       border-radius: 20px;
@@ -359,13 +355,13 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 }
 
 .interact-ctn-popover-slide-out-animation {
-  transform: translateX(-3rem);
+  transform: translateX(-2.5rem);
   transition: $transition-popover;
   opacity: 0;
 }
 
 .interact-ctn-popover-slide-in-animation {
-  transform: translateX(3rem);
+  transform: translateX(2.5rem);
   transition: $transition-popover;
   display: block;
   opacity: 1;
@@ -391,18 +387,17 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   }
 }
 
-#add-reaction-icon:hover>img {
+#add-reaction-icon:hover > img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg");
 }
 
-#comment-message-btn:hover>img {
+#comment-message-btn:hover > img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/comment-hover.svg");
 }
 
-#edit-message-icon:hover>img {
+#edit-message-icon:hover > img {
   content: url("../../../../../assets/icons/wsm/ws-write-hover.svg");
 }
-
 
 .toggle-edit-message-popup {
   transition: $transition-popover;
@@ -420,7 +415,6 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
 
   .input-message-toolbar {
     @include flex(space-between, center);
@@ -440,7 +434,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 }
 
 #emoji-picker-icon:hover {
-  >img {
+  > img {
     content: url("../../../../../assets/icons/chat/write-message/emoji-picker-hover.svg");
   }
 }
@@ -489,7 +483,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
       display: none;
     }
 
-    >section {
+    > section {
       .message-header {
         display: none;
       }

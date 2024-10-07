@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  ViewChild,
+  ElementRef,
+  Renderer2,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
+
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
@@ -24,10 +33,7 @@ import { User } from '../../shared/models/user.class';
   templateUrl: './workspacemenu.component.html',
   styleUrl: './workspacemenu.component.scss',
 })
-
 export class WorkspacemenuComponent implements OnInit, OnDestroy {
-
-
   public userservice = inject(UsersService);
   public channelservice = inject(ChannelService);
   private navigationService = inject(NavigationService);
@@ -37,21 +43,20 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
   activeChannel: Channel | undefined = this.channelservice.defaultChannel;
   activeUser: User | undefined = undefined;
 
-
   @ViewChild(AddchannelComponent) addChannelComponent!: AddchannelComponent;
 
   ngOnInit(): void {
-    this.navigationChangeSubscription = this.navigationService.change$.subscribe((type) => {
-      if (type === 'chatViewObjectSetAsChannel') {
-        this.activeChannel = this.navigationService.chatViewObject as Channel;
-        this.activeUser = undefined;
-      } else if (type === 'chatViewObjectSetAsChat') {
-        this.activeUser = this.navigationService.getChatPartnerAsUser();
-        this.activeChannel = undefined;
-      }
-    });
+    this.navigationChangeSubscription =
+      this.navigationService.change$.subscribe((type) => {
+        if (type === 'chatViewObjectSetAsChannel') {
+          this.activeChannel = this.navigationService.chatViewObject as Channel;
+          this.activeUser = undefined;
+        } else if (type === 'chatViewObjectSetAsChat') {
+          this.activeUser = this.navigationService.getChatPartnerAsUser();
+          this.activeChannel = undefined;
+        }
+      });
   }
-
 
   ngOnDestroy(): void {
     if (this.navigationChangeSubscription) {
@@ -59,6 +64,19 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
     }
   }
 
+  private renderer = inject(Renderer2);
+
+  toggleDetails(details: HTMLDetailsElement) {
+    if (details.open) {
+      const content = details.querySelector('ul');
+      if (content) {
+        const height = content.offsetHeight + 112;
+        this.renderer.setStyle(details, 'height', `${height}px`);
+      }
+    } else {
+      this.renderer.setStyle(details, 'height', '2.5rem');
+    }
+  }
 
   toggleAddChannelPopover() {
     this.addChannelId = document.getElementById('addChannelId');
@@ -70,13 +88,11 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
     }
   }
 
-
   setChat(user: User) {
     this.navigationService.setChatViewObject(user);
     // this.activeChannel = null;
     // this.activeUser = user;
   }
-
 
   setChannel(channel: Channel) {
     this.navigationService.setChatViewObject(channel);

@@ -40,12 +40,19 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
   z-index: 3;
   @include flex(space-between, center);
   width: 100%;
-  height: 6rem;
+  min-height: 6rem;
+  max-height: 6rem;
   border-radius: 1.875rem 1.875rem 0 0;
   padding: 1.5rem $header-pl;
   gap: 0.625rem;
   background-color: white;
   box-shadow: $modal-box-shadow;
+
+  @media (width < 426px) {
+    border-radius: 0;
+    min-height: 5rem;
+    max-height: 5rem;
+  }
 
   .chatview-channel-name {
     cursor: pointer;
@@ -227,10 +234,9 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
     max-height: 100%;
     max-width: 100%;
   }
-  
 }
 
-@starting-style {
+%starting-style {
   #channel-member-overview-popover:popover-open,
   #channel-editor-popover:popover-open {
     opacity: 0;
@@ -306,15 +312,14 @@ app-message-greeting {
 }
 
 @media (width < 426px) {
-  #channel-editor-popover{
+  #channel-editor-popover {
     width: 100%;
     height: 100%;
   }
 
-.member-avatar-overview{
-  .member-avatars-ctn{
-    display: none;
+  .member-avatar-overview {
+    .member-avatars-ctn {
+      display: none;
+    }
   }
-}
-  
 }
