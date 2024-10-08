@@ -6,23 +6,23 @@
 }
 
 .message-date-comp {
-  width: calc(100% - 2.5rem);
-  @include flex(center, center);
   position: relative;
+  @include flex(center, center);
+  width: calc(100% - 2.5rem);
 
   > hr {
     position: absolute;
-    background-color: $vert-spacer;
-    height: 1px;
-    border: none;
     width: 100%;
+    height: 1px;
+    background-color: $vert-spacer;
+    border: none;
   }
 
   > span {
+    z-index: 2;
+    padding: 0.3125rem 0.9375rem;
+    background-color: white;
     border: $default-border;
     border-radius: 1.875rem;
-    padding: 0.3125rem 0.9375rem;
-    z-index: 2;
-    background-color: white;
   }
 }

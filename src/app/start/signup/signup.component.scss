@@ -27,8 +27,8 @@
 
 @starting-style {
   #infoPopover:popover-open {
-    opacity: 0;
     transform: translateX(100vw);
+    opacity: 0;
   }
 }
 
@@ -191,9 +191,9 @@ section {
       }
 
       button {
-        background-color: transparent;
         width: 100%;
         height: 100%;
+        background-color: transparent;
         outline: none;
         border: none;
       }

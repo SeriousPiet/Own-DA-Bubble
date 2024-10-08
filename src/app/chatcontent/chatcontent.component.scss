@@ -9,14 +9,13 @@ $transition-grid: all 0.25s ease-out;
   transform: translateX(100vw);
   margin: auto 1.25rem 1.25rem auto;
   padding: 2rem;
+  background-color: $accent;
   border: unset;
   border-radius: 2rem 2rem 0 2rem;
-  background-color: $accent;
   font-size: 2.25rem;
   font-weight: 700;
   color: white;
   box-shadow: 0px 6px 10px 0px #00000033;
-
   transition: $transition-popover;
 
   > div {
@@ -32,12 +31,11 @@ $transition-grid: all 0.25s ease-out;
 
 @starting-style {
   #emailNotVerifiedPopover:popover-open {
-    opacity: 0;
     transform: translateX(100vw);
+    opacity: 0;
   }
 }
 
-// Grundlegendes Grid-Layout für alle Varianten
 section.chatcontent {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -48,8 +46,8 @@ section.chatcontent {
   column-gap: 1.25rem;
   row-gap: 1rem;
   width: 100%;
-  max-width: 1920px;
   height: 100vh;
+  max-width: 1920px;
   padding: 1.25rem;
   background-color: $background;
   transition: $transition-grid;
@@ -63,7 +61,6 @@ section.chatcontent {
   }
 }
 
-// Layout-Modi
 section.chatcontent.three-columns,
 section.chatcontent.two-broad-columns {
   .workspace-menu {
@@ -220,7 +217,6 @@ section.chatcontent.one-broad-column {
   }
 }
 
-// Gemeinsame Stile für alle Bereiche
 .workspace-menu,
 .chatview,
 .threadview {
@@ -264,13 +260,11 @@ section.chatcontent.one-broad-column {
   z-index: 2;
   left: 0rem;
   bottom: 1.25rem;
-  display: flex;
+  @include flex(space-between, center);
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  gap: 0.625rem;
   width: fit-content;
   height: fit-content;
-  gap: 0.625rem;
   padding: 1.4375rem 0.75rem 1.4375rem 0.5rem;
   background-color: #fff;
   border-radius: 0 1.875rem 1.875rem 0;
@@ -292,27 +286,27 @@ section.chatcontent.one-broad-column {
   }
 
   .wsm-close {
+    width: 1.5rem;
+    height: 1.5rem;
     background-image: url("../../assets/icons/wsm/wsm-close.svg");
     background-repeat: no-repeat;
     background-position: center;
-    width: 1.5rem;
-    height: 1.5rem;
   }
 
   .wsm-open {
+    width: 1.5rem;
+    height: 1.5rem;
     background-image: url("../../assets/icons/wsm/wsm-close-hover.svg");
     background-repeat: no-repeat;
     background-position: center;
-    width: 1.5rem;
-    height: 1.5rem;
   }
 
   span {
+    transform: rotate(-180deg);
     width: 100%;
     text-align: left;
     writing-mode: vertical-rl;
     text-wrap: nowrap;
-    transform: rotate(-180deg);
 
     @media (width < 426px) {
       display: none;
@@ -322,9 +316,11 @@ section.chatcontent.one-broad-column {
 
 .hide_show_wsm:hover {
   cursor: pointer;
+
   .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-open.svg");
   }
+
   .wsm-open {
     background-image: url("../../assets/icons/wsm/wsm-open-hover.svg");
   }
