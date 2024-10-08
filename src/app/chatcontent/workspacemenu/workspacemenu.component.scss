@@ -42,12 +42,11 @@ section {
     position: sticky;
     z-index: 1;
     top: 0;
-    @include display-standard;
-    justify-content: space-between;
+    @include flex(space-between, center);
     width: 100%;
-    padding: 0 $workspace-pr 0 1.875rem;
     min-height: 6rem;
     max-height: 6rem;
+    padding: 0 $workspace-pr 0 1.875rem;
     background: #fff;
     box-shadow: $modal-box-shadow;
     overflow: visible;
@@ -66,7 +65,7 @@ section {
     }
 
     div {
-      @include display-standard;
+      @include flex(flex-start, center);
       gap: 0.9375rem;
 
       img {
@@ -82,7 +81,8 @@ section {
     list-style-type: none;
 
     li {
-      @include display-standard;
+      @include flex(flex-start, center);
+
       gap: $chnl-gap;
 
       padding: 0.25rem 0.325rem 0.25rem 0.25rem;
@@ -128,10 +128,7 @@ section {
   }
 
   .channels {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    @include flex(space-between, center);
     width: 100%;
     padding: 0 $list-pr 0 1.875rem;
 
@@ -150,11 +147,11 @@ section {
         width: 100%;
 
         > div {
-          width: 100%;
           justify-content: space-between;
+          width: 100%;
 
           > div {
-            @include display-standard;
+            @include flex(flex-start, center);
             gap: $wsm-gap;
           }
         }
@@ -168,7 +165,7 @@ section {
     .add-channel-btn {
       position: relative;
       all: unset;
-      @include display-standard;
+      @include flex(flex-start, center);
       min-width: 2.5rem;
       @include background-properties;
       background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
@@ -184,7 +181,7 @@ section {
 
   summary {
     position: relative;
-    @include display-standard;
+    @include flex(flex-start, center);
     gap: $wsm-gap;
     width: 100%;
     list-style: none;
@@ -203,7 +200,8 @@ section {
     }
 
     > div {
-      @include display-standard;
+      @include flex(flex-start, center);
+
       gap: 0.9375rem;
     }
   }
@@ -245,7 +243,7 @@ section {
 
   button {
     all: unset;
-    @include display-standard;
+    @include flex(flex-start, center);
     text-align: center;
     line-height: normal;
     padding: 0.25rem 1.25rem 0.25rem $add-chnl-btn-pl;
@@ -278,11 +276,9 @@ section {
   .dm-list-item {
     @include flex(flex-start, center);
     @include buttonNoBorder;
-    @include fontSizer(18, 400, black);
+    @include nunito(1.125, 400, black);
     gap: $dm-item-gap !important;
-
     margin-bottom: 0.25rem;
-
     color: black !important;
 
     &:hover span {
@@ -296,11 +292,11 @@ section {
   }
 
   .dm-list-item:hover {
-    @include fontSizer(18, 400, black);
+    @include nunito(1.125, 400, black);
   }
 
   .dm-list-item:active {
-    @include fontSizer(18, 700, #535af1);
+    @include nunito(1.125, 700, #535af1);
   }
 
   .avatar {

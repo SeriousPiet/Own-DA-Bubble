@@ -5,10 +5,10 @@
 :host {
   display: flex;
   justify-content: center;
+  padding: 0.5rem 1.25rem 0.75rem var(--textarea-padding-left, 1.25rem);
   background-color: #ffffff;
   border-radius: 0 0 1.875rem 1.875rem;
   border: unset;
-  padding: 0.5rem 1.25rem 0.75rem var(--textarea-padding-left, 1.25rem);
 
   @media (width < 426px) {
     padding: 0.5rem 1.25rem 0.75rem 1.25rem;
@@ -22,9 +22,7 @@
 }
 
 .addattachment {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include flex(center, center);
 
   > input {
     display: none;
@@ -32,12 +30,10 @@
 }
 
 .attachments {
+  @include flex(center, center);
   align-self: stretch;
   height: fit-content;
   min-height: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
   overflow-y: auto;
@@ -47,14 +43,12 @@
 
   .attachment {
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex(center, center);
     gap: 0.5rem;
+    height: fit-content;
     padding: 0.5rem;
     border-radius: 0.625rem;
     background-color: #eceefe;
-    height: fit-content;
     transition: $transition-standard;
 
     &:hover {
@@ -68,10 +62,10 @@
     }
 
     > span {
+      max-width: 30ch;
       font-size: 0.875rem;
       font-weight: 600;
       color: black;
-      max-width: 30ch;
     }
 
     &:hover {
@@ -81,15 +75,15 @@
     }
 
     .remove-attachment {
-      display: none;
       position: absolute;
-      cursor: pointer;
       top: -0.5rem;
       right: -0.5rem;
+      display: none;
       width: 1rem;
       height: 1rem;
       border: 1px solid black;
       border-radius: 50%;
+      cursor: pointer;
       transition: $transition-standard;
 
       &:hover {
@@ -109,33 +103,28 @@
 }
 
 .drag-over {
-  // from the Welcome screen
-  // background-image: linear-gradient(270deg, #444df23d 5%, #fff 95%);
-  // background-image: radial-gradient(circle, #fff 0%, #444df23d 100%);
   opacity: 1 !important;
 }
 
 .drag-background {
-  z-index: 0;
-  opacity: 0;
   position: absolute;
+  z-index: 0;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  transition: $transition-standard;
   background-image: radial-gradient(circle, #fff 0%, #444df23d 100%);
   border-bottom-left-radius: 0.625rem;
   border-bottom-right-radius: 0.625rem;
+  opacity: 0;
+  transition: $transition-standard;
 }
 
 .input-message {
   position: relative;
   z-index: 1;
-  display: flex;
+  @include flex(flex-start, stretch);
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
   gap: 0.5rem;
   width: 100%;
   border-top: $default-border;
@@ -143,10 +132,8 @@
 
   .input-message-toolbar {
     z-index: 1;
+    @include flex(space-between, center);
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 
     @media (width < 426px) {
       padding-left: var(--textarea-padding-left, 2rem);
@@ -181,18 +168,16 @@
 
 .bottom-bar {
   z-index: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  @include flex(flex-end, center);
   gap: 1rem;
 }
 
 .button-disabled {
   @include flex(center, center);
+  flex-shrink: 0;
   width: 2.5rem;
   height: 2.5rem;
   aspect-ratio: 1 / 1;
-  flex-shrink: 0;
   border-radius: 50%;
 }
 
@@ -238,8 +223,4 @@
       content: url("../../../assets/icons/chat/write-message/send-hover.svg");
     }
   }
-}
-
-.d-none {
-  display: none !important;
 }
