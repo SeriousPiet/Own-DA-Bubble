@@ -10,16 +10,16 @@
   overflow: scroll;
 }
 
-section {
-  @include flex(center, normal);
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 :host(.default-channel) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+section {
+  @include flex(center, normal);
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 @keyframes colorChange {

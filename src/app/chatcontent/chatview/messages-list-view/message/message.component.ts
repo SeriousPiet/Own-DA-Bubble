@@ -30,6 +30,8 @@ import { isEmptyMessage } from '../../../../utils/quil/utility';
 })
 export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChecked {
 
+  private viewObserver!: IntersectionObserver;
+
   @ViewChild('messagemaindiv', { static: false }) messageMainDiv!: ElementRef;
   @ViewChild('messagediv', { static: false }) messageDiv!: ElementRef;
   @ViewChild('messageeditor', { static: false }) messageEditor!: MessageEditorComponent;
@@ -56,10 +58,12 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   }
 
   @Input() isThreadView = false;
+  @Input() isViewed = true;
   @Input() messageEditorOpen = false;
   @Input() previousMessageFromSameUser = false;
 
   @Output() messageEditorOpenChange = new EventEmitter<boolean>();
+  @Output() messageViewed = new EventEmitter<Message>();
 
   public messagefromUser = false;
   public messageCreator: User | undefined;
@@ -88,6 +92,7 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
 
   ngOnDestroy(): void {
     if (this.resizeobserver) this.resizeobserver.disconnect();
+    if (this.viewObserver) this.viewObserver.disconnect();
     if (this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
   }
 
@@ -109,6 +114,12 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
 
   ngAfterViewInit(): void {
     this.initMessageChangeSubscription();
+    this.initResizeObserver();
+    this.initViewOberserver();
+  }
+
+
+  initResizeObserver() {
     this.resizeobserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
         if (this.messageEditorOpen) this.handleEditorResize(entry.contentRect.width);
@@ -120,8 +131,28 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   }
 
 
+  initViewOberserver() {
+    if (this.isViewed) return;
+    const options = { root: null, rootMargin: '0px', threshold: 0.9, };
+    this.viewObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.messageViewed.emit(this._messageData);
+          this.removeViewObserver();
+        }
+      });
+    }, options);
+    this.viewObserver.observe(this.el.nativeElement);
+  }
+
+
+  removeViewObserver() {
+    if (this.viewObserver) this.viewObserver.disconnect();
+  }
+
+
   initMessageChangeSubscription() {
-    if(this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
+    if (this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
     this.messageChangeSubscription = this._messageData.changeMessage$.subscribe(() => {
       this.isAttachmentsHovered = new Array(this._messageData.attachments.length).fill(false);
       this.fillMessageContentHTML();

@@ -1,12 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnInit, } from '@angular/core';
 import { MessageComponent } from './message/message.component';
 import { MessageDateComponent } from './message-date/message-date.component';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
@@ -56,10 +48,10 @@ export class MessagesListViewComponent implements OnInit {
 
   constructor(
     private _cdr: ChangeDetectorRef,
-    private searchService: SearchService
+    private searchService: SearchService,
   ) { }
 
-  
+
   ngOnInit(): void {
     this.messageScrollSubscription =
       this.searchService.messageScrollRequested.subscribe(
@@ -105,6 +97,11 @@ export class MessagesListViewComponent implements OnInit {
   ifMessageFromSameUserAsPrevious(index: number): boolean {
     if (index === 0) return false;
     return this.messages[index].creatorID === this.messages[index - 1].creatorID;
+  }
+
+
+  messageViewed(message: Message): void {
+    console.log('messageViewed called with:', message);
   }
 
 
