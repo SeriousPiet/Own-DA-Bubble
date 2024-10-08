@@ -20,12 +20,10 @@ $dm-item-gap: clamp(0.625rem, 1.389vw + -0.417rem, 1.25rem);
   align-items: $align-items;
 }
 
-@mixin background-properties(
-  $bg-rep: no-repeat,
+@mixin background-properties($bg-rep: no-repeat,
   $bg-pos: center,
   $bg-width: 2.5rem,
-  $bg-height: 2.5rem
-) {
+  $bg-height: 2.5rem) {
   background-repeat: $bg-rep;
   background-position: $bg-pos;
   min-width: $bg-width;
@@ -94,6 +92,15 @@ section {
         @include background-properties;
       }
 
+      span {
+        flex-grow: 1;
+        text-align: left;
+      }
+
+      .new-message-count {
+        @include nunito(0.875, 400, $error);
+      }
+
       &:hover,
       &.active {
         background-color: #eceefe;
@@ -106,6 +113,10 @@ section {
         span {
           font-weight: 700;
           color: $accent;
+        }
+
+        .new-message-count {
+          font-weight: 700;
         }
       }
     }
@@ -140,17 +151,17 @@ section {
       padding: 0 calc($list-pr-716 + 1.25rem) 0 2.875rem;
     }
 
-    > details {
+    >details {
       width: 100%;
 
-      > summary {
+      >summary {
         width: 100%;
 
-        > div {
+        >div {
           justify-content: space-between;
           width: 100%;
 
-          > div {
+          >div {
             @include flex(flex-start, center);
             gap: $wsm-gap;
           }
@@ -199,7 +210,7 @@ section {
       @include background-properties;
     }
 
-    > div {
+    >div {
       @include flex(flex-start, center);
 
       gap: 0.9375rem;
@@ -212,11 +223,11 @@ section {
   }
 
   summary:hover {
-    > div > div > .ws-channels {
+    >div>div>.ws-channels {
       background-image: url("../../../assets/icons/wsm/ws-channels-hover.svg");
     }
 
-    > .dm-symbol {
+    >.dm-symbol {
       background-image: url("../../../assets/icons/wsm/dm-symbol-hover.svg");
     }
   }
@@ -254,7 +265,7 @@ section {
       color: $accent;
     }
 
-    > .add-channel-2 {
+    >.add-channel-2 {
       background-image: url("../../../assets/icons/wsm/add-channel-2.svg");
       @include background-properties;
     }
@@ -267,7 +278,7 @@ section {
   button:hover {
     cursor: pointer;
 
-    > .add-channel-2 {
+    >.add-channel-2 {
       background-image: url("../../../assets/icons/wsm/add-channel-2-hover.svg");
       @include background-properties;
     }

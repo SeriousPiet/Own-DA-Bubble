@@ -1,5 +1,5 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { User } from '../../shared/models/user.class';
+import { CollectionType, LastReadMessage, User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
 import { updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp } from '@angular/fire/firestore';
 import { Auth, sendEmailVerification, user } from '@angular/fire/auth';
@@ -17,6 +17,7 @@ export class UsersService implements OnDestroy {
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
   private emojiService = inject(EmojipickerService);
+
   private unsubUsers: any = null;
   private user$: any = null;
   private currentAuthUser: any = undefined;
@@ -42,6 +43,13 @@ export class UsersService implements OnDestroy {
     this.initAuthWatchDog();
     const guestUserEmail = localStorage.getItem('guestuseremail'); // this is only a guest user
     if (guestUserEmail) this.setCurrentUserByEMail(guestUserEmail);
+  }
+
+
+  getCollectionType(collection: Channel | Chat | Message): CollectionType {
+    if (collection instanceof Channel) return 'channel';
+    if (collection instanceof Chat) return 'chat';
+    return 'message';
   }
 
 
@@ -287,6 +295,7 @@ export class UsersService implements OnDestroy {
     let userData: { online: boolean; lastLoginAt: any; emailVerified?: boolean } = { online: true, lastLoginAt: serverTimestamp() };
     if (this.currentAuthUser) userData.emailVerified = this.currentAuthUser.emailVerified;
     await this.updateCurrentUserDataOnFirestore(userData);
+    
     this.changeCurrentUserSubject.next('login');
   }
 
@@ -294,28 +303,35 @@ export class UsersService implements OnDestroy {
   setLastReadMessage(message: Message, collection: Channel | Chat | Message) {
     if (this.currentUser && this.currentUser.guest === false) {
       const lrm = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionID === collection.id);
-      const messageCreatAt = message.createdAt.getTime();
+      const messageCreatedAt = message.createdAt.getTime();
       let updateNeeded = false;
       if (lrm) {
-        if (lrm.messageCreateAt < messageCreatAt) {
+        if (lrm.messageCreateAt < messageCreatedAt) {
           lrm.messageID = message.id;
-          lrm.messageCreateAt = messageCreatAt;
+          lrm.messageCreateAt = messageCreatedAt;
           updateNeeded = true;
         }
       }
       else {
-        console.log('userservice: time ', this.currentUser.signupAt, ' / ', message.createdAt);
         if (this.currentUser.signupAt < message.createdAt) {
-          const type = collection instanceof Channel ? 'channel' : collection instanceof Chat ? 'chat' : 'message';
-          this.currentUser.lastReadMessages.push({ collectionType: type, collectionID: collection.id, messageID: message.id, messageCreateAt: messageCreatAt });
+          const type = this.getCollectionType(collection);
+          this.currentUser.lastReadMessages.push({ collectionType: type, collectionID: collection.id, messageID: message.id, messageCreateAt: messageCreatedAt });
           updateNeeded = true;
         }
       }
       if (updateNeeded) {
         this.updateCurrentUserDataOnFirestore({ lastReadMessages: JSON.stringify(this.currentUser.lastReadMessages) });
-        console.log('userservice: setLastReadMessage: updated last read message: ', this.currentUser.lastReadMessages);
       }
     }
+  }
+
+
+  getLastReadMessageObject(collection: Channel | Chat | Message): LastReadMessage | undefined {
+    if (this.currentUser && this.currentUser.guest === false) {
+      const result = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionType === this.getCollectionType(collection) && lrm.collectionID === collection.id);
+      return result ? result : { collectionType: this.getCollectionType(collection), collectionID: collection.id, messageID: '', messageCreateAt: this.currentUser.signupAt.getTime() };
+    }
+    return undefined;
   }
 
 

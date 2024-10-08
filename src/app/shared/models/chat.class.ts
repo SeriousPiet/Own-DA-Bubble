@@ -2,6 +2,7 @@ export class Chat {
   readonly id: string;
   readonly memberIDs: string[] = [];
   public messagesCount: number = 0;
+  public unreadMessagesCount:  number = 0;
 
 
   get chatMessagesPath(): string {

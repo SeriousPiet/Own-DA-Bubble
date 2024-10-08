@@ -88,6 +88,12 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  getChatMessagesCount(user: User): string {
+    const count = this.channelservice.getChatWithUserByID(user.id)?.unreadMessagesCount;
+    return count ? count.toString() : '';
+  }
+
   setChat(user: User) {
     this.navigationService.setChatViewObject(user);
     // this.activeChannel = null;

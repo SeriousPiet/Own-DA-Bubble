@@ -10,6 +10,9 @@ import { BehaviorSubject } from 'rxjs';
  */
 export type authProvider = 'google' | 'email' | 'guest';
 
+export type CollectionType = 'channel' | 'chat' | 'message';
+
+
 /**
  * Represents the last read message by a user.
  * 
@@ -20,7 +23,7 @@ export type authProvider = 'google' | 'email' | 'guest';
  * @property {Date} messageCreateAt - The creation date of the message.
  */
 export type LastReadMessage = {
-  collectionType: 'channel' | 'chat' | 'message';
+  collectionType: CollectionType;
   collectionID: string;
   messageID: string;
   messageCreateAt: number;
@@ -125,6 +128,7 @@ export class User {
   private parseLRM(lrmString: string): LastReadMessage[] {
     if (lrmString === undefined) return [];
     const lrmArray = JSON.parse(lrmString);
+    console.log('parseLRM: ', lrmArray);
     return lrmArray;
   }
 

@@ -10,9 +10,13 @@ import {
   collection,
   doc,
   Firestore,
+  getDocs,
   onSnapshot,
+  query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
+  where,
 } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
 import { Channel } from '../../shared/models/channel.class';
@@ -54,6 +58,7 @@ export class ChannelService implements OnDestroy {
    * @type {UsersService}
    */
   private userservice: UsersService = inject(UsersService);
+  private currentUserSubscription: any;
 
   /**
    * @description Unsubscribe function for the channels subscription.
@@ -81,6 +86,13 @@ export class ChannelService implements OnDestroy {
         });
       }
     );
+    this.currentUserSubscription = this.userservice.changeCurrentUser$.subscribe((type) => {
+      if (type === 'login') {
+        setTimeout(() => {
+          this.calculateUnreadMessagesCountForAllChannelsAndChats();
+        }, 1000);
+      }
+    });
   }
 
   private initChannelCollection(): void {
@@ -89,13 +101,16 @@ export class ChannelService implements OnDestroy {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            this.channels.push(new Channel(change.doc.data(), change.doc.id));
+            const channel = new Channel(change.doc.data(), change.doc.id);
+            this.channels.push(channel);
           }
           if (change.type === 'modified') {
             const channel = this.channels.find(
               (channel) => channel.id === change.doc.id
             );
-            if (channel) channel.update(change.doc.data());
+            if (channel) {
+              channel.update(change.doc.data());
+            }
           }
           if (change.type === 'removed') {
             this.channels = this.channels.filter(
@@ -106,6 +121,35 @@ export class ChannelService implements OnDestroy {
       }
     );
   }
+
+
+  public calculateUnreadMessagesCountForAllChannelsAndChats() {
+    this.channels.forEach((channel) => {
+      if (!channel.defaultChannel) this.calculateUnreadMessagesCount(channel);
+    });
+    this.chats.forEach((chat) => {
+      if (chat.memberIDs.includes(this.userservice.currentUserID)) this.calculateUnreadMessagesCount(chat);
+    });
+  }
+
+
+  public async calculateUnreadMessagesCount(channel: Channel | Chat) {
+    const lrm = this.userservice.getLastReadMessageObject(channel);
+    const lastViewTime: Date = new Date();
+    lastViewTime.setTime(lrm ? lrm.messageCreateAt : this.userservice.currentUser?.signupAt.getTime() || 0);
+    const firestoreTimestamp = Timestamp.fromDate(lastViewTime);
+    const collectionRef = collection(this.firestore, channel instanceof Channel ? channel.channelMessagesPath : channel.chatMessagesPath);
+    const querySnapshot = await getDocs(
+      query(collectionRef, where('createdAt', '>', lastViewTime))
+    );
+    channel.unreadMessagesCount = querySnapshot.size;
+    if (channel instanceof Channel) console.log('Channel: ' + channel.name + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
+    else {
+      const chatPartner = this.getChatPartner(channel);
+      console.log('Chat: ' + channel.id + ' / ' + (chatPartner ? chatPartner.name : 'Unbekannt') + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
+    }
+  }
+
 
   private initChatCollection(): void {
     this.unsubChats = onSnapshot(
@@ -259,7 +303,7 @@ export class ChannelService implements OnDestroy {
     }
   }
 
-   
+
   /**
    * Checks if a channel name is a duplicate of an existing channel name, optionally excluding the original channel name.
    * @param channelName - The name of the channel to check for duplicates.
@@ -269,10 +313,10 @@ export class ChannelService implements OnDestroy {
    */
   checkForDuplicateChannelName(channelName: string, originalChannelName: string, originalChannelNameRequired = true): boolean {
     const isDuplicate = this.channels.some((channel) => channel.name.toLowerCase() === channelName.toLowerCase());
-    if(originalChannelNameRequired){
-    const isChanged = channelName.toLowerCase() !== originalChannelName.toLowerCase();
-    return isDuplicate && isChanged;  
-    }else return isDuplicate;
+    if (originalChannelNameRequired) {
+      const isChanged = channelName.toLowerCase() !== originalChannelName.toLowerCase();
+      return isDuplicate && isChanged;
+    } else return isDuplicate;
   }
 
 

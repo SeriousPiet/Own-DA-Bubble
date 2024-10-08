@@ -27,6 +27,8 @@ export class Channel {
   readonly creatorID: string; // User id
   readonly defaultChannel: boolean;
 
+  public unreadMessagesCount = 0;
+
   get channelMessagesPath(): string {
     if (this.id == '') return '';
     return `channels/${this.id}/messages/`;

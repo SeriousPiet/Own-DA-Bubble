@@ -12,6 +12,7 @@ import { Chat } from '../../../shared/models/chat.class';
 import { NavigationService } from '../../../utils/services/navigation.service';
 import { UsersService } from '../../../utils/services/user.service';
 import { LastReadMessage, User } from '../../../shared/models/user.class';
+import { ChannelService } from '../../../utils/services/channel.service';
 
 @Component({
   selector: 'app-messages-list-view',
@@ -29,6 +30,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   private firestore = inject(Firestore);
   public navigationService = inject(NavigationService);
   public userService = inject(UsersService);
+  public channelService = inject(ChannelService);
   private currentUserSubscription: any;
   private unsubMessages: any = null;
   public messages: Message[] = [];
@@ -75,19 +77,13 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
 
 
   messageViewed(message: Message): void {
-    console.log('messageViewed called with:', message);
     this.userService.setLastReadMessage(message, this.currentCollection);
+    if (!(this.currentCollection instanceof Message)) this.channelService.calculateUnreadMessagesCount(this.currentCollection);
   }
 
 
   updateLastReadMessage(user: User | null | undefined): void {
-    if (user) {
-      this.collectionLRM = user.lastReadMessages.find(
-        (lrm) => lrm.collectionID === this.currentCollection?.id && lrm.collectionType === this.currentCollectionType
-      );
-    } else {
-      this.collectionLRM = undefined;
-    }
+    this.collectionLRM = this.userService.getLastReadMessageObject(this.currentCollection);
   }
 
 
@@ -99,11 +95,8 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
 
 
   getIfMessageIsUnread(message: Message): boolean {
-    console.log('getIfMessageIsUnread called with:', message.createdAt.getTime(), ' / ', this.collectionLRM);
-    if (this.collectionLRM) {
-      return message.createdAt.getTime() > this.collectionLRM.messageCreateAt;
-    }
-    return false;
+    if (this.collectionLRM) return message.createdAt.getTime() > this.collectionLRM.messageCreateAt;
+    return message.createdAt > (this.userService.currentUser?.signupAt ?? 0);
   }
 
   private scrollToMessageInView(message: Message) {
