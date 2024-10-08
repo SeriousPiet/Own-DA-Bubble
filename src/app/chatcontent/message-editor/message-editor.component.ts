@@ -10,9 +10,10 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
-import { getTextBeforePreviousSign, insertItemAsSpan, registerLockedSpanBlot } from '../../utils/quil/utility';
+import { getTextBeforePreviousSign, insertItemAsSpan, isEmptyMessage, registerLockedSpanBlot } from '../../utils/quil/utility';
 
 export type EditedTextLength = {
+  messageEmpty: boolean;
   maxLength: number;
   textLength: number;
 };
@@ -46,7 +47,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   // Quill Editor variables and configuration
   readonly maxMessageLength = 1000;
   public quill!: Quill;
-  public toolbarID =    'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
+  public toolbarID = 'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   public showToolBarElements: number[] = [];
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
@@ -212,10 +213,8 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
         const hasImage = delta.ops.some((op: any) => op.insert && op.insert.image);
         const messageLength = this.quill.getLength();
         if (source === 'user' && hasImage) this.quill.history.undo();
-        else if (messageLength > this.maxMessageLength) {
-          this.quill.deleteText(this.maxMessageLength, messageLength - this.maxMessageLength);
-        }
-        this.textLengthChanged.emit({ maxLength: this.maxMessageLength, textLength: messageLength });
+        else if (messageLength > this.maxMessageLength) this.quill.deleteText(this.maxMessageLength, messageLength - this.maxMessageLength);
+        this.textLengthChanged.emit({ messageEmpty: isEmptyMessage(this.quill.root.innerHTML), maxLength: this.maxMessageLength, textLength: this.quill.getLength() });
         this._cdr.detectChanges();
       }
     });

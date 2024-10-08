@@ -50,7 +50,7 @@
       @if(showTextLength) {
       <span class="errorspan">{{ textLengthInfo }}</span>
       }
-      <button [disabled]="ifMessageUploading" (click)="addNewMessage()" id="send-message-icon"
+      <button [disabled]="!allowSendMessage" (click)="addNewMessage()" id="send-message-icon"
         (mouseenter)="isActive = true" (mouseleave)="isActive = false">
         <img src="./assets/icons/chat/write-message/send.svg" alt="" />
       </button>

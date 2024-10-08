@@ -23,8 +23,7 @@ export class MessageTextareaComponent {
   @Input() set messagesCollectionObject(value: Channel | Chat | Message) {
     this._messagesCollectionObject = value;
     if (this.messageeditor && this.messageeditor.quill) {
-      this.attachments = [];
-      this.messageeditor.clearEditor();
+      this.resetEditor();
       this.messageeditor.quill.focus();
     }
   }
@@ -35,6 +34,7 @@ export class MessageTextareaComponent {
   inputID = Math.random().toString(36).substring(2, 9);
   isActive = false;
   showTextLength = false;
+  allowSendMessage = false;
   textLengthInfo = '0/0';
 
   attachments: MessageAttachment[] = [];
@@ -80,6 +80,7 @@ export class MessageTextareaComponent {
   handleEditorTextLengthChanged(event: EditedTextLength) {
     this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
     this.showTextLength = event.textLength > event.maxLength * 0.8;
+    this.allowSendMessage = !event.messageEmpty && event.textLength <= event.maxLength;
     this._cdr.detectChanges();
   }
 
@@ -140,7 +141,7 @@ export class MessageTextareaComponent {
    * @returns {Promise<void>} A promise that resolves when the message has been added or an error has been handled.
    */
   async addNewMessage() {
-    if (this.ifMessageUploading) return;
+    if (this.ifMessageUploading || !this.allowSendMessage) return;
     const newHTMLMessage = this.messageeditor.getMessageAsHTML();
     this.errorInfo = '';
     if (isEmptyMessage(newHTMLMessage) && this.attachments.length === 0) {
@@ -149,12 +150,8 @@ export class MessageTextareaComponent {
       this.messageeditor.quill.disable();
       this.ifMessageUploading = true;
       const error = await this.messageService.addNewMessageToCollection(this._messagesCollectionObject, newHTMLMessage, this.attachments);
-      if (error) {
-        this.showErrorWithDelay(error);
-      } else {
-        this.messageeditor.clearEditor();
-        this.attachments = [];
-      }
+      if (error) this.showErrorWithDelay(error);
+      else this.resetEditor();
       this.ifMessageUploading = false;
       this.messageeditor.quill.enable();
     }
@@ -168,7 +165,7 @@ export class MessageTextareaComponent {
    * @param error - The error message to be handled.
    */
   private showErrorWithDelay(error: string, delay: number = 8000) {
-    if(this.errorInfoTimeout) clearTimeout(this.errorInfoTimeout);
+    if (this.errorInfoTimeout) clearTimeout(this.errorInfoTimeout);
     this.errorInfo = error;
     this.errorInfoTimeout = setTimeout(() => {
       this.errorInfo = '';
@@ -288,5 +285,12 @@ export class MessageTextareaComponent {
     };
     reader.readAsDataURL(file);
     return attachment;
+  }
+
+
+  private resetEditor() {
+    this.messageeditor.clearEditor();
+    this.attachments = [];
+    this.allowSendMessage = false;
   }
 }
