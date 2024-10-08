@@ -58,7 +58,7 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   }
 
   @Input() isThreadView = false;
-  @Input() isViewed = true;
+  @Input() isUnread = true;
   @Input() messageEditorOpen = false;
   @Input() previousMessageFromSameUser = false;
 
@@ -132,17 +132,18 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
 
 
   initViewOberserver() {
-    if (this.isViewed) return;
-    const options = { root: null, rootMargin: '0px', threshold: 0.9, };
-    this.viewObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          this.messageViewed.emit(this._messageData);
-          this.removeViewObserver();
-        }
-      });
-    }, options);
-    this.viewObserver.observe(this.el.nativeElement);
+    if (this.isUnread) {
+      const options = { root: null, rootMargin: '0px', threshold: 0.9, };
+      this.viewObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.messageViewed.emit(this._messageData);
+            this.removeViewObserver();
+          }
+        });
+      }, options);
+      this.viewObserver.observe(this.el.nativeElement);
+    }
   }
 
 

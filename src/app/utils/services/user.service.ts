@@ -4,6 +4,9 @@ import { BehaviorSubject } from 'rxjs';
 import { updateDoc, collection, Firestore, onSnapshot, doc, serverTimestamp } from '@angular/fire/firestore';
 import { Auth, sendEmailVerification, user } from '@angular/fire/auth';
 import { EmojipickerService } from './emojipicker.service';
+import { Message } from '../../shared/models/message.class';
+import { Chat } from '../../shared/models/chat.class';
+import { Channel } from '../../shared/models/channel.class';
 
 export type CurrentUserChange = 'init' | 'login' | 'logout' | 'update';
 
@@ -285,6 +288,34 @@ export class UsersService implements OnDestroy {
     if (this.currentAuthUser) userData.emailVerified = this.currentAuthUser.emailVerified;
     await this.updateCurrentUserDataOnFirestore(userData);
     this.changeCurrentUserSubject.next('login');
+  }
+
+
+  setLastReadMessage(message: Message, collection: Channel | Chat | Message) {
+    if (this.currentUser && this.currentUser.guest === false) {
+      const lrm = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionID === collection.id);
+      const messageCreatAt = message.createdAt.getTime();
+      let updateNeeded = false;
+      if (lrm) {
+        if (lrm.messageCreateAt < messageCreatAt) {
+          lrm.messageID = message.id;
+          lrm.messageCreateAt = messageCreatAt;
+          updateNeeded = true;
+        }
+      }
+      else {
+        console.log('userservice: time ', this.currentUser.signupAt, ' / ', message.createdAt);
+        if (this.currentUser.signupAt < message.createdAt) {
+          const type = collection instanceof Channel ? 'channel' : collection instanceof Chat ? 'chat' : 'message';
+          this.currentUser.lastReadMessages.push({ collectionType: type, collectionID: collection.id, messageID: message.id, messageCreateAt: messageCreatAt });
+          updateNeeded = true;
+        }
+      }
+      if (updateNeeded) {
+        this.updateCurrentUserDataOnFirestore({ lastReadMessages: JSON.stringify(this.currentUser.lastReadMessages) });
+        console.log('userservice: setLastReadMessage: updated last read message: ', this.currentUser.lastReadMessages);
+      }
+    }
   }
 
 

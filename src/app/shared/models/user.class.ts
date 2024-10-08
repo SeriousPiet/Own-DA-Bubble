@@ -10,15 +10,36 @@ import { BehaviorSubject } from 'rxjs';
  */
 export type authProvider = 'google' | 'email' | 'guest';
 
+/**
+ * Represents the last read message by a user.
+ * 
+ * @typedef {Object} LastReadMessage
+ * @property {'channel' | 'chat' | 'message'} type - The type of the message.
+ * @property {string} objectID - The ID of the object (e.g., channel or chat) the message belongs to.
+ * @property {string} messageID - The unique identifier of the message.
+ * @property {Date} messageCreateAt - The creation date of the message.
+ */
+export type LastReadMessage = {
+  collectionType: 'channel' | 'chat' | 'message';
+  collectionID: string;
+  messageID: string;
+  messageCreateAt: number;
+};
+
 export class User {
 
   private changeUser = new BehaviorSubject<User | null>(null);
   public changeUser$ = this.changeUser.asObservable();
 
   readonly id: string;
-  readonly createdAt: Date;
+  readonly signupAt: Date;
   readonly provider: authProvider;
   readonly guest: boolean;
+
+  private _lastReadMessages: LastReadMessage[];
+  get lastReadMessages(): LastReadMessage[] {
+    return this._lastReadMessages;
+  }
 
   private _pictureURL: string | undefined;
   get pictureURL(): string | undefined {
@@ -62,9 +83,10 @@ export class User {
     this._email = userObj.email ? userObj.email : '';
     this._avatar = userObj.avatar ? userObj.avatar : 1;
     this._online = userObj.online ? userObj.online : false;
-    this.createdAt = userObj.createdAt ? (userObj.createdAt as any).toDate() : new Date();
+    this.signupAt = userObj.signupAt ? (userObj.signupAt as any).toDate() : new Date();
     this.setSavePictureURL(userObj.pictureURL);
     this._chatIDs = userObj.chatIDs ? userObj.chatIDs : [];
+    this._lastReadMessages = this.parseLRM(userObj.lastReadMessages);
     this._emailVerified = userObj.emailVerified ? userObj.emailVerified : false;
     if (userObj.guest) {
       this.guest = true;
@@ -91,7 +113,8 @@ export class User {
         this.changeUser.next(this);
       };
       img.onerror = () => {
-        this.setUserPictureToDefault();
+        this._pictureURL = undefined;
+        this._avatar = 0;
       };
     } else {
       this._pictureURL = undefined;
@@ -99,17 +122,10 @@ export class User {
   }
 
 
-  /**
-   * Resets the user's picture to the default settings.
-   * 
-   * This method sets the `_pictureURL` to `undefined` and the `_avatar` to `0`.
-   * It is typically used to revert any custom user picture settings back to the default state.
-   * 
-   * @private
-   */
-  private setUserPictureToDefault(): void {
-    this._pictureURL = undefined;
-    this._avatar = 0;
+  private parseLRM(lrmString: string): LastReadMessage[] {
+    if (lrmString === undefined) return [];
+    const lrmArray = JSON.parse(lrmString);
+    return lrmArray;
   }
 
 
@@ -131,6 +147,7 @@ export class User {
     if (data.avatar) this._avatar = data.avatar;
     if (data.online !== undefined) this._online = data.online;
     if (data.chatIDs) this._chatIDs = data.chatIDs;
+    if (data.lastReadMessages) this._lastReadMessages = this.parseLRM(data.lastReadMessages);
     this.setSavePictureURL(data.pictureURL);
     if (data.emailVerified !== undefined)
       this._emailVerified = data.emailVerified;
