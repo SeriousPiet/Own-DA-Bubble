@@ -1,18 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  inject,
-  Input,
-  OnDestroy,
-  Output,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, OnDestroy, Output, QueryList, ViewChild, ViewChildren, } from '@angular/core';
 import { QuillEditorComponent, QuillModule } from 'ngx-quill';
 import Quill from 'quill';
 import { Range as QuillRange } from 'quill/core/selection';
@@ -23,11 +10,7 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
-import {
-  getTextBeforePreviousSign,
-  insertItemAsSpan,
-  registerLockedSpanBlot,
-} from '../../utils/quil/utility';
+import { getTextBeforePreviousSign, insertItemAsSpan, registerLockedSpanBlot } from '../../utils/quil/utility';
 
 export type EditedTextLength = {
   maxLength: number;
@@ -63,8 +46,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   // Quill Editor variables and configuration
   readonly maxMessageLength = 1000;
   public quill!: Quill;
-  public toolbarID =
-    'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
+  public toolbarID =    'editor-toolbar-' + Math.random().toString(36).substring(2, 9);
   public showToolBarElements: number[] = [];
   private savedRange: QuillRange | null = null;
   public showToolbar = false;
@@ -105,7 +87,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   private lastItem: User | Channel | null = null;
   public currentPickerIndex = -1;
 
-  constructor(private _cdr: ChangeDetectorRef) {}
+  constructor(private _cdr: ChangeDetectorRef) { }
 
   ngOnDestroy(): void {
     if (this.resizeobserver) this.resizeobserver.disconnect();
@@ -154,7 +136,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
    * @returns {string} The message content formatted as semantic HTML.
    */
   getMessageAsHTML() {
-    return this.quill.getSemanticHTML();
+    return this.quill.root.innerHTML;
   }
 
   /**
@@ -223,29 +205,17 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
       const [delta, oldDelta, source] = args;
       if (source === 'user' && eventName === 'text-change') {
         if (this.showPicker) {
-          const newSearchString = getTextBeforePreviousSign(
-            this.quill,
-            this.getLastOrCurrentSelection(),
-            this.pickersign
-          );
+          const newSearchString = getTextBeforePreviousSign(this.quill, this.getLastOrCurrentSelection(), this.pickersign);
           if (newSearchString === null) this.closeListPicker();
           else this.updatePickerItems(newSearchString);
         }
-        const hasImage = delta.ops.some(
-          (op: any) => op.insert && op.insert.image
-        );
+        const hasImage = delta.ops.some((op: any) => op.insert && op.insert.image);
         const messageLength = this.quill.getLength();
         if (source === 'user' && hasImage) this.quill.history.undo();
         else if (messageLength > this.maxMessageLength) {
-          this.quill.deleteText(
-            this.maxMessageLength,
-            messageLength - this.maxMessageLength
-          );
+          this.quill.deleteText(this.maxMessageLength, messageLength - this.maxMessageLength);
         }
-        this.textLengthChanged.emit({
-          maxLength: this.maxMessageLength,
-          textLength: messageLength,
-        });
+        this.textLengthChanged.emit({ maxLength: this.maxMessageLength, textLength: messageLength });
         this._cdr.detectChanges();
       }
     });
@@ -327,21 +297,13 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   handlePickerSelectionKeys(key: string): boolean {
     if (!this.showPicker) return true;
     if (key === 'ArrowUp') {
-      this.setCurrentPickerIndex(
-        (this.currentPickerIndex - 1 + this.pickerItems.length) %
-          this.pickerItems.length
-      );
+      this.setCurrentPickerIndex((this.currentPickerIndex - 1 + this.pickerItems.length) % this.pickerItems.length);
       return false;
     } else if (key === 'ArrowDown') {
-      this.setCurrentPickerIndex(
-        (this.currentPickerIndex + 1) % this.pickerItems.length
-      );
+      this.setCurrentPickerIndex((this.currentPickerIndex + 1) % this.pickerItems.length);
       return false;
     } else if (key === 'Select') {
-      const currentItem =
-        this.currentPickerIndex === -1
-          ? this.lastItem
-          : this.pickerItems[this.currentPickerIndex];
+      const currentItem = this.currentPickerIndex === -1 ? this.lastItem : this.pickerItems[this.currentPickerIndex];
       if (currentItem) this.choosePickerItem(currentItem);
       return true;
     } else if (key === 'Escape') {
@@ -425,19 +387,10 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
    */
   updatePickerItems(searchTerm: string) {
     if (this.pickersign === '@') {
-      this.pickerItems = this.userservice.users.filter(
-        (user) =>
-          !user.guest &&
-          (searchTerm === '' ||
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      this.pickerItems = this.userservice.users.filter((user) => !user.guest && (searchTerm === '' || user.name.toLowerCase().includes(searchTerm.toLowerCase())));
       this.setCurrentPickerIndex(-1);
     } else if (this.pickersign === '#') {
-      this.pickerItems = this.channelservice.channels.filter(
-        (channel) =>
-          !channel.defaultChannel &&
-          channel.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      this.pickerItems = this.channelservice.channels.filter((channel) => !channel.defaultChannel && channel.name.toLowerCase().includes(searchTerm.toLowerCase()));
       this.setCurrentPickerIndex(-1);
     }
   }
