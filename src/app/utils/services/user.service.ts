@@ -370,6 +370,7 @@ export class UsersService implements OnDestroy {
   public async clearCurrentUser() {
     if (this.currentUser) {
       const logoutUser = this.currentUser;
+      this.updateCurrentUserDataOnFirestore({ lastReadMessages: JSON.stringify(this.currentUser.lastReadMessages) });
       this.currentUser = undefined;
       localStorage.removeItem('guestuseremail'); // this is only for guest user
       this.currentGuestUserID = '';
