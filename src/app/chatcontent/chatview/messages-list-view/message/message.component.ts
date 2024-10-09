@@ -138,7 +138,7 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             this.messageViewed.emit(this._messageData);
-            this.removeViewObserver();
+            this.viewObserver.disconnect();
           }
         });
       }, options);
@@ -149,16 +149,12 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   }
 
 
-  removeViewObserver() {
-    if (this.viewObserver) this.viewObserver.disconnect();
-  }
-
-
   initMessageChangeSubscription() {
     if (this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
     this.messageChangeSubscription = this._messageData.changeMessage$.subscribe(() => {
       this.isAttachmentsHovered = new Array(this._messageData.attachments.length).fill(false);
       this.fillMessageContentHTML();
+      this.channelService.calculateUnreadMessagesCount(this._messageData);
       this._cdr.detectChanges();
     });
   }
@@ -309,7 +305,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     this.needContentUpdate = true;
     this._cdr.detectChanges();
   }
-
 
 
   isFirstMessage(index: number) {

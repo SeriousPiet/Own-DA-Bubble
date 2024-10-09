@@ -14,7 +14,7 @@ export function getCollectionType(collection: Channel | Chat | Message): Collect
 export function getCollectionPath(collection: Channel | Chat | Message): string {
     if (collection instanceof Channel) return collection.channelMessagesPath;
     if (collection instanceof Chat) return collection.chatMessagesPath;
-    return collection.messagePath;
+    return collection.answerPath;
 }
 
 

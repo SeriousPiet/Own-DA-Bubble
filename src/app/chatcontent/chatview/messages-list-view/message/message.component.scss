@@ -217,6 +217,10 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
         }
       }
 
+      .new-messages-count {
+        color: $error;
+      }
+
       > span {
         font-size: 0.875rem;
         font-weight: 400;

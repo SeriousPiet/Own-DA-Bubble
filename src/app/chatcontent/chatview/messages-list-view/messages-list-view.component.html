@@ -1,7 +1,8 @@
 <section>
   @for (message of messages; track message) {
+    {{ $index }}
     @if(ifNewMessagesSeparatorIsNeeded($index)) {
-      <div class="new-messages">
+      <div #newmessageseparator class="new-messages">
         <div></div>
         <span>Neue Nachrichten</span>
         <div></div>

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, Input, OnDestroy, OnInit, } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild, } from '@angular/core';
 import { MessageComponent } from './message/message.component';
 import { MessageDateComponent } from './message-date/message-date.component';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
@@ -41,6 +41,8 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   private newCollectionIsSet = false;
   private currentCollection!: Channel | Chat | Message;
   private collectionLRM: LastReadMessage | undefined;
+
+  @ViewChild('newmessageseparator', { static: false }) newMessageSeparator! :ElementRef;
 
   @Input() set currentObject(currentObject: Channel | Chat | Message) {
     this.currentCollection = currentObject;
@@ -121,13 +123,6 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   }
 
 
-  private setTopMessage(message: Message) {
-    const targetSelector = `${message.id}`;
-    const targetElement = document.getElementById(targetSelector);
-    if (targetElement) targetElement.scrollIntoView({ behavior: 'auto', block: 'start' });
-  }
-
-
   ifNewMessagesSeparatorIsNeeded(index: number): boolean {
     if (this.collectionLRM) {
       if (this.newMessagesSeparatorIndex === index) return true;
@@ -175,21 +170,15 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
           }
         });
         if (sortNeeded) this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-        if (this.messages.length > 0 && this.newCollectionIsSet && this.messages.length === this.getMessagesCount(this.currentCollection)) {
+        if (this.newCollectionIsSet) {
           this.newCollectionIsSet = false;
           setTimeout(() => {
-            this.setTopMessage(this.messages.find((message) => message.id === this.collectionLRM?.messageID) as Message);
+            if (this.newMessageSeparator) this.newMessageSeparator.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });            
           }, 500);
         }
         this._cdr.detectChanges();
       });
     }
-  }
-
-
-  private getMessagesCount(collection: Channel | Chat | Message): number {
-    if (collection instanceof Message) return collection.answerCount;
-    else return collection.messagesCount;
   }
 
 
