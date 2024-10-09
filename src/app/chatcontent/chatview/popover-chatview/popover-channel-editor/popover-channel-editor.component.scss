@@ -76,8 +76,8 @@ main {
           font-size: 1.125rem;
           font-weight: 500;
           color: $secondary;
+          width: 5.625rem;
           line-height: 1.5344rem;
-          transition: all 250ms ease-in-out;
           transition: $transition-standard;
 
           &:not(.no-edit-right, :disabled):hover {

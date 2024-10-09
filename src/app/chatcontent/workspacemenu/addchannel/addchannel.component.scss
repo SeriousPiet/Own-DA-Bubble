@@ -19,6 +19,10 @@
   border: 0rem;
   opacity: 0;
   transition: $transition-popover;
+
+  @media(width < 426px) {
+    padding: 0;
+  }
 }
 
 #addChannelId:popover-open {
@@ -27,7 +31,7 @@
   opacity: 1;
 }
 
-%starting-style {
+@starting-style {
   #addChannelId:popover-open {
     transform: translateY(-3rem);
     opacity: 0;
@@ -101,6 +105,12 @@
   input:hover {
     border-color: #535af1;
     cursor: pointer;
+  }
+
+  @media(width < 426px) {
+    height: 100%;
+    border-radius: 0;
+    gap: 1.25rem !important;
   }
 }
 
