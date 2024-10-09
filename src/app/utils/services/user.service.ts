@@ -22,6 +22,7 @@ export class UsersService implements OnDestroy {
   private unsubUsers: any = null;
   private user$: any = null;
   private currentAuthUser: any = undefined;
+  private updateCurrentUserDataFunction: any = undefined;
 
   private changeUserListSubject = new BehaviorSubject<User[]>([]);
   public changeUserList$ = this.changeUserListSubject.asObservable();
@@ -309,6 +310,8 @@ export class UsersService implements OnDestroy {
     if (this.currentUser && this.currentUser.guest === false) {
       const lrm = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionID === collection.id);
       const messageCreatedAt = message.createdAt.getTime();
+      collection.unreadMessagesCount--;
+      collection.update({});
       let updateNeeded = false;
       if (lrm) {
         if (lrm.messageCreateAt < messageCreatedAt) {
@@ -316,16 +319,21 @@ export class UsersService implements OnDestroy {
           lrm.messageCreateAt = messageCreatedAt;
           updateNeeded = true;
         }
-      }
-      else {
+      } else {
         if (this.currentUser.signupAt < message.createdAt) {
           const type = getCollectionType(collection);
           this.currentUser.lastReadMessages.push({ collectionType: type, collectionID: collection.id, messageID: message.id, messageCreateAt: messageCreatedAt });
           updateNeeded = true;
         }
       }
-      if (updateNeeded) {
-        this.updateCurrentUserDataOnFirestore({ lastReadMessages: JSON.stringify(this.currentUser.lastReadMessages) });
+      this.changeCurrentUserSubject.next('update');
+      if (updateNeeded && this.updateCurrentUserDataFunction === undefined) {
+        this.updateCurrentUserDataFunction = setTimeout(() => {
+          if (this.currentUser) {
+            this.updateCurrentUserDataOnFirestore({ lastReadMessages: JSON.stringify(this.currentUser.lastReadMessages) });
+          }
+          this.updateCurrentUserDataFunction = undefined;
+        }, 10000);
       }
     }
   }

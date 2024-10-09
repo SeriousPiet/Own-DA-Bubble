@@ -53,6 +53,7 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   @Input() set messageData(newMessage: Message) {
     this._messageData = newMessage;
     this.initMessageChangeSubscription();
+    if (this._messageData.answerCount > 0) this.channelService.calculateUnreadMessagesCount(this._messageData);
     this.messagefromUser = newMessage.creatorID === this.userService.currentUserID;
     this.fillMessageContentHTML();
   }
@@ -143,7 +144,7 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
         });
       }, options);
       setTimeout(() => {
-        this.viewObserver.observe(this.el.nativeElement);        
+        this.viewObserver.observe(this.el.nativeElement);
       }, 1000);
     }
   }
@@ -154,7 +155,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     this.messageChangeSubscription = this._messageData.changeMessage$.subscribe(() => {
       this.isAttachmentsHovered = new Array(this._messageData.attachments.length).fill(false);
       this.fillMessageContentHTML();
-      this.channelService.calculateUnreadMessagesCount(this._messageData);
       this._cdr.detectChanges();
     });
   }

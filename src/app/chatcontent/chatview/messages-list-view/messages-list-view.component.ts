@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild, } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild, } from '@angular/core';
 import { MessageComponent } from './message/message.component';
 import { MessageDateComponent } from './message-date/message-date.component';
 import { collection, Firestore, onSnapshot } from '@angular/fire/firestore';
@@ -16,6 +16,7 @@ import { ChannelService } from '../../../utils/services/channel.service';
 
 @Component({
   selector: 'app-messages-list-view',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     MessageComponent,
@@ -42,7 +43,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   private currentCollection!: Channel | Chat | Message;
   private collectionLRM: LastReadMessage | undefined;
 
-  @ViewChild('newmessageseparator', { static: false }) newMessageSeparator! :ElementRef;
+  @ViewChild('newmessageseparator', { static: false }) newMessageSeparator!: ElementRef;
 
   @Input() set currentObject(currentObject: Channel | Chat | Message) {
     this.currentCollection = currentObject;
@@ -57,6 +58,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
     this.messageEditorOpen = false;
     this.newMessagesSeparatorIndex = -1;
     this.newCollectionIsSet = true;
+    this._cdr.detectChanges();
   }
 
   private messageScrollSubscription: Subscription | undefined;
@@ -80,7 +82,6 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
 
   messageViewed(message: Message): void {
     this.userService.setLastReadMessage(message, this.currentCollection);
-    if (!(this.currentCollection instanceof Message)) this.channelService.calculateUnreadMessagesCount(this.currentCollection);
   }
 
 
@@ -97,6 +98,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
 
 
   getIfMessageIsUnread(message: Message): boolean {
+    if (this.userService.currentUserID === message.creatorID) return false;
     if (this.collectionLRM) return message.createdAt.getTime() > this.collectionLRM.messageCreateAt;
     return message.createdAt > (this.userService.currentUser?.signupAt ?? 0);
   }
@@ -120,6 +122,11 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
       }
     };
     setTimeout(scrollToElement, 100);
+  }
+
+
+  trackByFn(index: number, message: Message): string {
+    return message.id;
   }
 
 
@@ -155,10 +162,10 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
     if (this.unsubMessages) this.unsubMessages();
     if (messagesPath) {
       this.unsubMessages = onSnapshot(collection(this.firestore, messagesPath), (snapshot) => {
-        let sortNeeded = false;
+        let newMessagesAdded = false;
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            sortNeeded = true;
+            newMessagesAdded = true;
             this.messages.push(new Message(change.doc.data(), messagesPath, change.doc.id));
           }
           if (change.type === 'modified') {
@@ -169,14 +176,16 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
             this.messages = this.messages.filter((message) => message.id !== change.doc.id);
           }
         });
-        if (sortNeeded) this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        if (newMessagesAdded) {
+          this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+          this._cdr.detectChanges();
+        }
         if (this.newCollectionIsSet) {
           this.newCollectionIsSet = false;
           setTimeout(() => {
-            if (this.newMessageSeparator) this.newMessageSeparator.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });            
+            if (this.newMessageSeparator) this.newMessageSeparator.nativeElement.scrollIntoView({ behavior: 'auto', block: 'start' });
           }, 500);
         }
-        this._cdr.detectChanges();
       });
     }
   }

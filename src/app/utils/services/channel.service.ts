@@ -125,7 +125,7 @@ export class ChannelService implements OnDestroy {
   }
 
 
-  public calculateUnreadMessagesCountForAllChannelsAndChats() {
+  private calculateUnreadMessagesCountForAllChannelsAndChats() {
     this.channels.forEach((channel) => {
       if (!channel.defaultChannel) this.calculateUnreadMessagesCount(channel);
     });
@@ -144,7 +144,11 @@ export class ChannelService implements OnDestroy {
     const querySnapshot = await getDocs(
       query(collectionRef, where('createdAt', '>', lastViewTime))
     );
-    channel.unreadMessagesCount = querySnapshot.size;
+    let unreadMessagesCount = 0;
+    const test = querySnapshot.forEach((doc) => {
+        if(doc.data()['creatorID'] !== this.userservice.currentUserID) unreadMessagesCount++;
+    });
+    channel.unreadMessagesCount = unreadMessagesCount;
     // if (channel instanceof Channel) console.log('Channel: ' + channel.name + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
     // else if (channel instanceof Message) console.log('Message: ' + channel.id + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
     // else {

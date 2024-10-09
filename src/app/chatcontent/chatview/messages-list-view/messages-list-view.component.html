@@ -1,6 +1,5 @@
 <section>
-  @for (message of messages; track message) {
-    {{ $index }}
+  @for (message of messages; track trackByFn) {
     @if(ifNewMessagesSeparatorIsNeeded($index)) {
       <div #newmessageseparator class="new-messages">
         <div></div>
