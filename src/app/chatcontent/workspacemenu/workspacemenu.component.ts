@@ -1,14 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  inject,
-  ViewChild,
-  ElementRef,
-  Renderer2,
-  OnInit,
-  OnDestroy,
-} from '@angular/core';
-
+import { Component, inject, ViewChild, Renderer2, OnInit, OnDestroy, } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
@@ -37,6 +28,7 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
   public userservice = inject(UsersService);
   public channelservice = inject(ChannelService);
   private navigationService = inject(NavigationService);
+  private renderer = inject(Renderer2);
 
   navigationChangeSubscription: any;
   addChannelId: HTMLElement | null = null;
@@ -44,6 +36,7 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
   activeUser: User | undefined = undefined;
 
   @ViewChild(AddchannelComponent) addChannelComponent!: AddchannelComponent;
+
 
   ngOnInit(): void {
     this.navigationChangeSubscription =
@@ -58,13 +51,13 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
       });
   }
 
+
   ngOnDestroy(): void {
     if (this.navigationChangeSubscription) {
       this.navigationChangeSubscription.unsubscribe();
     }
   }
 
-  private renderer = inject(Renderer2);
 
   toggleDetails(details: HTMLDetailsElement) {
     if (details.open) {
@@ -77,6 +70,7 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
       this.renderer.setStyle(details, 'height', '2.5rem');
     }
   }
+
 
   toggleAddChannelPopover() {
     this.addChannelId = document.getElementById('addChannelId');

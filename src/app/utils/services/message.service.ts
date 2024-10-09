@@ -6,7 +6,7 @@ import { IReactions, Message, StoredAttachment } from '../../shared/models/messa
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { EmojipickerService } from './emojipicker.service';
-import { CleanupService } from './cleanup.service';
+import { getMessagePath, getObjectsPath, removeAllHTMLTagsFromString } from '../firebase/utils';
 
 export type MessageAttachment = {
   name: string;
@@ -28,41 +28,6 @@ export class MessageService {
 
 
   /**
-   * Retrieves the message path based on the type of the provided collection object.
-   * 
-   * @param collectionObject - The collection object which can be an instance of Channel, Chat, or Message.
-   * @returns The path to the messages associated with the provided collection object.
-   */
-  private getMessagePath(collectionObject: Channel | Chat | Message): string {
-    return collectionObject instanceof Channel
-      ? collectionObject.channelMessagesPath
-      : collectionObject instanceof Chat
-        ? collectionObject.chatMessagesPath
-        : collectionObject.answerPath;
-  }
-
-
-  /**
-   * Returns the path for a given collection object.
-   * 
-   * Depending on the type of the collection object, this method constructs a path string:
-   * - If the object is an instance of `Channel`, the path will be 'channels/' followed by the object's ID.
-   * - If the object is an instance of `Chat`, the path will be 'chats/' followed by the object's ID.
-   * - If the object is an instance of `Message`, the path will be the object's `messagePath`.
-   * 
-   * @param collectionObject - The collection object for which to generate the path. It can be an instance of `Channel`, `Chat`, or `Message`.
-   * @returns The path string for the given collection object.
-   */
-  private getObjectsPath(collectionObject: Channel | Chat | Message): string {
-    return collectionObject instanceof Channel
-      ? 'channels/' + collectionObject.id
-      : collectionObject instanceof Chat
-        ? 'chats/' + collectionObject.id
-        : collectionObject.messagePath;
-  }
-
-
-  /**
    * Adds a new message to the specified collection (Channel, Chat, or Message).
    * 
    * @param collectionObject - The collection object to which the message will be added. This can be a Channel, Chat, or Message.
@@ -73,8 +38,8 @@ export class MessageService {
    * @throws Will throw an error if the message path is not found.
    */
   async addNewMessageToCollection(collectionObject: Channel | Chat | Message, messageContent: string, attachments: MessageAttachment[] = []): Promise<string> {
-    const messagePath = this.getMessagePath(collectionObject);
-    const objectPath = this.getObjectsPath(collectionObject);
+    const messagePath = getMessagePath(collectionObject);
+    const objectPath = getObjectsPath(collectionObject);
     try {
       const messageCollectionRef = collection(this.firestore, messagePath);
       if (!messageCollectionRef) throw new Error('Nachrichtenpfad "' + messagePath + '" nicht gefunden.');
@@ -124,10 +89,10 @@ export class MessageService {
     try {
       if (message.answerable && message.answerCount > 0) this.deleteAllAnswersFromMessage(message);
       await deleteDoc(doc(this.firestore, message.messagePath));
-      const messageCollectionRef = collection(this.firestore, this.getMessagePath(collectionObject))
+      const messageCollectionRef = collection(this.firestore, getMessagePath(collectionObject))
       const messagesQuerySnapshot = await getDocs(messageCollectionRef)
       const updateData = collectionObject instanceof Message ? { answerCount: messagesQuerySnapshot.size } : { messagesCount: messagesQuerySnapshot.size }
-      await updateDoc(doc(this.firestore, this.getObjectsPath(collectionObject)), updateData)
+      await updateDoc(doc(this.firestore, getObjectsPath(collectionObject)), updateData)
       return ''
     } catch (error) {
       console.error('MessageService: error deleting message', error)
@@ -231,7 +196,7 @@ export class MessageService {
       if (updateData.content && updateData.content != message.content) {
         updateData.edited = true;
         updateData.editedAt = serverTimestamp();
-        updateData.plainContent = this.removeAllHTMLTagsFromString(updateData.content);
+        updateData.plainContent = removeAllHTMLTagsFromString(updateData.content);
         await updateDoc(doc(this.firestore, message.messagePath), updateData)
       }
     } catch (error) {
@@ -309,21 +274,10 @@ export class MessageService {
       creatorID: this.userservice.currentUserID,
       createdAt: serverTimestamp(),
       content: messageText,
-      plainContent: this.removeAllHTMLTagsFromString(messageText),
+      plainContent: removeAllHTMLTagsFromString(messageText),
       emojies: [],
       answerable: answerable,
     };
-  }
-
-
-  /**
-   * Removes all HTML tags from a given string.
-   *
-   * @param text - The string from which HTML tags should be removed.
-   * @returns A new string with all HTML tags removed.
-   */
-  private removeAllHTMLTagsFromString(text: string): string {
-    return text.replace(/<[^>]*>/g, '');
   }
 
 
@@ -355,7 +309,7 @@ export class MessageService {
     const results: Message[] = [];
     querySnapshot.forEach((doc: any) => {
       const messageData = doc.data();
-      const content = this.removeAllHTMLTagsFromString(messageData['content']).toLowerCase();
+      const content = removeAllHTMLTagsFromString(messageData['content']).toLowerCase();
       if (content.includes(searchLower)) {
         const message = new Message(messageData, doc.ref.parent.path, doc.id);
         results.push(message);

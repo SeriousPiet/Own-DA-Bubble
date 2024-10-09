@@ -24,6 +24,7 @@ import { PopoverMemberProfileComponent } from './popover-chatview/popover-member
 import { BehaviorSubject } from 'rxjs';
 import { ChannelService } from '../../utils/services/channel.service';
 import { User } from '../../shared/models/user.class';
+import { ifChatWhitSelf } from '../../utils/firebase/utils';
 
 @Component({
   selector: 'app-chatview',
@@ -70,7 +71,7 @@ export class ChatviewComponent implements OnInit {
   );
   channel$ = this.channelSubject.asObservable();
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
     this.channel$.subscribe(() => {
@@ -102,7 +103,7 @@ export class ChatviewComponent implements OnInit {
         (id) => id !== this.userService.currentUser?.id
       );
       if (chatPartnerID) return this.userService.getUserByID(chatPartnerID);
-      if (this.isSelfChat())
+      if (object instanceof Chat && ifChatWhitSelf(object))
         return this.userService.getUserByID(object.memberIDs[0]);
     }
     return undefined;
@@ -114,18 +115,12 @@ export class ChatviewComponent implements OnInit {
     );
     if (chatPartner) return this.userService.getUserByID(chatPartner)?.name;
     else
-      return `${
-        this.userService.getUserByID(this.currentContext.memberIDs[0])?.name
-      } (Du)`;
+      return `${this.userService.getUserByID(this.currentContext.memberIDs[0])?.name
+        } (Du)`;
   }
 
   isSelfChat(): boolean {
-    if (
-      this.currentContext.memberIDs.length === 2 &&
-      this.currentContext.memberIDs[0] === this.currentContext.memberIDs[1]
-    )
-      return true;
-    return false;
+    return this.currentContext instanceof Chat && ifChatWhitSelf(this.currentContext);
   }
 
   getNumberOfMembers(object: Channel | Chat) {
@@ -244,7 +239,7 @@ export class ChatviewComponent implements OnInit {
     }
   }
 
-  getChatPartnerID(chat: Chat | Channel):string | undefined {
+  getChatPartnerID(chat: Chat | Channel): string | undefined {
     if (this.userService.currentUser) {
       if (chat.memberIDs[0] === this.userService.currentUserID)
         return chat.memberIDs[1];

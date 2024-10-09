@@ -23,6 +23,8 @@ import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
+import { Message } from '../../shared/models/message.class';
+import { getCollectionPath } from '../firebase/utils';
 
 /**
  * @class ChannelService
@@ -133,21 +135,22 @@ export class ChannelService implements OnDestroy {
   }
 
 
-  public async calculateUnreadMessagesCount(channel: Channel | Chat) {
+  public async calculateUnreadMessagesCount(channel: Channel | Chat | Message) {
     const lrm = this.userservice.getLastReadMessageObject(channel);
     const lastViewTime: Date = new Date();
     lastViewTime.setTime(lrm ? lrm.messageCreateAt : this.userservice.currentUser?.signupAt.getTime() || 0);
     const firestoreTimestamp = Timestamp.fromDate(lastViewTime);
-    const collectionRef = collection(this.firestore, channel instanceof Channel ? channel.channelMessagesPath : channel.chatMessagesPath);
+    const collectionRef = collection(this.firestore, getCollectionPath(channel));
     const querySnapshot = await getDocs(
       query(collectionRef, where('createdAt', '>', lastViewTime))
     );
     channel.unreadMessagesCount = querySnapshot.size;
-    if (channel instanceof Channel) console.log('Channel: ' + channel.name + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
-    else {
-      const chatPartner = this.getChatPartner(channel);
-      console.log('Chat: ' + channel.id + ' / ' + (chatPartner ? chatPartner.name : 'Unbekannt') + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
-    }
+    // if (channel instanceof Channel) console.log('Channel: ' + channel.name + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
+    // else if (channel instanceof Message) console.log('Message: ' + channel.id + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
+    // else {
+    //   const chatPartner = this.getChatPartner(channel);
+    //   console.log('Chat: ' + channel.id + ' / ' + (chatPartner ? chatPartner.name : 'Unbekannt') + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
+    // }
   }
 
 
@@ -246,7 +249,6 @@ export class ChannelService implements OnDestroy {
         const user = this.userservice.getUserByID(userID);
         let userChatIDs = user?.chatIDs;
         userChatIDs?.push(chat.id);
-        console.log('other user chatid update ' + user + ' chatIDs:' + userChatIDs);
         this.userservice.updateUserDataOnFirestore(userID, { chatIDs: userChatIDs });
       }
       return chat.id;

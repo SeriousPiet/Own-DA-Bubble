@@ -142,7 +142,9 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
           }
         });
       }, options);
-      this.viewObserver.observe(this.el.nativeElement);
+      setTimeout(() => {
+        this.viewObserver.observe(this.el.nativeElement);        
+      }, 1000);
     }
   }
 

@@ -128,7 +128,6 @@ export class User {
   private parseLRM(lrmString: string): LastReadMessage[] {
     if (lrmString === undefined) return [];
     const lrmArray = JSON.parse(lrmString);
-    console.log('parseLRM: ', lrmArray);
     return lrmArray;
   }
 

@@ -7,6 +7,7 @@ import { EmojipickerService } from './emojipicker.service';
 import { Message } from '../../shared/models/message.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Channel } from '../../shared/models/channel.class';
+import { getCollectionType } from '../firebase/utils';
 
 export type CurrentUserChange = 'init' | 'login' | 'logout' | 'update';
 
@@ -43,13 +44,6 @@ export class UsersService implements OnDestroy {
     this.initAuthWatchDog();
     const guestUserEmail = localStorage.getItem('guestuseremail'); // this is only a guest user
     if (guestUserEmail) this.setCurrentUserByEMail(guestUserEmail);
-  }
-
-
-  getCollectionType(collection: Channel | Chat | Message): CollectionType {
-    if (collection instanceof Channel) return 'channel';
-    if (collection instanceof Chat) return 'chat';
-    return 'message';
   }
 
 
@@ -295,11 +289,22 @@ export class UsersService implements OnDestroy {
     let userData: { online: boolean; lastLoginAt: any; emailVerified?: boolean } = { online: true, lastLoginAt: serverTimestamp() };
     if (this.currentAuthUser) userData.emailVerified = this.currentAuthUser.emailVerified;
     await this.updateCurrentUserDataOnFirestore(userData);
-    
+
     this.changeCurrentUserSubject.next('login');
   }
 
 
+  /**
+   * Updates the last read message for the current user in a specified collection.
+   * 
+   * @param message - The message object containing the details of the message.
+   * @param collection - The collection (Channel, Chat, or Message) where the message belongs.
+   * 
+   * This method checks if the current user is not a guest and updates the last read message
+   * for the specified collection if the message is newer than the previously recorded one.
+   * If no record exists for the collection, it creates a new one. The updated data is then
+   * saved to Firestore.
+   */
   setLastReadMessage(message: Message, collection: Channel | Chat | Message) {
     if (this.currentUser && this.currentUser.guest === false) {
       const lrm = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionID === collection.id);
@@ -314,7 +319,7 @@ export class UsersService implements OnDestroy {
       }
       else {
         if (this.currentUser.signupAt < message.createdAt) {
-          const type = this.getCollectionType(collection);
+          const type = getCollectionType(collection);
           this.currentUser.lastReadMessages.push({ collectionType: type, collectionID: collection.id, messageID: message.id, messageCreateAt: messageCreatedAt });
           updateNeeded = true;
         }
@@ -326,10 +331,16 @@ export class UsersService implements OnDestroy {
   }
 
 
+  /**
+   * Retrieves the last read message object for the given collection.
+   * 
+   * @param collection - The collection which can be of type Channel, Chat, or Message.
+   * @returns The last read message object if found, otherwise undefined.
+   */
   getLastReadMessageObject(collection: Channel | Chat | Message): LastReadMessage | undefined {
     if (this.currentUser && this.currentUser.guest === false) {
-      const result = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionType === this.getCollectionType(collection) && lrm.collectionID === collection.id);
-      return result ? result : { collectionType: this.getCollectionType(collection), collectionID: collection.id, messageID: '', messageCreateAt: this.currentUser.signupAt.getTime() };
+      const result = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionType === getCollectionType(collection) && lrm.collectionID === collection.id);
+      return result ? result : { collectionType: getCollectionType(collection), collectionID: collection.id, messageID: '', messageCreateAt: this.currentUser.signupAt.getTime() };
     }
     return undefined;
   }

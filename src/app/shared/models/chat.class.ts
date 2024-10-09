@@ -16,10 +16,6 @@ export class Chat {
 
   }
 
-  ifSelfChat(): boolean {
-    if (this.memberIDs.length === 2 && this.memberIDs[0] === this.memberIDs[1]) return true;
-    return false;
-  }
 
   update(data: any) {
     if (data.messagesCount) this.messagesCount = data.messagesCount;

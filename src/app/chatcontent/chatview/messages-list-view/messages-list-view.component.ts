@@ -38,14 +38,13 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   public noMessagesAvailable = true;
   public messageEditorOpen = false;
   public newMessagesSeparatorIndex = -1;
+  private newCollectionIsSet = false;
   private currentCollection!: Channel | Chat | Message;
-  private currentCollectionType: 'channel' | 'chat' | 'message' | undefined;
   private collectionLRM: LastReadMessage | undefined;
 
   @Input() set currentObject(currentObject: Channel | Chat | Message) {
     this.currentCollection = currentObject;
-    this.currentCollectionType = currentObject ? currentObject.constructor.name.toLowerCase() as 'channel' | 'chat' | 'message' : undefined;
-    this.updateLastReadMessage(this.userService.currentUser);
+    this.updateLastReadMessage();
   }
 
   @Input()
@@ -55,6 +54,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
     this.subscribeMessages(value);
     this.messageEditorOpen = false;
     this.newMessagesSeparatorIndex = -1;
+    this.newCollectionIsSet = true;
   }
 
   private messageScrollSubscription: Subscription | undefined;
@@ -82,14 +82,14 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   }
 
 
-  updateLastReadMessage(user: User | null | undefined): void {
+  updateLastReadMessage(): void {
     this.collectionLRM = this.userService.getLastReadMessageObject(this.currentCollection);
   }
 
 
   initCurrentUserWatchDog() {
-    this.currentUserSubscription = this.userService.currentUser?.changeUser$.subscribe((user) => {
-      this.updateLastReadMessage(user);
+    this.currentUserSubscription = this.userService.currentUser?.changeUser$.subscribe(() => {
+      this.updateLastReadMessage();
     });
   }
 
@@ -118,6 +118,13 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
       }
     };
     setTimeout(scrollToElement, 100);
+  }
+
+
+  private setTopMessage(message: Message) {
+    const targetSelector = `${message.id}`;
+    const targetElement = document.getElementById(targetSelector);
+    if (targetElement) targetElement.scrollIntoView({ behavior: 'auto', block: 'start' });
   }
 
 
@@ -167,12 +174,22 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
             this.messages = this.messages.filter((message) => message.id !== change.doc.id);
           }
         });
-        if (sortNeeded) {
-          this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        if (sortNeeded) this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        if (this.messages.length > 0 && this.newCollectionIsSet && this.messages.length === this.getMessagesCount(this.currentCollection)) {
+          this.newCollectionIsSet = false;
+          setTimeout(() => {
+            this.setTopMessage(this.messages.find((message) => message.id === this.collectionLRM?.messageID) as Message);
+          }, 500);
         }
         this._cdr.detectChanges();
       });
     }
+  }
+
+
+  private getMessagesCount(collection: Channel | Chat | Message): number {
+    if (collection instanceof Message) return collection.answerCount;
+    else return collection.messagesCount;
   }
 
 

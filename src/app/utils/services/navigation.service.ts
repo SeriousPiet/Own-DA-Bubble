@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { UsersService } from './user.service';
 import { User } from '../../shared/models/user.class';
 import { ChannelService } from './channel.service';
+import { ifChatWhitSelf } from '../firebase/utils';
 
 type ChangeNavigation = 'unknow' | 'chatViewObjectSetAsChannel' | 'chatViewObjectSetAsChat' | 'threadViewObjectSet' | 'threadViewObjectCleared';
 @Injectable({
@@ -196,28 +197,13 @@ export class NavigationService {
       const chatPartner = this.getChatPartnerName();
       if (chatPartner) {
         return `in:@${chatPartner}`;
-      } else if (this.isSelfChat()) {
+      } else if (ifChatWhitSelf(this.chatViewObject)) {
         return `in:@${this.userService.currentUser?.name}`;
       }
     } else if (this.chatViewObject instanceof Channel) {
       return `in:#${this.chatViewObject.name}`;
     }
     return '';
-  }
-
-
-  /**
-   * Checks if the current chat view object represents a self-chat (a chat with only the current user).
-   *
-   * @returns {boolean} `true` if the current chat view object is a `Chat` instance and all member IDs match the current user's ID, `false` otherwise.
-   */
-  private isSelfChat(): boolean {
-    if (this.chatViewObject instanceof Chat && this.userService.currentUser) {
-      return this.chatViewObject.memberIDs.every(
-        (id) => id === this.userService.currentUser?.id
-      );
-    }
-    return false;
   }
 
 

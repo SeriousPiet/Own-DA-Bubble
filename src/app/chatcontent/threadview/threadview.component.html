@@ -6,12 +6,8 @@
         <span class="thread-headline">Thread</span>
 
         <span class="thread-headline-channel-name">
-          <img
-            src="../../../assets/icons/chat/general/hashtag-hover.svg"
-            alt="#"
-          />
-          {{ getTitle(navigationService.chatViewObject) }}</span
-        >
+          <img src="../../../assets/icons/chat/general/hashtag-hover.svg" alt="#" />
+          {{ getTitle(navigationService.chatViewObject) }}</span>
       </div>
       <button (click)="navigationService.clearThreadViewObject()"></button>
     </div>
@@ -22,23 +18,13 @@
     @if (navigationService.threadViewObject) {
     <div class="thread-messages-content">
       <div class="headliner-message">
-        <app-message-date
-          [date]="navigationService.threadViewObject.createdAt"
-        />
+        <app-message-date [date]="navigationService.threadViewObject.createdAt" />
 
-        <app-message
-          [isThreadView]="true"
-          [id]="navigationService.threadViewObject.id"
-          [messageData]="navigationService.threadViewObject"
-        />
+        <app-message [isThreadView]="true" [id]="navigationService.threadViewObject.id"
+          [messageData]="navigationService.threadViewObject" />
       </div>
-      <app-messages-list-view
-        class="thread-list-view"
-        [messagesPath]="navigationService.threadViewPath"
-      />
-      <app-message-textarea
-        [messagesCollectionObject]="navigationService.threadViewObject"
-      />
+      <app-messages-list-view class="thread-list-view" [messagesPath]="navigationService.threadViewPath" [currentObject]="navigationService.threadViewObject" />
+      <app-message-textarea [messagesCollectionObject]="navigationService.threadViewObject" />
     </div>
     }
   </section>
