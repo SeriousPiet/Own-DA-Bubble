@@ -195,7 +195,9 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 
       div {
         @include flex(normal, center);
-        gap: 1.25rem;
+        flex-wrap: wrap;
+        column-gap: 1.25rem;
+        width: 100%;
 
         > a {
           display: flex;
@@ -218,7 +220,7 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
       }
 
       .new-messages-count {
-        color: $error;
+        color: $secondary;
       }
 
       > span {
@@ -421,12 +423,6 @@ $reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
 
   .input-message-toolbar-right {
     @include flex(flex-start, center);
-  }
-}
-
-@container (width < 300px) {
-  .input-message-toolbar {
-    background-color: red;
   }
 }
 
