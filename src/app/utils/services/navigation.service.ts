@@ -27,13 +27,18 @@ export class NavigationService {
   private showProfileDetails = new BehaviorSubject<boolean>(false);
   public showProfileDetails$ = this.showProfileDetails.asObservable();
 
+  private userService: UsersService = inject(UsersService);
+  private channelService: ChannelService = inject(ChannelService);
+
+
+  /**
+   * Sets the profile target by toggling the visibility of profile details.
+   *
+   * @param toggle - A boolean value indicating whether to show or hide the profile details.
+   */
   setProfileTarget(toggle: boolean) {
     this.showProfileDetails.next(toggle);
   }
-
-
-  private userService: UsersService = inject(UsersService);
-  private channelService: ChannelService = inject(ChannelService);
 
 
   /**
@@ -141,6 +146,14 @@ export class NavigationService {
   }
 
 
+  /**
+   * Retrieves the chat partner as a User object.
+   * 
+   * @returns {User | undefined} The chat partner as a User object if found, otherwise undefined.
+   * 
+   * This method checks if the current chat view object is an instance of `Chat`. If the chat involves only the current user,
+   * it returns the current user. Otherwise, it finds the chat partner's ID and retrieves the corresponding User object.
+   */
   public getChatPartnerAsUser(): User | undefined {
     if (this.chatViewObject instanceof Chat) {
       if (this.chatViewObject.memberIDs[0] === this.chatViewObject.memberIDs[1]) return this.userService.currentUser;

@@ -19,12 +19,8 @@ export class CleanupService {
   private docsToDelete: string[] = [];
 
   constructor() {
-    setTimeout(() => {
-      this.markAllGuestsToDelete();
-    }, 5000);
-    setTimeout(() => {
-      this.deleteAllGuestData();
-    }, 10000);
+    setTimeout(() => { this.markAllGuestsToDelete(); }, 5000);
+    setTimeout(() => { this.deleteAllGuestData(); }, 10000);
   }
 
 

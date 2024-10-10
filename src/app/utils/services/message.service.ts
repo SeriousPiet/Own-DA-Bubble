@@ -305,6 +305,13 @@ export class MessageService {
   }
 
 
+  /**
+   * Retrieves messages from a Firestore query snapshot that match a search term.
+   *
+   * @param querySnapshot - The Firestore query snapshot containing message documents.
+   * @param searchLower - The search term in lowercase to match against message content.
+   * @returns A promise that resolves to an array of messages that contain the search term.
+   */
   private async getMessagesFromQuerySnapshot(querySnapshot: any, searchLower: string): Promise<Message[]> {
     const results: Message[] = [];
     querySnapshot.forEach((doc: any) => {

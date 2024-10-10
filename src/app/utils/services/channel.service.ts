@@ -5,19 +5,7 @@
  */
 
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import {
-  addDoc,
-  collection,
-  doc,
-  Firestore,
-  getDocs,
-  onSnapshot,
-  query,
-  serverTimestamp,
-  Timestamp,
-  updateDoc,
-  where,
-} from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, getDocs, onSnapshot, query, serverTimestamp, Timestamp, updateDoc, where, } from '@angular/fire/firestore';
 import { UsersService } from './user.service';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';

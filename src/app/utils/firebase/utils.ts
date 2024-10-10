@@ -4,6 +4,12 @@ import { Message } from "../../shared/models/message.class";
 import { CollectionType } from "../../shared/models/user.class";
 
 
+/**
+ * Determines the type of a given collection.
+ *
+ * @param collection - The collection instance which can be of type Channel, Chat, or Message.
+ * @returns The type of the collection as a string: 'channel', 'chat', or 'message'.
+ */
 export function getCollectionType(collection: Channel | Chat | Message): CollectionType {
     if (collection instanceof Channel) return 'channel';
     if (collection instanceof Chat) return 'chat';
@@ -11,6 +17,15 @@ export function getCollectionType(collection: Channel | Chat | Message): Collect
 }
 
 
+/**
+ * Retrieves the path for a given collection.
+ *
+ * This function determines the appropriate path based on the type of the collection
+ * passed as an argument. It supports `Channel`, `Chat`, and `Message` types.
+ *
+ * @param collection - The collection for which to retrieve the path. This can be an instance of `Channel`, `Chat`, or `Message`.
+ * @returns The path associated with the given collection.
+ */
 export function getCollectionPath(collection: Channel | Chat | Message): string {
     if (collection instanceof Channel) return collection.channelMessagesPath;
     if (collection instanceof Chat) return collection.chatMessagesPath;
@@ -18,10 +33,20 @@ export function getCollectionPath(collection: Channel | Chat | Message): string 
 }
 
 
+/**
+ * Checks if a chat is with oneself.
+ *
+ * This function determines if a chat involves only one person by checking if the chat has exactly two members
+ * and both member IDs are the same.
+ *
+ * @param chat - The chat object containing member IDs.
+ * @returns `true` if the chat is with oneself, `false` otherwise.
+ */
 export function ifChatWhitSelf(chat: Chat): boolean {
     if (chat.memberIDs.length === 2 && chat.memberIDs[0] === chat.memberIDs[1]) return true;
     return false;
 }
+
 
 /**
 * Retrieves the message path based on the type of the provided collection object.

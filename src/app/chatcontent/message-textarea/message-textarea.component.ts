@@ -77,12 +77,25 @@ export class MessageTextareaComponent {
 
   constructor(private el: ElementRef, private _cdr: ChangeDetectorRef) { }
 
+  /**
+   * Handles the change in the length of the text in the editor.
+   * 
+   * @param event - An object containing the edited text length and maximum allowed length.
+   * @param event.textLength - The current length of the text in the editor.
+   * @param event.maxLength - The maximum allowed length of the text.
+   * @param event.messageEmpty - A boolean indicating if the message is empty.
+   * 
+   * Updates the text length information, determines if the text length warning should be shown,
+   * and sets whether sending the message is allowed based on the text length and message emptiness.
+   * Triggers change detection to update the view.
+   */
   handleEditorTextLengthChanged(event: EditedTextLength) {
     this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
     this.showTextLength = event.textLength > event.maxLength * 0.8;
     this.allowSendMessage = !event.messageEmpty && event.textLength <= event.maxLength;
     this._cdr.detectChanges();
   }
+
 
   // -----------------------------------------------------------------------------
   // Eventlistener for drag and drop
@@ -288,6 +301,12 @@ export class MessageTextareaComponent {
   }
 
 
+  /**
+   * Resets the message editor by clearing its content, 
+   * removing all attachments, and disabling the send message option.
+   *
+   * @private
+   */
   private resetEditor() {
     this.messageeditor.clearEditor();
     this.attachments = [];
