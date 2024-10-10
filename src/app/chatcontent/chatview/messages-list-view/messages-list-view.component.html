@@ -1,22 +1,18 @@
 <section>
   @for (message of messages; track trackByFn) {
-    @if(ifNewMessagesSeparatorIsNeeded($index)) {
-      <div #newmessageseparator class="new-messages">
-        <div></div>
-        <span>Neue Nachrichten</span>
-        <div></div>
-      </div>
-    }
-  @if(ifDaySeparatorIsNeeded($index)) {
-  <app-message-date [date]="message.createdAt"></app-message-date>
-  <app-message [messageEditorOpen]="messageEditorOpen" [isUnread]="getIfMessageIsUnread(message)"
-    (messageEditorOpenChange)="messageEditorOpen = $event" (messageViewed)="messageViewed($event)"
-    [ngClass]="{ 'chat-view': true }" [id]="message.id" [messageData]="message"></app-message>
-  } @else {
-  <app-message [previousMessageFromSameUser]="ifMessageFromSameUserAsPrevious($index)"
-    [messageEditorOpen]="messageEditorOpen" (messageEditorOpenChange)="messageEditorOpen = $event"
-    [isUnread]="getIfMessageIsUnread(message)" (messageViewed)="messageViewed($event)" [ngClass]="{ 'chat-view': true }"
-    [id]="message.id" [messageData]="message"></app-message>
+  @if(message.newMessageSeparator) {
+  <div #newmessageseparator class="new-messages">
+    <div></div>
+    <span>Neue Nachrichten</span>
+    <div></div>
+  </div>
   }
+  @if(message.newDaySeparator) {
+  <app-message-date [date]="message.createdAt"></app-message-date>
+  }
+  <app-message [messageEditorOpen]="messageEditorOpen" [isUnread]="message.unread"
+    [previousMessageFromSameUser]="message.sameUserAsPrevious" (messageEditorOpenChange)="messageEditorOpen = $event"
+    (messageViewed)="messageViewed($event)" [ngClass]="{ 'chat-view': true }" [id]="message.id"
+    [messageData]="message"></app-message>
   }
 </section>

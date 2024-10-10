@@ -53,7 +53,6 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   @Input()
   set messagesPath(value: string | undefined) {
     this.messages = [];
-    this.messagesDates = [];
     this.subscribeMessages(value);
     this.messageEditorOpen = false;
     this.newMessagesSeparatorIndex = -1;
@@ -170,7 +169,10 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
           }
           if (change.type === 'modified') {
             const message = this.messages.find((message) => message.id === change.doc.id);
-            if (message) message.update(change.doc.data());
+            if (message) {
+              message.update(change.doc.data());
+              message.unread = this.getIfMessageIsUnread(message);
+            }
           }
           if (change.type === 'removed') {
             this.messages = this.messages.filter((message) => message.id !== change.doc.id);
@@ -178,6 +180,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
         });
         if (newMessagesAdded) {
           this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+          this.messages.forEach((message, index) => { if (message.propertysUnSet) this.setPropertysForRendering(message, index); });
           this._cdr.detectChanges();
         }
         if (this.newCollectionIsSet) {
@@ -188,6 +191,15 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+
+  setPropertysForRendering(message: Message, index: number): void {
+    message.newDaySeparator = this.ifDaySeparatorIsNeeded(index);
+    message.newMessageSeparator = this.ifNewMessagesSeparatorIsNeeded(index);
+    if (!message.newDaySeparator && !message.newMessageSeparator) message.sameUserAsPrevious = this.ifMessageFromSameUserAsPrevious(index);
+    message.unread = this.getIfMessageIsUnread(message);
+    message.propertysUnSet = false;
   }
 
 
