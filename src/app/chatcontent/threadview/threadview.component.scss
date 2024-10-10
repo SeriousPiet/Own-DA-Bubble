@@ -127,6 +127,7 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
 
     .thread-list-view {
       overflow: unset;
+      flex-direction: column;
     }
   }
 
