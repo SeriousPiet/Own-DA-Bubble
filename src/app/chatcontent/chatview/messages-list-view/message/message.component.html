@@ -138,6 +138,7 @@
   </div>
   }
 
+  @if (!messageEditorModus) {
   <div [ngClass]="{
       'interact-ctn-popover-slide-out-animation': !isHovered,
       'interact-ctn-popover-slide-in-animation': isHovered,
@@ -164,4 +165,5 @@
       }
     </section>
   </div>
+}
 </main>
