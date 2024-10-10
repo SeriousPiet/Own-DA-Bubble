@@ -53,7 +53,6 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   @Input()
   set messagesPath(value: string | undefined) {
     this.messages = [];
-    this.messagesDates = [];
     this.subscribeMessages(value);
     this.messageEditorOpen = false;
     this.newMessagesSeparatorIndex = -1;
@@ -80,16 +79,35 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   }
 
 
+  /**
+   * Marks a message as viewed by the user.
+   *
+   * @param message - The message that has been viewed.
+   * @returns void
+   */
   messageViewed(message: Message): void {
     this.userService.setLastReadMessage(message, this.currentCollection);
   }
 
 
+  /**
+   * Updates the last read message for the current collection.
+   * This method retrieves the last read message object for the current collection
+   * from the user service and assigns it to the `collectionLRM` property.
+   *
+   * @returns {void}
+   */
   updateLastReadMessage(): void {
     this.collectionLRM = this.userService.getLastReadMessageObject(this.currentCollection);
   }
 
 
+  /**
+   * Initializes a subscription to watch for changes in the current user.
+   * When the current user changes, it triggers an update to the last read message.
+   *
+   * @private
+   */
   initCurrentUserWatchDog() {
     this.currentUserSubscription = this.userService.currentUser?.changeUser$.subscribe(() => {
       this.updateLastReadMessage();
@@ -97,15 +115,17 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   }
 
 
-  getIfMessageIsUnread(message: Message): boolean {
-    if (this.userService.currentUserID === message.creatorID) return false;
-    if (this.collectionLRM) return message.createdAt.getTime() > this.collectionLRM.messageCreateAt;
-    return message.createdAt > (this.userService.currentUser?.signupAt ?? 0);
-  }
-
+  /**
+   * Scrolls the view to a specific message element identified by its ID.
+   * If the element is not found, it will retry up to a maximum number of attempts.
+   * Once the element is found, it scrolls smoothly to the element and applies a temporary color change.
+   *
+   * @param message - The message object containing the ID of the target element.
+   */
   private scrollToMessageInView(message: Message) {
     const maxAttempts = 5;
     let attempts = 0;
+    console.log('scrollToMessageInView:', message);
 
     const scrollToElement = () => {
       const targetSelector = `${message.id}`;
@@ -115,7 +135,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
         targetElement.classList.add('color-change');
         setTimeout(() => {
           targetElement.classList.remove('color-change');
-        }, 1750);
+        }, 2000);
       } else if (attempts < maxAttempts) {
         attempts++;
         setTimeout(scrollToElement, 500);
@@ -125,39 +145,23 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   }
 
 
-  trackByFn(index: number, message: Message): string {
-    return message.id;
-  }
-
-
-  ifNewMessagesSeparatorIsNeeded(index: number): boolean {
-    if (this.collectionLRM) {
-      if (this.newMessagesSeparatorIndex === index) return true;
-      const result = this.messages[index].createdAt.getTime() > this.collectionLRM.messageCreateAt;
-      if (result && this.messages[index].creatorID !== this.userService.currentUserID && this.newMessagesSeparatorIndex === -1) {
-        this.newMessagesSeparatorIndex = index;
-        return result;
-      }
-    }
-    return false;
-  }
-
-
-  ifDaySeparatorIsNeeded(index: number): boolean {
-    if (index === 0) return true;
-    return (
-      this.messages[index].createdAt.getDate() !==
-      this.messages[index - 1].createdAt.getDate()
-    );
-  }
-
-
-  ifMessageFromSameUserAsPrevious(index: number): boolean {
-    if (index === 0) return false;
-    return this.messages[index].creatorID === this.messages[index - 1].creatorID;
-  }
-
-
+  /**
+   * Subscribes to Firestore messages collection and handles real-time updates.
+   * 
+   * @param messagesPath - The path to the Firestore messages collection. If undefined, unsubscribes from the current collection.
+   * 
+   * This method performs the following actions:
+   * - Unsubscribes from the current messages collection if already subscribed.
+   * - Subscribes to the new messages collection if `messagesPath` is provided.
+   * - Listens for document changes (added, modified, removed) in the collection.
+   * - Adds new messages to the `messages` array and marks them as unread if applicable.
+   * - Updates existing messages in the `messages` array.
+   * - Removes deleted messages from the `messages` array.
+   * - Sorts the `messages` array by creation time after new messages are added.
+   * - Sets properties for rendering each message.
+   * - Triggers change detection to update the view.
+   * - Scrolls to the new message separator if a new collection is set.
+   */
   private subscribeMessages(messagesPath: string | undefined) {
     if (this.unsubMessages) this.unsubMessages();
     if (messagesPath) {
@@ -170,7 +174,10 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
           }
           if (change.type === 'modified') {
             const message = this.messages.find((message) => message.id === change.doc.id);
-            if (message) message.update(change.doc.data());
+            if (message) {
+              message.update(change.doc.data());
+              message.unread = this.getIfMessageIsUnread(message);
+            }
           }
           if (change.type === 'removed') {
             this.messages = this.messages.filter((message) => message.id !== change.doc.id);
@@ -178,6 +185,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
         });
         if (newMessagesAdded) {
           this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+          this.messages.forEach((message, index) => { if (message.propertysUnSet) this.setPropertysForRendering(message, index); });
           this._cdr.detectChanges();
         }
         if (this.newCollectionIsSet) {
@@ -191,6 +199,106 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   }
 
 
+  /**
+   * Sets various properties on a message object to determine how it should be rendered.
+   * 
+   * @param message - The message object to set properties for.
+   * @param index - The index of the message in the list.
+   * 
+   * Properties set:
+   * - `newDaySeparator`: Indicates if a new day separator is needed before this message.
+   * - `newMessageSeparator`: Indicates if a new message separator is needed before this message.
+   * - `sameUserAsPrevious`: Indicates if this message is from the same user as the previous message.
+   * - `unread`: Indicates if the message is unread.
+   * - `propertysUnSet`: Set to `false` to indicate that properties have been set.
+   */
+  setPropertysForRendering(message: Message, index: number): void {
+    message.newDaySeparator = this.ifDaySeparatorIsNeeded(index);
+    message.newMessageSeparator = this.ifNewMessagesSeparatorIsNeeded(index);
+    if (!message.newDaySeparator && !message.newMessageSeparator) message.sameUserAsPrevious = this.ifMessageFromSameUserAsPrevious(index);
+    message.unread = this.getIfMessageIsUnread(message);
+    message.propertysUnSet = false;
+  }
+
+
+  /**
+   * Determines if a new messages separator is needed at the given index.
+   *
+   * @param index - The index of the message in the messages array.
+   * @returns `true` if a new messages separator is needed at the given index, otherwise `false`.
+   *
+   * This method checks if the current message at the specified index was created after the last read message (LRM)
+   * and if the message was not created by the current user. If these conditions are met and a new messages separator
+   * index has not been set, it sets the new messages separator index to the current index and returns `true`.
+   * Otherwise, it returns `false`.
+   */
+  ifNewMessagesSeparatorIsNeeded(index: number): boolean {
+    if (this.collectionLRM) {
+      if (this.newMessagesSeparatorIndex === index) return true;
+      const result = this.messages[index].createdAt.getTime() > this.collectionLRM.messageCreateAt;
+      if (result && this.messages[index].creatorID !== this.userService.currentUserID && this.newMessagesSeparatorIndex === -1) {
+        this.newMessagesSeparatorIndex = index;
+        return result;
+      }
+    }
+    return false;
+  }
+
+
+  /**
+   * Determines if a day separator is needed between messages.
+   *
+   * @param index - The index of the current message in the messages array.
+   * @returns `true` if a day separator is needed, `false` otherwise.
+   *
+   * A day separator is needed if the current message is the first message
+   * in the list or if the current message was created on a different day
+   * than the previous message.
+   */
+  ifDaySeparatorIsNeeded(index: number): boolean {
+    if (index === 0) return true;
+    return (
+      this.messages[index].createdAt.getDate() !==
+      this.messages[index - 1].createdAt.getDate()
+    );
+  }
+
+
+  /**
+   * Determines if the message at the given index is from the same user as the previous message.
+   *
+   * @param index - The index of the current message in the messages array.
+   * @returns `true` if the current message is from the same user as the previous message, otherwise `false`.
+   */
+  ifMessageFromSameUserAsPrevious(index: number): boolean {
+    if (index === 0) return false;
+    return this.messages[index].creatorID === this.messages[index - 1].creatorID;
+  }
+
+
+  /**
+   * Determines if a message is unread.
+   *
+   * @param message - The message to check.
+   * @returns `true` if the message is unread, `false` otherwise.
+   */
+  getIfMessageIsUnread(message: Message): boolean {
+    if (this.userService.currentUserID === message.creatorID) return false;
+    if (this.collectionLRM) return message.createdAt.getTime() > this.collectionLRM.messageCreateAt;
+    return message.createdAt > (this.userService.currentUser?.signupAt ?? 0);
+  }
+
+
+  /**
+   * Lifecycle hook that is called when the component is destroyed.
+   * 
+   * This method performs cleanup by unsubscribing from various subscriptions
+   * to prevent memory leaks.
+   * 
+   * - Unsubscribes from `unsubMessages` if it exists.
+   * - Unsubscribes from `messageScrollSubscription` if it exists.
+   * - Unsubscribes from `currentUserSubscription` if it exists.
+   */
   ngOnDestroy(): void {
     if (this.unsubMessages) {
       this.unsubMessages();

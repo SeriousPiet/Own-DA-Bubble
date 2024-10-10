@@ -25,6 +25,12 @@ export class Message {
 
   public unreadMessagesCount: number = 0;
 
+  public propertysUnSet = true;
+  public unread: boolean = false;
+  public sameUserAsPrevious: boolean = false;
+  public newMessageSeparator: boolean = false;
+  public newDaySeparator: boolean = false;
+
   private _content: string;
   get content(): string {
     return this._content;
