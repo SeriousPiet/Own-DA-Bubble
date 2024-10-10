@@ -1,4 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, HostListener, } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation,
+  HostListener,
+} from '@angular/core';
 import { Observable, timer } from 'rxjs';
 import { filter, map, switchMap, take } from 'rxjs/operators';
 import { SearchService } from '../../../utils/services/search.service';
@@ -22,9 +29,15 @@ import { AvatarDirective } from '../../../utils/directives/avatar.directive';
   encapsulation: ViewEncapsulation.None,
 })
 export class SearchbarComponent implements OnInit {
-  searchState$!: Observable<{ query: string; context: string | null; keywords: string[]; }>;
+  searchState$!: Observable<{
+    query: string;
+    context: string | null;
+    keywords: string[];
+  }>;
   searchQuery: string = '';
-  suggestions$!: Observable<{ text: string; type: string; hasChat: boolean; message?: Message }[]>;
+  suggestions$!: Observable<
+    { text: string; type: string; hasChat: boolean; message?: Message }[]
+  >;
 
   isDropdownVisible = false;
   recentSearches: SearchSuggestion[] = [];
@@ -50,7 +63,15 @@ export class SearchbarComponent implements OnInit {
     }
   }
 
-
+  /**
+   * Constructs a new instance of the `SearchbarComponent`.
+   *
+   * @param searchService - The `SearchService` instance used for managing search-related functionality.
+   * @param navigationService - The `NavigationService` instance used for managing navigation-related events.
+   * @param channelService - The `ChannelService` instance used for managing channel-related functionality.
+   * @param usersService - The `UsersService` instance used for managing user-related functionality.
+   * @param eRef - The `ElementRef` instance used for accessing the native element of the component.
+   */
   constructor(
     public searchService: SearchService,
     public navigationService: NavigationService,
@@ -66,7 +87,6 @@ export class SearchbarComponent implements OnInit {
     });
   }
 
-
   /**
    * Updates the welcome channel status based on the current chat view object.
    * If the current chat view object is an instance of Channel and its name is 'Willkommen',
@@ -74,9 +94,9 @@ export class SearchbarComponent implements OnInit {
    */
   private updateWelcomeChannelStatus() {
     const currentObject = this.navigationService.chatViewObject;
-    this.isWelcomeChannel = currentObject instanceof Channel && currentObject.name === 'Willkommen';
+    this.isWelcomeChannel =
+      currentObject instanceof Channel && currentObject.name === 'Willkommen';
   }
-
 
   /**
    * Initializes the search suggestions, current search context, and recent searches.
@@ -87,14 +107,13 @@ export class SearchbarComponent implements OnInit {
     this.recentSearches = this.searchService.getRecentSearches();
   }
 
-
   /**
    * A reference to the HTML input element for the date picker.
    * This reference is used to programmatically show the date picker UI when the date picker is made visible.
    */
   @ViewChild('dateInput') dateInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('searchInput', { static: true }) searchInput!: ElementRef<HTMLInputElement>;
-
+  @ViewChild('searchInput', { static: true })
+  searchInput!: ElementRef<HTMLInputElement>;
 
   /**
    * Toggles the visibility of the date picker input field.
@@ -108,7 +127,6 @@ export class SearchbarComponent implements OnInit {
       });
     }
   }
-
 
   /**
    * Handles the date selection event from the date picker input field.
@@ -125,7 +143,6 @@ export class SearchbarComponent implements OnInit {
       this.isDatepickerVisible = false;
     }
   }
-
 
   /**
    * Updates the search query, retrieves the latest search suggestions, and retrieves the recent searches.
@@ -151,7 +168,6 @@ export class SearchbarComponent implements OnInit {
     this.recentSearches = this.searchService.getRecentSearches();
   }
 
-
   /**
    * Called when the search input field receives focus.
    * Sets the current search context, makes the search dropdown visible,
@@ -164,12 +180,10 @@ export class SearchbarComponent implements OnInit {
       if (this.searchQuery) {
         this.onSearchInput(this.searchQuery);
       }
-    }
-    else if (source === 'system') {
+    } else if (source === 'system') {
       this.searchInput.nativeElement.focus();
     }
   }
-
 
   /**
    * Enables context search and adds the current search context to the search query.
@@ -181,7 +195,6 @@ export class SearchbarComponent implements OnInit {
     this.onFocus('system');
   }
 
-
   /**
    * Selects a recent search suggestion and updates the search query and input.
    * @param search - The search suggestion to select.
@@ -191,7 +204,6 @@ export class SearchbarComponent implements OnInit {
     this.selectSuggestion(search);
     this.onSearchInput(search.text);
   }
-
 
   /**
    * Handles the selection of a search suggestion, performing the appropriate action based on the suggestion type.
@@ -216,7 +228,6 @@ export class SearchbarComponent implements OnInit {
     this.finalizeSuggestionSelection(suggestion);
   }
 
-
   /**
    * Handles the selection of a user search suggestion, finding the user by name and setting the chat view object to the user if found.
    *
@@ -233,7 +244,6 @@ export class SearchbarComponent implements OnInit {
     }
   }
 
-
   /**
    * Handles the selection of a channel search suggestion, finding the channel by name and setting the chat view object to the channel if found.
    *
@@ -249,7 +259,6 @@ export class SearchbarComponent implements OnInit {
       await this.navigationService.setChatViewObject(channel);
     }
   }
-
 
   /**
    * Handles the selection of a message search suggestion, finding the target chat or channel and setting the chat view object to it, then scrolling to the message.
@@ -277,7 +286,6 @@ export class SearchbarComponent implements OnInit {
     }
   }
 
-
   /**
    * Finalizes the selection of a search suggestion by removing the search context, adding the suggestion to the recent searches, and hiding the search dropdown.
    *
@@ -290,7 +298,6 @@ export class SearchbarComponent implements OnInit {
     this.isDropdownVisible = false;
   }
 
-
   /**
    * Scrolls to the specified message in the chat view.
    *
@@ -299,19 +306,26 @@ export class SearchbarComponent implements OnInit {
    * @param message - The message to scroll to.
    */
   private scrollToMessage(message: Message) {
-    this.navigationService.navigationComplete$.pipe(
-      take(1),
-      switchMap(() => timer(0, 500).pipe(
-        take(5),
-        map(() => this.navigationService.chatViewObject.id === message.collectionPath.split('/')[1]),
-        filter((isMatch) => isMatch),
-        take(1)
-      ))
-    ).subscribe(() => {
-      this.searchService.messageScrollRequested.emit(message);
-    });
+    this.navigationService.navigationComplete$
+      .pipe(
+        take(1),
+        switchMap(() =>
+          timer(0, 500).pipe(
+            take(5),
+            map(
+              () =>
+                this.navigationService.chatViewObject.id ===
+                message.collectionPath.split('/')[1]
+            ),
+            filter((isMatch) => isMatch),
+            take(1)
+          )
+        )
+      )
+      .subscribe(() => {
+        this.searchService.messageScrollRequested.emit(message);
+      });
   }
-
 
   /**
    * Gets the user object from a search suggestion.
@@ -321,14 +335,19 @@ export class SearchbarComponent implements OnInit {
    * @param suggestion - The search suggestion object containing the text and type.
    * @returns The user object if found, otherwise `undefined`.
    */
-  getUserFromSuggestion({ text, type }: { text: string; type: string }): User | undefined {
+  getUserFromSuggestion({
+    text,
+    type,
+  }: {
+    text: string;
+    type: string;
+  }): User | undefined {
     if (type === 'user') {
       const userName = text.startsWith('@') ? text.slice(1) : text;
       return this.usersService.getUserByName(userName);
     }
     return undefined;
   }
-
 
   /**
    * Adds the current context restriction to the search.
@@ -340,10 +359,12 @@ export class SearchbarComponent implements OnInit {
   addContextToSearch() {
     const context = this.searchService.getCurrentContext();
     if (context) {
-      this.searchService.addContextRestriction(context, this.navigationService.chatViewObject);
+      this.searchService.addContextRestriction(
+        context,
+        this.navigationService.chatViewObject
+      );
     }
   }
-
 
   /**
    * Removes the current context restriction from the search.
@@ -356,7 +377,6 @@ export class SearchbarComponent implements OnInit {
     this.searchService.removeContextRestriction();
     this.searchService.setContextSearchEnabled(false);
   }
-
 
   /**
    * Adds a search term to the recent searches list.
@@ -374,7 +394,6 @@ export class SearchbarComponent implements OnInit {
     this.searchService.addRecentSearch(suggestion);
     this.recentSearches = this.searchService.getRecentSearches();
   }
-
 
   /**
    * Removes a search term from the recent searches list.

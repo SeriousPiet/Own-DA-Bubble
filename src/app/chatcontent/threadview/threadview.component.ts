@@ -30,9 +30,14 @@ export class ThreadviewComponent {
 
   constructor(private cdr: ChangeDetectorRef) {}
 
+  /**
+   * Returns the title of a Channel, Chat, or Message object.
+   *
+   * @param object - The Channel, Chat, or Message object to get the title for.
+   * @returns The title of the object, or an empty string if the object is not a Channel.
+   */
   getTitle(object: Channel | Chat | Message | undefined): string {
     if (object instanceof Channel) return object.name;
     return '';
   }
-
 }
