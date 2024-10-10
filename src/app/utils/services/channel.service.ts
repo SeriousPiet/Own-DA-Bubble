@@ -49,6 +49,8 @@ export class ChannelService implements OnDestroy {
   public chats: Chat[] = [];
   private unsubChats: any = null;
 
+  private updateAllowed = false;
+
   /**
    * @description Firestore instance.
    * @type {Firestore}
@@ -90,51 +92,30 @@ export class ChannelService implements OnDestroy {
     );
     this.currentUserSubscription = this.userservice.changeCurrentUser$.subscribe((type) => {
       if (type === 'login') {
+        this.updateAllowed = true;
         setTimeout(() => {
-          this.calculateUnreadMessagesCountForAllChannelsAndChats();
+          this.channels.forEach((channel) => { if (!channel.defaultChannel) this.calculateUnreadMessagesCount(channel); });
+          this.chats.forEach((chat) => { if (this.userservice.currentUser?.chatIDs.includes(chat.id)) this.calculateUnreadMessagesCount(chat); });
         }, 1000);
+      } else if (type === 'logout') {
+        this.updateAllowed = false;
       }
     });
   }
 
-  private initChannelCollection(): void {
-    this.unsubChannels = onSnapshot(
-      collection(this.firestore, '/channels'),
-      (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            const channel = new Channel(change.doc.data(), change.doc.id);
-            this.channels.push(channel);
-          }
-          if (change.type === 'modified') {
-            const channel = this.channels.find(
-              (channel) => channel.id === change.doc.id
-            );
-            if (channel) {
-              channel.update(change.doc.data());
-            }
-          }
-          if (change.type === 'removed') {
-            this.channels = this.channels.filter(
-              (channel) => channel.id !== change.doc.id
-            );
-          }
-        });
-      }
-    );
-  }
 
-
-  private calculateUnreadMessagesCountForAllChannelsAndChats() {
-    this.channels.forEach((channel) => {
-      if (!channel.defaultChannel) this.calculateUnreadMessagesCount(channel);
-    });
-    this.chats.forEach((chat) => {
-      if (chat.memberIDs.includes(this.userservice.currentUserID)) this.calculateUnreadMessagesCount(chat);
-    });
-  }
-
-
+  /**
+   * Calculates the number of unread messages in a given channel, chat, or message.
+   * 
+   * @param channel - The channel, chat, or message object for which to calculate unread messages.
+   * @returns A promise that resolves when the unread messages count has been calculated and updated in the channel object.
+   * 
+   * @remarks
+   * This method retrieves the last read message object for the given channel and calculates the number of messages
+   * created after the last view time. It then updates the `unreadMessagesCount` property of the channel object.
+   * 
+   * @throws Will throw an error if the Firestore query fails.
+   */
   public async calculateUnreadMessagesCount(channel: Channel | Chat | Message) {
     const lrm = this.userservice.getLastReadMessageObject(channel);
     const lastViewTime: Date = new Date();
@@ -146,48 +127,96 @@ export class ChannelService implements OnDestroy {
     );
     let unreadMessagesCount = 0;
     const test = querySnapshot.forEach((doc) => {
-        if(doc.data()['creatorID'] !== this.userservice.currentUserID) unreadMessagesCount++;
+      if (doc.data()['creatorID'] !== this.userservice.currentUserID) unreadMessagesCount++;
     });
     channel.unreadMessagesCount = unreadMessagesCount;
-    // if (channel instanceof Channel) console.log('Channel: ' + channel.name + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
-    // else if (channel instanceof Message) console.log('Message: ' + channel.id + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
-    // else {
-    //   const chatPartner = this.getChatPartner(channel);
-    //   console.log('Chat: ' + channel.id + ' / ' + (chatPartner ? chatPartner.name : 'Unbekannt') + ' / unreadMessagesCount: ' + channel.unreadMessagesCount);
-    // }
   }
 
 
-  private initChatCollection(): void {
-    this.unsubChats = onSnapshot(
-      collection(this.firestore, '/chats'),
-      (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added')
-            this.chats.push(
-              new Chat(change.doc.data(), change.doc.id)
-            );
-          if (change.type === 'modified') {
-            const chat = this.chats.find(
-              (chat) => chat.id === change.doc.id
-            );
-            if (chat) chat.update(change.doc.data());
+  /**
+   * Initializes the channel collection by setting up a Firestore snapshot listener.
+   * 
+   * This method subscribes to changes in the '/channels' collection in Firestore.
+   * It handles three types of changes:
+   * - 'added': Adds a new channel to the local `channels` array.
+   * - 'modified': Updates an existing channel in the local `channels` array and recalculates the unread messages count.
+   * - 'removed': Removes a channel from the local `channels` array.
+   * 
+   * @private
+   * @returns {void}
+   */
+  private initChannelCollection(): void {
+    this.unsubChannels = onSnapshot(collection(this.firestore, '/channels'), (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const channel = new Channel(change.doc.data(), change.doc.id);
+          this.channels.push(channel);
+        }
+        if (change.type === 'modified') {
+          const channel = this.channels.find((channel) => channel.id === change.doc.id);
+          if (channel) {
+            channel.update(change.doc.data());
+            if (this.updateAllowed) this.calculateUnreadMessagesCount(channel);
           }
-
-          if (change.type === 'removed')
-            this.chats = this.chats.filter(
-              (chat) => chat.id !== change.doc.data()['id']
-            );
-        });
-        this.chatListChange.next(this.chats);
-      }
-    );
+        }
+        if (change.type === 'removed') {
+          this.channels = this.channels.filter((channel) => channel.id !== change.doc.id);
+        }
+      });
+    });
   }
 
+
+  /**
+   * Initializes the chat collection by setting up a Firestore snapshot listener.
+   * 
+   * This method listens for changes in the '/chats' collection in Firestore and updates the local
+   * `chats` array accordingly. It handles three types of changes:
+   * 
+   * - 'added': Adds a new chat to the `chats` array.
+   * - 'modified': Updates an existing chat in the `chats` array and recalculates unread messages count if allowed.
+   * - 'removed': Removes a chat from the `chats` array.
+   * 
+   * After processing the changes, it emits the updated `chats` array via the `chatListChange` subject.
+   * 
+   * @private
+   * @returns {void}
+   */
+  private initChatCollection(): void {
+    this.unsubChats = onSnapshot(collection(this.firestore, '/chats'), (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') this.chats.push(new Chat(change.doc.data(), change.doc.id));
+        if (change.type === 'modified') {
+          const chat = this.chats.find((chat) => chat.id === change.doc.id);
+          if (chat) {
+            chat.update(change.doc.data());
+            if (this.updateAllowed) this.calculateUnreadMessagesCount(chat);
+          }
+        }
+        if (change.type === 'removed') this.chats = this.chats.filter((chat) => chat.id !== change.doc.data()['id']);
+      });
+      this.chatListChange.next(this.chats);
+    });
+  }
+
+
+  /**
+   * Retrieves a chat by its unique identifier.
+   *
+   * @param chatID - The unique identifier of the chat to retrieve.
+   * @returns The chat object if found, otherwise `undefined`.
+   */
   getChatByID(chatID: string): Chat | undefined {
     return this.chats.find((chat) => chat.id === chatID);
   }
 
+
+  /**
+   * Retrieves the chat partner for a given chat.
+   *
+   * @param chat - The chat object containing member IDs.
+   * @returns The User object of the chat partner if found, otherwise undefined.
+   */
   getChatPartner(chat: Chat): User | undefined {
     if (this.userservice.currentUser) {
       if (chat.memberIDs[0] === this.userservice.currentUserID)
@@ -198,6 +227,12 @@ export class ChannelService implements OnDestroy {
   }
 
 
+  /**
+   * Retrieves a chat between the current user and a specified user by their ID.
+   *
+   * @param selectedUserID - The ID of the user to find the chat with.
+   * @returns The chat object if found, otherwise `undefined`.
+   */
   getChatWithUserByID(selectedUserID: string): Chat | undefined {
     if (this.userservice.currentUser) {
       let selectedChat: Chat | undefined = undefined;
@@ -212,6 +247,12 @@ export class ChannelService implements OnDestroy {
   }
 
 
+  /**
+   * Retrieves a chat with a user by their username.
+   *
+   * @param selectedUserName - The username of the user to get the chat with.
+   * @returns The chat with the specified user, or `undefined` if the user is not found.
+   */
   getChatWithUserByName(selectedUserName: string): Chat | undefined {
     const selectedUser = this.userservice.getUserByName(selectedUserName);
     if (selectedUser) return this.getChatWithUserByID(selectedUser.id);
@@ -219,11 +260,23 @@ export class ChannelService implements OnDestroy {
   }
 
 
+  /**
+   * Retrieves a channel by its name.
+   *
+   * @param channelName - The name of the channel to retrieve.
+   * @returns The channel object if found, otherwise `undefined`.
+   */
   getChannelByName(channelName: string): Channel | undefined {
     return this.channels.find((channel) => channel.name === channelName) || undefined;
   }
 
 
+  /**
+   * Checks if the current user is a member of the specified channel by its name.
+   *
+   * @param {string} channel - The name of the channel to check.
+   * @returns {boolean} - Returns `true` if the current user is a member of the channel, otherwise `false`.
+   */
   ifCurrentUserMemberOfChannelByName(channel: string): boolean {
     const channelObj = this.getChannelByName(channel);
     if (channelObj) return channelObj.memberIDs.includes(this.userservice.currentUserID);
