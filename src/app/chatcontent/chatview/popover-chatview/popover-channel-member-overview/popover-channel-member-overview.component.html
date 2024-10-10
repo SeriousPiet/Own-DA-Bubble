@@ -5,12 +5,12 @@
     popovertargetaction="hide"
     popovertarget="channel-member-overview-popover"
   >
-    <img src="assets\icons\chat\general\close.svg" alt="" />
+    <img src="assets\icons\chat\general\close.svg" alt="close" />
   </button>
 </div>
 <section class="member-list">
   @for (memberID of currentChannel.memberIDs; track memberID) {
-    @if(!checkifUserIsGuest(memberID)){
+  @if(!checkifUserIsGuest(memberID)){
   <button
     [ngClass]="{
       'current-user': memberID === userService.currentUser?.id,
@@ -26,8 +26,7 @@
     ></div>
     <span>{{ getMemberName(memberID) }}</span>
   </button>
-  }
-  }
+  } }
   <button
     (click)="openAddNewMemberPopover()"
     [ngClass]="{
@@ -38,7 +37,10 @@
     [disabled]="!isAllowedToAddMember()"
   >
     <div>
-      <img src="assets/icons/chat/general/add-to-channel.svg" alt="" />
+      <img
+        src="assets/icons/chat/general/add-to-channel.svg"
+        alt="add to channel"
+      />
     </div>
     <span>Mitglieder hinzufügen</span>
   </button>
@@ -53,7 +55,7 @@
         popovertarget="channel-member-overview-popover"
         (click)="resetAddmembers()"
       >
-        <img src="assets\icons\chat\general\close.svg" alt="" />
+        <img src="assets\icons\chat\general\close.svg" alt="close" />
       </button>
     </div>
     <div class="channel-name">

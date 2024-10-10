@@ -3,15 +3,18 @@
     <div class="picker-info">
       <div class="picker-use-info">
         Benutze:
-        <img src="./assets/icons/chat/write-message/updown.svg" alt="" />
-        <img src="./assets/icons/chat/write-message/enter.svg" alt="" />
+        <img
+          src="./assets/icons/chat/write-message/updown.svg"
+          alt="navigate using up & down key"
+        />
+        <img src="./assets/icons/chat/write-message/enter.svg" alt="Enter" />
         <span>ESC</span>
       </div>
       <div class="picker-close">
         <img
           (click)="handlePickerSelectionKeys('Escape')"
           src="./assets/icons/chat/general/close.svg"
-          alt=""
+          alt="close"
         />
       </div>
     </div>
@@ -30,7 +33,7 @@
         @if(isUser(item)) {
         <div appAvatar [user]="item" context="search"></div>
         } @else {
-        <img src="../../../assets/icons/wsm/hashtag.svg" alt="" />
+        <img src="../../../assets/icons/wsm/hashtag.svg" alt="channel icon" />
         }
         <span class="picker-item-name">{{ item.name }}</span>
       </div>
