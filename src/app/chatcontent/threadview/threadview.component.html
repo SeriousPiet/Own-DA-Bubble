@@ -23,9 +23,17 @@
         <app-message [isThreadView]="true" [id]="navigationService.threadViewObject.id"
           [messageData]="navigationService.threadViewObject" />
       </div>
-      <app-messages-list-view class="thread-list-view" [messagesPath]="navigationService.threadViewPath" [currentObject]="navigationService.threadViewObject" />
-      <app-message-textarea [messagesCollectionObject]="navigationService.threadViewObject" />
+      <app-messages-list-view
+        class="thread-list-view"
+        [messagesPath]="navigationService.threadViewPath"
+      />
     </div>
+    <section class="chatview-editor">
+      <app-message-textarea
+        [messagesCollectionObject]="navigationService.threadViewObject"
+      />
+    </section>
+    
     }
   </section>
 </main>

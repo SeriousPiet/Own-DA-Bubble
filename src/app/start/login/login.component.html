@@ -5,7 +5,7 @@
     <div class="intro-boundry">
       <div class="animated-content">
         <div class="animated-bubble-logo">
-          <img src="./assets/img/start-logo.png" alt="" />
+          <img src="./assets/img/start-logo.png" alt="DA Bubble Logo" />
         </div>
 
         <div class="heading">
@@ -40,21 +40,36 @@
   <div id="infoPopover" popover>
     <div>
       @if(loginInfoIcon) {
-      <img src="./assets/icons/modals/send-white.svg" alt="" />
+      <img
+        src="./assets/icons/modals/send-white.svg"
+        alt="sent verification mail"
+      />
       }
       {{ loginInfoMessage }}
     </div>
   </div>
 
   @if(passwordResetFormShow) {
-  <form class="pw-reset-form" [formGroup]="passwordResetForm" (ngSubmit)="submitPasswordResetForm($event)">
-    <button type="button" class="return" (click)="passwordResetFormShow = false">
-      <img src="../../../assets/icons/start/go-back.svg" alt="" />
+  <form
+    class="pw-reset-form"
+    [formGroup]="passwordResetForm"
+    (ngSubmit)="submitPasswordResetForm($event)"
+  >
+    <button
+      type="button"
+      class="return"
+      (click)="passwordResetFormShow = false"
+    >
+      <img src="../../../assets/icons/start/go-back.svg" alt="go back icon" />
     </button>
     <span class="title">Passwort zurücksetzen</span>
     <div class="info">Bitte gib deine E-Mail-Adresse ein.</div>
     <div class="input-box mail">
-      <input formControlName="email" type="email" placeholder="beispielname@email.com" />
+      <input
+        formControlName="email"
+        type="email"
+        placeholder="beispielname@email.com"
+      />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
       } @else if(passwordResetForm.get('email')?.invalid &&
@@ -69,22 +84,38 @@
     </div>
     <div class="action-btns-pwreset">
       @if(showSpinner) {
-      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
+      <img
+        src="../../../assets/icons/svg-spinner-accent.svg"
+        alt="loading spinner"
+      />
       }
-      <button [disabled]="passwordResetForm.invalid" type="submit" class="blue-btn">
+      <button
+        [disabled]="passwordResetForm.invalid"
+        type="submit"
+        class="blue-btn"
+      >
         E-Mail abschicken
       </button>
     </div>
   </form>
   } @else if(loginFormShow) {
-  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="submitLoginForm($event)">
+  <form
+    class="login-form"
+    [formGroup]="loginForm"
+    (ngSubmit)="submitLoginForm($event)"
+  >
     <span class="title">Anmeldung</span>
     <div class="info">
       Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
       verwendest.
     </div>
     <div class="input-box mail">
-      <input id="email" formControlName="email" type="email" placeholder="beispielname@email.com" />
+      <input
+        id="email"
+        formControlName="email"
+        type="email"
+        placeholder="beispielname@email.com"
+      />
       @if(errorEmail != '') {
       <span class="errorspan">{{ errorEmail }}</span>
       } @else if(loginForm.get('email')?.invalid &&
@@ -93,13 +124,19 @@
       }
     </div>
     <div class="input-box pw">
-      <input formControlName="password" type="password" placeholder="Passwort" />
+      <input
+        formControlName="password"
+        type="password"
+        placeholder="Passwort"
+      />
       @if(errorPassword != '') {
       <span class="errorspan">{{ errorPassword }}</span>
       } @else if(loginForm.get('password')?.invalid &&
       (loginForm.get('password')?.dirty || loginForm.get('password')?.touched))
       {
-      <span class="errorspan">Passwort muss mindesten 8 Zeichen lang sein.</span>
+      <span class="errorspan"
+        >Passwort muss mindesten 8 Zeichen lang sein.</span
+      >
       }
     </div>
     <div class="password-missed">
@@ -113,8 +150,12 @@
       <div></div>
     </div>
     <div class="button-box">
-      <button class="login-with-google" (click)="signinWithGoogle()" type="button">
-        <img src="../../../assets/icons/start/google.svg" alt="" />
+      <button
+        class="login-with-google"
+        (click)="signinWithGoogle()"
+        type="button"
+      >
+        <img src="../../../assets/icons/start/google.svg" alt="google icon" />
         Anmelden mit Google
       </button>
       @if(errorGoogleSignin != '') {
@@ -126,7 +167,11 @@
         Anmelden
       </button>
       @if(showSpinner && !spinnerMobile) {
-      <img class="spinner" src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
+      <img
+        class="spinner"
+        src="../../../assets/icons/svg-spinner-accent.svg"
+        alt="loading spinner"
+      />
       }
       <button (click)="loginGuest()" type="button" class="white-btn">
         Gäste-Login
@@ -134,12 +179,15 @@
     </div>
     @if(showSpinner && spinnerMobile ) {
     <div class="spinner-box">
-      <img class="spinner" src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
+      <img
+        class="spinner"
+        src="../../../assets/icons/svg-spinner-accent.svg"
+        alt="loading spinner"
+      />
     </div>
     }
   </form>
-  }
-  @if(loginFormShow) {
+  } @if(loginFormShow) {
   <div class="mandatory-buttons">
     <button [routerLink]="['/imprint']">Impressum</button>
     <button [routerLink]="['/policy']">Datenschutz</button>

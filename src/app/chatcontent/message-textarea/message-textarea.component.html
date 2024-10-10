@@ -1,58 +1,130 @@
 <div class="input-message">
-  <div [ngClass]="{ 'drag-over': dropzonehighlighted }" class="drag-background"></div>
-  <app-message-editor #messageeditor (enterPressed)="addNewMessage()"
-    (textLengthChanged)="handleEditorTextLengthChanged($event)" [placeholder]="'Schreib etwas...'"></app-message-editor>
+  <div
+    [ngClass]="{ 'drag-over': dropzonehighlighted }"
+    class="drag-background"
+  ></div>
+  <app-message-editor
+    #messageeditor
+    (enterPressed)="addNewMessage()"
+    (textLengthChanged)="handleEditorTextLengthChanged($event)"
+    [placeholder]="'Schreib etwas...'"
+  ></app-message-editor>
   @if(!ifMessageUploading && attachments.length > 0){
   <div class="attachments">
     @for(attachment of attachments; track attachment){
     <div class="attachment">
       <img src="{{ attachment.src }}" alt="+" />
       <span>{{ attachment.name }}</span>
-      <img (click)="removeAttachment(attachment)" class="remove-attachment" src="./assets/icons/chat/general/close.svg"
-        alt="" />
+      <img
+        (click)="removeAttachment(attachment)"
+        class="remove-attachment"
+        src="./assets/icons/chat/general/close.svg"
+        alt="close"
+      />
     </div>
     }
   </div>
   }
   <div class="input-message-toolbar z-index-2">
-    <div class="message-action-button" (mouseenter)="isActive = true" (mouseleave)="isActive = false">
-      <div id="add-attachment-icon" [ngClass]="{ 'button-ctn': attachments.length < 5 }" class="button-ctn-size">
+    <div
+      class="message-action-button"
+      (mouseenter)="isActive = true"
+      (mouseleave)="isActive = false"
+    >
+      <div
+        id="add-attachment-icon"
+        [ngClass]="{ 'button-ctn': attachments.length < 5 }"
+        class="button-ctn-size"
+      >
         <label class="addattachment" [for]="inputID" id="add-attachment-icon">
-          <input [disabled]="ifMessageUploading || attachments.length >= 5" (change)="changeAttachmentFile($event)"
-            [id]="inputID" type="file" accept=".pdf, .png, .jpeg, .gif" multiple />
-          <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/add-attachment.svg" alt="+" />
-          <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/add-attachment-active.svg"
-            alt="+" />
+          <input
+            [disabled]="ifMessageUploading || attachments.length >= 5"
+            (change)="changeAttachmentFile($event)"
+            [id]="inputID"
+            type="file"
+            accept=".pdf, .png, .jpeg, .gif"
+            multiple
+          />
+          <img
+            [ngClass]="{ 'd-none': isActive }"
+            src="./assets/icons/chat/write-message/add-attachment.svg"
+            alt="+"
+          />
+          <img
+            [ngClass]="{ 'd-none': !isActive }"
+            src="./assets/icons/chat/write-message/add-attachment-active.svg"
+            alt="+"
+          />
         </label>
       </div>
       <span>|</span>
-      <div (click)="messageeditor.openEmojiPicker()" id="emoji-picker-icon" class="button-ctn">
-        <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/emoji-picker.svg" alt="+" />
-        <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/emoji-picker-active.svg"
-          alt="smiley" />
+      <div
+        (click)="messageeditor.openEmojiPicker()"
+        id="emoji-picker-icon"
+        class="button-ctn"
+      >
+        <img
+          [ngClass]="{ 'd-none': isActive }"
+          src="./assets/icons/chat/write-message/emoji-picker.svg"
+          alt="+"
+        />
+        <img
+          [ngClass]="{ 'd-none': !isActive }"
+          src="./assets/icons/chat/write-message/emoji-picker-active.svg"
+          alt="smiley"
+        />
       </div>
-      <div (click)="messageeditor.openListPicker('@')" id="tag-person-icon" class="button-ctn">
-        <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/tag-person.svg" alt="+" />
-        <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/tag-person-active.svg"
-          alt="@" />
+      <div
+        (click)="messageeditor.openListPicker('@')"
+        id="tag-person-icon"
+        class="button-ctn"
+      >
+        <img
+          [ngClass]="{ 'd-none': isActive }"
+          src="./assets/icons/chat/write-message/tag-person.svg"
+          alt="+"
+        />
+        <img
+          [ngClass]="{ 'd-none': !isActive }"
+          src="./assets/icons/chat/write-message/tag-person-active.svg"
+          alt="@"
+        />
       </div>
-      <div (click)="messageeditor.openListPicker('#')" id="tag-channel-icon" class="button-ctn">
-        <img [ngClass]="{ 'd-none': isActive }" src="./assets/icons/chat/write-message/hashtag.svg" alt="+" />
-        <img [ngClass]="{ 'd-none': !isActive }" src="./assets/icons/chat/write-message/hashtag-active.svg" alt="@" />
+      <div
+        (click)="messageeditor.openListPicker('#')"
+        id="tag-channel-icon"
+        class="button-ctn"
+      >
+        <img
+          [ngClass]="{ 'd-none': isActive }"
+          src="./assets/icons/chat/write-message/hashtag.svg"
+          alt="+"
+        />
+        <img
+          [ngClass]="{ 'd-none': !isActive }"
+          src="./assets/icons/chat/write-message/hashtag-active.svg"
+          alt="@"
+        />
       </div>
     </div>
     <div class="bottom-bar">
       @if(errorInfo !== '') { <span class="errorspan">{{ errorInfo }}</span>
-      }
-      @if(ifMessageUploading){
-      <img src="./assets/icons/svg-spinner-accent.svg" alt="" />
-      } @else {
-      @if(showTextLength) {
+      } @if(ifMessageUploading){
+      <img src="./assets/icons/svg-spinner-accent.svg" alt="loading spinner" />
+      } @else { @if(showTextLength) {
       <span class="errorspan">{{ textLengthInfo }}</span>
       }
-      <button [disabled]="!allowSendMessage" (click)="addNewMessage()" id="send-message-icon"
-        (mouseenter)="isActive = true" (mouseleave)="isActive = false">
-        <img src="./assets/icons/chat/write-message/send.svg" alt="" />
+      <button
+        [disabled]="!allowSendMessage"
+        (click)="addNewMessage()"
+        id="send-message-icon"
+        (mouseenter)="isActive = true"
+        (mouseleave)="isActive = false"
+      >
+        <img
+          src="./assets/icons/chat/write-message/send.svg"
+          alt="send message icon"
+        />
       </button>
       }
     </div>

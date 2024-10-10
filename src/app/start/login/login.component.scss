@@ -3,6 +3,7 @@
 @import "../../../mixins.scss";
 
 $popover-padding: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
+$popover-fs: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
 
 #infoPopover {
   transform: translateX(100vw);
@@ -11,7 +12,7 @@ $popover-padding: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
   background-color: $accent;
   border: unset;
   border-radius: 2rem 2rem 0 2rem;
-  font-size: $popover-padding;
+  font-size: $popover-fs;
   font-weight: 700;
   color: white;
   box-shadow: 0px 6px 10px 0px #00000033;

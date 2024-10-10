@@ -5,22 +5,25 @@ $wsm-width: clamp(18rem, 4.444vw + 14.667rem, 20rem);
 $thread-width: clamp(26rem, 13.333vw + 16rem, 32rem);
 $transition-grid: all 0.25s ease-out;
 
+$popover-padding: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
+$popover-fs: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
+
 #emailNotVerifiedPopover {
   transform: translateX(100vw);
+  width: fit-content;
   margin: auto 1.25rem 1.25rem auto;
-  padding: 2rem;
+  padding: $popover-padding;
   background-color: $accent;
   border: unset;
   border-radius: 2rem 2rem 0 2rem;
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: white;
   box-shadow: 0px 6px 10px 0px #00000033;
   transition: $transition-popover;
 
-  > div {
-    @include flex(flex-start, center);
-    gap: 1rem;
+  & span {
+    font-size: $popover-fs;
+    font-weight: 700;
+    color: white;
+    text-wrap: balance;
   }
 }
 
@@ -198,6 +201,8 @@ section.chatcontent.one-broad-column {
   .threadview {
     grid-column: 1 / 2;
     width: 100%;
+    --message-padding-left: 2.875rem;
+    --textarea-padding-left: 2.625rem;
     transition: opacity 0s, overflow 0s, width 0.125s !important;
 
     &.hidden {

@@ -23,19 +23,19 @@ section {
 }
 
 .new-messages {
-  width: 100%;
   @include flex(center, center);
   gap: 0.5rem;
-  padding: 0.625rem;
+  width: 100%;
+  padding: 0.625rem 1.25rem;
 
   div {
     height: 2px;
     flex-grow: 1;
-    background-color: $error;
+    background-color: $secondary;
   }
 
   span {
-    @include nunito(0.875, 400, $error);
+    @include nunito(1, 400, $secondary);
   }
 }
 

@@ -2,44 +2,67 @@
   <div class="profile-details">
     <div class="top">
       <span class="modal-title">Profil</span>
-      <button class="icon-box" popovertargetaction="hide" popovertarget="popover-member-profile">
+      <button
+        class="icon-box"
+        popovertargetaction="hide"
+        popovertarget="popover-member-profile"
+      >
         <img src="./assets/icons/chat/general/close.svg" alt="Close" />
       </button>
     </div>
 
     @if (selectedUser) {
     <div>
-      <div class="avatar" appAvatar [user]="selectedUser" context="profile-card"></div>
+      <div
+        class="avatar"
+        appAvatar
+        [user]="selectedUser"
+        context="profile-card"
+      ></div>
     </div>
     }
 
     <div class="username-ctn">
       <span class="username">{{ selectedUser?.name }}</span>
       <div class="online-status">
-        <div class="online-status-indicator" [style]="{
+        <div
+          class="online-status-indicator"
+          [style]="{
             '--status-color': selectedUser?.online ? onlineColor : offlineColor
-          }"></div>
+          }"
+        ></div>
 
-        <span [style]="{
+        <span
+          [style]="{
             color: selectedUser?.online ? onlineColor : offlineColor
-          }">
+          }"
+        >
           {{ selectedUser?.online ? "Aktiv" : "Offline" }}
         </span>
       </div>
     </div>
 
     <div class="usermail">
-      <img src="./assets/icons/start/mail.svg" alt="" />
+      <img src="./assets/icons/start/mail.svg" alt="send mail" />
       <div class="mail-adress">
         <span>Email-Adresse</span>
         <a href="mailto: {{ selectedUser?.email }}">{{
           selectedUser?.email
-          }}</a>
+        }}</a>
       </div>
     </div>
 
-    <button popovertargetaction="hide" popovertarget="popover-member-profile" popovertarget="channel-member-overview-popover" (click)="setChat(selectedUser)" class="send-direct-message-btn">
-      <img src="./assets/icons/chat/general/dm-profile-enter-chat.svg" alt="" />Nachricht
+    <button
+      popovertargetaction="hide"
+      popovertarget="popover-member-profile"
+      popovertarget="channel-member-overview-popover"
+      (click)="setChat(selectedUser)"
+      class="send-direct-message-btn"
+    >
+      <img
+        src="./assets/icons/chat/general/dm-profile-enter-chat.svg"
+        alt="enter chat"
+      />Nachricht
     </button>
   </div>
 </main>

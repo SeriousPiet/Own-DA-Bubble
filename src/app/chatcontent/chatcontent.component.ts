@@ -32,9 +32,7 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
     | 'three-columns'
     | 'two-broad-columns'
     | 'two-narrow-columns'
-    | 'one-broad-column'
-    | 'one-narrow-column'
-    | 'one-slim-column' = 'three-columns';
+    | 'one-broad-column' = 'three-columns';
 
   isWorkspaceMenuVisible = true;
   isThreadViewVisible = false;
@@ -45,14 +43,17 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
+  /**
+   * Initializes the layout of the chat content component based on the current screen size.
+   * Subscribes to breakpoint changes and updates the layout accordingly.
+   * Also subscribes to navigation service changes to update the visibility of different views.
+   */
   ngOnInit() {
     const layoutBreakpoints = {
       'three-columns': '(min-width: 1200px)',
       'two-broad-columns': '(min-width: 892px) and (max-width: 1199px)',
       'two-narrow-columns': '(min-width: 716px) and (max-width: 891px)',
-      'one-broad-column': '(min-width: 480px) and (max-width: 715px)',
-      'one-narrow-column': ' (min-width: 376px) and (max-width: 479px)',
-      'one-slim-column': '(max-width: 375px)',
+      'one-broad-column': '(min-width: 320px) and (max-width: 715px)',
     };
 
     this.breakpointSubscription = this.breakpointObserver
@@ -96,12 +97,21 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Unsubscribes from the breakpoint subscription when the component is destroyed.
+   */
   ngOnDestroy() {
     if (this.breakpointSubscription) {
       this.breakpointSubscription.unsubscribe();
     }
   }
 
+  /**
+   * Sets the layout of the chat content based on the current layout mode.
+   * This method is called when the layout mode changes to adjust the visibility
+   * of the various components (workspace menu, chat view, thread view) based on
+   * the current layout.
+   */
   setLayout() {
     switch (this.currentLayout) {
       case 'three-columns':
@@ -116,20 +126,22 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
       case 'one-broad-column':
         this.adjustOneBroadColumnLayout();
         break;
-      case 'one-narrow-column':
-        // to be implemented
-
-        break;
-      case 'one-slim-column':
-        // to be implemented
-        break;
     }
   }
+
+  /**
+   * Adjusts the layout of the chat content when the current layout is set to 'three-columns'.
+   * This method sets the `isSingleColumn` flag based on the visibility of the workspace menu and thread view.
+   */
   adjustThreeColumnLayout() {
     this.isSingleColumn =
       !this.isWorkspaceMenuVisible && !this.isThreadViewVisible;
   }
 
+  /**
+   * Adjusts the layout of the chat content when the current layout is set to 'two-broad-columns'.
+   * This method sets the visibility of the workspace menu and chat view based on the visibility of the thread view.
+   */
   adjustTwoBroadColumnLayout() {
     if (this.isThreadViewVisible) {
       this.isWorkspaceMenuVisible = false;
@@ -139,15 +151,22 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Adjusts the layout of the chat content when the current layout is set to 'two-narrow-columns'.
+   * This method sets the visibility of the chat view based on the visibility of the thread view.
+   */
   adjustTwoNarrowColumnLayout() {
     if (!this.isWorkspaceMenuVisible) {
-      // Wenn WSM ausgeblendet ist, entweder ChatView oder ThreadView zeigen
       this.isChatViewVisible = !this.isThreadViewVisible;
     } else {
       this.isChatViewVisible = !this.isThreadViewVisible;
     }
   }
 
+  /**
+   * Adjusts the layout of the chat content when the current layout is set to 'one-broad-column'.
+   * This method sets the visibility of the workspace menu, chat view, and thread view based on the visibility of the thread view and workspace menu.
+   */
   adjustOneBroadColumnLayout() {
     if (this.isThreadViewVisible) {
       this.isWorkspaceMenuVisible = false;
@@ -159,6 +178,10 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Toggles the visibility of the thread view in the chat content component.
+   * This method adjusts the visibility of the workspace menu, chat view, and thread view based on the current layout of the chat content.
+   */
   toggleThreadView() {
     this.isThreadViewVisible = !this.isThreadViewVisible;
 
@@ -166,11 +189,9 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
       if (this.isThreadViewVisible) {
         this.isWorkspaceMenuVisible = false;
       }
-      // ChatView bleibt immer sichtbar in diesem Layout
       this.isChatViewVisible = true;
     } else if (this.currentLayout === 'two-narrow-columns') {
       this.isChatViewVisible = !this.isThreadViewVisible;
-      // WSM-Status bleibt unverändert
     } else if (
       this.currentLayout !== 'three-columns' &&
       this.isThreadViewVisible
@@ -188,6 +209,10 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
     this.setLayout();
   }
 
+  /**
+   * Toggles the visibility of the workspace menu in the chat content component.
+   * This method adjusts the visibility of the workspace menu, chat view, and thread view based on the current layout of the chat content.
+   */
   toggleWorkspaceMenu() {
     this.isWorkspaceMenuVisible = !this.isWorkspaceMenuVisible;
 
@@ -195,7 +220,6 @@ export class ChatcontentComponent implements OnInit, OnDestroy {
       if (this.isWorkspaceMenuVisible) {
         this.isThreadViewVisible = false;
       }
-      // ChatView bleibt immer sichtbar in diesem Layout
       this.isChatViewVisible = true;
     } else if (this.currentLayout === 'two-narrow-columns') {
       if (this.isWorkspaceMenuVisible) {

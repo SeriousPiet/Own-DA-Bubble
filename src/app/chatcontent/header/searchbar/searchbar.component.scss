@@ -61,7 +61,7 @@
   .datepicker {
     position: relative;
     top: 1.125rem;
-    left: 18rem;
+    left: calc(100% - 18rem);
     width: 0;
     height: 0;
   }

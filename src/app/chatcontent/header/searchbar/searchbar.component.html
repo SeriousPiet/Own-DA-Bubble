@@ -1,60 +1,97 @@
-<div class="searchbar" [ngClass]="isDropdownVisible ? 'searchbar-open' : ''" (click)="$event.stopPropagation();">
-  <input #searchInput type="text" [(ngModel)]="searchQuery" (input)="onSearchInput(searchQuery)" (focus)="onFocus()"
-    placeholder="Search..." />
+<div
+  class="searchbar"
+  [ngClass]="isDropdownVisible ? 'searchbar-open' : ''"
+  (click)="$event.stopPropagation()"
+>
+  <input
+    #searchInput
+    type="text"
+    [(ngModel)]="searchQuery"
+    (input)="onSearchInput(searchQuery)"
+    (focus)="onFocus()"
+    placeholder="Search..."
+  />
 
-  <button [class.d-none]="isWelcomeChannel" class="datepicker-icon" (click)="toggleDatepicker()">
+  <button
+    [class.d-none]="isWelcomeChannel"
+    class="datepicker-icon"
+    (click)="toggleDatepicker()"
+  >
     <img src="./assets/icons/modals/calendar-search.svg" alt="Calendar Icon" />
   </button>
 
-  <input #dateInput type="date" class="datepicker" (change)="onDateSelected($event)"
-    [class.d-none]="!isDatepickerVisible" />
-
+  <input
+    #dateInput
+    type="date"
+    class="datepicker"
+    (change)="onDateSelected($event)"
+    [class.d-none]="!isDatepickerVisible"
+  />
 
   @if(isDropdownVisible) {
   <div class="dropdown">
-    @if(!isWelcomeChannel) {
-    @if(!searchService.isContextSearchEnabled) {
+    @if(!isWelcomeChannel) { @if(!searchService.isContextSearchEnabled) {
     <div class="context-search" (click)="enableContextSearch()">
       {{ searchService.getCurrentContext() }} suchen
     </div>
-    }
-    @else {
+    } @else {
     <div class="search-blocks context-active">
-      <span *ngIf="searchService.getSearchRestrictions().context" class="search-block-item">
+      <span
+        *ngIf="searchService.getSearchRestrictions().context"
+        class="search-block-item"
+      >
         {{ searchService.getSearchRestrictions().context }}
         <button class="remove-context" (click)="removeContextFromSearch()">
-          <img src="./assets/icons/modals/close-search-item.svg" alt="" />
+          <img
+            src="./assets/icons/modals/close-search-item.svg"
+            alt="disable context-based search"
+          />
         </button>
       </span>
     </div>
-    }
-    }
+    } }
 
-    <div class="autocomplete-suggestions" *ngIf="(suggestions$ | async)?.length ?? 0 > 0">
+    <div
+      class="autocomplete-suggestions"
+      *ngIf="(suggestions$ | async)?.length ?? 0 > 0"
+    >
       <ng-container *ngFor="let suggestion of suggestions$ | async">
         <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
           <ng-container [ngSwitch]="suggestion.type">
             <ng-container *ngSwitchCase="'user'">
-              <div *ngIf="getUserFromSuggestion(suggestion)" appAvatar [user]="getUserFromSuggestion(suggestion)!"
-                context="search"></div>
+              <div
+                *ngIf="getUserFromSuggestion(suggestion)"
+                appAvatar
+                [user]="getUserFromSuggestion(suggestion)!"
+                context="search"
+              ></div>
               {{ suggestion.text }}
               <span class="item-action">{{
                 suggestion.hasChat ? "Chat betreten" : "Unterhaltung starten"
-                }}</span>
+              }}</span>
             </ng-container>
             <ng-container *ngSwitchCase="'channel'">
               {{ suggestion.text }}
               <span class="item-action">{{
-                channelService.ifCurrentUserMemberOfChannelByName(suggestion.text.slice(1))
-                ? "Channel betreten"
-                : "Channel beitreten"
-                }}</span>
+                channelService.ifCurrentUserMemberOfChannelByName(
+                  suggestion.text.slice(1)
+                )
+                  ? "Channel betreten"
+                  : "Channel beitreten"
+              }}</span>
             </ng-container>
             <ng-container *ngSwitchCase="'message'">
               <div class="message-item">
-                <img src="./assets/icons/modals/search-message.svg" alt="Nachricht" class="message-icon" />
+                <img
+                  src="./assets/icons/modals/search-message.svg"
+                  alt="Nachricht"
+                  class="message-icon"
+                />
                 <div class="message-preview">
-                  <span class="message-content" [innerHTML]="suggestion.text"></span>
+                  <span
+                    class="message-content"
+                    [innerHTML]="suggestion.text"
+                  ></span>
                 </div>
               </div>
             </ng-container>
@@ -65,25 +102,40 @@
 
     <div class="recent-searches">
       <div class="category-header">Aktuelle Suchanfragen:</div>
-      <div class="recent-search-items" *ngFor="let search of recentSearches" (click)="selectRecentSearch(search)">
-        <img class="search-history-icon" src="./assets/icons/modals/search-history.svg" alt="Search History" />
+      <div
+        class="recent-search-items"
+        *ngFor="let search of recentSearches"
+        (click)="selectRecentSearch(search)"
+      >
+        <img
+          class="search-history-icon"
+          src="./assets/icons/modals/search-history.svg"
+          alt="Search History"
+        />
 
-        <div class="avatar" *ngIf="search.type === 'user' && getUserFromSuggestion(search)" appAvatar
-          [user]="getUserFromSuggestion(search)!" context="search"></div>
+        <div
+          class="avatar"
+          *ngIf="search.type === 'user' && getUserFromSuggestion(search)"
+          appAvatar
+          [user]="getUserFromSuggestion(search)!"
+          context="search"
+        ></div>
 
         <span [innerHTML]="search.text"></span>
         <span class="item-action" *ngIf="search.type === 'user'">
           {{
-          channelService.getChatWithUserByName(search.text.slice(1))
-          ? "Chat betreten"
-          : "Unterhaltung starten"
+            channelService.getChatWithUserByName(search.text.slice(1))
+              ? "Chat betreten"
+              : "Unterhaltung starten"
           }}
         </span>
         <span class="item-action" *ngIf="search.type === 'channel'">
           {{
-          channelService.ifCurrentUserMemberOfChannelByName(search.text.slice(1))
-          ? "Channel betreten"
-          : "Channel beitreten"
+            channelService.ifCurrentUserMemberOfChannelByName(
+              search.text.slice(1)
+            )
+              ? "Channel betreten"
+              : "Channel beitreten"
           }}
         </span>
       </div>
