@@ -194,10 +194,8 @@ main {
 }
 
 .no-edit-right {
-  color: $disabled !important;
   cursor: default !important;
   user-select: none !important;
-  cursor: default !important;
 }
 
 .leave-channel-button {
@@ -370,7 +368,7 @@ main {
   opacity: 1;
 }
 
-@starting-style {
+%starting-style {
   #add-member-to-channel-mobile-popover {
     opacity: 0;
   }

@@ -2,17 +2,16 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
-.add-channel.fullscreen{
+.add-channel.fullscreen {
   padding: 0;
 
-  @media screen and (orientation:landscape) {
+  @media screen and (orientation: landscape) {
     .addChannelSection {
       gap: 0.5rem;
       padding: 1.2rem;
     }
   }
 }
-
 
 .fullscreen {
   width: 100vw;
@@ -33,7 +32,7 @@
   opacity: 0;
   transition: $transition-popover;
 
-  @media(width < 426px) {
+  @media (width < 426px) {
     padding: 0;
   }
 }
@@ -44,7 +43,7 @@
   opacity: 1;
 }
 
-@starting-style {
+%starting-style {
   #addChannelId:popover-open {
     transform: translateY(-3rem);
     opacity: 0;
@@ -120,7 +119,7 @@
     cursor: pointer;
   }
 
-  @media(width < 426px) {
+  @media (width < 426px) {
     height: 100%;
     border-radius: 0;
     gap: 1.25rem !important;
