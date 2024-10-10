@@ -1,4 +1,4 @@
-<section popover id="addChannelId" class="add-channel" (click)="closeOnClick()">
+<section popover id="addChannelId"[ngClass]="{ fullscreen: isFullscreen, 'add-channel': true }" (click)="closeOnClick()">
   @if (toggleAddChannelPopover) {
   <section [ngClass]="{ fullscreen: isFullscreen }" class="addChannelSection">
     <div class="headline">
