@@ -1,13 +1,20 @@
 @import "../../../../../styles.scss";
 @import "../../../../../mixins.scss";
 
+$popover-width: clamp(26rem, 42.056vw + 8.084rem, 35rem);
+
 :host {
   top: -5.3125rem;
-  width: 50%;
+  width: 100%;
+  max-width: $popover-width;
   border: none;
   border-radius: 0px 1.875rem 1.875rem 1.875rem;
   opacity: 0;
   transition: $transition-popover;
+
+  @media (width <= 425px) {
+    max-width: 100%;
+  }
 }
 
 main {

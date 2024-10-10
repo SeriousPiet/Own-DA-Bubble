@@ -200,7 +200,6 @@ export class SearchbarComponent implements OnInit {
    * @param search - The search suggestion to select.
    */
   selectRecentSearch(search: SearchSuggestion) {
-    console.log('Recent search selected: ', search.text);
     this.selectSuggestion(search);
     this.onSearchInput(search.text);
   }
