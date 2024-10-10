@@ -1,17 +1,35 @@
 import { Timestamp } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
 
+/**
+ * Interface representing a collection of reactions.
+ * 
+ * @interface IReactions
+ * @property {string} type - The type of reaction (e.g., like, love, etc.).
+ * @property {string[]} userIDs - An array of user IDs who have given this reaction.
+ */
 export interface IReactions {
   type: string;
   userIDs: string[];
 }
 
+
+/**
+ * Represents an attachment that is stored.
+ * 
+ * @typedef {Object} StoredAttachment
+ * @property {string} name - The name of the attachment.
+ * @property {'image' | 'pdf'} type - The type of the attachment, which can be either 'image' or 'pdf'.
+ * @property {string} url - The URL where the attachment can be accessed.
+ * @property {string} path - The file path of the attachment.
+ */
 export type StoredAttachment = {
   name: string;
   type: 'image' | 'pdf';
   url: string;
   path: string;
 };
+
 
 export class Message {
   private changeMessage = new BehaviorSubject<void>(undefined);
@@ -97,6 +115,12 @@ export class Message {
     this._attachments = this.parseAttachments(data.attachments);
   }
 
+
+  /**
+   * Calculates and updates the emojis based on the provided reactions array.
+   * 
+   * @param reactionsArray - An array of strings representing reactions in JSON format.
+   */
   calculateReaction(reactionsArray: string[]) {
     this._emojies = [];
     if (reactionsArray) {
@@ -106,11 +130,31 @@ export class Message {
     }
   }
 
+
+  /**
+   * Parses the provided data to extract stored attachments.
+   *
+   * @param data - The data to be parsed, expected to be a JSON string.
+   * @returns An array of `StoredAttachment` objects if the data is valid, otherwise an empty array.
+   */
   parseAttachments(data: any): StoredAttachment[] {
     if (data !== undefined && data !== '') return JSON.parse(data);
     return [];
   }
 
+
+  /**
+   * Updates the message properties with the provided data.
+   * 
+   * @param data - An object containing the new values for the message properties.
+   *   - `content` (optional): The new content of the message.
+   *   - `emojies` (optional): The new set of emojis to calculate reactions.
+   *   - `answerCount` (optional): The new count of answers.
+   *   - `lastAnswerAt` (optional): The timestamp of the last answer.
+   *   - `edited` (optional): A boolean indicating if the message was edited.
+   *   - `editedAt` (optional): The timestamp of when the message was edited.
+   *   - `attachments` (optional): The new attachments to be parsed.
+   */
   update(data: any): void {
     if (data.content) this._content = data.content;
     if (data.emojies) this.calculateReaction(data.emojies);
