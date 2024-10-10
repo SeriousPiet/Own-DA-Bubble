@@ -19,7 +19,7 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
 }
 
 .threadview-header {
-  position: relative;
+  position: sticky;
   z-index: 3;
   @include flex(space-between, center);
   gap: 0.625rem;
@@ -113,7 +113,6 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
   position: relative;
   @include flex(normal, center);
   flex-direction: column;
-  gap: 1.5rem;
   height: 100%;
   width: 100%;
   overflow-y: scroll;
@@ -127,11 +126,16 @@ $header-pl: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
     overflow-y: scroll;
 
     .thread-list-view {
-      overflow-x: hidden;
+      overflow: unset;
     }
   }
 
   ::-webkit-scrollbar {
     display: none;
   }
+}
+
+.chatview-editor{
+  position: relative;
+  width: 100%;
 }
