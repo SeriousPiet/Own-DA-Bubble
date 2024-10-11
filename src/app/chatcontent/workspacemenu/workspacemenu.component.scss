@@ -81,7 +81,7 @@ section {
 
       gap: $chnl-gap;
 
-      padding: 0.25rem 0.325rem 0.25rem 0.25rem;
+      padding: 0.25rem 0.25rem 0.25rem 0.25rem;
       margin-left: $chnl-ml;
       border-radius: $circled-border-radius;
 
@@ -252,11 +252,12 @@ section {
   }
 
   button {
-    all: unset;
     @include flex(flex-start, center);
     text-align: center;
     line-height: normal;
-    padding: 0.25rem 1.25rem 0.25rem $add-chnl-btn-pl;
+    margin-left: $chnl-ml;
+    padding: 0.25rem 1.25rem 0.25rem 0.25rem;
+    // padding: 0.25rem 1.25rem 0.25rem $add-chnl-btn-pl;
     gap: $chnl-gap;
 
     &:hover span {
