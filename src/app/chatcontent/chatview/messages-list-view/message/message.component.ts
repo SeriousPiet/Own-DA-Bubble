@@ -293,7 +293,8 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   }
 
 
-  addReaction() {
+  async addReaction() {
+    if (await !this.userService.ifCurrentUserVerified()) return;
     this.emojiService.showPicker((emoji: string) => {
       this.messageService.toggleReactionToMessage(this._messageData, emoji);
     });
