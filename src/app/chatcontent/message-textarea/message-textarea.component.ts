@@ -5,9 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
-import { EditedTextLength, MessageEditorComponent } from '../message-editor/message-editor.component';
+import { MessageEditorComponent } from '../message-editor/message-editor.component';
 import { Message } from '../../shared/models/message.class';
-import { isEmptyMessage } from '../../utils/quil/utility';
+import { EditedTextLength, isEmptyMessage } from '../../utils/quil/utility';
 
 @Component({
   selector: 'app-message-textarea',

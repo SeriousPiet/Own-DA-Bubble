@@ -6,6 +6,21 @@ import { LockedSpanBlot } from '../../shared/models/lockedspan.class';
 
 
 /**
+ * Represents the length details of edited text.
+ * 
+ * @typedef {Object} EditedTextLength
+ * @property {boolean} messageEmpty - Indicates if the message is empty.
+ * @property {number} maxLength - The maximum allowed length of the text.
+ * @property {number} textLength - The current length of the text.
+ */
+export type EditedTextLength = {
+    messageEmpty: boolean;
+    maxLength: number;
+    textLength: number;
+};
+
+
+/**
  * Checks if the provided message is considered empty.
  *
  * A message is considered empty if it is either:

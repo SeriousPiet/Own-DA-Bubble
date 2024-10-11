@@ -10,13 +10,8 @@ import { ChannelService } from '../../utils/services/channel.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
-import { getTextBeforePreviousSign, insertItemAsSpan, isEmptyMessage, registerLockedSpanBlot } from '../../utils/quil/utility';
+import { EditedTextLength, getTextBeforePreviousSign, insertItemAsSpan, isEmptyMessage, registerLockedSpanBlot } from '../../utils/quil/utility';
 
-export type EditedTextLength = {
-  messageEmpty: boolean;
-  maxLength: number;
-  textLength: number;
-};
 
 @Component({
   selector: 'app-message-editor',
@@ -90,64 +85,15 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
 
   constructor(private _cdr: ChangeDetectorRef) { }
 
+  /**
+   * Lifecycle hook that is called when the component is destroyed.
+   * 
+   * This method disconnects the resize observer if it exists to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     if (this.resizeobserver) this.resizeobserver.disconnect();
   }
 
-  /**
-   * Opens the emoji picker and inserts the selected emoji into the editor at the current cursor position.
-   *
-   * This method uses the `emojiService` to display the emoji picker. When an emoji is selected, it:
-   * 1. Retrieves the current cursor position.
-   * 2. Adds the selected emoji to the user's frequently used emojis.
-   * 3. Inserts the emoji at the cursor position in the Quill editor.
-   * 4. Updates the cursor position to be after the inserted emoji.
-   * 5. Focuses the Quill editor.
-   *
-   * @remarks
-   * The method ensures that the emoji is inserted silently without triggering any Quill events.
-   */
-  openEmojiPicker() {
-    this.emojiService.showPicker((emoji: string) => {
-      const position = this.getLastOrCurrentSelection();
-      const emojiLength = emoji.length;
-      this.emojiService.addEmojiToUserEmojis(emoji);
-      this.quill.insertText(position ? position.index : 0, emoji);
-      this.quill.setSelection(
-        position ? position.index + emojiLength : emojiLength,
-        Quill.sources.SILENT
-      );
-      this.quill.focus();
-    });
-  }
-
-  /**
-   * Determines if the given item is an instance of the User class.
-   *
-   * @param item - The item to check, which can be either a User or a Channel.
-   * @returns A boolean indicating whether the item is a User.
-   */
-  isUser(item: User | Channel): item is User {
-    return item instanceof User;
-  }
-
-  /**
-   * Retrieves the current message content from the Quill editor as semantic HTML.
-   *
-   * @returns {string} The message content formatted as semantic HTML.
-   */
-  getMessageAsHTML() {
-    return this.quill.root.innerHTML;
-  }
-
-  /**
-   * Clears the text editor by setting its content to an empty string
-   * and clearing the editor's history.
-   */
-  clearEditor() {
-    this.quill.setText('');
-    this.quill.history.clear();
-  }
 
   /**
    * Lifecycle hook that is called after a component's view has been fully initialized.
@@ -182,11 +128,72 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.resizeobserver.observe(this.toolbar.nativeElement);
   }
 
+
+  /**
+   * Opens the emoji picker and inserts the selected emoji into the editor at the current cursor position.
+   *
+   * This method uses the `emojiService` to display the emoji picker. When an emoji is selected, it:
+   * 1. Retrieves the current cursor position.
+   * 2. Adds the selected emoji to the user's frequently used emojis.
+   * 3. Inserts the emoji at the cursor position in the Quill editor.
+   * 4. Updates the cursor position to be after the inserted emoji.
+   * 5. Focuses the Quill editor.
+   *
+   * @remarks
+   * The method ensures that the emoji is inserted silently without triggering any Quill events.
+   */
+  openEmojiPicker() {
+    this.emojiService.showPicker((emoji: string) => {
+      const position = this.getLastOrCurrentSelection();
+      const emojiLength = emoji.length;
+      this.emojiService.addEmojiToUserEmojis(emoji);
+      this.quill.insertText(position ? position.index : 0, emoji);
+      this.quill.setSelection(
+        position ? position.index + emojiLength : emojiLength,
+        Quill.sources.SILENT
+      );
+      this.quill.focus();
+    });
+  }
+
+
+  /**
+   * Determines if the given item is an instance of the User class.
+   *
+   * @param item - The item to check, which can be either a User or a Channel.
+   * @returns A boolean indicating whether the item is a User.
+   */
+  isUser(item: User | Channel): item is User {
+    return item instanceof User;
+  }
+
+
+  /**
+   * Retrieves the current message content from the Quill editor as semantic HTML.
+   *
+   * @returns {string} The message content formatted as semantic HTML.
+   */
+  getMessageAsHTML() {
+    return this.quill.root.innerHTML;
+  }
+
+
+  /**
+   * Clears the text editor by setting its content to an empty string
+   * and clearing the editor's history.
+   */
+  clearEditor() {
+    this.quill.setText('');
+    this.quill.history.clear();
+  }
+
+
   private handleToolBarResize(width: number) {
     if (width < 300) this.showToolBarElements = [1, 3, 5];
     else if (width < 400) this.showToolBarElements = [1, 3, 4, 5];
     else this.showToolBarElements = [1, 2, 3, 4, 5];
   }
+
 
   /**
    * Adds event listeners to the Quill editor instance to handle text changes.
@@ -220,6 +227,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+
   /**
    * Adds focus and blur event listeners to the Quill editor element.
    *
@@ -242,6 +250,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
       this.closeListPicker();
     });
   }
+
 
   /**
    * Adds custom key bindings to the Quill editor instance.
@@ -280,6 +289,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.quill.keyboard.bindings['Enter'] = [];
   }
 
+
   /**
    * Handles key events for the picker selection.
    *
@@ -312,6 +322,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     return true;
   }
 
+
   /**
    * Handles the selection of an item from the picker.
    * Depending on the type of the item (User or Channel), it inserts the item as a span
@@ -324,6 +335,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.closeListPicker();
   }
 
+
   /**
    * Retrieves the last or current selection range in the Quill editor.
    *
@@ -334,6 +346,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     if (this.quill.hasFocus()) return this.quill.getSelection();
     return this.savedRange;
   }
+
 
   /**
    * Sets the current picker index and updates the UI accordingly.
@@ -357,6 +370,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+
   /**
    * Scrolls the view to the selected item in the picker list.
    *
@@ -370,6 +384,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
         block: 'center',
       });
   }
+
 
   /**
    * Updates the picker items based on the search term and the current picker sign.
@@ -394,6 +409,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+
   /**
    * Toggles the visibility of the list picker and updates the picker items.
    *
@@ -406,6 +422,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.updatePickerItems('');
   }
 
+  
   /**
    * Closes the list picker if it is currently shown.
    *
