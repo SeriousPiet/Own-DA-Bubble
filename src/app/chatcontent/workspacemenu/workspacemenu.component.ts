@@ -105,13 +105,16 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
    * If the add channel popover is not currently visible, it will be shown. If it is visible,
    * it will be hidden and the add channel component will be reset.
    */
-  toggleAddChannelPopover() {
-    this.addChannelId = document.getElementById('addChannelId');
-    this.addChannelId?.showPopover();
-    this.addChannelComponent.resetAddChannel();
-    if (!this.addChannelComponent.toggleAddChannelPopover) {
-      this.addChannelComponent.toggleAddChannelPopover =
-        !this.addChannelComponent.toggleAddChannelPopover;
+  async toggleAddChannelPopover() {
+    if (await this.userservice.ifCurrentUserVerified()) {
+      console.log('toggleAddChannelPopover');
+      this.addChannelId = document.getElementById('addChannelId');
+      this.addChannelId?.showPopover();
+      this.addChannelComponent.resetAddChannel();
+      if (!this.addChannelComponent.toggleAddChannelPopover) {
+        this.addChannelComponent.toggleAddChannelPopover =
+          !this.addChannelComponent.toggleAddChannelPopover;
+      }
     }
   }
 

@@ -8,12 +8,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvatarDirective } from '../../../../utils/directives/avatar.directive';
 import { User } from '../../../../shared/models/user.class';
-import { EditedTextLength, MessageEditorComponent } from '../../../message-editor/message-editor.component';
+import { MessageEditorComponent } from '../../../message-editor/message-editor.component';
 import { ChannelService } from '../../../../utils/services/channel.service';
 import { Channel } from '../../../../shared/models/channel.class';
 import { EmojipickerService } from '../../../../utils/services/emojipicker.service';
 import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
-import { isEmptyMessage } from '../../../../utils/quil/utility';
+import { EditedTextLength, isEmptyMessage } from '../../../../utils/quil/utility';
 
 @Component({
   selector: 'app-message',
@@ -293,10 +293,19 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
   }
 
 
-  addReaction() {
-    this.emojiService.showPicker((emoji: string) => {
-      this.messageService.toggleReactionToMessage(this._messageData, emoji);
-    });
+  async addReaction() {
+    if (await this.userService.ifCurrentUserVerified()) {
+      this.emojiService.showPicker((emoji: string) => {
+        this.messageService.toggleReactionToMessage(this._messageData, emoji);
+      });
+    }
+  }
+
+
+  async toggleReaction(reactionType: string) {
+    if (await this.userService.ifCurrentUserVerified()) {
+      this.messageService.toggleReactionToMessage(this._messageData, reactionType);
+    }
   }
 
 

@@ -13,6 +13,8 @@ section {
 
   .picker-list {
     position: absolute;
+    display: flex;
+    flex-direction: column;
     z-index: 1000;
     bottom: 105%;
     max-height: 13rem;
@@ -59,6 +61,7 @@ section {
 
     .picker-item-list {
       @include flex(flex-start, stretch);
+      z-index: 1010;
       flex-direction: column;
       gap: 0.5rem;
       padding: 0.3rem;

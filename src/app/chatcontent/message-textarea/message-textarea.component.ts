@@ -5,9 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { Channel } from '../../shared/models/channel.class';
 import { Chat } from '../../shared/models/chat.class';
 import { UsersService } from '../../utils/services/user.service';
-import { EditedTextLength, MessageEditorComponent } from '../message-editor/message-editor.component';
+import { MessageEditorComponent } from '../message-editor/message-editor.component';
 import { Message } from '../../shared/models/message.class';
-import { isEmptyMessage } from '../../utils/quil/utility';
+import { EditedTextLength, isEmptyMessage } from '../../utils/quil/utility';
 
 @Component({
   selector: 'app-message-textarea',
@@ -155,20 +155,22 @@ export class MessageTextareaComponent {
    */
   async addNewMessage() {
     if (this.ifMessageUploading || !this.allowSendMessage) return;
-    const newHTMLMessage = this.messageeditor.getMessageAsHTML();
-    this.errorInfo = '';
-    if (isEmptyMessage(newHTMLMessage) && this.attachments.length === 0) {
-      this.showErrorWithDelay('Nachricht darf nicht leer sein.');
-    } else if (await this.userservice.ifCurrentUserVerified()) {
-      this.messageeditor.quill.disable();
-      this.ifMessageUploading = true;
-      const error = await this.messageService.addNewMessageToCollection(this._messagesCollectionObject, newHTMLMessage, this.attachments);
-      if (error) this.showErrorWithDelay(error);
-      else this.resetEditor();
-      this.ifMessageUploading = false;
-      this.messageeditor.quill.enable();
+    if (await this.userservice.ifCurrentUserVerified()) {
+      const newHTMLMessage = this.messageeditor.getMessageAsHTML();
+      this.errorInfo = '';
+      if (isEmptyMessage(newHTMLMessage) && this.attachments.length === 0) {
+        this.showErrorWithDelay('Nachricht darf nicht leer sein.');
+      } else {
+        this.messageeditor.quill.disable();
+        this.ifMessageUploading = true;
+        const error = await this.messageService.addNewMessageToCollection(this._messagesCollectionObject, newHTMLMessage, this.attachments);
+        if (error) this.showErrorWithDelay(error);
+        else this.resetEditor();
+        this.ifMessageUploading = false;
+        this.messageeditor.quill.enable();
+      }
+      this._cdr.detectChanges();
     }
-    this._cdr.detectChanges();
   }
 
 

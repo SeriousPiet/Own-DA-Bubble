@@ -185,6 +185,7 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
         });
         if (newMessagesAdded) {
           this.messages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+          this.newMessagesSeparatorIndex = -1;
           this.messages.forEach((message, index) => { if (message.propertysUnSet) this.setPropertysForRendering(message, index); });
           this._cdr.detectChanges();
         }

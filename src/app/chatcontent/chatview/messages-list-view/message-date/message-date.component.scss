@@ -11,7 +11,7 @@
   width: calc(100% - 2.5rem);
 
   > hr {
-    position: absolute;
+    // position: absolute;
     width: 100%;
     height: 1px;
     background-color: $vert-spacer;
@@ -19,10 +19,10 @@
   }
 
   > span {
-    z-index: 2;
     padding: 0.3125rem 0.9375rem;
     background-color: white;
     border: $default-border;
     border-radius: 1.875rem;
+    text-wrap: nowrap;
   }
 }
