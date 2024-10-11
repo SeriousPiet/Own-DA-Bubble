@@ -129,7 +129,10 @@ export class ChannelService implements OnDestroy {
     const test = querySnapshot.forEach((doc) => {
       if (doc.data()['creatorID'] !== this.userservice.currentUserID) unreadMessagesCount++;
     });
-    channel.unreadMessagesCount = unreadMessagesCount;
+    if (channel.unreadMessagesCount !== unreadMessagesCount) {
+      channel.unreadMessagesCount = unreadMessagesCount;
+      if (channel instanceof Chat) this.updateActiveChatsStream();
+    }
   }
 
 
@@ -162,7 +165,6 @@ export class ChannelService implements OnDestroy {
         if (change.type === 'removed') {
           this.channels = this.channels.filter((channel) => channel.id !== change.doc.id);
         }
-        this.updateActiveChatsStream();
       });
     });
   }
@@ -191,7 +193,9 @@ export class ChannelService implements OnDestroy {
           const chat = this.chats.find((chat) => chat.id === change.doc.id);
           if (chat) {
             chat.update(change.doc.data());
-            if (this.updateAllowed) this.calculateUnreadMessagesCount(chat);
+            if (this.updateAllowed) {
+              this.calculateUnreadMessagesCount(chat);
+            }
           }
         }
         if (change.type === 'removed') this.chats = this.chats.filter((chat) => chat.id !== change.doc.data()['id']);
