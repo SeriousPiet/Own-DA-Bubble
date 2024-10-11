@@ -63,6 +63,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
           shiftKey: true,
           handler: (range: { index: number }, ctx: any) => {
             this.quill.insertText(range.index, '\n');
+            this.quill.scrollSelectionIntoView();
           },
         },
         enter: {
