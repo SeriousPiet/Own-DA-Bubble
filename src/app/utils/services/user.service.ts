@@ -307,7 +307,7 @@ export class UsersService implements OnDestroy {
    * saved to Firestore.
    */
   setLastReadMessage(message: Message, collection: Channel | Chat | Message) {
-    if (this.currentUser && this.currentUser.guest === false) {
+    if (this.currentUser) {
       const lrm = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionID === collection.id);
       const messageCreatedAt = message.createdAt.getTime();
       collection.unreadMessagesCount--;
@@ -346,7 +346,7 @@ export class UsersService implements OnDestroy {
    * @returns The last read message object if found, otherwise undefined.
    */
   getLastReadMessageObject(collection: Channel | Chat | Message): LastReadMessage | undefined {
-    if (this.currentUser && this.currentUser.guest === false) {
+    if (this.currentUser) {
       const result = this.currentUser.lastReadMessages.find((lrm) => lrm.collectionType === getCollectionType(collection) && lrm.collectionID === collection.id);
       return result ? result : { collectionType: getCollectionType(collection), collectionID: collection.id, messageID: '', messageCreateAt: this.currentUser.signupAt.getTime() };
     }

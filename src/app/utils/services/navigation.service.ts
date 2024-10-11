@@ -85,10 +85,15 @@ export class NavigationService {
    * @param object - The object to set as the main message object.
    * @returns void
    */
-  async setChatViewObject(object: Channel | User): Promise<void> {
+  async setChatViewObject(object: Channel | User | Chat): Promise<void> {
 
     if (object instanceof Channel) this.setChatViewObjectAsChannel(object);
-    else this.setChatViewObjectAsChat(object);
+    else if (object instanceof User) this.setChatViewObjectAsChat(object);
+    else {
+      this._chatViewObject = object;
+      this._chatViewPath = object.chatMessagesPath;
+      this.changeSubject.next('chatViewObjectSetAsChat');
+    }
 
     this.clearThreadViewObject();
 

@@ -10,12 +10,13 @@ import {
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
-import { ChannelService } from '../../utils/services/channel.service';
+import { ActivChat, ChannelService } from '../../utils/services/channel.service';
 import { NavigationService } from '../../utils/services/navigation.service';
 import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { AddchannelComponent } from '../../chatcontent/workspacemenu/addchannel/addchannel.component';
 import { Channel } from '../../shared/models/channel.class';
 import { User } from '../../shared/models/user.class';
+import { Chat } from '../../shared/models/chat.class';
 
 @Component({
   selector: 'app-workspacemenu',
@@ -125,9 +126,7 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
    * @returns The count of unread messages for the user, or an empty string if the count is 0.
    */
   getChatMessagesCount(user: User): string {
-    const count = this.channelservice.getChatWithUserByID(
-      user.id
-    )?.unreadMessagesCount;
+    const count = this.channelservice.getChatWithUserByID(user.id)?.unreadMessagesCount;
     return count ? count.toString() : '';
   }
 
@@ -136,7 +135,7 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
    *
    * @param user - The user to set the chat view to.
    */
-  setChat(user: User) {
+  setChat(user: User | Chat) {
     this.navigationService.setChatViewObject(user);
   }
 

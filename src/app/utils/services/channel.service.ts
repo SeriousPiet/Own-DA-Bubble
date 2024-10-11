@@ -14,6 +14,12 @@ import { BehaviorSubject } from 'rxjs';
 import { Message } from '../../shared/models/message.class';
 import { getCollectionPath } from '../firebase/utils';
 
+export type ActivChat = {
+  chat: Chat;
+  partner: User;
+  unreadMessagesCount: number;
+}
+
 /**
  * @class ChannelService
  * @description Service that handles the retrieval and addition of channels to the database.
@@ -34,34 +40,18 @@ export class ChannelService implements OnDestroy {
   private chatListChange = new BehaviorSubject<Chat[]>([]);
   public chatListChange$ = this.chatListChange.asObservable();
 
+  public activeChats$ = new BehaviorSubject<ActivChat[]>([]);
+
   public chats: Chat[] = [];
   private unsubChats: any = null;
+  private activeUserSubscription: any;
 
   private updateAllowed = false;
 
-  /**
-   * @description Firestore instance.
-   * @type {Firestore}
-   */
   private firestore: Firestore = inject(Firestore);
-
-  /**
-   * @description Users service instance.
-   * @type {UsersService}
-   */
   private userservice: UsersService = inject(UsersService);
   private currentUserSubscription: any;
-
-  /**
-   * @description Unsubscribe function for the channels subscription.
-   * @type {any}
-   */
   private unsubChannels: any;
-
-  /**
-   * @description List of channels.
-   * @type {Channel[]}
-   */
   public channels: Channel[] = [this.defaultChannel];
 
   /**
@@ -84,11 +74,33 @@ export class ChannelService implements OnDestroy {
         setTimeout(() => {
           this.channels.forEach((channel) => { if (!channel.defaultChannel) this.calculateUnreadMessagesCount(channel); });
           this.chats.forEach((chat) => { if (this.userservice.currentUser?.chatIDs.includes(chat.id)) this.calculateUnreadMessagesCount(chat); });
+          this.initActiveChatsStream();
         }, 1000);
       } else if (type === 'logout') {
         this.updateAllowed = false;
       }
     });
+  }
+
+
+  initActiveChatsStream(): void {
+    if (this.activeUserSubscription) this.activeUserSubscription.unsubscribe();
+    this.activeUserSubscription = this.userservice.currentUser?.changeUser$.subscribe((user) => {
+      if (user) {
+        this.updateActiveChatsStream();
+      }
+    });
+  }
+
+
+  updateActiveChatsStream(): void {
+    this.activeChats$.next(this.chats
+      .filter((chat) => this.userservice.currentUser?.chatIDs.includes(chat.id))
+      .map((chat) => ({
+        chat,
+        partner: this.getChatPartner(chat) as User,
+        unreadMessagesCount: chat.unreadMessagesCount,
+      })));
   }
 
 
@@ -150,6 +162,7 @@ export class ChannelService implements OnDestroy {
         if (change.type === 'removed') {
           this.channels = this.channels.filter((channel) => channel.id !== change.doc.id);
         }
+        this.updateActiveChatsStream();
       });
     });
   }
@@ -304,6 +317,20 @@ export class ChannelService implements OnDestroy {
   }
 
 
+  async addSelfChat(userID: string): Promise<string | undefined> {
+    try {
+      const chatRef = collection(this.firestore, '/chats');
+      const chatObj = { memberIDs: [userID, userID], createdAt: serverTimestamp() };
+      const chat = await addDoc(chatRef, chatObj);
+      this.userservice.updateUserDataOnFirestore(userID, { chatIDs: [chat.id] });
+      return chat.id;
+    } catch (error) {
+      console.error('userservice/chat: Error adding selfchat(' + (error as Error).message + ')');
+      return undefined;
+    }
+  }
+
+
   /**
    * Adds a new channel to Firestore with the specified name, description, and member IDs.
    *
@@ -373,8 +400,9 @@ export class ChannelService implements OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.unsubChannels) this.unsubChannels();
-    if (this.subscribeUserListChange)
-      this.subscribeUserListChange.unsubscribe();
+    if (this.subscribeUserListChange) this.subscribeUserListChange.unsubscribe();
     if (this.unsubChats) this.unsubChats();
+    if (this.currentUserSubscription) this.currentUserSubscription.unsubscribe();
+    if (this.activeUserSubscription) this.activeUserSubscription.unsubscribe();
   }
 }

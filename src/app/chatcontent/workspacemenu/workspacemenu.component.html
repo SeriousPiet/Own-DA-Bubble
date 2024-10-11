@@ -46,15 +46,19 @@
           <div class="avatar" appAvatar [user]="userservice.currentUser" context="wsm-list"></div>
           <span>{{ userservice.currentUser.name }} <br />(Du) </span>
         </li>
-        } @for(user of userservice.users; track user) { @if(!user.guest &&
-        user.id !== userservice.currentUserID) {
-        <li class="dm-list-item" hoverElement [class.active]="activeUser === user"
-          (click)="setChat(user); activeUser = user">
-          <div class="avatar" appAvatar [user]="user" context="wsm-list"></div>
-          <span>{{ user.name }} </span>
-          <div class="new-message-count">{{ getChatMessagesCount(user) }}</div>
-        </li>
-        } }
+        }
+        @for(activchat of channelservice.activeChats$ | async; track activchat) {
+        @if(activchat.partner !== userservice.currentUser) {
+        <li class="dm-list-item" hoverElement [class.active]="activeUser === activchat.partner"
+          (click)="setChat(activchat.chat); activeUser = activchat.partner">
+          <div class="avatar" appAvatar [user]="activchat.partner" context="wsm-list"></div>
+          <span> {{ activchat.partner.name }} </span>
+          @if(activchat.unreadMessagesCount > 0) {
+            <div class="new-message-count">{{ activchat.unreadMessagesCount }}</div>
+            }
+          </li>
+        }
+        }
       </ul>
     </details>
   </div>

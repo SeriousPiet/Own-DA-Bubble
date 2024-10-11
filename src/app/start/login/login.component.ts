@@ -6,6 +6,8 @@ import { emailValidator, passwordValidator } from '../../utils/form-validators';
 import { Auth, getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
 import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
+import { ChannelService } from '../../utils/services/channel.service';
+import { MessageService } from '../../utils/services/message.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +21,8 @@ export class LoginComponent implements OnDestroy, OnInit {
   private showLoginInfoTime: number | null = null;
 
   public userservice = inject(UsersService);
+  private channelService = inject(ChannelService);
+  private messageService = inject(MessageService);
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
   private router: Router = inject(Router);
@@ -124,7 +128,7 @@ export class LoginComponent implements OnDestroy, OnInit {
   async loginGuest() {
     this.showSpinner = true; this.loginForm.disable(); this.clearAllErrorSpans();
     const email = 'gast' + new Date().getTime() + '@gast.de';
-    await addDoc(collection(this.firestore, '/users'),
+    const data = await addDoc(collection(this.firestore, '/users'),
       {
         name: 'Gast',
         email: email,
@@ -138,6 +142,9 @@ export class LoginComponent implements OnDestroy, OnInit {
     localStorage.setItem('guestuseremail', email);
     this.showSpinner = false; this.loginForm.enable();
     this.handleLoginSuccess();
+    setTimeout(() => {
+      this.implementSomeNewUserStuff(data.id);
+    }, 4000);
   }
 
 
@@ -431,4 +438,19 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.errorPassword = '';
     this.errorGoogleSignin = '';
   }
+
+  welcomemessagecontent = `<h1>Willkommen bei DABubble!</h1><p><br></p><p><strong>DABubble</strong> ist eine moderne Chat-App für effiziente Kommunikation in Channels und per Direktnachricht. Arbeite im Team oder chatte privat mit Kollegen – flexibel und intuitiv.</p><p><br></p><h2>Was bietet DABubble?</h2><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Channels erstellen</strong>: Bleibe bei Projekten und Themen auf dem Laufenden.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Direktnachrichten</strong>: Führe private Gespräche.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Emoji-Reaktionen</strong>: Verleihe Nachrichten eine persönliche Note.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Suchfunktion</strong>: Finde schnell Nachrichten oder User. Du kannst global suchen – entweder nach Nachrichten im aktuellen Channel oder in allen Channels. Auch die Suche nach Usern und Channels ist möglich.</li></ol><p><br></p><p>Im <span class="highlight-channel" id="isPDY8NAznEARHdJFTyb" contenteditable="false">#Allgemein</span> Channel kannst du generelle Fragen stellen. <span class="highlight-channel" id="0biyIbK3IYw3SaRihcrC" contenteditable="false">#Backend</span> und <span class="highlight-channel" id="LKN74nq0AFkZCqGoLGZN" contenteditable="false">#Front End</span> sind dann für spezielle dinge reserviert.</p><p><br></p><p>Bei Fragen wende Dich gerne an <span class="highlight-user" id="4iqrDSW9hM4hRVQGuMVy" contenteditable="false">@Michael Buschmann</span> , <span class="highlight-user" id="ellfDJEyv2LnT55aYyH3" contenteditable="false">@Peter Wallbaum</span> , <span class="highlight-user" id="codDqlQXNu6QBkrpdR8A" contenteditable="false">@Anthony Hamon</span> oder <span class="highlight-user" id="SVFcGhTwEk94NhptJ7iz" contenteditable="false">@Bela Schramm</span> . </p><p><br></p><p>Viel Spaß mit <strong>DABubble!</strong> Bei Fragen sind wir immer für dich da. Um neue <em>User</em> anzuschreiben, nutze die Suchfunktion.</p>  `;
+
+  private async implementSomeNewUserStuff(newUserID: string) {
+    const belaID = 'SVFcGhTwEk94NhptJ7iz';
+    const selfChatID = await this.channelService.addChatWithUserOnFirestore(newUserID);
+    const belaChatID = await this.channelService.addChatWithUserOnFirestore(belaID); // Bela Schramm
+    if (belaChatID) {
+      const belaChat = this.channelService.getChatByID(belaChatID);
+      if (belaChat) {
+        this.messageService.addNewMessageToCollection(belaChat, this.welcomemessagecontent, [], belaID);
+      }
+    }
+  }
+
 }

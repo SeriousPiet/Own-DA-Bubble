@@ -5,7 +5,9 @@ import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, nameValidator, passwordValidator } from '../../utils/form-validators';
 import { ChooesavatarComponent } from '../chooesavatar/chooesavatar.component';
 import { Auth, createUserWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
-import { addDoc, collection, Firestore, serverTimestamp } from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, serverTimestamp, updateDoc } from '@angular/fire/firestore';
+import { ChannelService } from '../../utils/services/channel.service';
+import { MessageService } from '../../utils/services/message.service';
 
 @Component({
   selector: 'app-signup',
@@ -30,6 +32,8 @@ export class SignupComponent {
   private firestore = inject(Firestore);
   private firebaseauth = inject(Auth);
   private userservice = inject(UsersService);
+  private channelService = inject(ChannelService);
+  private messageService = inject(MessageService);
   private router: Router = inject(Router);
 
   public errorEmailExists = '';
@@ -129,12 +133,29 @@ export class SignupComponent {
     try {
       const userCredential = await createUserWithEmailAndPassword(this.firebaseauth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
-      await addDoc(collection(this.firestore, '/users'), { name: name, email: email, online: false, signupAt: serverTimestamp(), avatar: 0 });
+      const data = await addDoc(collection(this.firestore, '/users'), { name: name, email: email, online: false, signupAt: serverTimestamp(), avatar: 0 });
+      this.implementSomeNewUserStuff(data.id);
       this.userservice.sendEmailVerificationLink();
       return '';
     } catch (error) {
       console.error('userservice/auth: Error registering user(', (error as Error).message, ')');
       return (error as Error).message;
+    }
+  }
+
+
+  welcomemessagecontent = `
+  <h1>Willkommen bei DABubble!</h1><p><br></p><p><strong>DABubble</strong> ist eine moderne Chat-App für effiziente Kommunikation in Channels und per Direktnachricht. Arbeite im Team oder chatte privat mit Kollegen – flexibel und intuitiv.</p><p><br></p><h2>Was bietet DABubble?</h2><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Channels erstellen</strong>: Bleibe bei Projekten und Themen auf dem Laufenden.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Direktnachrichten</strong>: Führe private Gespräche.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Emoji-Reaktionen</strong>: Verleihe Nachrichten eine persönliche Note.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Suchfunktion</strong>: Finde schnell Nachrichten oder User. Du kannst global suchen – entweder nach Nachrichten im aktuellen Channel oder in allen Channels. Auch die Suche nach Usern und Channels ist möglich.</li></ol><p><br></p><p>Im <span class="highlight-channel" id="isPDY8NAznEARHdJFTyb" contenteditable="false">#Allgemein</span> Channel kannst du generelle Fragen stellen. <span class="highlight-channel" id="0biyIbK3IYw3SaRihcrC" contenteditable="false">#Backend</span> und <span class="highlight-channel" id="LKN74nq0AFkZCqGoLGZN" contenteditable="false">#Front End</span> sind dann für spezielle dinge reserviert.</p><p><br></p><p>Bei Fragen wende Dich gerne an <span class="highlight-user" id="4iqrDSW9hM4hRVQGuMVy" contenteditable="false">@Michael Buschmann</span> , <span class="highlight-user" id="ellfDJEyv2LnT55aYyH3" contenteditable="false">@Peter Wallbaum</span> , <span class="highlight-user" id="codDqlQXNu6QBkrpdR8A" contenteditable="false">@Anthony Hamon</span> oder <span class="highlight-user" id="SVFcGhTwEk94NhptJ7iz" contenteditable="false">@Bela Schramm</span> . </p><p><br></p><p>Viel Spaß mit <strong>DABubble!</strong> Bei Fragen sind wir immer für dich da. Um neue <em>User</em> anzuschreiben, nutze die Suchfunktion.</p>  `;
+  
+  private async implementSomeNewUserStuff(newUserID: string) {
+    const belaID = 'SVFcGhTwEk94NhptJ7iz';
+    const selfChatID = await this.channelService.addChatWithUserOnFirestore(newUserID);
+    const belaChatID = await this.channelService.addChatWithUserOnFirestore(belaID); // Bela Schramm
+    if (belaChatID) {
+      const belaChat = this.channelService.getChatByID(belaChatID);
+      if (belaChat) {
+        this.messageService.addNewMessageToCollection(belaChat, this.welcomemessagecontent, [], belaID);
+      }
     }
   }
 
@@ -182,4 +203,6 @@ export class SignupComponent {
   clearAllErrorSpans() {
     this.errorEmailExists = '';
   }
+
+
 }
