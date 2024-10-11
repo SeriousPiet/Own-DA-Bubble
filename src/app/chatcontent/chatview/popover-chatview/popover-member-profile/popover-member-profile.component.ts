@@ -37,6 +37,10 @@ export class PopoverMemberProfileComponent implements OnInit, OnDestroy {
   }
 
 
+  /**
+   * Gets the message creator object for the currently selected user.
+   * @returns The user object for the message creator, or `undefined` if no user is selected.
+   */
   getMessageCreatorObject() {
     if (this.selectedUser) {
       return this.userService.getUserByID(this.selectedUser.id);
@@ -44,10 +48,17 @@ export class PopoverMemberProfileComponent implements OnInit, OnDestroy {
     return
   }
 
+  /**
+   * Sets the current chat view object in the navigation service.
+   * @param chat - The chat object to set in the navigation service.
+   */
   setChat(chat: any) {
     this.navigationService.setChatViewObject(chat);
   }
 
+  /**
+   * Unsubscribes from the `selectedUserObject$` subscription when the component is destroyed.
+   */
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();

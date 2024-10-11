@@ -324,18 +324,32 @@ export class ChatviewComponent implements OnInit {
     return;
   }
 
+  /**
+   * Checks if the current user is allowed to add members to the current chat context, and returns a message if they are not allowed.
+   * @returns An empty string if the user is allowed to add members, or a message indicating they are not allowed.
+   */
   showNoRightToEditInfo() {
-    if (!this.isAllowedToAddMember()) {
-      return 'Du bist nicht befugt, neue Leute einzuladen.';
+      if (!this.isAllowedToAddMember()) {
+        return 'Du bist nicht befugt, neue Leute einzuladen.';
+      }
+      return '';
     }
-    return '';
-  }
+ 
 
+  /**
+   * Sets the selected user object in the user service and updates the navigation service to target the profile.
+   * @param selectedUserID - The ID of the user to set as the selected user.
+   */
   setSelectedUserObject(selectedUserID: string) {
     this.userService.updateSelectedUser(this.userService.getUserByID(selectedUserID));
     this.navigationService.setProfileTarget(true);
   }
 
+  /**
+   * Returns the appropriate popover target based on whether the selected user is the current user.
+   * @param selectedUser - The ID of the user whose popover target should be determined.
+   * @returns 'profile-popover' if the selected user is the current user, 'popover-member-profile' otherwise.
+   */
   returnPopoverTarget(selectedUser: string) {
     if (selectedUser === this.userService.currentUser?.id) {
       return 'profile-popover';
@@ -344,6 +358,12 @@ export class ChatviewComponent implements OnInit {
     }
   }
 
+  /**
+   * Gets the ID of the chat partner for the given chat or channel.
+   * If the current user is a member of the chat/channel, this method returns the ID of the other member.
+   * @param chat - The chat or channel object to get the chat partner ID for.
+   * @returns The ID of the chat partner, or `undefined` if the current user is not a member of the chat/channel.
+   */
   getChatPartnerID(chat: Chat | Channel): string | undefined {
     if (this.userService.currentUser) {
       if (chat.memberIDs[0] === this.userService.currentUserID)

@@ -82,6 +82,13 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     });
   }
 
+
+  /**
+   * Updates the channel data object with the current channel's name, description, and member IDs.
+   *
+   * This method is called when the current channel changes, and it updates the `updateChannelData` object
+   * with the relevant information from the `currentChannel` property.
+   */
   updateChannelDatas() {
     if (this.currentChannel instanceof Channel) {
       this.updateChannelData.name = this.currentChannel.name;
@@ -91,6 +98,12 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
   }
 
 
+  /**
+   * Retrieves a `User` object from a search suggestion.
+   *
+   * @param suggestion - A string or an object with `text` and `type` properties representing a search suggestion.
+   * @returns The `User` object if found, otherwise `undefined`.
+   */
   public getUserFromSuggestion(
     suggestion: string | { text: string; type: string }
   ): User | undefined {
@@ -103,6 +116,16 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     return this.findUserByName(userName);
   }
 
+  
+  /**
+   * Retrieves the display name for a channel member.
+   *
+   * If the member is the current user, the name is returned with the text "(You)" appended.
+   * Otherwise, the member's name is returned as-is.
+   *
+   * @param memberID - The ID of the channel member.
+   * @returns The display name for the channel member.
+   */
   getMemberName(memberID: string) {
     const member = this.userService.getUserByID(memberID);
     return member?.id === this.userService.currentUser?.id
@@ -110,6 +133,12 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
       : member?.name;
   }
 
+  
+  /**
+   * Checks if the current user is a member of the current channel.
+   *
+   * @returns `true` if the current user is a member of the current channel, `false` otherwise.
+   */
   currentUserIsChannelMember() {
     return (
       this.currentChannel instanceof Channel &&
@@ -117,6 +146,15 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     );
   }
 
+  /**
+   * Determines the appropriate popover target based on the message creator.
+   *
+   * If the message creator is the current user, the 'profile-popover' target is returned.
+   * Otherwise, the 'popover-member-profile' target is returned.
+   *
+   * @param messageCreator - The ID of the message creator.
+   * @returns The appropriate popover target.
+   */
   returnPopoverTarget(messageCreator: string) {
     if (messageCreator === this.userService.currentUser?.id) {
       return 'profile-popover';
@@ -125,16 +163,33 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     }
   }
 
+  /**
+   * Sets the selected user object and updates the navigation service's profile target.
+   *
+   * @param messageCreatorID - The ID of the message creator.
+   */
   setSelectedUserObject(messageCreatorID: string) {
     this.userService.updateSelectedUser(this.userService.getUserByID(messageCreatorID));
     this.navigationService.setProfileTarget(true);
   }
 
+  /**
+   * Gets the title of a given Channel, Chat, Message, or undefined object.
+   *
+   * @param object - The object to get the title for.
+   * @returns The title of the object, or an empty string if the object is undefined.
+   */
   getTitle(object: Channel | Chat | Message | undefined): string {
     if (object instanceof Channel) return object.name;
     return '';
   }
 
+  /**
+   * Opens the "Add New Member" popover and updates the state of the member list and add member popover.
+   *
+   * This method is responsible for setting the `addMemberPopover` property to `true`, the `memberList` property to `false`,
+   * and then emitting the updated values of `memberList` and `addMemberPopover` through the corresponding event emitters.
+   */
   openAddNewMemberPopover() {
     this.addMemberPopover = true;
     this.memberList = false;
@@ -142,6 +197,14 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     this.addMemberPopoverChange.emit(this.addMemberPopover);
   }
 
+  /**
+   * Handles the search input event by updating the search query and retrieving search suggestions.
+   *
+   * This method is responsible for:
+   * 1. Updating the search query in the search service.
+   * 2. Retrieving search suggestions from the search service and mapping the results to a flat array of suggestions.
+   * 3. Emitting the updated search suggestions through the `suggestions$` observable.
+   */
   onSearchInput() {
     this.searchService.updateSearchQuery(this.searchQuery);
     this.suggestions$ = this.searchService.getSearchSuggestions().pipe(
@@ -155,6 +218,13 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     );
   }
 
+  /**
+   * Handles the focus event on the search input by making the dropdown visible and triggering a search if the search query is not empty.
+   *
+   * This method is responsible for:
+   * 1. Setting the `isDropdownVisible` property to `true` to show the dropdown.
+   * 2. Calling the `onSearchInput()` method to update the search suggestions if the `searchQuery` property is not empty.
+   */
   onFocus() {
     this.isDropdownVisible = true;
     if (this.searchQuery) {
@@ -162,6 +232,16 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     }
   }
 
+  /**
+   * Handles the blur event on the search input by hiding the dropdown and resetting the search query.
+   *
+   * This method is responsible for:
+   * 1. Setting the `isDropdownVisible` property to `false` to hide the dropdown.
+   * 2. Resetting the `searchQuery` property to an empty string.
+   * 3. Updating the search query in the search service to an empty string.
+   *
+   * This method is called after a short delay (200 milliseconds) to allow for the dropdown to be hidden smoothly.
+   */
   onBlur() {
     setTimeout(() => {
       this.isDropdownVisible = false;
@@ -170,6 +250,18 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     }, 200);
   }
 
+  /**
+   * Handles the selection of a search suggestion.
+   *
+   * This method is responsible for:
+   * 1. Checking if the selected suggestion is a user.
+   * 2. Extracting the user name from the suggestion text.
+   * 3. Finding the user by the extracted name using the `findUserByName()` method.
+   * 4. Adding the found user to the selection using the `addUserToSelection()` method.
+   * 5. Hiding the dropdown by setting the `isDropdownVisible` property to `false`.
+   *
+   * @param suggestion The selected search suggestion.
+   */
   selectSuggestion(suggestion: SearchSuggestion) {
     if (suggestion.type === 'user') {
       const userName = suggestion.text.slice(1);
@@ -181,6 +273,12 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     }
   }
 
+  /**
+   * Finds a user by is name.
+   * This method searches through all the user IDs retrieved from the `userService` and returns the first user whose name matches the provided `name` parameter. If no matching user is found, it returns `undefined`.
+   * @param name The name of the user to search for.
+   * @returns The user object if found, otherwise `undefined`.
+   */
   public findUserByName(name: string): User | undefined {
     const userIds = this.userService.getAllUserIDs();
     for (const id of userIds) {
@@ -192,6 +290,10 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     return undefined;
   }
 
+  /**
+   * Adds a user to the selection if they are not already selected and are not a member of the current channel.
+   * @param user - The user to add to the selection.
+   */
   addUserToSelection(user: User) {
     if (!this.selectedUsers.some((u) => u.id === user.id)) {
       if (!this.currentChannel.memberIDs.includes(user.id)) {
@@ -201,6 +303,11 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     }
   }
 
+  /**
+   * Removes a user from the selection.
+   * This method filters the `selectedUsers` array to remove the user with the provided `id`. It also decrements the `userAmount` counter if the user's `id` is not null.
+   * @param user - The user to remove from the selection.
+   */
   removeUserFromSelection(user: User) {
     this.selectedUsers = this.selectedUsers.filter((u) => u.id !== user.id);
     if (user.id!) {
@@ -208,16 +315,29 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     }
   }
 
+  /**
+   * Sets the state of the user search selection.
+   * This method is used to update the `isUserSearchSelected` and `isAnyOptionSelected` properties based on the provided `isUserSearchSelected` parameter.
+   * @param isUserSearchSelected - A boolean indicating whether the user search option is selected.
+   */
   addOptionSelected(isUserSearchSelected: boolean) {
     this.isUserSearchSelected = isUserSearchSelected;
     this.isAnyOptionSelected = true;
   }
 
+  /**
+   * Resets the selected users and the user amount counter.
+   * This method is used to clear the selected users and reset the user amount counter to 0.
+   */
   resetAddmembers() {
     this.selectedUsers = [];
     this.userAmount = 0;
   }
 
+  /**
+   * Adds the selected users to the current channel, updates the channel subject, emits the updated channel, and updates the channel on Firestore.
+   * Finally, it resets the selected users and hides the channel member overview popover.
+   */
   addSelectedUserToChannel() {
     this.selectedUsers.forEach((user) => {
       this.currentChannel.memberIDs.push(user.id);
@@ -233,6 +353,11 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     document.getElementById('channel-member-overview-popover')!.hidePopover();
   }
 
+  /**
+   * Checks if the current user is allowed to add new members to the current channel.
+   * The user is allowed to add new members if they are the creator of the channel or if they are already a member of the channel.
+   * @returns `true` if the current user is allowed to add new members, `false` otherwise.
+   */
   isAllowedToAddMember() {
     if (this.currentChannel instanceof Channel) {
       return this.currentChannel.creatorID === this.userService.currentUserID ||
@@ -241,6 +366,10 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     return;
   }
 
+  /**
+   * Checks if the current user is allowed to add new members to the current channel, and returns a message if they are not allowed.
+   * @returns A message indicating that the user is not allowed to add new members, or an empty string if the user is allowed.
+   */
   showNoRightToEditInfo() {
     if (!this.isAllowedToAddMember()) {
       return 'Du bist nicht befugt, neue Leute hinzuzufügen.'
@@ -252,9 +381,13 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
     this.subscribeToChannel();
   }
 
+  /**
+   * Checks if the specified user is a guest user.
+   * @param memberID - The ID of the user to check.
+   * @returns `true` if the user is a guest, `false` otherwise.
+   */
   checkifUserIsGuest(memberID: string) {
     const member = this.userService.getUserByID(memberID);
     return member?.guest;
   }
-
 }
