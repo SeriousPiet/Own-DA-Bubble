@@ -245,7 +245,7 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
 .chatview-chat-partner-name {
   @include flex(normal, center);
   gap: 0.9375rem;
-  padding: 0.25rem 1.25rem;
+  padding: 0.25rem 1.25rem 0.25rem 0;
   border-radius: 2.1875rem;
 
   > span {

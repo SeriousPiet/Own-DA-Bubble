@@ -269,6 +269,7 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     span.addEventListener('click', (event) => {
       event.stopPropagation();
       this.setSelectedUserObject(span.id);
+      this.navigationService.setProfileTarget(true);
       const popoverElement = document.getElementById(
         this.returnPopoverTarget(span.id)
       );
