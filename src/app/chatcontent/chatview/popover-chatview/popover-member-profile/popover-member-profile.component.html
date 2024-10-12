@@ -54,9 +54,8 @@
 
     <button
       popovertargetaction="hide"
-      popovertarget="popover-member-profile"
       popovertarget="channel-member-overview-popover"
-      (click)="setChat(selectedUser)"
+      (click)="setChat(selectedUser); closePopovers()"
       class="send-direct-message-btn"
     >
       <img

@@ -57,6 +57,14 @@ export class PopoverMemberProfileComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Closes any open popovers in the application.
+   */
+  closePopovers(){
+    document.getElementById('popover-member-profile')?.hidePopover();
+    document.getElementById('channel-member-overview-popover')?.hidePopover();
+  }
+
+  /**
    * Unsubscribes from the `selectedUserObject$` subscription when the component is destroyed.
    */
   ngOnDestroy() {
