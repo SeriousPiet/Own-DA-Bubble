@@ -346,19 +346,6 @@ export class ChatviewComponent implements OnInit {
   }
 
   /**
-   * Returns the appropriate popover target based on whether the selected user is the current user.
-   * @param selectedUser - The ID of the user whose popover target should be determined.
-   * @returns 'profile-popover' if the selected user is the current user, 'popover-member-profile' otherwise.
-   */
-  returnPopoverTarget(selectedUser: string) {
-    if (selectedUser === this.userService.currentUser?.id) {
-      return 'profile-popover';
-    } else {
-      return 'popover-member-profile';
-    }
-  }
-
-  /**
    * Gets the ID of the chat partner for the given chat or channel.
    * If the current user is a member of the chat/channel, this method returns the ID of the other member.
    * @param chat - The chat or channel object to get the chat partner ID for.

@@ -82,14 +82,11 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     return this.userService.getUserByID(this._messageData.creatorID);
   }
 
-
   constructor(private _cdr: ChangeDetectorRef, private el: ElementRef) { }
-
 
   debugConsoleLog(text: string) {
     console.log(text);
   }
-
 
   ngOnDestroy(): void {
     if (this.resizeobserver) this.resizeobserver.disconnect();
@@ -97,13 +94,11 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     if (this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
   }
 
-
   handleEditorTextLengthChanged(event: EditedTextLength) {
     this.textLengthInfo = `${event.textLength}/${event.maxLength}`;
     this.showTextLength = event.textLength > event.maxLength * 0.8;
     this._cdr.detectChanges();
   }
-
 
   ngAfterViewChecked(): void {
     if (this.messageDiv && this.needContentUpdate) {
@@ -112,13 +107,11 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     }
   }
 
-
   ngAfterViewInit(): void {
     this.initMessageChangeSubscription();
     this.initResizeObserver();
     this.initViewOberserver();
   }
-
 
   initResizeObserver() {
     this.resizeobserver = new ResizeObserver((entries) => {
@@ -130,7 +123,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     this.resizeobserver.observe(this.el.nativeElement);
     this.handleEditorResize(this.el.nativeElement.clientWidth);
   }
-
 
   initViewOberserver() {
     if (this.isUnread) {
@@ -149,7 +141,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     }
   }
 
-
   initMessageChangeSubscription() {
     if (this.messageChangeSubscription) this.messageChangeSubscription.unsubscribe();
     this.messageChangeSubscription = this._messageData.changeMessage$.subscribe(() => {
@@ -159,12 +150,10 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     });
   }
 
-
   handleEditorResize(width: number) {
     this.showBigButtons = width > 700;
     this.showSmallButtons = !this.showBigButtons;
   }
-
 
   handleMostUsedEmojisCountChange(width: number) {
     if (width < 550) this.showMostUsedEmojisCount = 0;
@@ -173,16 +162,13 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     else this.showMostUsedEmojisCount = 4;
   }
 
-
   hasMessagetextContent() {
     return !isEmptyMessage(this._messageData.content);
   }
 
-
   isReactionSelf(reaction: IReactions) {
     return reaction.userIDs.includes(this.userService.currentUserID);
   }
-
 
   getReactionUsers(reaction: IReactions): string {
     const currentUserReacted = reaction.userIDs.includes(this.userService.currentUserID);
@@ -205,14 +191,12 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     }
   }
 
-
   fillMessageContentHTML() {
     if (this.messageDiv) {
       this.messageDiv.nativeElement.innerHTML = this._messageData.content;
       this.calculateMessageSpans();
     }
   }
-
 
   downloadAttachment(attachment: StoredAttachment) {
     const link = document.createElement('a');
@@ -227,7 +211,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     this.messageService.deleteStoredAttachment(this._messageData, attachment);
   }
 
-
   calculateMessageSpans() {
     const spans = this.messageDiv.nativeElement.querySelectorAll('span');
     spans.forEach((span: HTMLSpanElement) => {
@@ -238,7 +221,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
       }
     });
   }
-
 
   prepareChannelSpan(span: HTMLSpanElement) {
     const spanChannel = this.getChannelOnlyWhenNotCurrent(span.id);
@@ -251,7 +233,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
       });
     }
   }
-
 
   getChannelOnlyWhenNotCurrent(channelID: string): Channel | undefined {
     const channel = this.channelService.channels.find(
@@ -271,7 +252,7 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
       this.setSelectedUserObject(span.id);
       this.navigationService.setProfileTarget(true);
       const popoverElement = document.getElementById(
-        this.returnPopoverTarget(span.id)
+        this.navigationService.returnPopoverTarget(span.id)
       );
       if (popoverElement) (popoverElement as any).showPopover();
     });
@@ -293,7 +274,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     this.closeMessageEditor();
   }
 
-
   async addReaction() {
     if (await this.userService.ifCurrentUserVerified()) {
       this.emojiService.showPicker((emoji: string) => {
@@ -302,13 +282,11 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     }
   }
 
-
   async toggleReaction(reactionType: string) {
     if (await this.userService.ifCurrentUserVerified()) {
       this.messageService.toggleReactionToMessage(this._messageData, reactionType);
     }
   }
-
 
   closeMessageEditor() {
     this.toggleMessageEditor();
@@ -316,16 +294,13 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     this._cdr.detectChanges();
   }
 
-
   isFirstMessage(index: number) {
     return index === 0;
   }
 
-
   isSameCreatorAndDate(currentCreatorId: string, previousCreatorId: string, currentMessageDate: string, previousMessageDate: string) {
     return currentCreatorId === previousCreatorId && currentMessageDate === previousMessageDate;
   }
-
 
   getFormatedMessageTime(messageTime: Date | undefined) {
     let formatedMessageTime = messageTime?.toLocaleTimeString('de-DE', {
@@ -334,7 +309,6 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     });
     return `${formatedMessageTime} Uhr`;
   }
-
 
   getLastAnsweredMessagedDateOrTime(answerAt: Date) {
     const now = new Date(); const isToday = answerAt.toDateString() === now.toDateString();
@@ -345,11 +319,9 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     }
   }
 
-
   toggleEditMessagePopup() {
     this.showEditMessagePopup = !this.showEditMessagePopup;
   }
-
 
   toggleMessageEditor() {
     this.toggleEditMessagePopup();
@@ -367,32 +339,20 @@ export class MessageComponent implements OnDestroy, AfterViewInit, AfterViewChec
     }
   }
 
-
-  returnPopoverTarget(messageCreator: string) {
-    if (messageCreator === this.userService.currentUser?.id) {
-      return 'profile-popover';
-    } else {
-      return 'popover-member-profile';
-    }
-  }
-
-
   showUserPopover(messageCreatorID: string) {
     this.setSelectedUserObject(messageCreatorID);
     const popoverElement = document.getElementById(
-      this.returnPopoverTarget(messageCreatorID)
+      this.navigationService.returnPopoverTarget(messageCreatorID)
     );
     this.navigationService.setProfileTarget(true);
     if (popoverElement) (popoverElement as any).showPopover();
   }
-
 
   setSelectedUserObject(messageCreatorID: string) {
     this.userService.updateSelectedUser(
       this.userService.getUserByID(messageCreatorID)
     );
   }
-
 
   setThread(thread: Message) {
     if (thread.answerable) {

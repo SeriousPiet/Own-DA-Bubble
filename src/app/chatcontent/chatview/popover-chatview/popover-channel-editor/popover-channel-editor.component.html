@@ -118,7 +118,7 @@
           member: true
         }"
         (click)="setSelectedUserObject(memberID)"
-        [attr.popovertarget]="returnPopoverTarget(memberID)"
+        [attr.popovertarget]="navigationService.returnPopoverTarget(memberID)"
       >
         <div
           appAvatar

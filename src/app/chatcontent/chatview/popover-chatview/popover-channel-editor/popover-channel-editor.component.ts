@@ -252,20 +252,6 @@ export class PopoverChannelEditorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * If the selectedUser is the current user, the function returns 'profile-popover'.
-   * Otherwise, it returns 'popover-member-profile' which is the profilcard for not current user.
-   * @param selectedUser - The ID of the message creator.
-   * @returns The appropriate popover target.
-   */
-  returnPopoverTarget(selectedUser: string) {
-    if (selectedUser === this.userService.currentUser?.id) {
-      return 'profile-popover';
-    } else {
-      return 'popover-member-profile';
-    }
-  }
-
-  /**
    * Gets the name of the member with the specified ID.
    * If the member with the specified ID is the current user, the name is returned with the text "(You)" appended.
    * @param memberID - The ID of the member to get the name for.

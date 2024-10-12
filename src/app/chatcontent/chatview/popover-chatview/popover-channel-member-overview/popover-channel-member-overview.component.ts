@@ -147,23 +147,6 @@ export class PopoverChannelMemberOverviewComponent implements OnInit, OnDestroy 
   }
 
   /**
-   * Determines the appropriate popover target based on the message creator.
-   *
-   * If the message creator is the current user, the 'profile-popover' target is returned.
-   * Otherwise, the 'popover-member-profile' target is returned.
-   *
-   * @param messageCreator - The ID of the message creator.
-   * @returns The appropriate popover target.
-   */
-  returnPopoverTarget(messageCreator: string) {
-    if (messageCreator === this.userService.currentUser?.id) {
-      return 'profile-popover';
-    } else {
-      return 'popover-member-profile';
-    }
-  }
-
-  /**
    * Sets the selected user object and updates the navigation service's profile target.
    *
    * @param messageCreatorID - The ID of the message creator.

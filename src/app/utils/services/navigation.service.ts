@@ -242,5 +242,18 @@ export class NavigationService {
     return undefined;
   }
 
+/**
+   * Returns the appropriate popover target based on whether the selected user is the current user.
+   * @param selectedUser - The ID of the user whose popover target should be determined.
+   * @returns 'profile-popover' if the selected user is the current user, 'popover-member-profile' otherwise.
+   */
+returnPopoverTarget(selectedUser: string) {
+  if (selectedUser === this.userService.currentUser?.id) {
+    return 'profile-popover';
+  } else {
+    return 'popover-member-profile';
+  }
+}
+
 
 }
