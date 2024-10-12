@@ -34,6 +34,18 @@ section {
       }
     }
 
+    .picker-info-mouseonly {
+      position: sticky;
+      z-index: 1010;
+      top: 0;
+      margin-left: auto;
+      margin-right: 0.2rem;
+      width: fit-content;
+      @include flex(flex-end, center);
+      background-color: white;
+      border-radius: 1000px;
+    }
+
     .picker-info {
       @include nunito(0.875rem, 600, black);
       position: sticky;

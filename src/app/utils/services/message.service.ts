@@ -37,13 +37,19 @@ export class MessageService {
    * 
    * @throws Will throw an error if the message path is not found.
    */
-  async addNewMessageToCollection(collectionObject: Channel | Chat | Message, messageContent: string, attachments: MessageAttachment[] = [], creatorID: string = this.userservice.currentUserID): Promise<string> {
+  async addNewMessageToCollection(
+    collectionObject: Channel | Chat | Message,
+    messageContent: string,
+    attachments: MessageAttachment[] = [],
+    creatorID: string = this.userservice.currentUserID,
+    createdAt: Date | undefined = undefined
+  ): Promise<string> {
     const messagePath = getMessagePath(collectionObject);
     const objectPath = getObjectsPath(collectionObject);
     try {
       const messageCollectionRef = collection(this.firestore, messagePath);
       if (!messageCollectionRef) throw new Error('Nachrichtenpfad "' + messagePath + '" nicht gefunden.');
-      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, !(collectionObject instanceof Message), creatorID));
+      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, !(collectionObject instanceof Message), creatorID, createdAt));
       if (attachments.length > 0) this.uploadAndAddAttachmentsToMessage(response.id, response.path, attachments);
       const messagesQuerySnapshot = await getDocs(messageCollectionRef);
       const updateData = collectionObject instanceof Message ? { answerCount: messagesQuerySnapshot.size, lastAnswerAt: serverTimestamp() } : { messagesCount: messagesQuerySnapshot.size };
@@ -269,10 +275,10 @@ export class MessageService {
    * @param answerable - A boolean indicating if the message is answerable.
    * @returns An object representing the new message.
    */
-  private createNewMessageObject(messageText: string, answerable: boolean, createdBy: string): any {
+  private createNewMessageObject(messageText: string, answerable: boolean, createdBy: string, createdAt: Date | undefined): any {
     return {
       creatorID: createdBy,
-      createdAt: serverTimestamp(),
+      createdAt: createdAt ? createdAt : serverTimestamp(),
       content: messageText,
       plainContent: removeAllHTMLTagsFromString(messageText),
       emojies: [],

@@ -350,6 +350,11 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
   }
 
 
+  listKeysValid() {
+    return this.quill && this.quill.hasFocus();
+  }
+
+
   /**
    * Sets the current picker index and updates the UI accordingly.
    *
