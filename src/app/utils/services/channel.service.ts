@@ -12,7 +12,7 @@ import { Chat } from '../../shared/models/chat.class';
 import { User } from '../../shared/models/user.class';
 import { BehaviorSubject } from 'rxjs';
 import { Message } from '../../shared/models/message.class';
-import { getCollectionPath } from '../firebase/utils';
+import { dabubbleBotId, getCollectionPath, isRealUser } from '../firebase/utils';
 
 export type ActivChat = {
   chat: Chat;
@@ -96,11 +96,15 @@ export class ChannelService implements OnDestroy {
   updateActiveChatsStream(): void {
     this.activeChats$.next(this.chats
       .filter((chat) => this.userservice.currentUser?.chatIDs.includes(chat.id))
+      .filter((chat) => this.chats.find((c) => c.id === chat.id))
       .map((chat) => ({
         chat,
         partner: this.getChatPartner(chat) as User,
         unreadMessagesCount: chat.unreadMessagesCount,
-      })));
+      }))
+      .filter((chat) => chat.partner !== undefined && chat.partner.guest === false)
+      .sort((a, b) => b.chat.createdAt.getTime() - a.chat.createdAt.getTime())
+    );
   }
 
 

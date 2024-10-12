@@ -1,6 +1,9 @@
+import { Timestamp } from "@angular/fire/firestore";
+
 export class Chat {
   readonly id: string;
   readonly memberIDs: string[] = [];
+  readonly createdAt: Date;
   public messagesCount: number = 0;
   public unreadMessagesCount:  number = 0;
 
@@ -14,6 +17,7 @@ export class Chat {
     this.id = id;
     this.memberIDs = data.memberIDs ? data.memberIDs : [];
     this.messagesCount = data.messagesCount ? data.messagesCount : 0;
+    this.createdAt = data.createdAt ? (data.createdAt as Timestamp).toDate() : new Date();
   }
 
 
