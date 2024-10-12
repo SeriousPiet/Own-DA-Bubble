@@ -61,7 +61,6 @@ section {
 
     .picker-item-list {
       @include flex(flex-start, stretch);
-      z-index: 1010;
       flex-direction: column;
       gap: 0.5rem;
       padding: 0.3rem;

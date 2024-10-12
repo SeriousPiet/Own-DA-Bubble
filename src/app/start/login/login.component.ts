@@ -8,7 +8,7 @@ import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where }
 import { CommonModule } from '@angular/common';
 import { ChannelService } from '../../utils/services/channel.service';
 import { MessageService } from '../../utils/services/message.service';
-import { welcomemessagecontent } from '../../utils/firebase/utils';
+import { dabubbleBotId, newGuestMessages } from '../../utils/firebase/utils';
 
 @Component({
   selector: 'app-login',
@@ -441,13 +441,14 @@ export class LoginComponent implements OnDestroy, OnInit {
   }
 
   private async implementSomeNewUserStuff(newUserID: string) {
-    const belaID = 'SVFcGhTwEk94NhptJ7iz';
     const selfChatID = await this.channelService.addChatWithUserOnFirestore(newUserID);
-    const belaChatID = await this.channelService.addChatWithUserOnFirestore(belaID); // Bela Schramm
-    if (belaChatID) {
-      const belaChat = this.channelService.getChatByID(belaChatID);
-      if (belaChat) {
-        this.messageService.addNewMessageToCollection(belaChat, welcomemessagecontent, [], belaID);
+    const dabubbleBotChatID = await this.channelService.addChatWithUserOnFirestore(dabubbleBotId); // Bela Schramm
+    if (dabubbleBotChatID) {
+      const dabubbleBotChat = this.channelService.getChatByID(dabubbleBotChatID);
+      if (dabubbleBotChat) {
+        newGuestMessages.forEach(async (message) => {
+          await this.messageService.addNewMessageToCollection(dabubbleBotChat, message, [], dabubbleBotId);
+        });
       }
     }
   }

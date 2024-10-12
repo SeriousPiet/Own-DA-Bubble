@@ -8,7 +8,7 @@ import { Auth, createUserWithEmailAndPassword, signOut, updateProfile } from '@a
 import { addDoc, collection, doc, Firestore, serverTimestamp, updateDoc } from '@angular/fire/firestore';
 import { ChannelService } from '../../utils/services/channel.service';
 import { MessageService } from '../../utils/services/message.service';
-import { welcomemessagecontent } from '../../utils/firebase/utils';
+import { dabubbleBotId, newUserMessages } from '../../utils/firebase/utils';
 
 @Component({
   selector: 'app-signup',
@@ -145,15 +145,16 @@ export class SignupComponent {
   }
 
 
-  
+
   private async implementSomeNewUserStuff(newUserID: string) {
-    const belaID = 'SVFcGhTwEk94NhptJ7iz';
     const selfChatID = await this.channelService.addChatWithUserOnFirestore(newUserID);
-    const belaChatID = await this.channelService.addChatWithUserOnFirestore(belaID); // Bela Schramm
-    if (belaChatID) {
-      const belaChat = this.channelService.getChatByID(belaChatID);
-      if (belaChat) {
-        this.messageService.addNewMessageToCollection(belaChat, welcomemessagecontent, [], belaID);
+    const dabubbleBotChatID = await this.channelService.addChatWithUserOnFirestore(dabubbleBotId); // DABubble Bot
+    if (dabubbleBotChatID) {
+      const dabubbleBotChat = this.channelService.getChatByID(dabubbleBotChatID);
+      if (dabubbleBotChat) {
+        newUserMessages.forEach(async (message) => {
+          await this.messageService.addNewMessageToCollection(dabubbleBotChat, message, [], dabubbleBotId);
+        });
       }
     }
   }

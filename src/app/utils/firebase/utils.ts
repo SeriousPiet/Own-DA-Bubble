@@ -1,11 +1,19 @@
 import { Channel } from "../../shared/models/channel.class";
 import { Chat } from "../../shared/models/chat.class";
 import { Message } from "../../shared/models/message.class";
-import { CollectionType } from "../../shared/models/user.class";
+import { CollectionType, User } from "../../shared/models/user.class";
+
+const welcomemessagecontent = `<h2>Willkommen bei DABubble!</h2><p><br></p><p><strong>DABubble</strong> ist eine moderne Chat-App für effiziente Kommunikation in Channels und per Direktnachricht. Arbeite im Team oder chatte privat mit Kollegen - flexibel und intuitiv.</p><p><br></p><p>Im <span class="highlight-channel" id="isPDY8NAznEARHdJFTyb" contenteditable="false">#Allgemein</span> Channel kannst du generelle Fragen stellen. <span class="highlight-channel" id="0biyIbK3IYw3SaRihcrC" contenteditable="false">#Backend</span> und <span class="highlight-channel" id="LKN74nq0AFkZCqGoLGZN" contenteditable="false">#Front End</span> sind dann für spezielle dinge reserviert.</p><p><br></p><p>Bei Fragen wende Dich gerne an <span class="highlight-user" id="4iqrDSW9hM4hRVQGuMVy" contenteditable="false">@Michael Buschmann</span> , <span class="highlight-user" id="ellfDJEyv2LnT55aYyH3" contenteditable="false">@Peter Wallbaum</span> , <span class="highlight-user" id="codDqlQXNu6QBkrpdR8A" contenteditable="false">@Anthony Hamon</span> oder <span class="highlight-user" id="SVFcGhTwEk94NhptJ7iz" contenteditable="false">@Bela Schramm</span> . </p><p><br></p><p>Viel Spaß mit <strong>DABubble!</strong> Bei Fragen sind wir immer für dich da. Um <em>User</em> anzuschreiben, nutze die Suchfunktion.</p>`;
+const guestHint1 = `<h2>Ein Hinweis noch für Gäste.</h2><p><br></p><p>Bitte benutzt die <strong>Logout</strong> Möglichkeit rechts oben im <em>Profil Menu</em>. ☝️</p><p>Damit stellst Du sicher, das Dein gesamter Content den Du erzeugt hast, wieder gelöscht wird.</p><p><br></p><p>Vielen Dank. 👍</p><p><br></p><p>Euer DABubble 303 Team. 🙂</p>`;
+
+export const dabubbleBotId = 'L1vx1LslWBb7nQUOLMqc';
+export const newGuestMessages = [welcomemessagecontent, guestHint1];
+export const newUserMessages = [welcomemessagecontent];
 
 
-export const welcomemessagecontent = `<h2>Willkommen bei DABubble!</h2><p><br></p><p><strong>DABubble</strong> ist eine moderne Chat-App für effiziente Kommunikation in Channels und per Direktnachricht. Arbeite im Team oder chatte privat mit Kollegen – flexibel und intuitiv.</p><p><br></p><h3>Was bietet DABubble?</h3><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Channels erstellen</strong>: Bleibe bei Projekten und Themen auf dem Laufenden.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Direktnachrichten</strong>: Führe private Gespräche.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Emoji-Reaktionen</strong>: Verleihe Nachrichten eine persönliche Note.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Suchfunktion</strong>: Finde schnell Nachrichten oder User. Du kannst global suchen – entweder nach Nachrichten im aktuellen Channel oder in allen Channels. Auch die Suche nach Usern und Channels ist möglich.</li></ol><p><br></p><p>Im <span class="highlight-channel" id="isPDY8NAznEARHdJFTyb" contenteditable="false">#Allgemein</span> Channel kannst du generelle Fragen stellen. <span class="highlight-channel" id="0biyIbK3IYw3SaRihcrC" contenteditable="false">#Backend</span> und <span class="highlight-channel" id="LKN74nq0AFkZCqGoLGZN" contenteditable="false">#Front End</span> sind dann für spezielle dinge reserviert.</p><p><br></p><p>Bei Fragen wende Dich gerne an <span class="highlight-user" id="4iqrDSW9hM4hRVQGuMVy" contenteditable="false">@Michael Buschmann</span> , <span class="highlight-user" id="ellfDJEyv2LnT55aYyH3" contenteditable="false">@Peter Wallbaum</span> , <span class="highlight-user" id="codDqlQXNu6QBkrpdR8A" contenteditable="false">@Anthony Hamon</span> oder <span class="highlight-user" id="SVFcGhTwEk94NhptJ7iz" contenteditable="false">@Bela Schramm</span> . </p><p><br></p><p>Viel Spaß mit <strong>DABubble!</strong> Bei Fragen sind wir immer für dich da. Um neue <em>User</em> anzuschreiben, nutze die Suchfunktion.</p>  `;
-
+export function isRealUser(user: User): boolean {
+    return !user.guest && user.id !== dabubbleBotId;
+}
 
 /**
  * Determines the type of a given collection.

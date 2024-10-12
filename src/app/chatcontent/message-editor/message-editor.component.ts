@@ -11,6 +11,7 @@ import { AvatarDirective } from '../../utils/directives/avatar.directive';
 import { FormsModule } from '@angular/forms';
 import { EmojipickerService } from '../../utils/services/emojipicker.service';
 import { EditedTextLength, getTextBeforePreviousSign, insertItemAsSpan, isEmptyMessage, registerLockedSpanBlot } from '../../utils/quil/utility';
+import { isRealUser } from '../../utils/firebase/utils';
 
 
 @Component({
@@ -402,7 +403,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
    */
   updatePickerItems(searchTerm: string) {
     if (this.pickersign === '@') {
-      this.pickerItems = this.userservice.users.filter((user) => !user.guest && (searchTerm === '' || user.name.toLowerCase().includes(searchTerm.toLowerCase())));
+      this.pickerItems = this.userservice.users.filter((user) => isRealUser(user) && (searchTerm === '' || user.name.toLowerCase().includes(searchTerm.toLowerCase())));
       this.setCurrentPickerIndex(-1);
     } else if (this.pickersign === '#') {
       this.pickerItems = this.channelservice.channels.filter((channel) => !channel.defaultChannel && channel.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -423,7 +424,7 @@ export class MessageEditorComponent implements AfterViewInit, OnDestroy {
     this.updatePickerItems('');
   }
 
-  
+
   /**
    * Closes the list picker if it is currently shown.
    *
