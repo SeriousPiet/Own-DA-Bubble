@@ -16,12 +16,8 @@
   </div>
 
   <!-- DEBUG Section -->
-  <div class="debug-btn d-none">
-    <button [routerLink]="['/chatthreadtest']">DEBUG</button>
-    <button [routerLink]="['/chatcontent']">CHATCONTENT</button>
-    @if(userservice.currentUser) { User: {{ userservice.currentUser.name }}
-    }
-    <button [routerLink]="['/showcase']">Styling Showcase</button>
+  <div class="debug-btn">
+    <button (click)="injectFrontEndMessages()">frontend</button>
   </div>
 
   <div class="static-bubble-logo">
