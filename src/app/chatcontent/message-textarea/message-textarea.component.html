@@ -12,7 +12,7 @@
   @if(!ifMessageUploading && attachments.length > 0){
   <div class="attachments">
     @for(attachment of attachments; track attachment){
-    <div class="attachment">
+    <button popovertarget="attachment-preview" class="attachment">
       <img src="{{ attachment.src }}" alt="+" />
       <span>{{ attachment.name }}</span>
       <img
@@ -21,6 +21,9 @@
         src="./assets/icons/chat/general/close.svg"
         alt="close"
       />
+    </button>
+    <div popover id="attachment-preview">
+      <img src="{{ attachment.src }}" alt="+" />
     </div>
     }
   </div>
