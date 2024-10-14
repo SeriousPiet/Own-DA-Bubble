@@ -27,6 +27,8 @@ export class Channel {
   readonly creatorID: string; // User id
   readonly defaultChannel: boolean;
 
+  public unreadMessagesCount = 0;
+
   get channelMessagesPath(): string {
     if (this.id == '') return '';
     return `channels/${this.id}/messages/`;
@@ -45,6 +47,16 @@ export class Channel {
   }
 
 
+  /**
+   * Updates the channel properties with the provided data.
+   * 
+   * @param data - An object containing the properties to update. 
+   *               The object can have the following optional properties:
+   *               - `name`: The new name of the channel.
+   *               - `description`: The new description of the channel.
+   *               - `memberIDs`: An array of new member IDs.
+   *               - `messagesCount`: The new count of messages in the channel.
+   */
   update(data: any) {
     if (data.name) this._name = data.name;
     if (data.description) this._description = data.description;

@@ -1,0 +1,21 @@
+@import "../../../styles.scss";
+@import "../../../mixins.scss";
+
+section {
+  padding: 0;
+  border: none;
+  border-radius: 0.375rem;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
+  transition: $transition-popover;
+}
+
+#popover-emoji-picker:popover-open {
+  opacity: 1;
+}
+
+@starting-style {
+  #popover-emoji-picker:popover-open {
+    opacity: 0;
+  }
+}

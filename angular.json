@@ -25,21 +25,27 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles.scss"],
-            "scripts": []
+            "styles": [
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.bubble.css",
+              "node_modules/quill/dist/quill.snow.css",
+              "node_modules/@ctrl/ngx-emoji-mart/picker.css",
+              "src/styles.scss"
+            ],
+            "scripts": ["node_modules/quill/dist/quill.js"]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "30kb",
+                  "maximumError": "40kb"
                 }
               ],
               "outputHashing": "all"
@@ -83,5 +89,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

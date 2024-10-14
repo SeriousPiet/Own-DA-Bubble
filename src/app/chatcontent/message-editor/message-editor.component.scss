@@ -1,0 +1,164 @@
+@import "../../../mixins.scss";
+@import "../../../styles.scss";
+
+section {
+  position: relative;
+  @include flex(flex-start, stretch);
+  flex-direction: column;
+
+  .picker-hide {
+    max-height: 0 !important;
+    border: none !important;
+  }
+
+  .picker-list {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    bottom: 105%;
+    max-height: 13rem;
+    border-radius: 1.5rem 1.5rem 0 1.5rem;
+    border: 1px solid #adb0d9;
+    background-color: white;
+    box-shadow: $modal-box-shadow;
+    overflow-y: auto;
+    transition: $transition-standard;
+
+    .picker-close {
+      @include flex(center, center);
+      @include iconBox;
+
+      &:hover img {
+        content: url("../../../assets/icons/chat/general/close-hover.svg");
+      }
+    }
+
+    .picker-info-mouseonly {
+      position: sticky;
+      z-index: 1010;
+      top: 0;
+      margin-left: auto;
+      margin-right: 0.2rem;
+      width: fit-content;
+      @include flex(flex-end, center);
+      background-color: white;
+      border-radius: 1000px;
+    }
+
+    .picker-info {
+      @include nunito(0.875rem, 600, black);
+      position: sticky;
+      z-index: 1010;
+      top: 0;
+      @include flex(space-between, center);
+      flex-wrap: nowrap;
+      width: 100%;
+      min-width: fit-content;
+      padding: 0.3rem;
+      background-color: white;
+      border-bottom: 1px solid lightgray;
+
+      .picker-use-info {
+        @include flex(flex-start, center);
+        gap: 0.5rem;
+        padding: 0.3rem;
+
+        img {
+          width: 1.1rem;
+          height: 1.1rem;
+        }
+      }
+    }
+
+    .picker-item-list {
+      @include flex(flex-start, stretch);
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.3rem;
+
+      .picker-item-select {
+        background-color: $background;
+        border: 1px solid #adb0d9;
+      }
+
+      .picker-item-nonselect {
+        border: 1px solid transparent;
+      }
+
+      .picker-item {
+        @include flex(flex-start, center);
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.3rem;
+        border-radius: 1000rem;
+        cursor: pointer;
+
+        .picker-item-name {
+          @include nunito(0.875rem, 600, black);
+        }
+
+        &:hover {
+          background-color: $background;
+        }
+      }
+    }
+  }
+
+  quill-editor {
+    width: 100%;
+    background-color: transparent;
+    color: black;
+    outline: none;
+    border: none;
+    overflow-y: auto;
+    transition: all 0.5s;
+  }
+
+  .editor-toolbar {
+    position: sticky;
+    top: 0;
+    @include flex(flex-start, center);
+    width: 100%;
+    padding: 0;
+    border: none;
+    transition: all 0.2s;
+    overflow: hidden;
+
+    .quill-error {
+      @include nunito(0.75rem, 600, $error);
+    }
+
+    .quill-message-length {
+      @include nunito(0.75rem, 600, black);
+    }
+
+    span.ql-formats {
+      @media (width < 400px) {
+        margin-right: 0.175rem !important;
+      }
+
+      &.tb_section_5 {
+        @include flex(center, center);
+        gap: 4px;
+        width: fit-content;
+      }
+
+      &.tb_section_5 button {
+        width: 1.25rem;
+        height: 1.25rem;
+        padding: 0;
+      }
+    }
+  }
+
+  .show-editor-toolbar {
+    max-height: 3rem;
+    border-bottom: 1px solid #adb0d9;
+  }
+
+  .hide-editor-toolbar {
+    max-height: 0;
+    border-bottom: 1px solid transparent;
+  }
+}

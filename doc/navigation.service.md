@@ -2,11 +2,6 @@
 
 ## Public Properties
 
-### `defaultChannel`
-
-- **Type:** `Channel`
-- **Description:** The default channel object, which is used as the fallback channel when no other channel is selected. Useful in the WorkSpaceMenu.Component, to select all the channels and user in the list.
-
 ### `change$`
 
 - **Type:** `Observable<string>`
@@ -63,13 +58,3 @@
 - **Description:** Returns the context string for searching within the current chat or channel.
 - **Returns:** `string` - The search context string.
 
-## Private Methods (for internal use)
-
-### `clearThread(): void`
-
-- **Description:** Clears the thread by resetting the thread message path and message properties.
-
-### `getChatPartnerName(): string | undefined`
-
-- **Description:** Retrieves the name of the chat partner in the current chat.
-- **Returns:** `string | undefined` - The name of the chat partner, or `undefined` if not available.

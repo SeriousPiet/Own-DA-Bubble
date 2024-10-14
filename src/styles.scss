@@ -11,6 +11,9 @@ $error: #ed1e79;
 
 $mail: #1381ff;
 
+$selfReaction: #5381ff;
+$selfReactionDelete: #c72c2c;
+
 // start animation background
 $intro-gradient: linear-gradient(1.46deg, #313ae6 1.22%, #797ef3 98.76%);
 
@@ -46,8 +49,43 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 
 @import "./fonts.scss";
 
+// quill editor
+
+.ql-editor {
+  font-family: "Nunito";
+  font-size: 1rem;
+  border: none;
+  padding: 0.25rem;
+}
+
+.highlight-user {
+  padding: 0.05rem;
+  background-color: $primary;
+  color: white;
+  border-radius: 0.3rem;
+}
+
+.highlight-channel {
+  padding: 0.05rem;
+  background-color: $disabled;
+  color: white;
+  border-radius: 0.3rem;
+}
+
+.highlight-can-clicked {
+  cursor: pointer;
+}
+
+.highlight-item:hover {
+  background-color: $hover-grey;
+  color: black;
+}
+
+// ---------------------------------- GLOBAL STYLES ----------------------------------
+
 * {
   box-sizing: border-box;
+  font-family: "Nunito", sans-serif;
 }
 
 .d-none {
@@ -85,25 +123,28 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 html {
   font-size: 16px;
 
-  @media (width <= 768px) {
+  @media (width <=768px) {
     font-size: 14px;
   }
 
-  @media (width <= 375px) {
+  @media (width <=375px) {
     font-size: 12px;
   }
 }
 
 h1 {
-  @extend .nunito-46-700;
+  font-size: 2.875rem;
+  font-weight: 700;
 }
 
 h2 {
-  @extend .nunito-32-700;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 h3 {
-  @extend .nunito-24-700;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 h1,
@@ -142,12 +183,15 @@ body {
   max-width: 1920px;
   margin: 0 auto;
   padding: 0;
-  overflow: hidden;
+
+  background: $background;
 
   font-family: "Nunito", sans-serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  overflow: auto;
 
   &:has(*:popover-open) {
     pointer-events: none;
@@ -157,7 +201,15 @@ body {
     }
   }
 
-  @media (width <= 1440px) {
-    font-size: 16px;
+  @media (width <=425px) {
+    overflow-y: auto;
   }
+
+  @media (width <= 1440px) {
+    font-size: 1rem;
+  }
+}
+
+app-root {
+  position: relative;
 }

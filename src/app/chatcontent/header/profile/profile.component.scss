@@ -1,6 +1,7 @@
 @import "../../../../styles.scss";
 @import "../../../../mixins.scss";
 
+$username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
 // ##############################
 
 .profile {
@@ -9,8 +10,19 @@
   gap: 1.25rem;
   cursor: pointer;
 
+  @media (width < 716px) {
+    gap: 0.25rem;
+  }
+
   span.username {
     @include nunito(2, 700, black);
+    font-size: $username-fs !important;
+    line-height: 100%;
+    text-align: left;
+
+    @media (width < 716px) {
+      display: none;
+    }
   }
 
   span,
@@ -22,18 +34,37 @@
     color: $primary;
   }
 
-  &:hover img.icon {
+  .icon img {
+    width: 30px;
+    aspect-ratio: 1 / 1;
+
+    @media (width < 716px) {
+      display: none;
+    }
+  }
+
+  &:hover .icon img {
     content: url("../../../../assets/icons/modals/expand-down-hover.svg");
+  }
+
+  .avatar {
+    display: flex;
+    flex-shrink: 0;
+
+    @media (width < 716px) {
+      width: 3.5rem !important;
+      height: 3.5rem !important;
+    }
   }
 }
 
 #profile-popover {
   display: none;
   top: 7.5rem;
-  min-width: 15.5rem;
-  max-width: 29rem;
   width: fit-content;
   height: fit-content;
+  min-width: 15.5rem;
+  max-width: 29rem;
   max-height: 45rem;
   margin: 0 1.25rem 0 auto;
   padding: 1.25rem;
@@ -42,6 +73,23 @@
   box-shadow: $profile-box-shadow;
   opacity: 0;
   transition: $transition-popover;
+
+  @media (width < 426px) {
+    top: 5.5rem;
+    margin: 0 1rem 0 auto;
+
+    &.fullscreen {
+      top: 0;
+      width: 100%;
+      height: 100%;
+      min-width: unset;
+      max-height: unset;
+      max-width: unset;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
 
   .choose-action {
     @include flex(center, center);
@@ -59,6 +107,21 @@
     @include flex(center, center);
     flex-direction: column;
     min-width: 20rem;
+
+    @media (width < 426px) {
+      &.fullscreen {
+        @include flex(flex-start, center);
+        gap: 1rem;
+        width: 100%;
+        height: 100%;
+
+        .avatar {
+          width: 12rem !important;
+          height: 12rem !important;
+          margin-bottom: 1.25rem;
+        }
+      }
+    }
 
     .edit-username {
       @include flex(space-between, center);
@@ -97,7 +160,7 @@
       .online-status-indicator {
         width: 1rem;
         height: 1rem;
-        background-color: var(--status-color); // <--- dynamisch gesetzt
+        background-color: var(--status-color);
         border-radius: 50%;
       }
 
@@ -124,6 +187,12 @@
         .mail-span {
           @include nunito(1.25, 400, $mail);
         }
+
+        .mail-verify {
+          .mail-verify-link {
+            @include buttonNoBorder;
+          }
+        }
       }
     }
   }
@@ -133,11 +202,57 @@
     flex-direction: column;
     min-width: 20rem;
 
+    @media (width < 426px) {
+      &.fullscreen {
+        @include flex(flex-start, center);
+        gap: 1rem;
+        height: 100%;
+        width: 100%;
+        min-width: unset;
+
+        .img-box .avatar {
+          width: 12rem !important;
+          height: 12rem !important;
+          margin-bottom: 1.25rem;
+        }
+      }
+    }
+
+    .img-box {
+      position: relative;
+    }
+
+    .img-box:not(:has(.restricted)) {
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("../../../../assets/icons/modals/profile/swap-avatar.svg");
+        background-size: 2rem 2rem;
+        background-position: bottom right;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        transition: $transition-standard;
+      }
+
+      &:hover {
+        &::after {
+          background-color: rgba(255, 255, 255, 0.4);
+          backdrop-filter: blur(1px);
+          background-position: center;
+          background-size: 4rem 4rem;
+        }
+      }
+    }
+
     .avatar {
       cursor: pointer;
       transition: $transition-standard;
 
-      &.google:hover {
+      &.restricted:hover {
         filter: grayscale(0.8);
         cursor: not-allowed;
       }
@@ -173,7 +288,7 @@
       .input-box {
         @include inputBox(100%, #adb0d9, $secondary, $secondary, false);
 
-        &.google {
+        &.restricted {
           border-color: $disabled !important;
 
           &:hover {
@@ -187,7 +302,7 @@
           padding: 0.75rem 0;
           font-size: 1rem;
 
-          &.google {
+          &.restricted {
             color: $disabled;
             pointer-events: none;
           }
@@ -205,6 +320,10 @@
       width: 100%;
       margin-top: 1rem;
 
+      @media (width < 426px) {
+        margin-top: 4rem;
+      }
+
       button:first-of-type {
         @include buttonEmpty;
       }
@@ -215,7 +334,7 @@
     }
 
     .error-message,
-    .google-info-message {
+    .restricted-info-message {
       @include nunito(0.875, 400, $error);
       height: 0.875rem;
       width: 100%;
@@ -229,9 +348,6 @@
       .error-message {
         opacity: 0;
       }
-    }
-
-    #choose-avatar {
     }
   }
 

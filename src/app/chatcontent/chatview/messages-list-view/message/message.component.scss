@@ -1,20 +1,137 @@
 @import "../../../../../styles.scss";
 @import "../../../../../mixins.scss";
 
+$p-left: clamp(1.25rem, 3.472vw + -1.354rem, 2.8125rem);
+$p-right: clamp(1.25rem, -2.778vw + 3.333rem, 0rem);
+$creator-fs: clamp(1rem, 0.278vw + 0.792rem, 1.125rem);
+$reactions-gap: clamp(0.325rem, 0.667vw + -0.175rem, 0.625rem);
+
+.errorspan {
+  @include nunito(0.875, 400, $error);
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.emoji-div {
+  @include nunito(0.875, 400, black);
+}
+
+.self-reaction {
+  background-color: #fff;
+  border-radius: 1000px;
+  border: 2px solid $selfReaction;
+}
+
+.other-reaction {
+  border-radius: 1000px;
+  background-color: white;
+  border: $default-border;
+}
+
+.reaction-btn {
+  position: relative;
+  width: fit-content;
+
+  &:hover {
+    .reaction-hover-info {
+      transform: translateY(0);
+      box-shadow: $profile-box-shadow;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+.reaction-hover-info {
+  position: absolute;
+  z-index: 10;
+  bottom: 112.5%;
+  left: 50%;
+  transform: translateY(-20px);
+  @include flex(center, center);
+  width: clamp(14ch, 100%, 32ch);
+
+  padding: 0.325rem 0.625rem;
+  background-color: $secondary;
+  border-radius: 1rem 1rem 1rem 0;
+  color: #fff;
+  opacity: 0;
+  visibility: hidden;
+  transition: $transition-standard;
+
+  p {
+    text-align: left;
+  }
+
+  .emoji-tag {
+    font-size: 0.875rem;
+  }
+}
+
+.message-attachments {
+  @include nunito(1, 400, black);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin-top: 0.625rem;
+
+  .type-pdf {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .type-image {
+    height: auto;
+    width: 10rem;
+  }
+
+  .attachment {
+    position: relative;
+    @include flex(flex-start, stretch);
+    flex-direction: column;
+    padding: 0.3rem 0.625rem;
+    border-radius: 0.625rem;
+    background-color: #f5f5f5;
+    color: #686868;
+
+    .attachment-action-btn {
+      @include iconBox;
+
+      &.trash-icon:hover img {
+        transform: scale(1.1);
+
+        filter: invert(26%) sepia(58%) saturate(5610%) hue-rotate(320deg)
+          brightness(94%) contrast(98%) !important;
+      }
+
+      &.download-icon:hover img {
+        transform: scale(1.1);
+
+        filter: invert(26%) sepia(37%) saturate(4864%) hue-rotate(231deg)
+          brightness(95%) contrast(100%);
+      }
+    }
+  }
+}
+
 .message-ctn {
   display: flex;
-  padding: 0.625rem 0rem 0.625rem 2.8125rem;
+  padding: 0.625rem $p-right 0.625rem var(--message-padding-left, $p-left);
   gap: 1.875rem;
   position: relative;
   transition: $transition-popover;
 
   .message-avatar-ctn {
-    >span {
+    .message-creator-avatar {
+      cursor: pointer;
+    }
+
+    > span {
       display: none;
     }
   }
 
-  >section {
+  > section {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -24,70 +141,70 @@
       @include flex(normal, center);
       gap: 1.25rem;
 
-      > :nth-child(1) {
-        font-size: 1.125rem;
+      > .message-creator-name {
+        font-size: $creator-fs;
         font-weight: 700;
+        text-wrap: balance;
+        text-align: left;
 
         &:hover {
           color: $accent;
         }
       }
 
-      > :nth-child(2) {
+      > span {
         font-size: 0.875rem;
         font-weight: 400;
         color: #686868;
       }
     }
 
-    >p {
+    > .message-text {
       margin: 0;
       padding: 15px;
       border-radius: 0 1.875rem 1.875rem 1.875rem;
       background-color: $background;
       max-width: max-content;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
 
     .message-reactions {
       display: flex;
-      gap: 10px;
-      min-height: 2.25rem;
+      gap: $reactions-gap;
+      flex-wrap: wrap;
 
-      >button {
-        padding: 5px 10px;
+      > button {
         @include flex(center, center);
-        gap: 10px;
-        border: $default-border;
-        border-radius: 20px;
+        gap: 0.625rem;
       }
 
-      >img {
+      > img {
         &:hover {
           content: url(../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg);
         }
       }
     }
 
-    >.message-info {
-      @include flex(flex-end, center);
+    > .message-info {
+      @include flex(flex-start, center);
+      flex-wrap: wrap;
+      column-gap: 1.25rem;
+      row-gap: 0.25rem;
       width: 100%;
-      gap: 1.25rem;
-
-      >span {
-        font-size: 0.875rem;
-        font-weight: 400;
-      }
 
       div {
         @include flex(normal, center);
-        gap: 1.25rem;
+        flex-wrap: wrap;
+        column-gap: 1.25rem;
+        width: 100%;
 
-        >a {
+        > a {
           display: flex;
           gap: 0.375rem;
+          min-width: 6.875rem;
           font-size: 1.125rem;
           color: $secondary;
-          min-width: 6.875rem;
 
           &:hover {
             transition: all 0.1s ease-out;
@@ -96,54 +213,66 @@
           }
         }
 
-        >span {
+        > span {
           font-size: 0.875rem;
           font-weight: 400;
         }
+      }
+
+      .new-messages-count {
+        color: $secondary;
+      }
+
+      > span {
+        font-size: 0.875rem;
+        font-weight: 400;
       }
     }
   }
 
   &:not(.message-from-user):hover {
     transition: all 100ms ease-out;
-    cursor: pointer;
     background-color: $background;
 
-    >section {
-      >p {
+    > section {
+      > p {
         background-color: #ffffff;
       }
+    }
+  }
 
-      .message-reactions {
-        >button {
-          background-color: #ffffff;
-
-          &:hover {
-            border-color: $accent;
-          }
+  &:hover {
+    > section {
+      .self-reaction {
+        &:hover {
+          border: 2px solid $selfReactionDelete;
         }
       }
-    }
 
-    .message-ctn .message-from-user {
-      transition: $transition-popover;
-      transform: translatex(3rem);
+      .other-reaction {
+        background-color: #ffffff;
+
+        &:hover {
+          border-color: $accent;
+        }
+      }
     }
   }
 }
 
 .message-from-user {
   flex-direction: row-reverse;
-  padding: 0.625rem 2.8125rem 0.625rem 0;
+  padding: 0.625rem $p-left 0.625rem $p-right;
 
-  >section {
+  > section {
     align-items: flex-end;
 
     .message-header {
       flex-direction: row-reverse;
 
-      >span {
+      > span {
         text-align: end;
+        text-wrap: nowrap;
       }
 
       .message-creator-name {
@@ -151,26 +280,46 @@
       }
     }
 
-    >p {
+    > .message-text {
       border-radius: 1.875rem 0 1.875rem 1.875rem;
       background-color: $primary;
       color: white;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     .message-reactions {
       @include flex(flex-end, normal);
+      flex-wrap: wrap;
+    }
+
+    .message-info {
+      justify-content: flex-end;
     }
   }
 
   .interact-ctn-popover {
-    left: 0.1875rem;
+    left: 4.8125rem;
     right: unset;
 
-    >section {
+    > section {
       #edit-message-icon {
         display: flex;
       }
     }
+  }
+
+  .attachment-ctn-popover {
+    left: unset !important;
+    right: -2.5rem !important;
+  }
+
+  .interact-ctn-popover-slide-out-animation {
+    transform: translateX(2.5rem);
+  }
+
+  .interact-ctn-popover-slide-in-animation {
+    transform: translateX(-2.5rem);
   }
 
   &:not(section .message-header .message-creator-name):hover {
@@ -181,20 +330,20 @@
 }
 
 .interact-ctn-popover {
-  padding: 0.1875rem 0.9375rem 0.1875rem 1.25rem;
-  border-radius: 1.5625rem 1.5625rem 0 1.5625rem;
-  border: 1px solid #adb0d9;
-  height: fit-content;
   position: absolute;
   top: -1.25rem;
   right: 5.8125rem;
+  height: fit-content;
+  padding: 0.1875rem 0.325rem 0.1875rem 0.25rem;
   background-color: white;
+  border-radius: 1.5625rem 1.5625rem 0 1.5625rem;
+  border: 1px solid #adb0d9;
 
-  >section {
+  > section {
     @include flex(normal, center);
     gap: 0.3125rem;
 
-    >div {
+    > div {
       @include flex(center, center);
       padding: 8px;
       border-radius: 20px;
@@ -207,23 +356,26 @@
 }
 
 .interact-ctn-popover-slide-out-animation {
-  transform: translateX(-3rem);
+  transform: translateX(-2.5rem);
   transition: $transition-popover;
   opacity: 0;
 }
 
 .interact-ctn-popover-slide-in-animation {
-  transform: translateX(3rem);
-  transition: $transition-popover;
   display: block;
+  transform: translateX(2.5rem);
+  transition: $transition-popover;
   opacity: 1;
 }
 
+.attachment-ctn-popover {
+  left: -3rem !important;
+  right: unset !important;
+}
+
 .button-ctn {
+  @include flex(center, center);
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 100%;
@@ -234,76 +386,48 @@
   }
 }
 
-#add-reaction-icon:hover {
+#add-reaction-icon:hover > img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/add-reaction-hover.svg");
 }
 
-#comment-icon:hover {
+#comment-message-btn:hover > img {
   content: url("../../../../../assets/icons/chat/message-hover-menu/comment-hover.svg");
 }
 
-#edit-message-icon:hover {
-  content: url("../../../../../assets/icons/chat/message-hover-menu/more-hover.svg");
-}
-
-.edit-message-ctn {
-  position: absolute;
-  right: -95%;
-  top: 50%;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0 1.875rem 1.875rem 1.875rem;
-  background-color: #ffffff;
-  box-shadow: 0 0.375rem 0.875rem 0 rgba($color: #000000, $alpha: 0.2);
-  transition: $transition-popover;
-  opacity: 0;
-  display: none;
-
-  >span {
-    padding: 0.625rem 1.25rem;
-    border-radius: 0 1.875rem 1.875rem 1.875rem;
-    min-width: 220px;
-
-    &:hover {
-      background-color: $background;
-      color: $accent;
-      font-weight: 700;
-    }
-  }
+#edit-message-icon:hover > img {
+  content: url("../../../../../assets/icons/wsm/ws-write-hover.svg");
 }
 
 .toggle-edit-message-popup {
+  display: flex;
   transition: $transition-popover;
   opacity: 1;
-  display: flex;
 }
 
 .message-editor {
-  width: 75%;
-  padding: 1.25rem;
-  border-radius: 1.25rem;
-  background-color: white;
-  min-height: 180px;
-  height: 100%;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
+  flex-direction: column;
+  width: 75%;
+  height: 100%;
+  min-height: 180px;
+  padding: 1.25rem;
+  background-color: white;
+  border-radius: 1.25rem;
 
-  >textarea {
-    resize: none;
-    width: 100%;
-    border: none;
-    outline: none;
-    font-family: "Nunito";
-    font-size: 1rem;
+  .input-message-toolbar {
+    @include flex(space-between, center);
+    container-name: bottomtoolbar;
+    container-type: inline-size;
   }
 
-  >div {
-    @include flex(space-between, center);
+  .input-message-toolbar-right {
+    @include flex(flex-start, center);
   }
 }
 
 #emoji-picker-icon:hover {
-  >img {
+  > img {
     content: url("../../../../../assets/icons/chat/write-message/emoji-picker-hover.svg");
   }
 }
@@ -314,7 +438,21 @@
 
 .message-editor-button {
   @include flex(center, center);
-  gap: 2rem;
+  gap: 1rem;
+
+  .action-btn {
+    &:hover {
+      img {
+        transform: scale(1.1);
+        filter: $iconFilterPurple;
+      }
+    }
+  }
+
+  #btn-ok {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
 
   .abort-btn {
     @include buttonEmpty();
@@ -325,21 +463,29 @@
   }
 }
 
-.message-from-same-user {
-  .message-avatar-ctn span {
-    display: flex;
-    font-size: 0.875rem;
-    font-weight: 400;
-    color: #686868;
-  }
+:host(.chat-view) {
+  .message-from-same-user {
+    .message-avatar-ctn span {
+      display: flex;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #686868;
+    }
 
-  .message-creator-avatar {
-    display: none;
-  }
-
-  >section {
-    .message-header {
+    .message-creator-avatar {
       display: none;
     }
+
+    > section {
+      .message-header {
+        display: none;
+      }
+    }
+  }
+}
+
+:host:not(.chat-view) {
+  #message-answer-info {
+    display: none;
   }
 }

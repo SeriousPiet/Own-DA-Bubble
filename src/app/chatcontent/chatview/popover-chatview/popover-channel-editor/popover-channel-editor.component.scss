@@ -1,35 +1,42 @@
 @import "../../../../../styles.scss";
 @import "../../../../../mixins.scss";
 
+$popover-width: clamp(26rem, 42.056vw + 8.084rem, 35rem);
+
 :host {
-  border: none;
-  width: 50%;
-  border-radius: 0px 1.875rem 1.875rem 1.875rem;
   top: -5.3125rem;
+  width: 100%;
+  max-width: $popover-width;
+  border: none;
+  border-radius: 0px 1.875rem 1.875rem 1.875rem;
   opacity: 0;
   transition: $transition-popover;
+
+  @media (width <= 425px) {
+    max-width: 100%;
+  }
 }
 
 main {
   @include flex(normal, normal);
   flex-direction: column;
   gap: 1.25rem;
-  padding: 2.5rem;
   height: 36.3125rem;
   min-height: 100%;
   min-width: 100%;
+  padding: 1.5rem 2.5rem;
 
-  >div {
+  > .channel-editor-header {
     @include flex(space-between, center);
 
-    >div {
+    > div {
       @include flex(normal, center);
+      gap: 0.9375rem;
       font-size: 1.5rem;
       font-weight: 700;
-      gap: 0.9375rem;
     }
 
-    >#close-icon {
+    > #close-icon {
       @include flex(center, center);
       height: 2.5rem;
       width: 2.5rem;
@@ -40,7 +47,7 @@ main {
         background-color: $background;
         cursor: pointer;
 
-        >img {
+        > img {
           content: url("../../../../../assets/icons/chat/general/close-hover.svg");
         }
       }
@@ -53,46 +60,56 @@ main {
     gap: 1.25rem;
     height: 100%;
 
-    >section {
+    > section {
       @include flex(space-between, center);
       flex-direction: column;
       gap: 0.625rem;
+      width: 100%;
+      padding: 1.25rem;
       border: $default-border;
       border-radius: 1.25rem;
-      padding: 1.25rem;
-      width: 100%;
 
-      .channel-name-input {
-        gap: 0.625rem;
-        >input{
-          @include nunito(1.125, 400)
-        }
-      }
-
-      >div {
+      > div {
         width: 100%;
 
-        >span {
+        > span {
           font-size: 1.125rem;
           font-weight: 700;
         }
 
-        >button {
+        > button {
+          width: 6.25rem;
+          width: 5.625rem;
           font-size: 1.125rem;
           font-weight: 500;
           color: $secondary;
-          width: 6.25rem;
-          transition: all 250ms ease-in-out;
           width: 5.625rem;
           line-height: 1.5344rem;
           transition: $transition-standard;
 
-          &:hover {
+          &:not(.no-edit-right, :disabled):hover {
             font-weight: 600;
             color: $secondary;
           }
+
+          &:not(.no-edit-right):disabled {
+            color: $disabled;
+            cursor: default;
+          }
         }
       }
+
+      .channel-name-input {
+        gap: 0.625rem;
+
+        > input {
+          @include nunito(1.125, 400);
+        }
+      }
+    }
+
+    .member-list {
+      display: none;
     }
   }
 }
@@ -100,7 +117,7 @@ main {
 .channel-name {
   height: 7.125rem;
 
-  >div {
+  > div {
     @include flex(space-between, center);
   }
 
@@ -112,18 +129,18 @@ main {
 .channel-description {
   height: 273px;
 
-  >div {
+  > div {
     @include flex(space-between, center);
   }
 
-  >textarea:disabled,
+  > textarea:disabled,
   textarea:enabled {
     @include nunito(1.125, 400);
     width: 100%;
-    resize: none;
+    background-color: white;
     border: none;
     outline: none;
-    background-color: white;
+    resize: none;
 
     &::-webkit-scrollbar {
       display: none;
@@ -135,12 +152,12 @@ main {
     width: 100%;
   }
 
-  :nth-child(4) {
+  .channel-creator-info {
     @include flex(normal, normal);
     flex-direction: column;
     gap: 1.25rem;
 
-    > :nth-child(2) {
+    > #channel-creator-name {
       font-weight: 400;
       font-size: 1.5rem;
       color: $secondary;
@@ -148,33 +165,369 @@ main {
   }
 }
 
-.leave-channel-button {
-  align-self: flex-end;
-  @include buttonFull();
-}
-
 .channel-name-editor {
   .channel-name {
+    padding: unset !important;
     border: unset !important;
     transition: $transition-standard;
 
     .channel-name-input {
+      padding: 1.125rem 1.25rem;
       border: $default-border;
       border-radius: 2.5rem;
-      padding: 1.125rem 1.25rem;
     }
   }
 }
 
 .channel-description-editor {
   .channel-description {
+    padding: unset !important;
     border: unset !important;
     transition: $transition-standard;
 
-    >textarea {
+    > textarea {
+      padding: 1.125rem 1.25rem;
       border: $default-border;
       border-radius: 1.875rem;
-      padding: 1.125rem 1.25rem;
     }
+  }
+}
+
+.no-edit-right {
+  cursor: default !important;
+  user-select: none !important;
+}
+
+.leave-channel-button {
+  align-self: flex-end;
+  @include buttonFull();
+}
+
+#confirmation-popup {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 20px;
+
+  .confirmation-popup-ctn {
+    @include flex(center, center);
+    flex-direction: column;
+    gap: 20px;
+
+    > p {
+      line-height: 32px;
+
+      > span {
+        color: $primary;
+      }
+    }
+
+    > .btn-ctn {
+      @include flex(flex-end, center);
+      gap: 1.25rem;
+      width: 100%;
+
+      > button {
+        @include buttonFull();
+      }
+    }
+  }
+}
+
+.duplicate-channel-error-msg {
+  color: $error;
+  font-size: 0.875rem;
+  text-align: start;
+  opacity: 1;
+  transition: $transition-standard;
+}
+
+.hide-duplicate-channel-error-msg {
+  opacity: 0;
+  color: $error;
+  font-size: 0.875rem;
+  text-align: start;
+  width: 100%;
+  margin-top: -0.5rem;
+  font-size: 0.875rem;
+  color: #f00;
+  text-align: start;
+  opacity: 0;
+  user-select: none;
+}
+
+@media (width < 426px) {
+  :host {
+    top: 0;
+    border-radius: unset;
+  }
+
+  main {
+    .channel-info-content {
+      justify-content: flex-start;
+      overflow: hidden;
+
+      .member-list {
+        display: flex;
+        justify-content: flex-start;
+        gap: 0.25rem;
+        width: 100%;
+        height: 33%;
+        max-height: fit-content;
+        padding: 1rem 2.5rem;
+        overflow-y: auto;
+
+        .current-user {
+          user-select: none;
+
+          &:hover {
+            cursor: default !important;
+          }
+        }
+
+        > button {
+          @include flex(normal, center);
+          gap: 0.8125rem;
+          width: 100%;
+          margin-bottom: unset;
+
+          > span {
+            @include nunito(1.125, 400);
+          }
+        }
+
+        .member {
+          padding: 0.25rem 1.25rem;
+
+          &:hover {
+            background-color: $background;
+            cursor: pointer;
+            border-radius: 6.25rem;
+          }
+        }
+      }
+    }
+  }
+
+  .channel-description {
+    height: fit-content;
+  }
+}
+
+.add-member-btn {
+  @include flex(center, center);
+  gap: 0.9375rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6.25rem;
+  cursor: pointer;
+
+  > div {
+    @include flex(center, center);
+    width: 2.5rem;
+    height: 2.5rem;
+
+    > img {
+      width: 2rem;
+      height: 2rem;
+      padding: 0.25rem;
+      border-radius: 100%;
+      background-color: $background;
+    }
+  }
+
+  &:not(.no-edit-right):hover {
+    background-color: $background;
+    color: $secondary;
+    cursor: pointer;
+
+    > div {
+      > img {
+        content: url("../../../../../assets/icons/chat/general/add-to-channel-hover.svg");
+        border-radius: unset;
+      }
+    }
+  }
+}
+
+.channel-edit-btn.no-edit-right {
+  color: $disabled !important;
+}
+
+#add-member-to-channel-mobile-popover {
+  right: -3.125rem;
+  width: 100%;
+  max-height: 42%;
+  border: none;
+  border-radius: 1.875rem 0 1.875rem 1.875rem;
+  opacity: 0;
+  overflow: hidden;
+  transition: $transition-popover;
+}
+
+#add-member-to-channel-mobile-popover:popover-open {
+  opacity: 1;
+}
+
+%starting-style {
+  #add-member-to-channel-mobile-popover {
+    opacity: 0;
+  }
+}
+
+main {
+  height: fit-content;
+}
+
+.add-new-member-popover {
+  @include flex(flex-start, center);
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  height: 36.3125rem;
+  padding: 2.5rem;
+
+  > section {
+    @include flex(normal, normal);
+    flex-direction: column;
+    gap: 0.3125rem;
+    width: 100%;
+
+    > .popover-title {
+      @include flex(space-between, center);
+      width: 100%;
+
+      h4 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      > button {
+        @include flex(center, center);
+        height: 2.5rem;
+        width: 2.5rem;
+        border-radius: 100%;
+
+        &:hover {
+          background-color: $background;
+          cursor: pointer;
+
+          > img {
+            content: url("../../../../../assets/icons/chat/general/close-hover.svg");
+          }
+        }
+      }
+    }
+
+    > .channel-name-in-popover {
+      @include flex(normal, center);
+      gap: 0.9375rem;
+
+      > img {
+        filter: invert(45%) sepia(72%) saturate(824%) hue-rotate(207deg)
+          brightness(99%) contrast(92%);
+      }
+
+      > span {
+        color: $primary;
+      }
+    }
+  }
+
+  .add-member-input-ctn {
+    @include flex(flex-start, flex-start);
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    height: fit-content;
+    max-height: 30%;
+    padding: 0 1.25rem;
+    border-radius: 1.875rem;
+    border: $default-border;
+    overflow: scroll;
+
+    .search-input-ctn {
+      position: sticky;
+      z-index: 2;
+      top: 0;
+      padding-top: 0.9375rem;
+      background-color: white;
+
+      > input {
+        @include nunito(1.125, 400);
+        color: $disabled;
+      }
+    }
+  }
+
+  .button-disabled {
+    @include buttonDisabled();
+    align-self: flex-end;
+    cursor: default !important;
+  }
+
+  .button-enable {
+    @include buttonFull();
+    align-self: flex-end;
+  }
+}
+
+.search-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+
+  &.context-active {
+    margin: 0.5rem 0;
+  }
+}
+
+.search-block-item {
+  @include flex(space-evenly, center);
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: $background;
+  border-radius: 1rem;
+  color: $accent;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+
+  button.remove-context {
+    @include flex(flex-start, center);
+    margin-left: 0.25rem;
+    padding: 0;
+    background: none;
+    border: none;
+
+    &:hover img {
+      border-color: $error;
+      content: url("../../../../../assets/icons/modals/close-search-item-hover.svg");
+    }
+
+    img {
+      width: 1.25rem;
+      aspect-ratio: 1 / 1;
+      padding: 0.125rem;
+      border-radius: 50%;
+      border: $active-border;
+    }
+  }
+}
+
+.suggestion-item {
+  @include flex(flex-start, center);
+  gap: 0.25rem;
+  width: fit-content;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: $transition-standard;
+
+  &:hover {
+    padding: 0.5rem 0.825rem;
+    background-color: $background;
+    border-radius: $circled-border-radius;
+    color: $accent;
+    font-weight: 700;
   }
 }

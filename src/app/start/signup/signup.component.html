@@ -1,58 +1,98 @@
-<div id="infoPopover" popover>
-    Konto erfolgreich erstellt!
-</div>
+<div id="infoPopover" popover>Konto erstellt!</div>
 
 <section>
-    @if(showChooseAvatarMask) {
+  @if(showChooseAvatarMask) {
+  <div class="mask-div">
+    <span class="headline">Wähle deinen Avatar</span>
     <app-chooseavatar (clickSuccess)="successChooseAvatar()"></app-chooseavatar>
-    }
-    @else {
-    <form [formGroup]="signupForm" (ngSubmit)="submitSignUpForm($event)">
-        <button type="button" class="return" [routerLink]="['/']">
-            <img src="../../../assets/icons/start/go-back.svg" alt="">
-        </button>
-        <span class="headline">Konto erstellen</span>
-        <span class="info">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</span>
-        <div class="input-box name">
-            <input formControlName="name" type="text" placeholder="Name und Nachname" maxlength="20">
-            @if(signupForm.get('name')?.invalid && (signupForm.get('name')?.dirty ||
-            signupForm.get('name')?.touched)) {
-            <span class="errorspan">Bitte einen Vor- und Nachnamen eingeben</span>
-            }
-        </div>
-        <div class="input-box mail">
-            <input formControlName="email" type="text" placeholder="beispielname@email.com">
-            @if(errorEmailExists != '') {
-            <span class="errorspan">{{ errorEmailExists }}</span>
-            }
-            @else if(signupForm.get('email')?.invalid && (signupForm.get('email')?.dirty ||
-            signupForm.get('email')?.touched)) {
-            <span class="errorspan">Bitte eine korrekte Email eingeben</span>
-            }
-        </div>
-        <div class="input-box pw">
-            <input formControlName="password" type="password" placeholder="password" minlength="6" max="20">
-            @if(signupForm.get('password')?.invalid && (signupForm.get('password')?.dirty ||
-            signupForm.get('password')?.touched)) {
-            <span class="errorspan">Passwort muss mindesten 8 Zeichen lang sein.</span>
-            }
-        </div>
-        <div class="checkbox-div">
-            <label class="check-pp">
-                <input formControlName="checkboxPP" type="checkbox" name="" id="" class="square-checkbox">
-                <span>Ich stimme der <a href="#">Datenschutzerklärung</a> zu</span>
-            </label>
-            @if(signupForm.get('checkboxPP')?.invalid && (signupForm.get('checkboxPP')?.dirty ||
-            signupForm.get('checkboxPP')?.touched)) {
-            <span class="errorspan">Der Datenschutzerklärung muss zugestimmt werden.</span>
-            }
-        </div>
-        <div class="action">
-            @if(loggingIn) {
-            <img src="../../../assets/icons/svg-spinner-accent.svg" alt="">
-            }
-            <button [disabled]="signupForm.invalid" type="submit" class="blue-btn">Weiter</button>
-        </div>
-    </form>
-    }
+  </div>
+  } @else {
+  <form
+    [formGroup]="signupForm"
+    (ngSubmit)="submitSignUpForm($event)"
+    class="mask-div"
+  >
+    <button type="button" class="return" (click)="goBack()">
+      <img src="../../../assets/icons/start/go-back.svg" alt="" />
+    </button>
+    <span class="headline">Konto erstellen</span>
+    <span class="info"
+      >Mit deinem Namen und deiner Mail-Adresse hast du dein neues
+      DABubble-Konto.</span
+    >
+    <div class="input-box name">
+      <input
+        formControlName="name"
+        type="text"
+        placeholder="Name und Nachname"
+        maxlength="20"
+      />
+      @if(signupForm.get('name')?.invalid && (signupForm.get('name')?.dirty ||
+      signupForm.get('name')?.touched)) {
+      <span class="errorspan">Bitte Vor- und Nachnamen angeben.</span>
+      }
+    </div>
+    <div class="input-box mail">
+      <input
+        formControlName="email"
+        type="text"
+        placeholder="beispielname@email.com"
+      />
+      @if(errorEmailExists != '') {
+      <span class="errorspan">{{ errorEmailExists }}</span>
+      } @else if(signupForm.get('email')?.invalid &&
+      (signupForm.get('email')?.dirty || signupForm.get('email')?.touched)) {
+      <span class="errorspan">Bitte gib eine korrekte Mailaddresse an.</span>
+      }
+    </div>
+    <div class="input-box pw">
+      <input
+        formControlName="password"
+        type="password"
+        placeholder="password"
+        minlength="6"
+        max="20"
+      />
+      @if(signupForm.get('password')?.invalid &&
+      (signupForm.get('password')?.dirty ||
+      signupForm.get('password')?.touched)) {
+      <span class="errorspan">Passwort muss mind. 8 Zeichen lang sein.</span>
+      }
+    </div>
+    <div class="checkbox-div">
+      <label class="check-pp">
+        <input
+          formControlName="checkboxPP"
+          type="checkbox"
+          name=""
+          id=""
+          class="square-checkbox"
+        />
+
+        <span
+          >Ich stimme der
+          <button type="button" (click)="goToPolicy()">
+            Datenschutzerklärung
+          </button>
+          zu
+        </span>
+      </label>
+      @if(signupForm.get('checkboxPP')?.invalid &&
+      (signupForm.get('checkboxPP')?.dirty ||
+      signupForm.get('checkboxPP')?.touched)) {
+      <span class="errorspan"
+        >Der Datenschutzerklärung muss zugestimmt werden.</span
+      >
+      }
+    </div>
+    <div class="action">
+      @if(loggingIn) {
+      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
+      }
+      <button [disabled]="signupForm.invalid" type="submit" class="blue-btn">
+        Weiter
+      </button>
+    </div>
+  </form>
+  }
 </section>

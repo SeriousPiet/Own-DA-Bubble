@@ -1,6 +1,6 @@
-<section popover id="addChannelId" class="add-channel" (click)="closeOnClick()">
+<section popover id="addChannelId"[ngClass]="{ fullscreen: isFullscreen, 'add-channel': true }" (click)="closeOnClick()">
   @if (toggleAddChannelPopover) {
-  <section class="addChannelSection">
+  <section [ngClass]="{ fullscreen: isFullscreen }" class="addChannelSection">
     <div class="headline">
       <span class="nunito-24-700">Channels erzeugen</span>
       <button
@@ -22,6 +22,15 @@
       placeholder="# z.B. Kooperationsprojekte"
       class="nunito-18-400"
     />
+    <span
+      [ngClass]="{
+        'duplicate-channel-error-msg':
+          channelservice.checkForDuplicateChannelName(name, name, false),
+        'hide-duplicate-channel-error-msg':
+          !channelservice.checkForDuplicateChannelName(name, name, false)
+      }"
+      >Dieser Kanalname ist bereits vergeben!</span
+    >
     <div>
       <span class="nunito-18-700">Beschreibung <span>(optional)</span></span>
     </div>
@@ -34,7 +43,11 @@
     <div style="justify-content: end">
       <button
         class="button-ctn nunito-18-700"
-        [disabled]="!name || name.trim().length === 0"
+        [disabled]="
+          !name ||
+          name.trim().length === 0 ||
+          channelservice.checkForDuplicateChannelName(name, name, false)
+        "
         (click)="toggleAddChannel()"
       >
         Erstellen
@@ -42,7 +55,7 @@
     </div>
   </section>
   } @else { @if (!toggleAddChannelPopover){
-  <section class="addUserToChannel">
+  <section [ngClass]="{ fullscreen: isFullscreen }" class="addUserToChannel">
     <div>
       <span class="nunito-24-700">Leute hinzufügen</span>
       <button
@@ -54,27 +67,33 @@
     <div>
       <div>
         <input
+          id="allMembers"
           class="select-user-search"
           type="radio"
           name="userOption"
           (change)="addOptionSelected(false)"
-        />Alle Mitglieder von Devspace hinzufügen
+        />
+        <label for="allMembers">Alle Mitglieder von Devspace hinzufügen</label>
       </div>
     </div>
     <div style="flex-direction: column">
       <div>
         <input
+          id="specificPeople"
           class="select-user-search"
           type="radio"
           name="userOption"
           (change)="addOptionSelected(true)"
-        />Bestimmte Leute hinzufügen
+        />
+        <label for="specificPeople">Bestimmte Leute hinzufügen</label>
       </div>
       <div>
-        <div class="addUserSearchbar" *ngIf="isUserSearchSelected">
+        @if (isUserSearchSelected) {
+        <div class="addUserSearchbar">
           @if (userAmount > 0) {
           <div class="search-blocks">
-            <div *ngFor="let user of selectedUsers" class="search-block-item">
+            @for (user of selectedUsers; track user) {
+            <div class="search-block-item">
               <div appAvatar [user]="user" context="search"></div>
               <span>{{ user.name }}</span>
               <button
@@ -87,6 +106,7 @@
                 />
               </button>
             </div>
+            }
           </div>
           }
 
@@ -99,22 +119,21 @@
             placeholder="Search users..."
           />
 
-          <div
-            *ngFor="let suggestion of suggestions$ | async"
-            class="suggestion-item"
-            (click)="selectSuggestion(suggestion)"
-          >
+          @for (suggestion of suggestions$ | async; track suggestion) {
+          <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+            @if(suggestion.type === 'user' &&
+            getUserFromSuggestion(suggestion)){
             <div
-              *ngIf="
-                suggestion.type === 'user' && getUserFromSuggestion(suggestion)
-              "
               appAvatar
               [user]="getUserFromSuggestion(suggestion)!"
               context="search"
             ></div>
             <div>{{ suggestion.text }}</div>
+            }
           </div>
+          }
         </div>
+        }
       </div>
     </div>
     <div style="justify-content: end">

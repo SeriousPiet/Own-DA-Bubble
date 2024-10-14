@@ -3,22 +3,22 @@
     <div class="button-bar">
       <div class="go-back">
         <img
-          [routerLink]="['']"
+          (click)="goBack()"
           src="./assets/icons/start/go-back.svg"
-          alt=""
+          alt="go back icon"
         />
       </div>
     </div>
     <article>
       <h1>Impressum</h1>
-      <h2 id="m46">Diensteanbieter</h2>
+      <h3 id="m46">Diensteanbieter</h3>
       <p>
         Michael Buschmann <br />
         Wernerstraße 18 <br />
         01159 Dresden
       </p>
 
-      <h2 id="m56">Kontaktmöglichkeiten</h2>
+      <h3 id="m56">Kontaktmöglichkeiten</h3>
       <p>
         E-Mail-Adresse:
         <a href="mailto: hey@michael-buschmann.dev"
@@ -26,13 +26,15 @@
         >
       </p>
 
-      <h2 id="m153">Vertretungsberechtigte Personen</h2>
-      <p>
-        Entwickler-Team bestehend aus: <br />
-        Béla Schramm <br />Peter Walbaum <br />
-        Anthony Hamon <br />
-        Michael Buschmann
-      </p>
+      <h3 id="m153">Vertretungsberechtigte Personen</h3>
+      <p>Entwickler-Team bestehend aus:</p>
+
+      <ul>
+        <li>Béla Schramm</li>
+        <li>Anthony Hamon</li>
+        <li>Peter Walbaum</li>
+        <li>Michael Buschmann</li>
+      </ul>
     </article>
   </div>
 </section>

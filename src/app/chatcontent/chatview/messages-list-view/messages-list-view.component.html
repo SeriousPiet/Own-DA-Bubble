@@ -1,24 +1,18 @@
-<section [ngClass]="{'no-messages': messages.length == 0}">
-  @if(currentObject.messagesCount > 0){
-
-  @for (date of messagesDates; track $index) {
-  <app-message-date [date]="date"></app-message-date>
-
-
-  @for (message of messages; track message) { @if(date.getDate() ==
-  message.createdAt.getDate()){
-  <app-message [id]="message.id" [messages]="messages" [messageWriter]="message.creatorID"
+<section>
+  @for (message of messages; track message) {
+  @if(message.newMessageSeparator) {
+  <div #newmessageseparator class="new-messages">
+    <div></div>
+    <span>Neue Nachrichten</span>
+    <div></div>
+  </div>
+  }
+  @if(message.newDaySeparator) {
+  <app-message-date [date]="message.createdAt"></app-message-date>
+  }
+  <app-message [messageEditorOpen]="messageEditorOpen" [isUnread]="message.unread"
+    [previousMessageFromSameUser]="message.sameUserAsPrevious" (messageEditorOpenChange)="messageEditorOpen = $event"
+    (messageViewed)="messageViewed($event)" [ngClass]="{ 'chat-view': true }" [id]="message.id"
     [messageData]="message"></app-message>
-  } } }
-  }@else{
-  <section class="no-messages-ctn">
-    <div class="channel-name">
-      <img src="assets/icons/chat/general/hashtag.svg" alt="#" />
-      <span>{{ getTitle(navigationService.chatViewObject) }}</span>
-    </div>
-    <div class="channel-begin">{{getChannelCreatorName(navigationService.chatViewObject)}} diesen Channel
-      {{getChannelCreationTime(navigationService.chatViewObject)}} erstellt. Das ist der Anfang des Channel <span> #
-        {{ getTitle(navigationService.chatViewObject) }}</span>.</div>
-  </section>
   }
 </section>

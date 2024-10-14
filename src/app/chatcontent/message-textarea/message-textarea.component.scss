@@ -1,111 +1,261 @@
+@import "../../../styles.scss";
+@import "../../../mixins.scss";
+@import "../../../fonts.scss";
+
 :host {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    background-color: #FFFFFF;
-    border-radius: 0 0 1.875rem 1.875rem;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 1.25rem 0.75rem var(--textarea-padding-left, 1.25rem);
+  background-color: #ffffff;
+  border-radius: 0 0 1.875rem 1.875rem;
+  border: unset;
+
+  @media (width < 426px) {
+    padding: 0.5rem 1.25rem 0.75rem 1.25rem;
+  }
+}
+
+.errorspan {
+  @include nunito(0.875, 400, $error);
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.addattachment {
+  @include flex(center, center);
+
+  >input {
+    display: none;
+  }
+}
+
+.attachments {
+  @include flex(center, center);
+  align-self: stretch;
+  height: fit-content;
+  min-height: 3rem;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #adb0d9 #eceefe;
+
+  .attachment {
+    position: relative;
+    @include flex(center, center);
+    gap: 0.5rem;
+    height: fit-content;
+    padding: 0.5rem;
+    border-radius: 0.625rem;
+    background-color: #eceefe;
+    transition: $transition-standard;
+
+    &:hover {
+      background-color: #d9dffd;
+    }
+
+    >img {
+      width: 1.5rem;
+      height: 1.5rem;
+      cursor: pointer;
+    }
+
+    > span {
+      max-width: 30ch;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: black;
+    }
+
+    &:hover {
+      .remove-attachment {
+        display: flex;
+      }
+    }
+
+    .remove-attachment {
+      position: absolute;
+      top: -0.5rem;
+      right: -0.5rem;
+      display: none;
+      width: 1rem;
+      height: 1rem;
+      border: 1px solid black;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: $transition-standard;
+
+      &:hover {
+        background-color: $error;
+      }
+    }
+  }
+
+  .remove-attachment {
+    cursor: pointer;
+
+    >img {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+.drag-over {
+  opacity: 1 !important;
+}
+
+.drag-background {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle, #fff 0%, #444df23d 100%);
+  border-bottom-left-radius: 0.625rem;
+  border-bottom-right-radius: 0.625rem;
+  opacity: 0;
+  transition: $transition-standard;
 }
 
 .input-message {
-    height: 9.0625rem;
-    width: 90%;
-    border: 1px solid #ADB0D9;
-    border-radius: 1.25rem;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+  position: relative;
+  z-index: 1;
+  @include flex(flex-start, stretch);
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  border-top: $default-border;
+  transition: $transition-standard;
 
-    >textarea {
-        resize: none;
-        width: 100%;
-        height: 90%;
-        border: none;
-        outline: none;
-        font-family: "Nunito";
-        font-size: 1rem;
+  .input-message-toolbar {
+    z-index: 1;
+    @include flex(space-between, center);
+    width: 100%;
+
+    @media (width < 426px) {
+      padding-left: var(--textarea-padding-left, 2rem);
     }
 
-    .input-message-toolbar {
-        width: 100%;
+    .message-action-button {
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.3125rem;
+
+      >img {
+        z-index: 1;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      >button {
+        z-index: 1;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+      }
 
-        .message-action-button {
-            display: flex;
-            align-items: center;
-            gap: .3125rem;
-
-            >img {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-
-            >button {
-                display: flex;
-                align-items: center;
-            }
-
-            >span {
-                font-size: 24px;
-
-                font-weight: 100;
-            }
-        }
+      >span {
+        z-index: 1;
+        font-size: 24px;
+        font-weight: 100;
+      }
     }
+  }
+}
+
+.bottom-bar {
+  z-index: 1;
+  @include flex(flex-end, center);
+  gap: 1rem;
+}
+
+.button-disabled {
+  @include flex(center, center);
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
 }
 
 .button-ctn {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 100%;
-
-    &:hover {
-        background-color: #ECEEFE;
-    }
+  @include iconBox;
 }
 
 #add-attachment-icon:hover {
-    >img {
-        content: url('../../../assets/icons/chat/write-message/add-attachment-hover.svg');
-    }
+  >img {
+    content: url("../../../assets/icons/chat/write-message/add-attachment-hover.svg");
+  }
 }
 
 #emoji-picker-icon:hover {
-    >img {
-        content: url('../../../assets/icons/chat/write-message/emoji-picker-hover.svg');
-    }
+  >img {
+    content: url("../../../assets/icons/chat/write-message/emoji-picker-hover.svg");
+  }
 }
 
 #tag-person-icon:hover {
-    >img {
-        content: url('../../../assets/icons/chat/write-message/tag-person-hover.svg');
-    }
+  >img {
+    content: url("../../../assets/icons/chat/write-message/tag-person-hover.svg");
+  }
+}
+
+#tag-channel-icon:hover {
+  >img {
+    content: url("../../../assets/icons/chat/write-message/hashtag-hover.svg");
+  }
 }
 
 #send-message-icon {
-    cursor: pointer;
+  @include flex(center, center);
+
+  &:disabled {
+    cursor: default !important;
+
     >img {
-        width: 1.875rem;
-        height: 1.875rem;
+      filter: grayscale(100%);
+      opacity: 0.5;
     }
-    &:hover{
-        >img{
-            content: url('../../../assets/icons/chat/write-message/send-hover.svg');
-        }
+  }
+
+  >img {
+    width: 1.875rem;
+    height: 1.875rem;
+  }
+
+  &:enabled:hover {
+    >img {
+      content: url("../../../assets/icons/chat/write-message/send-hover.svg");
     }
+  }
 }
 
-.d-none {
-    display: none !important;
+#attachment-preview{
+  display: none;
+  height: 50%;
+  max-height: 40rem;
+  padding: 1.25rem;
+  border: none;
+  border-radius: 1.875rem;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
+  transition: $transition-popover;
+
+  >img{
+    border-radius: 1.875rem;
+  }
+}
+
+#attachment-preview:popover-open {
+  opacity: 1;
+  display: flex;
+}
+
+@starting-style {
+  #popover-member-profile:popover-open {
+    opacity: 0;
+  }
 }

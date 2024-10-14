@@ -2,21 +2,21 @@
 
 ## Public Methods
 
-### `addNewMessageToPath(messagePath: string, messageContent: string): Promise<void>`
+### `async addNewMessageToCollection(channel: Channel | Chat, messageContent: string): Promise<void>`
 
-- **Description:** Adds a new message to the specified Firestore path.
+- **Description:** Adds a new message to the specified channel or chat.
 - **Parameters:**
-  - `messagePath` - The Firestore path where the new message will be added.
+  - `channel` - The channel or the chat.
   - `messageContent` - The content of the message.
-- **Returns:** A promise that resolves when the message has been successfully added.
+- **Returns:** A promise.
 
-### `updateMessage(message: Message, updateData: { content?: string, emojies?: string[] }): Promise<void>`
+### `async updateMessage(message: Message, updateData: { content?: string, edited?: boolean, editedAt?: any }): Promise<void>`
 
-- **Description:** Updates an existing message with new content or emojis.
+- **Description:** Updates an existing message with new content.
 - **Parameters:**
   - `message` - The message object to be updated.
-  - `updateData` - An object containing the new content and/or emojis to be applied to the message.
-- **Returns:** A promise that resolves when the message has been successfully updated.
+  - `updateData` - An object containing the new content and/or when edited message.
+- **Returns:** A promise.
 
 ### `ifMessageFromCurrentUser(message: Message): boolean`
 
@@ -32,3 +32,11 @@
   - `message` - The original message to which the answer will be added.
   - `answerContent` - The content of the answer.
 - **Returns:** A promise that resolves when the answer has been successfully added.
+
+### `async toggleReactionToMessage(message: Message, reaction: string): Promise<void>`
+
+- **Description:** Toggles a single Reaction from current User.
+- **Parameters:**
+  - `message` - The message to which the reaction will be toggled.
+  - `reaction` - The Emoji ID String.
+- **Returns:** A promise.

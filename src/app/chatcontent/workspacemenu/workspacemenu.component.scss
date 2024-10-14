@@ -2,10 +2,18 @@
 @import "../../../mixins.scss";
 @import "../../../styles.scss";
 
-@mixin display-standard($display: flex, $align-items: center) {
-  display: $display;
-  align-items: $align-items;
-}
+$wsm-gap: clamp(0rem, 2.083vw + -1.562rem, 0.9375rem);
+$chnl-ml: clamp(0.75rem, 2.222vw + -0.917rem, 1.75rem);
+$add-chnl-btn-pl: clamp(0.75rem, 4.444vw + -2.583rem, 2.75rem);
+
+$list-pr: clamp(0.75rem, 1.111vw + -0.083rem, 1.25rem);
+$list-pr-716: clamp(1rem, 4.13vw + 0.029rem, 1.875rem);
+
+$workspace-pr: clamp(0.75rem, 2.5vw + -1.125rem, 1.875rem);
+$workspace-pr-716: 1.875rem;
+
+$chnl-gap: clamp(0rem, 1.944vw + -1.458rem, 0.875rem);
+$dm-item-gap: clamp(0.625rem, 1.389vw + -0.417rem, 1.25rem);
 
 @mixin background-properties(
   $bg-rep: no-repeat,
@@ -24,63 +32,91 @@ section {
   flex-direction: column;
   gap: 1.5625rem;
   width: 100%;
+  overflow-y: scroll;
 
-  .workspace {
+  .workspace-menu-header {
     position: sticky;
-    top: 0;
-    padding: 0 1.875rem 0rem 1.875rem;
-    overflow: visible;
-    background: #fff;
     z-index: 1;
-    box-shadow: $modal-box-shadow;
-    @include display-standard;
-    justify-content: space-between;
+    top: 0;
+    @include flex(space-between, center);
     width: 100%;
-    height: 6rem;
     min-height: 6rem;
+    max-height: 6rem;
+    padding: 0 $workspace-pr 0 1.875rem;
+    background: #fff;
+    box-shadow: $modal-box-shadow;
+    overflow: visible;
+
+    @media (width < 426px) {
+      min-height: 5rem;
+      max-height: 5rem;
+    }
+
+    @media (width < 716px) {
+      padding: 0 $workspace-pr-716 0 1.875rem;
+    }
+
+    @media (width < 716px) {
+      padding: 0 1.25rem;
+    }
+
     div {
-      @include display-standard;
+      @include flex(flex-start, center);
       gap: 0.9375rem;
-    }
-    .ws-write {
-      padding: 0.5rem;
-      gap: 0.625rem;
-      background-image: url("../../../assets/icons/wsm/ws-write.svg");
-      border-radius: 1.25rem;
-      @include background-properties;
-    }
 
-    .ws-write:hover {
-      cursor: pointer;
-      background-image: url("../../../assets/icons/wsm/ws-write-hover.svg");
-      background-color: #eceefe;
+      img {
+        width: 3.75rem;
+        aspect-ratio: 1 / 1;
+      }
     }
-  }
-
-  .hashtag {
-    background-image: url("../../../assets/icons/wsm/hashtag.svg");
-    @include background-properties;
   }
 
   ul {
-    list-style-type: none;
-    padding-left: 0;
     gap: 0.8125rem;
+    padding-left: 0;
+    list-style-type: none;
 
     li {
-      @include display-standard;
+      @include flex(flex-start, center);
+
+      gap: $chnl-gap;
+
+      padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+      margin-left: $chnl-ml;
       border-radius: $circled-border-radius;
-      padding: 0.25rem 0.325rem 0.25rem 0.25rem;
-      margin-left: 2.75rem;
-      gap: 0.625rem;
-    }
 
-    li:hover {
-      cursor: pointer;
-      background-color: #eceefe;
+      .hashtag {
+        background-image: url("../../../assets/icons/wsm/hashtag.svg");
+        @include background-properties;
+      }
 
-      > .hashtag {
-        background-image: url("../../../assets/icons/wsm/hashtag-hover.svg");
+      span {
+        flex-grow: 1;
+        text-align: left;
+      }
+
+      .new-message-count {
+        @include nunito(0.875, 400, $primary);
+        margin-right: 0.875rem;
+      }
+
+      &:hover,
+      &.active {
+        background-color: #eceefe;
+        cursor: pointer;
+
+        .hashtag {
+          background-image: url("../../../assets/icons/wsm/hashtag-hover.svg");
+        }
+
+        span {
+          font-weight: 700;
+          color: $accent;
+        }
+
+        .new-message-count {
+          font-weight: 700;
+        }
       }
     }
   }
@@ -90,16 +126,29 @@ section {
   }
 
   .messagesChannels {
-    padding: 0rem 1.875rem 2rem 1.875rem;
+    padding: 0 $list-pr 2rem 1.875rem;
+
+    @media (width < 716px) {
+      padding: 0 $list-pr-716 0 1.875rem;
+    }
+
+    @media (width < 426px) {
+      padding: 0 calc($list-pr-716 + 1.25rem) 0 2.875rem;
+    }
   }
 
   .channels {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    @include flex(space-between, center);
     width: 100%;
-    padding: 0rem 1.875rem 0rem 1.875rem;
+    padding: 0 $list-pr 0 1.875rem;
+
+    @media (width < 716px) {
+      padding: 0 $list-pr-716 0 1.875rem;
+    }
+
+    @media (width < 426px) {
+      padding: 0 calc($list-pr-716 + 1.25rem) 0 2.875rem;
+    }
 
     > details {
       width: 100%;
@@ -108,38 +157,46 @@ section {
         width: 100%;
 
         > div {
-          width: 100%;
           justify-content: space-between;
+          width: 100%;
 
           > div {
-            @include display-standard;
-            gap: 0.9375rem;
+            @include flex(flex-start, center);
+            gap: $wsm-gap;
           }
         }
       }
     }
 
+    .channel-list li {
+      margin-bottom: 0.25rem;
+    }
+
     .add-channel-btn {
-      all: unset;
-      background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
-      @include background-properties;
-      @include display-standard;
       position: relative;
+      all: unset;
+      @include flex(flex-start, center);
       min-width: 2.5rem;
+      @include background-properties;
+      background-image: url("../../../assets/icons/wsm/add-channel-1.svg");
       border-radius: 1.25rem;
     }
 
     .add-channel-btn:hover {
-      cursor: pointer;
       background-image: url("../../../assets/icons/wsm/add-channel-1-hover.svg");
       background-color: #eceefe;
+      cursor: pointer;
     }
   }
 
   summary {
-    @include display-standard;
-    gap: 0.9375rem;
+    position: relative;
+    @include flex(flex-start, center);
+    gap: $wsm-gap;
     width: 100%;
+    list-style: none;
+    cursor: pointer;
+
     .ws-channels {
       background-image: url("../../../assets/icons/wsm/ws-channels.svg");
       @include background-properties;
@@ -153,12 +210,10 @@ section {
     }
 
     > div {
-      @include display-standard;
+      @include flex(flex-start, center);
+
       gap: 0.9375rem;
     }
-    list-style: none;
-    cursor: pointer;
-    position: relative;
   }
 
   summary:hover::before {
@@ -183,13 +238,13 @@ section {
   summary::before {
     content: "";
     display: inline-block;
+    transform: rotate(-90deg);
+    width: 1rem;
+    height: 1rem;
     background-image: url("../../../assets/icons/wsm/dropdown.svg");
     background-repeat: no-repeat;
     background-position: center;
-    width: 1rem;
-    height: 1rem;
     transition: transform 0.3s ease-in-out;
-    transform: rotate(-90deg);
   }
 
   details[open] summary::before {
@@ -197,16 +252,26 @@ section {
   }
 
   button {
-    all: unset;
-    @include display-standard;
+    @include flex(flex-start, center);
     text-align: center;
     line-height: normal;
-    padding: 0.25rem 1.25rem 0.25rem 2.8125rem;
-    gap: 0.625rem;
+    margin-left: $chnl-ml;
+    padding: 0.25rem 1.25rem 0.25rem 0.25rem;
+    // padding: 0.25rem 1.25rem 0.25rem $add-chnl-btn-pl;
+    gap: $chnl-gap;
+
+    &:hover span {
+      font-weight: 700;
+      color: $accent;
+    }
 
     > .add-channel-2 {
       background-image: url("../../../assets/icons/wsm/add-channel-2.svg");
       @include background-properties;
+    }
+
+    span {
+      text-wrap: nowrap;
     }
   }
 
@@ -222,62 +287,44 @@ section {
   .dm-list-item {
     @include flex(flex-start, center);
     @include buttonNoBorder;
-    @include fontSizer(18, 400, black);
-    width: fit-content;
-    gap: 1.25rem;
+    @include nunito(1.125, 400, black);
+    gap: $dm-item-gap !important;
+    margin-bottom: 0.25rem;
     color: black !important;
 
     &:hover span {
       font-weight: 700;
-      color: $accent;
+      color: $secondary;
     }
 
     span {
       text-align: left;
     }
-
-    .avatar {
-      @include flex(center, center);
-      @include avatarStatusThumbnail(
-        $status: var(--status-color),
-        $img_size: 4.5rem,
-        $status_size: 1rem,
-        $border_color: $background
-      );
-      width: auto;
-      aspect-ratio: 1 / 1;
-
-      &:hover .avatar::after {
-        border-color: $background;
-      }
-
-      .avatar {
-        @include flex(center, center);
-        @include avatarStatusThumbnail(
-          $status: $online,
-          $img_size: 2.5rem,
-          $status_size: 0.675rem,
-          $border_color: #fff
-        );
-
-        width: auto;
-        aspect-ratio: 1 / 1;
-
-        img {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          object-fit: cover;
-        }
-      }
-    }
   }
 
   .dm-list-item:hover {
-    @include fontSizer(18, 400, black);
+    @include nunito(1.125, 400, black);
   }
 
   .dm-list-item:active {
-    @include fontSizer(18, 700, #535af1);
+    @include nunito(1.125, 700, #535af1);
+  }
+
+  .avatar {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  details {
+    overflow: hidden;
+    transition: height 0.25s ease-out, opacity 0.25s ease-out;
+  }
+
+  details:not([open]) {
+    height: 2.5rem;
+  }
+
+  summary {
+    height: 2.5rem;
   }
 }

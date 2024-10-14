@@ -11,7 +11,8 @@
       </button>
     </div>
 
-    <div *ngIf="selectedUser">
+    @if (selectedUser) {
+    <div>
       <div
         class="avatar"
         appAvatar
@@ -19,6 +20,7 @@
         context="profile-card"
       ></div>
     </div>
+    }
 
     <div class="username-ctn">
       <span class="username">{{ selectedUser?.name }}</span>
@@ -41,7 +43,7 @@
     </div>
 
     <div class="usermail">
-      <img src="./assets/icons/start/mail.svg" alt="" />
+      <img src="./assets/icons/start/mail.svg" alt="send mail" />
       <div class="mail-adress">
         <span>Email-Adresse</span>
         <a href="mailto: {{ selectedUser?.email }}">{{
@@ -50,10 +52,15 @@
       </div>
     </div>
 
-    <button class="send-direct-message-btn">
+    <button
+      popovertargetaction="hide"
+      popovertarget="channel-member-overview-popover"
+      (click)="setChat(selectedUser); closePopovers()"
+      class="send-direct-message-btn"
+    >
       <img
         src="./assets/icons/chat/general/dm-profile-enter-chat.svg"
-        alt=""
+        alt="enter chat"
       />Nachricht
     </button>
   </div>

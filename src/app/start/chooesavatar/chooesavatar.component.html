@@ -4,9 +4,14 @@
   <span class="infospan">Avatar aus der Liste wählen</span>
   <div class="avatar-list">
     @for(avatar of avatarList; track avatarList) { @if(avatar.id != 0) {
-    <img (click)="setAvatar(avatar.id)" src="{{ avatar.img_name }}" alt="" />
+    <img
+      (click)="setAvatar(avatar.id)"
+      src="{{ avatar.img_name }}"
+      alt="1 of 6 default avatars"
+    />
     } }
   </div>
+  @if(!userservice.currentUser?.guest) {
   <div class="or-separator">
     <div></div>
     <span>ODER</span>
@@ -25,12 +30,16 @@
       <span class="filerequest">Bild wählen</span>
     </label>
   </div>
+  }
   <div class="action">
     @if(uploading) {
-    <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
+    <img
+      src="../../../assets/icons/svg-spinner-accent.svg"
+      alt="loading spinner"
+    />
     } @if(picturePropertysError) {
     <span class="errorspan">{{ picturePropertysError }}</span>
-    } @if(changedAvatar) {
+    } @if(changedAvatar && !uploading) {
     <button class="undo" (click)="undoAvatarChange()">Rückgängig</button>
     }
     <button class="success" (click)="submitChooseAvatar($event)">

@@ -1,32 +1,44 @@
+<div id="emailNotVerifiedPopover" popover>
+  <span>Bitte verifiziere erst deine Mailadresse!</span>
+</div>
+
+<app-emojipicker></app-emojipicker>
+
 <section
   class="chatcontent"
-  [ngClass]="!isWorkspaceMenuVisible ? 'menu-hidden' : ''"
+  [ngClass]="[currentLayout]"
+  [class.no-padding]="
+    !isThreadViewVisible && !isWorkspaceMenuVisible && isChatViewVisible
+  "
+  [class.no-padding-left]="
+    isThreadViewVisible && isChatViewVisible && !isWorkspaceMenuVisible
+  "
+  [class.no-padding-right]="
+    (!isThreadViewVisible || !isChatViewVisible) && isWorkspaceMenuVisible
+  "
 >
   <button class="hide_show_wsm blue" (click)="toggleWorkspaceMenu()">
-    @if (isWorkspaceMenuVisible) {
-    <div class="wsm-close"></div>
-    } @else if (!isWorkspaceMenuVisible) {
-    <div class="wsm-open"></div>
-    }
+    <div
+      [class.wsm-close]="isWorkspaceMenuVisible"
+      [class.wsm-open]="!isWorkspaceMenuVisible"
+    ></div>
     <span class="nunito-20-500"
       >Workspace-Menü
-      {{ isWorkspaceMenuVisible ? "öffnen" : "schließen" }}</span
+      {{ isWorkspaceMenuVisible ? "schließen" : "öffnen" }}</span
     >
   </button>
 
   <div class="top-bar">
     <app-header />
   </div>
-  <div
-    class="workspace-menu"
-    [@slideInOut]="isWorkspaceMenuVisible ? 'visible' : 'hidden'"
-  >
+  <div class="workspace-menu" [class.hidden]="!isWorkspaceMenuVisible">
     <app-workspacemenu />
   </div>
-  <div class="chatview">
-    <app-chatview [currentChannel]="navigationService.chatViewObject" />
+  <div class="chatview" [class.hidden]="!isChatViewVisible">
+    <app-chatview [currentContext]="navigationService.chatViewObject" />
   </div>
-  <div class="threadview">
+
+  <div class="threadview" [class.hidden]="!isThreadViewVisible">
     <app-threadview />
   </div>
 </section>

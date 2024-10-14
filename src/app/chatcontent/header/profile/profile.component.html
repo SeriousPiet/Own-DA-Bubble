@@ -11,11 +11,19 @@
     [user]="userservice.currentUser!"
     context="outer-profile"
   ></div>
-
-  <img class="icon" src="./assets/icons/modals/profile/expand.svg" alt="" />
+  <div class="icon">
+    <img
+      src="./assets/icons/modals/profile/expand.svg"
+      alt="open profile menue"
+    />
+  </div>
 </button>
 
-<div id="profile-popover" popover>
+<div
+  id="profile-popover"
+  popover
+  [class.fullscreen]="showProfileDetails || editMode"
+>
   @if (!showProfileDetails) {
   <div class="choose-action">
     <button (click)="toggleProfileDetails()">Profil</button>
@@ -23,7 +31,10 @@
   </div>
   } @else { @if (!editMode) {
 
-  <div class="profile-details">
+  <div
+    class="profile-details"
+    [class.fullscreen]="showProfileDetails && !editMode"
+  >
     <div class="top">
       <span class="modal-title">Profil</span>
       <div class="icon-box" (click)="showProfileDetails = false">
@@ -63,10 +74,23 @@
     </div>
 
     <div class="usermail">
-      <img src="./assets/icons/start/mail.svg" alt="" />
+      <img src="./assets/icons/start/mail.svg" alt="email" />
       <div class="mail-adress">
+        @if(!isGoogleAccount && !userservice.currentUser?.emailVerified) {
+        <span>Email-Adresse nicht verifiziert</span>
+        } @else {
         <span>Email-Adresse</span>
-        @if (!isGuestAccount) {
+        } @if (!isGuestAccount) { @if(!isGoogleAccount &&
+        !userservice.currentUser?.emailVerified) {
+        <div class="mail-verify">
+          <button
+            class="mail-verify-link"
+            (click)="userservice.sendEmailVerificationLink()"
+          >
+            Link erneut zuschicken
+          </button>
+        </div>
+        }
         <span class="mail-span">{{ userservice.currentUser?.email }}</span>
         } @else {
         <span class="mail-span">gast&#64;da-bubble.de</span>
@@ -86,7 +110,7 @@
   ></app-chooseavatar>
 
   } @else {
-  <div class="profile-edit">
+  <div class="profile-edit" [class.fullscreen]="editMode">
     <div class="top">
       <span class="modal-title">Dein Profil Bearbeiten</span>
       <div class="icon-box" (click)="toggleEditMode()">
@@ -95,19 +119,26 @@
     </div>
     <!-- todo: -->
     <div
-      [class.google]="isGoogleAccount"
-      class="avatar"
+      class="img-box"
       (click)="!isGoogleAccount && showChooseAvatarComponent()"
-      appAvatar
-      [user]="userservice.currentUser!"
-      context="inner-profile"
-    ></div>
+    >
+      <div
+        [class.restricted]="isGoogleAccount"
+        class="avatar"
+        appAvatar
+        [user]="userservice.currentUser!"
+        context="inner-profile"
+      ></div>
+    </div>
 
     <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
       <div class="edit-box">
         <div class="edit">
           <div class="input-label">
-            <img src="./assets/icons/modals/profile/person_circle.svg" alt="" />
+            <img
+              src="./assets/icons/modals/profile/person_circle.svg"
+              alt="person placeholder"
+            />
             <span>Vollständiger Name</span>
           </div>
           <div class="input-box">
@@ -135,18 +166,21 @@
             <img src="./assets/icons/modals/profile/mail.svg" alt="" />
             <span>E-mail Adresse</span>
           </div>
-          <div [class.google]="isGoogleAccount" class="input-box">
+          <div
+            [class.restricted]="isGoogleAccount || isGuestAccount"
+            class="input-box"
+          >
             <input
-              [class.google]="isGoogleAccount"
+              [class.restricted]="isGoogleAccount || isGuestAccount"
               type="email"
               formControlName="email"
               placeholder="Deine Mailadresse hier"
-              [readOnly]="isGoogleAccount"
+              [readOnly]="isGoogleAccount || isGuestAccount"
             />
           </div>
 
-          @if (isGoogleAccount) {
-          <div class="google-info-message">
+          @if (isGoogleAccount || isGuestAccount) {
+          <div class="restricted-info-message">
             <span>Mail-Adresse nicht editierbar.</span>
           </div>
           } @if (profileForm.get('email')?.invalid &&

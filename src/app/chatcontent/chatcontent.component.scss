@@ -1,56 +1,263 @@
 @import "../../styles.scss";
 @import "../../mixins.scss";
 
+$wsm-width: clamp(18rem, 4.444vw + 14.667rem, 20rem);
+$thread-width: clamp(26rem, 13.333vw + 16rem, 32rem);
+$transition-grid: all 0.25s ease-out;
+
+$popover-padding: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
+$popover-fs: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
+
+#emailNotVerifiedPopover {
+  transform: translateX(100vw);
+  width: fit-content;
+  margin: auto 1.25rem 1.25rem auto;
+  padding: $popover-padding;
+  background-color: $accent;
+  border: unset;
+  border-radius: 2rem 2rem 0 2rem;
+  box-shadow: 0px 6px 10px 0px #00000033;
+  transition: $transition-popover;
+
+  & span {
+    font-size: $popover-fs;
+    font-weight: 700;
+    color: white;
+    text-wrap: balance;
+  }
+}
+
+#emailNotVerifiedPopover:popover-open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@starting-style {
+  #emailNotVerifiedPopover:popover-open {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
 section.chatcontent {
-  width: 100%;
-  max-width: 1920px;
-  height: 100vh;
-  padding: 1.5rem 1.25rem 1.25rem;
-  background-color: $background;
-
   display: grid;
-  grid:
-    "top-bar top-bar top-bar" auto
-    "workspace-menu chatview threadview" 1fr
-    / auto 1fr 20%;
-  grid-template-rows: fit-content auto;
-  gap: 1.25rem;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: 4.75rem auto;
+  grid-template-areas:
+    "topBar topBar topBar"
+    "workspaceMenu chatView threadView";
+  column-gap: 1.25rem;
+  row-gap: 1rem;
+  width: 100%;
+  height: 100vh;
+  max-width: 1920px;
+  padding: 1.25rem;
+  background-color: $background;
+  transition: $transition-grid;
 
-  transition: $transition-standard;
+  @media (width < 560px) {
+    grid-template-rows: 8.5rem auto;
+  }
 
-  &.menu-hidden {
+  @media (width < 426px) {
+    grid-template-rows: auto auto;
+  }
+}
+
+section.chatcontent.three-columns,
+section.chatcontent.two-broad-columns {
+  .workspace-menu {
+    grid-column: 1 / 2;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .chatview {
+    grid-column: 2 / 3;
+    width: 100%;
+  }
+
+  .threadview {
+    grid-column: 3 / 4;
+    width: $thread-width;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  &.no-padding {
+    padding-left: 0;
+    padding-right: 0;
+    --message-padding-left: 2.25rem;
+    --textarea-padding-left: 1.75rem;
+  }
+
+  &.no-padding-right {
+    padding-right: 0;
+  }
+
+  &.no-padding-left {
     padding-left: 0;
   }
 }
 
+section.chatcontent.two-narrow-columns {
+  grid-template-columns: auto 1fr 0;
+
+  .workspace-menu {
+    grid-column: 1 / 2;
+
+    max-width: $wsm-width;
+    width: $wsm-width;
+
+    &.hidden {
+      width: 0;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .chatview {
+    grid-column: 2 / 3;
+    max-width: 100%;
+    width: 100%;
+    transition: opacity 0s, overflow 0s, width 0.125s !important;
+
+    &.hidden {
+      width: 0;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .threadview {
+    grid-column: 2 / 3;
+    width: 100%;
+    transition: opacity 0s, overflow 0s, width 0.125s !important;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  &.no-padding {
+    padding-left: 0;
+    padding-right: 0;
+    --message-padding-left: 2.25rem;
+    --textarea-padding-left: 2rem;
+  }
+
+  &.no-padding-left {
+    padding-left: 0;
+  }
+
+  &.no-padding-right {
+    padding-right: 0;
+  }
+}
+
+section.chatcontent.one-broad-column {
+  grid-template-columns: auto 0 0;
+  column-gap: 0;
+
+  .workspace-menu {
+    grid-column: 1 / 2;
+    max-width: 100%;
+    width: 100%;
+
+    &.hidden {
+      width: 0;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .chatview {
+    grid-column: 1 / 2;
+    max-width: 100%;
+    width: 100%;
+    transition: opacity 0s, overflow 0s, width 0.125s !important;
+
+    &.hidden {
+      width: 0;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  .threadview {
+    grid-column: 1 / 2;
+    width: 100%;
+    --message-padding-left: 2.875rem;
+    --textarea-padding-left: 2.625rem;
+    transition: opacity 0s, overflow 0s, width 0.125s !important;
+
+    &.hidden {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  &.no-padding {
+    --message-padding-left: 2.875rem;
+    --textarea-padding-left: 2.625rem;
+  }
+
+  @media (width < 426px) {
+    padding: 0;
+  }
+}
+
+.workspace-menu,
+.chatview,
+.threadview {
+  background-color: #fff;
+  border-radius: 1.875rem;
+  transition: $transition-grid;
+
+  @media (width < 426px) {
+    border-radius: 0;
+  }
+}
+
 .top-bar {
-  grid-area: top-bar;
+  grid-area: topBar;
 }
 
 .workspace-menu {
-  grid-area: workspace-menu;
-  max-width: 20rem;
-  border-radius: 1.875rem;
-  background-color: #fff;
+  grid-area: workspaceMenu;
+  width: $wsm-width;
   overflow-y: scroll;
   overflow-x: hidden;
-  transition: $transition-standard;
+  opacity: 1;
 }
 
 .chatview {
-  grid-area: chatview;
-  border-radius: 1.875rem;
-  background-color: #fff;
+  grid-area: chatView;
   overflow-y: scroll;
-  transition: $transition-standard;
+  overflow-x: hidden;
+  opacity: 1;
 }
 
 .threadview {
-  grid-area: threadview;
-  border-radius: 1.875rem;
-  background-color: #fff;
+  grid-area: threadView;
   overflow-y: scroll;
-  transition: $transition-standard;
+  overflow-x: hidden;
+  opacity: 1;
 }
 
 .hide_show_wsm {
@@ -58,49 +265,67 @@ section.chatcontent {
   z-index: 2;
   left: 0rem;
   bottom: 1.25rem;
-  display: flex;
+  @include flex(space-between, center);
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  gap: 0.625rem;
   width: fit-content;
   height: fit-content;
-  gap: 0.625rem;
   padding: 1.4375rem 0.75rem 1.4375rem 0.5rem;
   background-color: #fff;
   border-radius: 0 1.875rem 1.875rem 0;
   box-shadow: $profile-box-shadow;
   transition: $transition-standard;
 
+  @media (width > 1920px) {
+    border-radius: 1.875rem;
+    padding: 1.4375rem 0.75rem;
+  }
+
+  @media (width < 426px) {
+    bottom: 0.5rem;
+    padding: 0.625rem 0.75rem 0.625rem 0.325rem;
+    border-radius: 0 8rem 8rem 0;
+    border-top: #444df210 1px solid;
+    border-bottom: #444df210 1px solid;
+    background-image: linear-gradient(270deg, #444df210 0%, #444df25f 100%);
+  }
+
   .wsm-close {
+    width: 1.5rem;
+    height: 1.5rem;
     background-image: url("../../assets/icons/wsm/wsm-close.svg");
     background-repeat: no-repeat;
     background-position: center;
-    width: 1.5rem;
-    height: 1.5rem;
   }
 
   .wsm-open {
+    width: 1.5rem;
+    height: 1.5rem;
     background-image: url("../../assets/icons/wsm/wsm-close-hover.svg");
     background-repeat: no-repeat;
     background-position: center;
-    width: 1.5rem;
-    height: 1.5rem;
   }
 
   span {
+    transform: rotate(-180deg);
     width: 100%;
     text-align: left;
     writing-mode: vertical-rl;
     text-wrap: nowrap;
-    transform: rotate(-180deg);
+
+    @media (width < 426px) {
+      display: none;
+    }
   }
 }
 
 .hide_show_wsm:hover {
   cursor: pointer;
+
   .wsm-close {
     background-image: url("../../assets/icons/wsm/wsm-open.svg");
   }
+
   .wsm-open {
     background-image: url("../../assets/icons/wsm/wsm-open-hover.svg");
   }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-policy',
@@ -8,4 +9,10 @@ import { RouterModule } from '@angular/router';
   templateUrl: './policy.component.html',
   styleUrl: './policy.component.scss',
 })
-export class PolicyComponent {}
+export class PolicyComponent {
+  constructor(private location: Location) {}
+
+  goBack() {
+    this.location.back();
+  }
+}

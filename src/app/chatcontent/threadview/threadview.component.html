@@ -1,1 +1,40 @@
-<p>threadview works!</p>
+<main class="threadview-main-ctn">
+  @if (navigationService.threadViewObject) {
+  <section class="threadview-header">
+    <div>
+      <div>
+        <span class="thread-headline">Thread</span>
+
+        <span class="thread-headline-channel-name">
+          <img src="../../../assets/icons/chat/general/hashtag-hover.svg" alt="#" />
+          {{ getTitle(navigationService.chatViewObject) }}</span>
+      </div>
+      <button (click)="navigationService.clearThreadViewObject()"></button>
+    </div>
+  </section>
+  }
+
+  <section class="threadview-content">
+    @if (navigationService.threadViewObject) {
+    <div class="thread-messages-content">
+      <div class="headliner-message">
+        <app-message-date [date]="navigationService.threadViewObject.createdAt" />
+
+        <app-message [isThreadView]="true" [id]="navigationService.threadViewObject.id"
+          [messageData]="navigationService.threadViewObject" />
+      </div>
+      <app-messages-list-view
+        class="thread-list-view"
+        [messagesPath]="navigationService.threadViewPath"
+        [currentObject]="navigationService.threadViewObject"
+      />
+    </div>
+    <section class="chatview-editor">
+      <app-message-textarea
+        [messagesCollectionObject]="navigationService.threadViewObject"
+      />
+    </section>
+    
+    }
+  </section>
+</main>
