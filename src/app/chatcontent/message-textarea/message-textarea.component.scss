@@ -232,3 +232,30 @@
     }
   }
 }
+
+#attachment-preview{
+  display: none;
+  height: 50%;
+  max-height: 40rem;
+  padding: 1.25rem;
+  border: none;
+  border-radius: 1.875rem;
+  box-shadow: $profile-box-shadow;
+  opacity: 0;
+  transition: $transition-popover;
+
+  >img{
+    border-radius: 1.875rem;
+  }
+}
+
+#attachment-preview:popover-open {
+  opacity: 1;
+  display: flex;
+}
+
+@starting-style {
+  #popover-member-profile:popover-open {
+    opacity: 0;
+  }
+}
