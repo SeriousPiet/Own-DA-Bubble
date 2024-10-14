@@ -4,13 +4,11 @@ import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, passwordValidator } from '../../utils/form-validators';
 import { Auth, getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
-import { addDoc, collection, doc, Firestore, getDocs, query, serverTimestamp, updateDoc, where } from '@angular/fire/firestore';
+import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { ChannelService } from '../../utils/services/channel.service';
 import { MessageService } from '../../utils/services/message.service';
-import { dabubbleBotId, frontendMessages, getMessagePath, getObjectsPath, newGoogleUserMessages, newGuestMessages, newUserMessages, removeAllHTMLTagsFromString } from '../../utils/firebase/utils';
-import { Channel } from '../../shared/models/channel.class';
-import { Message } from '../../shared/models/message.class';
+import { dabubbleBotId, newGoogleUserMessages, newGuestMessages } from '../../utils/firebase/utils';
 
 @Component({
   selector: 'app-login',
@@ -464,61 +462,5 @@ export class LoginComponent implements OnDestroy, OnInit {
         });
       }
     }
-  }
-
-  injectFrontEndMessages() {
-    const frontendChannel = this.channelService.channels.find(channel => channel.id === 'xnNn5jFjvkJ9vHBZYJr2');
-    if (!frontendChannel) {
-      console.error('Frontend channel not found');
-      return;
-    }
-    frontendMessages.forEach(async (message) => {
-      const messageID = await this.addDefaultMessageToCollection(frontendChannel.channelMessagesPath, 'channels/' + frontendChannel.id, message.message, message.creatorID, this.getMessageDate(message.createdAt));
-      if (messageID !== '' && message.answers && message.answers.length > 0) {
-        message.answers.forEach(async (answer) => {
-          await this.addDefaultMessageToCollection(frontendChannel.channelMessagesPath + messageID + '/answers', frontendChannel.channelMessagesPath + messageID, answer.message, answer.creatorID, this.getMessageDate(answer.createdAt), true);
-        });
-      }
-    });
-  }
-
-  getMessageDate(createdAt: string): Date {
-    const messageDate = new Date();
-    messageDate.setTime(+createdAt);
-    return messageDate;
-  }
-
-  async addDefaultMessageToCollection(
-    messagePath: string,
-    objectPath: string,
-    messageContent: string,
-    creatorID: string = this.userservice.currentUserID,
-    createdAt: Date | undefined = undefined,
-    answer: boolean = false,
-  ): Promise<string> {
-    try {
-      const messageCollectionRef = collection(this.firestore, messagePath);
-      if (!messageCollectionRef) throw new Error('Nachrichtenpfad "' + messagePath + '" nicht gefunden.');
-      const response = await addDoc(messageCollectionRef, this.createNewMessageObject(messageContent, !(answer), creatorID, createdAt));
-      const messagesQuerySnapshot = await getDocs(messageCollectionRef);
-      const updateData = answer ? { answerCount: messagesQuerySnapshot.size, lastAnswerAt: serverTimestamp() } : { messagesCount: messagesQuerySnapshot.size };
-      await updateDoc(doc(this.firestore, objectPath), updateData);
-      return response.id;
-    } catch (error) {
-      console.error('DefaultMessageAdd: error adding message', error);
-      return '';
-    }
-  }
-
-
-  private createNewMessageObject(messageText: string, answerable: boolean, createdBy: string, createdAt: Date | undefined): any {
-    return {
-      creatorID: createdBy,
-      createdAt: createdAt ? createdAt : serverTimestamp(),
-      content: messageText,
-      plainContent: removeAllHTMLTagsFromString(messageText),
-      emojies: [],
-      answerable: answerable,
-    };
   }
 }

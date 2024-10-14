@@ -3,126 +3,6 @@ import { Chat } from "../../shared/models/chat.class";
 import { Message } from "../../shared/models/message.class";
 import { CollectionType, User } from "../../shared/models/user.class";
 
-export const frontendMessages = [
-    {
-      "creatorID": "SVFcGhTwEk94NhptJ7iz",
-      "createdAt": "1696300800",
-      "message": "<p><h2>Login und Registrierung sind jetzt vollständig mit Firebase verbunden 🎉</h2></p><p>Das Formular prüft nun auf schwache Passwörter, und Nutzer erhalten sofortige Rückmeldung bei falschen Eingaben.</p>",
-      "answers": [
-        {
-          "creatorID": "4iqrDSW9hM4hRVQGuMVy",
-          "createdAt": "1696387200",
-          "message": "<p>Das ist klasse! Jetzt können wir uns darauf konzentrieren, die Profilbearbeitung zu optimieren.</p>"
-        },
-        {
-          "creatorID": "ellfDJEyv2LnT55aYyH3",
-          "createdAt": "1696473600",
-          "message": "<p>Sehr gut! Gibt es schon Fortschritte bei der Avatar-Auswahl für neue Benutzer?</p>"
-        },
-        {
-          "creatorID": "SVFcGhTwEk94NhptJ7iz",
-          "createdAt": "1696560000",
-          "message": "<p>Ja, das kommt als nächstes dran! Nutzer können bald ihren Avatar hochladen oder aus einer vorgegebenen Auswahl wählen.</p>"
-        }
-      ]
-    },
-    {
-      "creatorID": "ellfDJEyv2LnT55aYyH3",
-      "createdAt": "1696610400",
-      "message": "<p><h2>WorkSpaceMenu ist jetzt vollständig responsiv!</h2></p><p>Die Seitenleiste minimiert sich automatisch auf kleineren Bildschirmen und ist auf mobilen Geräten als Overlay verfügbar.</p>",
-      "answers": [
-        {
-          "creatorID": "4iqrDSW9hM4hRVQGuMVy",
-          "createdAt": "1696696800",
-          "message": "<p>Perfekt! Dadurch wird die mobile Nutzererfahrung deutlich verbessert.</p>"
-        },
-        {
-          "creatorID": "codDqlQXNu6QBkrpdR8A",
-          "createdAt": "1696783200",
-          "message": "<p>Sieht super aus! Haben wir auch an die Tastaturnavigation gedacht?</p>"
-        },
-        {
-          "creatorID": "ellfDJEyv2LnT55aYyH3",
-          "createdAt": "1696869600",
-          "message": "<p>Guter Punkt! Ich werde sicherstellen, dass die Navigation auch mit der Tab-Taste funktioniert.</p>"
-        }
-      ]
-    },
-    {
-      "creatorID": "codDqlQXNu6QBkrpdR8A",
-      "createdAt": "1696920000",
-      "message": "<p><h2>Chat-Ansicht enthält jetzt die Thread-Funktion! 🧵</h2></p><p>Nutzer können jetzt auf eine bestimmte Nachricht klicken und einen Thread starten. Dies sorgt für mehr Übersichtlichkeit in den Channels.</p>",
-      "answers": [
-        {
-          "creatorID": "SVFcGhTwEk94NhptJ7iz",
-          "createdAt": "1697006400",
-          "message": "<p>Das wird den Nutzern wirklich helfen, Themen besser zu strukturieren. Gut gemacht!</p>"
-        },
-        {
-          "creatorID": "ellfDJEyv2LnT55aYyH3",
-          "createdAt": "1697092800",
-          "message": "<p>Thread-Ansicht sieht sehr aufgeräumt aus. Funktioniert das auch in Direktnachrichten?</p>"
-        },
-        {
-          "creatorID": "codDqlQXNu6QBkrpdR8A",
-          "createdAt": "1697179200",
-          "message": "<p>Ja, die Threads funktionieren in allen Chats – auch in den DMs!</p>"
-        }
-      ]
-    },
-    {
-      "creatorID": "4iqrDSW9hM4hRVQGuMVy",
-      "createdAt": "1697265600",
-      "message": "<p><h3>Das CSS-Styling für die Buttons ist jetzt einheitlich und responsiv</h3></p><p>Jeder Button hat jetzt das richtige Hover-Verhalten, und die Farben passen sich den Branding-Vorgaben an.</p>",
-      "answers": [
-        {
-          "creatorID": "ellfDJEyv2LnT55aYyH3",
-          "createdAt": "1697352000",
-          "message": "<p>Super Arbeit! Das sorgt für ein konsistentes Erlebnis auf allen Seiten.</p>"
-        },
-        {
-          "creatorID": "codDqlQXNu6QBkrpdR8A",
-          "createdAt": "1697438400",
-          "message": "<p>Ich habe gesehen, dass es noch ein kleines Problem mit dem Fokus-Styling in Firefox gibt. Ich kümmere mich darum!</p>"
-        }
-      ]
-    },
-    {
-      "creatorID": "SVFcGhTwEk94NhptJ7iz",
-      "createdAt": "1697524800",
-      "message": "<p>Die Firebase-Authentifizierung wurde auf allen Seiten erfolgreich getestet. Keine Fehlermeldungen mehr! 🎉</p>"
-    },
-    {
-      "creatorID": "ellfDJEyv2LnT55aYyH3",
-      "createdAt": "1697611200",
-      "message": "<p>Ich habe die Menü-Komponente optimiert. Das Menü kann jetzt durch Klick auf einen Button minimiert und maximiert werden. Besonders nützlich auf mobilen Geräten! 📱</p>",
-      "answers": [
-        {
-          "creatorID": "codDqlQXNu6QBkrpdR8A",
-          "createdAt": "1697697600",
-          "message": "<p>Super! Das wird die Benutzerfreundlichkeit deutlich verbessern.</p>"
-        },
-        {
-          "creatorID": "SVFcGhTwEk94NhptJ7iz",
-          "createdAt": "1697784000",
-          "message": "<p>Ja, das macht das Chat-Interface deutlich übersichtlicher. Danke für die schnelle Umsetzung!</p>"
-        }
-      ]
-    },
-    {
-      "creatorID": "codDqlQXNu6QBkrpdR8A",
-      "createdAt": "1697870400",
-      "message": "<p><h3>Profilanzeige ist jetzt komplett! 🎉</h3></p><p>Nutzer können ihre Avatare hochladen und ihr Profil bearbeiten.</p>"
-    },
-    {
-      "creatorID": "4iqrDSW9hM4hRVQGuMVy",
-      "createdAt": "1697956800",
-      "message": "<p>Die Suchfunktion wurde erfolgreich implementiert! 🔍 Benutzer können jetzt Nachrichten in ihren Chats und Kanälen durchsuchen.</p>"
-    }
-  ]
-  
-  
-   
 
 /**
  * A constant string containing the welcome message content for DABubble.
@@ -162,7 +42,7 @@ export const newGoogleUserMessages = [welcomemessagecontent];
  * @returns `true` if the user is a real user, `false` otherwise.
  */
 export function isRealUser(user: User): boolean {
-    return !user.guest && user.id !== dabubbleBotId;
+  return !user.guest && user.id !== dabubbleBotId;
 }
 
 
@@ -173,9 +53,9 @@ export function isRealUser(user: User): boolean {
  * @returns The type of the collection as a string: 'channel', 'chat', or 'message'.
  */
 export function getCollectionType(collection: Channel | Chat | Message): CollectionType {
-    if (collection instanceof Channel) return 'channel';
-    if (collection instanceof Chat) return 'chat';
-    return 'message';
+  if (collection instanceof Channel) return 'channel';
+  if (collection instanceof Chat) return 'chat';
+  return 'message';
 }
 
 
@@ -189,9 +69,9 @@ export function getCollectionType(collection: Channel | Chat | Message): Collect
  * @returns The path associated with the given collection.
  */
 export function getCollectionPath(collection: Channel | Chat | Message): string {
-    if (collection instanceof Channel) return collection.channelMessagesPath;
-    if (collection instanceof Chat) return collection.chatMessagesPath;
-    return collection.answerPath;
+  if (collection instanceof Channel) return collection.channelMessagesPath;
+  if (collection instanceof Chat) return collection.chatMessagesPath;
+  return collection.answerPath;
 }
 
 
@@ -205,8 +85,8 @@ export function getCollectionPath(collection: Channel | Chat | Message): string 
  * @returns `true` if the chat is with oneself, `false` otherwise.
  */
 export function ifChatWhitSelf(chat: Chat): boolean {
-    if (chat.memberIDs.length === 2 && chat.memberIDs[0] === chat.memberIDs[1]) return true;
-    return false;
+  if (chat.memberIDs.length === 2 && chat.memberIDs[0] === chat.memberIDs[1]) return true;
+  return false;
 }
 
 
@@ -217,11 +97,11 @@ export function ifChatWhitSelf(chat: Chat): boolean {
 * @returns The path to the messages associated with the provided collection object.
 */
 export function getMessagePath(collectionObject: Channel | Chat | Message): string {
-    return collectionObject instanceof Channel
-        ? collectionObject.channelMessagesPath
-        : collectionObject instanceof Chat
-            ? collectionObject.chatMessagesPath
-            : collectionObject.answerPath;
+  return collectionObject instanceof Channel
+    ? collectionObject.channelMessagesPath
+    : collectionObject instanceof Chat
+      ? collectionObject.chatMessagesPath
+      : collectionObject.answerPath;
 }
 
 
@@ -237,11 +117,11 @@ export function getMessagePath(collectionObject: Channel | Chat | Message): stri
  * @returns The path string for the given collection object.
  */
 export function getObjectsPath(collectionObject: Channel | Chat | Message): string {
-    return collectionObject instanceof Channel
-        ? 'channels/' + collectionObject.id
-        : collectionObject instanceof Chat
-            ? 'chats/' + collectionObject.id
-            : collectionObject.messagePath;
+  return collectionObject instanceof Channel
+    ? 'channels/' + collectionObject.id
+    : collectionObject instanceof Chat
+      ? 'chats/' + collectionObject.id
+      : collectionObject.messagePath;
 }
 
 
@@ -252,7 +132,7 @@ export function getObjectsPath(collectionObject: Channel | Chat | Message): stri
  * @returns A new string with all HTML tags removed.
  */
 export function removeAllHTMLTagsFromString(text: string): string {
-    return text.replace(/<[^>]*>/g, '');
+  return text.replace(/<[^>]*>/g, '');
 }
 
 

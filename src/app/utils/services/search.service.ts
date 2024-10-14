@@ -9,6 +9,7 @@ import { Message } from '../../shared/models/message.class';
 import { Firestore, collection, query, where, orderBy, limit, getDocs, startAt, collectionGroup } from '@angular/fire/firestore';
 import { Chat } from '../../shared/models/chat.class';
 import { Channel } from '../../shared/models/channel.class';
+import { isRealUser } from '../firebase/utils';
 
 export interface GroupedSearchResults {
   users: { text: string; type: 'user'; hasChat: boolean }[];
@@ -350,6 +351,7 @@ export class SearchService {
       map((userIds) => userIds
         .map((id) => {
           const user = this.usersService.getUserByID(id);
+          if(user && !isRealUser(user)) return null;
           return user ? { text: `@${user.name}`, type: 'user' as const, hasChat: this.channelService.getChatWithUserByID(id) !== undefined } : null;
         })
         .filter((user): user is { text: string; type: 'user'; hasChat: boolean } => user !== null && user.text.toLowerCase().includes(query.toLowerCase()))
