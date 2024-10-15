@@ -23,6 +23,7 @@ export class UsersService implements OnDestroy {
   private user$: any = null;
   private currentAuthUser: any = undefined;
   private updateCurrentUserDataFunction: any = undefined;
+  public isUserMemberOfCurrentChannel = false;
 
   private changeUserListSubject = new BehaviorSubject<User[]>([]);
   public changeUserList$ = this.changeUserListSubject.asObservable();

@@ -5,6 +5,7 @@ import { ChannelService } from './channel.service';
 import { Channel } from '../../shared/models/channel.class';
 import { Auth, signOut } from '@angular/fire/auth';
 import { NavigationService } from './navigation.service';
+import { isRealUser } from '../firebase/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -237,15 +238,65 @@ export class CleanupService {
   }
 
 
+  /**
+   * Recalculates Firestore data for all channels managed by the channel service.
+   * 
+   * This method iterates over all channels and performs the following operations:
+   * 1. Skips the channel if it is marked as a default channel.
+   * 2. Recalculates all messages for the current channel.
+   * 3. Clears unknown users from the current channel.
+   * 
+   * @returns {Promise<void>} A promise that resolves when the recalculations and cleanups are complete.
+   */
   async recalculateFireStoreData() {
     for (let i = 0; i < this.channelservice.channels.length; i++) {
       const channel = this.channelservice.channels[i];
       if (channel.defaultChannel) continue;
       await this.recalculateAllMessagesFormChannel(channel);
+      await this.clearUnknowUsersFromChannel(channel);
     }
   }
 
 
+  /**
+   * Clears unknown users from a given channel.
+   * 
+   * This method filters out users from the channel's member list who are not recognized
+   * or are not considered real users. If any unknown users are found, the channel's 
+   * member list is updated in the Firestore database.
+   * 
+   * @param {Channel} channel - The channel from which to clear unknown users.
+   * @returns {Promise<void>} A promise that resolves when the operation is complete.
+   */
+  async clearUnknowUsersFromChannel(channel: Channel) {
+    const currentMembers = channel.memberIDs;
+    let membersArrayNeedUpdate = false;
+    let membersToRemove:string[] = [];
+    const realMembers = currentMembers.filter((memberID) => {
+      const user = this.userservice.getUserByID(memberID)
+      if (!user || !isRealUser(user)) {
+        membersArrayNeedUpdate = true;
+        membersToRemove.push(memberID);
+        return false;
+      }
+      return true;
+    });
+    if (membersArrayNeedUpdate) {
+      console.warn('cleanupservice: Clearing unknown users from channel (' + channel.name + ')');
+      await updateDoc(doc(this.firestore, 'channels/' + channel.id), { memberIDs: realMembers });
+    }
+  }
+
+
+  /**
+   * Recalculates all messages from a given channel.
+   * 
+   * This method retrieves all messages from the specified channel and recalculates
+   * the answers for each message.
+   * 
+   * @param channel - The channel from which to recalculate messages.
+   * @returns A promise that resolves when all messages have been recalculated.
+   */
   async recalculateAllMessagesFormChannel(channel: Channel) {
     const messages = await getDocs(collection(this.firestore, channel.channelMessagesPath));
     for (let i = 0; i < messages.docs.length; i++) {
@@ -255,6 +306,12 @@ export class CleanupService {
   }
 
 
+  /**
+   * Recalculates the number of answers for a given message and updates the message document if the count has changed.
+   *
+   * @param message - The message document snapshot from which to recalculate the answers.
+   * @returns A promise that resolves when the recalculation and potential update are complete.
+   */
   async recalculateAnswersFromMessage(message: QueryDocumentSnapshot<DocumentData, DocumentData>) {
     const answersRef = collection(this.firestore, message.ref.path + '/answers');
     const answers = await getDocs(answersRef);

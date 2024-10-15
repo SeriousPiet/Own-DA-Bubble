@@ -155,6 +155,10 @@ export class MessageTextareaComponent {
    */
   async addNewMessage() {
     if (this.ifMessageUploading || !this.allowSendMessage) return;
+    if (!this.userservice.isUserMemberOfCurrentChannel) {
+      this.showErrorWithDelay('Nur Channelmitglieder dürfen Nachrichten senden.');
+      return;
+    }
     if (await this.userservice.ifCurrentUserVerified()) {
       const newHTMLMessage = this.messageeditor.getMessageAsHTML();
       this.errorInfo = '';
