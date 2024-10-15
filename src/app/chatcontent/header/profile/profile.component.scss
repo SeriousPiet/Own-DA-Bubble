@@ -60,7 +60,7 @@ $username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
 
 #profile-popover {
   display: none;
-  top: 7.5rem;
+  top: 7rem;
   width: fit-content;
   height: fit-content;
   min-width: 15.5rem;
@@ -265,7 +265,7 @@ $username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
     .edit-box {
       @include flex(flex-start, flex-start);
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1.125rem;
       width: 100%;
 
       .edit {
@@ -310,7 +310,7 @@ $username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
       }
 
       .verify-pw-change {
-        margin-top: 0.5rem;
+        margin-top: 0.25rem;
       }
     }
 
@@ -336,7 +336,7 @@ $username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
     .error-message,
     .restricted-info-message {
       @include nunito(0.875, 400, $error);
-      height: 0.875rem;
+      height: 1rem;
       width: 100%;
       margin-top: -0.325rem;
       padding-left: 1.25rem;
@@ -365,7 +365,7 @@ $username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
     height: fit-content;
 
     .modal-title {
-      @include fontSizer(24, 700, black);
+      @include nunito(1.5, 700, black);
     }
   }
 }
