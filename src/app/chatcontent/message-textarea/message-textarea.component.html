@@ -11,8 +11,8 @@
   ></app-message-editor>
   @if(!ifMessageUploading && attachments.length > 0){
   <div class="attachments">
-    @for(attachment of attachments; track attachment){
-    <button popovertarget="attachment-preview" class="attachment">
+    @for(attachment of attachments; track attachment; let index = $index){
+    <button [attr.popovertarget]="'attachment-preview' + index" class="attachment">
       <img src="{{ attachment.src }}" alt="+" />
       <span>{{ attachment.name }}</span>
       <img
@@ -22,10 +22,12 @@
         alt="close"
       />
     </button>
-    <div popover id="attachment-preview">
+    <div class="attachment-preview" popover [id]="'attachment-preview' + index">
+      @if (attachment) {
       <img src="{{ attachment.src }}" alt="+" />
+      }
     </div>
-    }
+  }
   </div>
   }
   <div class="input-message-toolbar z-index-2">
