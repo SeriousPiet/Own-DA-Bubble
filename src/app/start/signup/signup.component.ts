@@ -193,6 +193,7 @@ export class SignupComponent {
     if (error.includes('auth/email-already-in-use')) {
       this.errorEmailExists = 'Diese E-Mail-Adresse ist bereits vergeben.';
     }
+    console.clear();
   }
 
 

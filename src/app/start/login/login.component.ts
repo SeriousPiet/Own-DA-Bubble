@@ -394,8 +394,9 @@ export class LoginComponent implements OnDestroy, OnInit {
       this.errorGoogleSignin = 'Anmeldung durch Benutzer abgebrochen.';
     } else if (error.includes('auth/google-signin-error-name-email-missing')) {
       this.errorGoogleSignin =
-        'Anmeldung fehlgeschlagen. Name & E-Mail unbekannt.';
+      'Anmeldung fehlgeschlagen. Name & E-Mail unbekannt.';
     }
+    console.clear();
   }
 
 

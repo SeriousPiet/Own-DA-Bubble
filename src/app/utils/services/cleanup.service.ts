@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { UsersService } from './user.service';
-import { collection, deleteDoc, doc, Firestore, getDoc, getDocs, updateDoc } from '@angular/fire/firestore';
+import { collection, deleteDoc, doc, DocumentData, Firestore, getDoc, getDocs, QueryDocumentSnapshot, updateDoc } from '@angular/fire/firestore';
 import { ChannelService } from './channel.service';
 import { Channel } from '../../shared/models/channel.class';
 import { Auth, signOut } from '@angular/fire/auth';
@@ -233,5 +233,36 @@ export class CleanupService {
       await deleteDoc(doc(this.firestore, this.docsToDelete[i]));
     }
     this.docsToDelete = [];
+    setTimeout(() => { this.recalculateFireStoreData(); }, 3000);
+  }
+
+
+  async recalculateFireStoreData() {
+    for (let i = 0; i < this.channelservice.channels.length; i++) {
+      const channel = this.channelservice.channels[i];
+      if (channel.defaultChannel) continue;
+      await this.recalculateAllMessagesFormChannel(channel);
+    }
+  }
+
+
+  async recalculateAllMessagesFormChannel(channel: Channel) {
+    const messages = await getDocs(collection(this.firestore, channel.channelMessagesPath));
+    for (let i = 0; i < messages.docs.length; i++) {
+      const message = messages.docs[i];
+      await this.recalculateAnswersFromMessage(message);
+    }
+  }
+
+
+  async recalculateAnswersFromMessage(message: QueryDocumentSnapshot<DocumentData, DocumentData>) {
+    const answersRef = collection(this.firestore, message.ref.path + '/answers');
+    const answers = await getDocs(answersRef);
+    const realAnswerCount = answers ? answers.size : 0;
+    const currentAnswerCount = message.data()['answerCount'] ? message.data()['answerCount'] : 0;
+    if (realAnswerCount !== currentAnswerCount) {
+      console.warn('cleanupservice: Recalculating answers for message (' + message.ref.path + ')');
+      updateDoc(doc(this.firestore, message.ref.path), { answerCount: realAnswerCount });
+    }
   }
 }
