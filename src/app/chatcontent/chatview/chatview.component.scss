@@ -45,7 +45,7 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
   background-color: white;
   box-shadow: $modal-box-shadow;
 
-  @media (width < 426px) {
+  @media (width <= 430px) {
     min-height: 5rem;
     max-height: 5rem;
     border-radius: 0;
@@ -223,7 +223,7 @@ $member-btn-gap: clamp(0.5rem, 0.556vw + 0.083rem, 0.75rem);
   max-height: 50%;
   max-width: 25rem;
 
-  @media (width < 426px) {
+  @media (width <= 430px) {
     width: 100%;
     max-width: 100%;
     max-height: 100%;
@@ -305,7 +305,7 @@ app-message-greeting {
   height: 100%;
 }
 
-@media (width < 426px) {
+@media (width <= 430px) {
   #channel-editor-popover {
     width: 100%;
     height: 100%;

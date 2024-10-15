@@ -12,7 +12,7 @@ $popover-width: clamp(26rem, 42.056vw + 8.084rem, 35rem);
   opacity: 0;
   transition: $transition-popover;
 
-  @media (width <= 425px) {
+  @media (width <= 430px) {
     max-width: 100%;
   }
 }
@@ -255,7 +255,7 @@ main {
   user-select: none;
 }
 
-@media (width < 426px) {
+@media (width <= 430px) {
   :host {
     top: 0;
     border-radius: unset;
