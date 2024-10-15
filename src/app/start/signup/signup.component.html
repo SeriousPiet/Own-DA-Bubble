@@ -19,7 +19,7 @@
     class="mask-div"
   >
     <button type="button" class="return" (click)="goBack()">
-      <img src="../../../assets/icons/start/go-back.svg" alt="" />
+      <img src="./assets/icons/start/go-back.svg" alt="" />
     </button>
     <span class="headline">Konto erstellen</span>
     <span class="info"
@@ -93,7 +93,7 @@
     </div>
     <div class="action">
       @if(loggingIn) {
-      <img src="../../../assets/icons/svg-spinner-accent.svg" alt="" />
+      <img src="./assets/icons/svg-spinner-accent.svg" alt="" />
       }
       <button [disabled]="signupForm.invalid" type="submit" class="blue-btn">
         Weiter
