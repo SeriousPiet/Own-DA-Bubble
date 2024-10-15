@@ -61,7 +61,7 @@
       cursor: pointer;
     }
 
-    > span {
+    >span {
       max-width: 30ch;
       font-size: 0.875rem;
       font-weight: 600;
@@ -233,10 +233,12 @@
   }
 }
 
-#attachment-preview{
+.attachment-preview {
   display: none;
-  height: 50%;
-  max-height: 40rem;
+  height: fit-content;
+  max-height: 60%;
+  width: fit-content;
+  max-width: 70%;
   padding: 1.25rem;
   border: none;
   border-radius: 1.875rem;
@@ -244,12 +246,20 @@
   opacity: 0;
   transition: $transition-popover;
 
-  >img{
+  @media screen and (width < 431px) {
+    max-height: 80%;
+    max-width: 90%;
+  }
+
+  >img {
     border-radius: 1.875rem;
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
   }
 }
 
-#attachment-preview:popover-open {
+.attachment-preview:popover-open {
   opacity: 1;
   display: flex;
 }
