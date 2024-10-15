@@ -7,7 +7,7 @@ import { EmojipickerService } from './emojipicker.service';
 import { Message } from '../../shared/models/message.class';
 import { Chat } from '../../shared/models/chat.class';
 import { Channel } from '../../shared/models/channel.class';
-import { getCollectionType } from '../firebase/utils';
+import { getCollectionType, isRealUser } from '../firebase/utils';
 
 export type CurrentUserChange = 'init' | 'login' | 'logout' | 'update';
 
@@ -54,7 +54,8 @@ export class UsersService implements OnDestroy {
    * @returns {string[]} An array of user IDs.
    */
   getAllUserIDs(): string[] {
-    const userIDs = this.users.map((user) => user.id); return userIDs;
+    const userIDs = this.users.filter((user) => isRealUser(user)).map((user) => user.id);
+    return userIDs;
   }
 
 
