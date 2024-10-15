@@ -209,7 +209,6 @@ export class MessageTextareaComponent {
    * @param event - The event object from the file input change event.
    */
   changeAttachmentFile(event: any) {
-    console.log(event);
     event.preventDefault();
     this.loadAttachments(event.target);
   }

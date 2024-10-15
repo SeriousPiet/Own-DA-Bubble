@@ -125,7 +125,6 @@ export class MessagesListViewComponent implements OnInit, OnDestroy {
   private scrollToMessageInView(message: Message) {
     const maxAttempts = 5;
     let attempts = 0;
-    console.log('scrollToMessageInView:', message);
 
     const scrollToElement = () => {
       const targetSelector = `${message.id}`;
