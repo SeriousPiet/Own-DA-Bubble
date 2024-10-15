@@ -7,6 +7,12 @@
     <app-chooseavatar (clickSuccess)="successChooseAvatar()"></app-chooseavatar>
   </div>
   } @else {
+
+  <div class="static-bubble-logo">
+    <img src="./assets/img/start-logo.png" alt="DA-Bubble Logo" />
+    <span>DABubble</span>
+  </div>
+
   <form
     [formGroup]="signupForm"
     (ngSubmit)="submitSignUpForm($event)"

@@ -100,6 +100,7 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
   display: block !important;
 }
 
+/* Webkit-based Browsers (Chrome, Safari, newer versions of Edge) */
 ::-webkit-scrollbar {
   width: 0px;
   height: 10px;
@@ -113,6 +114,17 @@ $transition-popover: 0.25s opacity ease-in-out, 0.25s display allow-discrete,
 ::-webkit-scrollbar-track {
   background-color: transparent;
   border: none;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+/* Edge (older versions) and Internet Explorer */
+* {
+  -ms-overflow-style: none;
 }
 
 *::backdrop {

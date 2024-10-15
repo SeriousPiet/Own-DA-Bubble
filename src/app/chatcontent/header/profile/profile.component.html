@@ -148,17 +148,27 @@
               placeholder="Dein Name hier"
             />
           </div>
-          @if (profileForm.get('name')?.invalid &&
-          (profileForm.get('name')?.dirty || profileForm.get('name')?.touched))
-          {
+
           <div class="error-message">
-            @if (profileForm.get('name')?.errors?.['required']) {
-            <span>Name ist erforderlich.</span>
-            } @else if (profileForm.get('name')?.errors?.['invalidName']) {
-            <span>Bitte gib deinen vollständigen Namen ein.</span>
-            }
+            <span
+              *ngIf="
+                profileForm.get('name')?.invalid &&
+                (profileForm.get('name')?.dirty ||
+                  profileForm.get('name')?.touched)
+              "
+            >
+              <ng-container
+                *ngIf="profileForm.get('name')?.errors?.['required']"
+              >
+                Name ist erforderlich.
+              </ng-container>
+              <ng-container
+                *ngIf="profileForm.get('name')?.errors?.['invalidName']"
+              >
+                Bitte gib deinen vollständigen Namen ein.
+              </ng-container>
+            </span>
           </div>
-          }
         </div>
 
         <div class="edit">
@@ -183,17 +193,31 @@
           <div class="restricted-info-message">
             <span>Mail-Adresse nicht editierbar.</span>
           </div>
-          } @if (profileForm.get('email')?.invalid &&
-          (profileForm.get('email')?.dirty ||
-          profileForm.get('email')?.touched)) {
+
+          }
+
           <div class="error-message">
-            @if (profileForm.get('email')?.errors?.['required']) {
-            <span>E-Mail ist erforderlich.</span>
-            } @else if (profileForm.get('email')?.errors?.['invalidEmail']) {
-            <span>Bitte gib eine gültige E-Mail-Adresse ein.</span>
-            }
+            <span
+              *ngIf="
+                profileForm.get('email')?.invalid &&
+                (profileForm.get('email')?.dirty ||
+                  profileForm.get('email')?.touched)
+              "
+            >
+              <ng-container
+                *ngIf="profileForm.get('email')?.errors?.['required']"
+              >
+                E-Mail ist erforderlich.
+              </ng-container>
+              <ng-container
+                *ngIf="profileForm.get('email')?.errors?.['invalidEmail']"
+              >
+                Bitte gib eine gültige E-Mail-Adresse ein.
+              </ng-container>
+            </span>
           </div>
-          } @if(emailChanged()) {
+
+          @if(emailChanged()) {
           <div class="input-box verify-pw-change">
             <input
               [(ngModel)]="reauthpassword"
