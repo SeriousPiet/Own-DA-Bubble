@@ -61,6 +61,7 @@ export class CleanupService {
       const user = users[i];
       if (user.guest) {
         if (!user.online) {
+          console.warn('cleanupservice: Deleting guest user data (' + user.id + ')');
           const userDoc = await getDoc(doc(this.firestore, '/users/' + user.id));
           if (userDoc.exists()) {
             const userData = userDoc.data();
@@ -89,10 +90,8 @@ export class CleanupService {
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
       if (user.guest) {
-        if (user.online) {
-          console.warn('cleanupservice: Marking guest for deletion (' + user.id + ')');
-          await updateDoc(doc(this.firestore, '/users/' + user.id), { online: false, markedToDeleteAT: Date.now() });
-        }
+        console.warn('cleanupservice: Marking guest for deletion (' + user.id + ')');
+        await updateDoc(doc(this.firestore, '/users/' + user.id), { online: false, markedToDeleteAT: Date.now() });
       }
     }
   }
@@ -271,7 +270,7 @@ export class CleanupService {
   async clearUnknowUsersFromChannel(channel: Channel) {
     const currentMembers = channel.memberIDs;
     let membersArrayNeedUpdate = false;
-    let membersToRemove:string[] = [];
+    let membersToRemove: string[] = [];
     const realMembers = currentMembers.filter((memberID) => {
       const user = this.userservice.getUserByID(memberID)
       if (!user || !isRealUser(user)) {
