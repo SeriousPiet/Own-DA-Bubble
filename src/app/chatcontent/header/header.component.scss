@@ -4,12 +4,15 @@
 $header-gap: clamp(1.25rem, 4.28vw + -1.136rem, 4rem);
 
 section.header {
+  @include flex(center, center);
   width: 100%;
 
   .header-content {
     @include flex(space-between, center);
+    width: calc(100% - 1.25rem * 2);
     gap: $header-gap;
-    padding: 0 1rem;
+    padding-left: var(--header-offset, 0);
+    transition: padding 0.25s ease-out;
 
     @media (width < 560px) {
       flex-wrap: wrap;
