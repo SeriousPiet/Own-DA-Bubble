@@ -5,7 +5,6 @@
 $popover-padding: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
 $popover-fs: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
 
-
 $popover-right: calc(1.25rem + max(0px, (100vw - 1920px) / 2));
 $signup-btn-margin: calc(4rem + max(0px, (100vw - 1920px) / 2));
 
@@ -54,6 +53,7 @@ section {
   height: fit-content;
   max-width: 1920px;
   min-height: 100vh;
+  max-height: 1080px;
   padding: 1.25rem;
   background-color: $background;
 

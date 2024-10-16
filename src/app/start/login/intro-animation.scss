@@ -5,14 +5,13 @@
 .intro-screen {
   position: absolute;
   z-index: 10;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+
   @include flex(center, center);
   gap: 1.5rem;
   min-height: 100vh;
   height: 100%;
+  width: 100vw;
+
   background: $intro-gradient;
   opacity: 1;
   animation: backgroundFade 0.335s ease-out forwards 2.275s;
