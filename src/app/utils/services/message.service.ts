@@ -91,7 +91,7 @@ export class MessageService {
    * - The related collection object is updated with the new count of messages or answers.
    * 
    */
-  async deleteMessage(message: Message, collectionObject: Channel | Chat | Message): Promise<string> {
+  private async deleteMessage(message: Message, collectionObject: Channel | Chat | Message): Promise<string> {
     try {
       if (message.answerable && message.answerCount > 0) this.deleteAllAnswersFromMessage(message);
       await deleteDoc(doc(this.firestore, message.messagePath));

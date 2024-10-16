@@ -29,7 +29,6 @@ export class LockedSpanBlot extends Inline {
   override format(name: string, value: any) {
     if (name === 'lockedSpan') {
       if (this.domNode) {
-        console.log('format', value, 'domNode', this.domNode, 'name', name);
         if (value && value.class) {
           this.domNode.setAttribute('class', value.class);
         } else {

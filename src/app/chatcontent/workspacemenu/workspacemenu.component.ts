@@ -94,10 +94,10 @@ export class WorkspacemenuComponent implements OnInit, OnDestroy {
       const content = details.querySelector('ul');
       if (content) {
         const height = content.offsetHeight + 112;
-        this.renderer.setStyle(details, 'height', `${height}px`);
+        this.renderer.setStyle(details, 'height', `fit-content`);
       }
     } else {
-      this.renderer.setStyle(details, 'height', '2.5rem');
+      this.renderer.setStyle(details, 'height', 'fit-content');
     }
   }
 

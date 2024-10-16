@@ -1,14 +1,39 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../utils/services/user.service';
 import { emailValidator, passwordValidator } from '../../utils/form-validators';
-import { Auth, getAuth, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
-import { addDoc, collection, Firestore, getDocs, query, serverTimestamp, where } from '@angular/fire/firestore';
+import {
+  Auth,
+  getAuth,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from '@angular/fire/auth';
+import {
+  addDoc,
+  collection,
+  Firestore,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
+} from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { ChannelService } from '../../utils/services/channel.service';
 import { MessageService } from '../../utils/services/message.service';
-import { dabubbleBotId, newGoogleUserMessages, newGuestMessages } from '../../utils/firebase/utils';
+import {
+  dabubbleBotId,
+  newGoogleUserMessages,
+  newGuestMessages,
+} from '../../utils/firebase/utils';
 
 @Component({
   selector: 'app-login',
@@ -55,7 +80,6 @@ export class LoginComponent implements OnDestroy, OnInit {
     password: new FormControl('', [Validators.required, passwordValidator()]),
   });
 
-
   /**
    * Lifecycle hook that is called after data-bound properties of a directive are initialized.
    * This method performs the following actions:
@@ -70,16 +94,15 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.initCurrentUserWatch();
   }
 
-
   /**
    * Checks the status of the introductory sequence.
-   * 
+   *
    * This method determines whether the introductory sequence has been played
-   * by checking the 'introPlayed' item in the session storage. If the 
-   * introductory sequence has been played, it sets `showIntro` and 
-   * `sessionWithIntro` to `false`. If not, it sets the 'introPlayed' item 
+   * by checking the 'introPlayed' item in the session storage. If the
+   * introductory sequence has been played, it sets `showIntro` and
+   * `sessionWithIntro` to `false`. If not, it sets the 'introPlayed' item
    * in the session storage to 'true'.
-   * 
+   *
    * @private
    */
   private checkIntroStatus() {
@@ -92,10 +115,9 @@ export class LoginComponent implements OnDestroy, OnInit {
     }
   }
 
-
   /**
    * Lifecycle hook that is called when the component is destroyed.
-   * 
+   *
    * This method performs necessary cleanup such as:
    * - Unsubscribing from the `subCurrentUser` observable to prevent memory leaks.
    * - Removing the 'resize' event listener from the window to avoid potential issues.
@@ -104,7 +126,6 @@ export class LoginComponent implements OnDestroy, OnInit {
     if (this.subCurrentUser) this.subCurrentUser.unsubscribe();
     window.removeEventListener('resize', this.checkScreenWidth.bind(this));
   }
-
 
   /**
    * Checks the current screen width and sets the `spinnerMobile` property.
@@ -117,42 +138,44 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.spinnerMobile = window.innerWidth <= 480;
   }
 
-
   /**
    * Logs in a guest user by creating a new user document in Firestore with a unique email address.
    * Disables the login form and shows a spinner during the process.
    * Sets the current user in the user service and stores the guest email in local storage.
    * Re-enables the login form and hides the spinner upon completion.
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the login process is complete.
    */
   async loginGuest() {
-    this.showSpinner = true; this.loginForm.disable(); this.clearAllErrorSpans();
+    this.showSpinner = true;
+    this.loginForm.disable();
+    this.clearAllErrorSpans();
     const email = 'gast' + new Date().getTime() + '@gast.de';
-    const data = await addDoc(collection(this.firestore, '/users'),
-      {
-        name: 'Gast',
-        email: email,
-        online: false,
-        signupAt: serverTimestamp(),
-        avatar: 0,
-        guest: true,
-        emailVerified: true
-      });
+    const data = await addDoc(collection(this.firestore, '/users'), {
+      name: 'Gast',
+      email: email,
+      online: false,
+      signupAt: serverTimestamp(),
+      avatar: 0,
+      guest: true,
+      emailVerified: true,
+    });
     this.userservice.setCurrentUserByEMail(email);
     localStorage.setItem('guestuseremail', email);
-    this.showSpinner = false; this.loginForm.enable();
+    this.showSpinner = false;
+    this.loginForm.enable();
     this.handleLoginSuccess();
-    setTimeout(() => { this.implementSomeNewUserStuff(data.id, newGuestMessages); }, 4000);
+    setTimeout(() => {
+      this.implementSomeNewUserStuff(data.id, newGuestMessages);
+    }, 4000);
   }
-
 
   /**
    * Handles the submission of the password reset form.
-   * 
+   *
    * @param {Event} event - The event triggered by form submission.
    * @returns {Promise<void>} - A promise that resolves when the password reset process is complete.
-   * 
+   *
    * @remarks
    * This method performs the following actions:
    * - Prevents the default form submission behavior.
@@ -166,7 +189,7 @@ export class LoginComponent implements OnDestroy, OnInit {
    * - Shows an informational popover for 3 seconds.
    * - If no user is found, displays an error message indicating that the email is unknown.
    * - Hides the loading spinner and re-enables the password reset form.
-   * 
+   *
    * @throws {Error} If there is an issue with sending the password reset email.
    */
   async submitPasswordResetForm(event: Event) {
@@ -182,7 +205,10 @@ export class LoginComponent implements OnDestroy, OnInit {
       await sendPasswordResetEmail(auth, email);
       this.passwordResetForm.reset();
       document.getElementById('infoPopover')?.showPopover();
-      setTimeout(() => { document.getElementById('infoPopover')?.hidePopover(); this.passwordResetFormShow = false; }, 3000);
+      setTimeout(() => {
+        document.getElementById('infoPopover')?.hidePopover();
+        this.passwordResetFormShow = false;
+      }, 3000);
     } else {
       this.errorEmail = 'Diese E-Mail-Adresse ist leider unbekannt.';
     }
@@ -190,13 +216,12 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.passwordResetForm.enable();
   }
 
-
   /**
    * Handles the submission of the login form.
-   * 
+   *
    * @param event - The event triggered by the form submission.
    * @returns A promise that resolves when the login process is complete.
-   * 
+   *
    * This method performs the following actions:
    * - Prevents the default form submission behavior.
    * - Clears all error messages.
@@ -219,13 +244,12 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.loginForm.enable();
   }
 
-
   /**
    * Logs in a user using their email and password.
    *
    * @param email - The email address of the user.
    * @param password - The password of the user.
-   * @returns A promise that resolves to an empty string if login is successful, 
+   * @returns A promise that resolves to an empty string if login is successful,
    *          or an error message string if login fails.
    */
   async loginUser(email: string, password: string): Promise<string> {
@@ -239,14 +263,13 @@ export class LoginComponent implements OnDestroy, OnInit {
     }
   }
 
-
   /**
    * Initiates the sign-in process with Google.
-   * 
+   *
    * This method displays a spinner while attempting to sign in with Google using a popup.
    * If an error occurs during the sign-in process, it handles the error accordingly.
    * Otherwise, it handles the successful login.
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the sign-in process is complete.
    */
   async signinWithGoogle() {
@@ -257,20 +280,19 @@ export class LoginComponent implements OnDestroy, OnInit {
     else this.handleLoginSuccess();
   }
 
-
   /**
    * Signs in a user using Google authentication via a popup.
-   * 
+   *
    * This method clears all error spans, sets the authentication language to German,
    * and attempts to sign in the user with a Google popup. If the sign-in is successful
    * and the user's display name and email are available, it checks if the user exists
    * in the Firestore database by email. If the user does not exist, it adds the user
-   * to the Firestore database. 
-   * 
+   * to the Firestore database.
+   *
    * @returns {Promise<string>} A promise that resolves to an empty string if the sign-in
    * is successful and the user data is processed correctly, or an error message string
    * if an error occurs during the sign-in process.
-   * 
+   *
    * @throws {Error} If an error occurs during the sign-in process, the error message is returned.
    */
   async signinWithGooglePopup(): Promise<string> {
@@ -283,8 +305,14 @@ export class LoginComponent implements OnDestroy, OnInit {
       if (result.user.displayName && result.user.email) {
         let userID = await this.getUserIDByEmail(result.user.email);
         if (!userID) {
-          const newUserID = await this.addGoogleUserToFirestore(result.user.displayName, result.user.email, result.user.photoURL);
-          setTimeout(() => { this.implementSomeNewUserStuff(newUserID, newGoogleUserMessages); }, 4000);
+          const newUserID = await this.addGoogleUserToFirestore(
+            result.user.displayName,
+            result.user.email,
+            result.user.photoURL
+          );
+          setTimeout(() => {
+            this.implementSomeNewUserStuff(newUserID, newGoogleUserMessages);
+          }, 4000);
         }
         return '';
       } else {
@@ -295,7 +323,6 @@ export class LoginComponent implements OnDestroy, OnInit {
     }
   }
 
-
   /**
    * Adds a Google user to Firestore.
    *
@@ -304,13 +331,24 @@ export class LoginComponent implements OnDestroy, OnInit {
    * @param pictureURL - The URL of the user's profile picture, or null if not available.
    * @returns A promise that resolves to the ID of the newly created user document.
    */
-  private async addGoogleUserToFirestore(name: string, email: string, pictureURL: string | null): Promise<string> {
-    const userObj = { name, email, provider: 'google', online: false, signupAt: serverTimestamp(), avatar: 0, pictureURL: pictureURL || null };
+  private async addGoogleUserToFirestore(
+    name: string,
+    email: string,
+    pictureURL: string | null
+  ): Promise<string> {
+    const userObj = {
+      name,
+      email,
+      provider: 'google',
+      online: false,
+      signupAt: serverTimestamp(),
+      avatar: 0,
+      pictureURL: pictureURL || null,
+    };
     this.userservice.setCurrentUserByEMail(email);
     const newUser = await addDoc(collection(this.firestore, '/users'), userObj);
     return newUser.id;
   }
-
 
   /**
    * Retrieves the user ID associated with the given email address.
@@ -318,7 +356,9 @@ export class LoginComponent implements OnDestroy, OnInit {
    * @param email - The email address to search for. Can be a string or null.
    * @returns A promise that resolves to the user ID if found, otherwise undefined.
    */
-  private async getUserIDByEmail(email: string | null): Promise<string | undefined> {
+  private async getUserIDByEmail(
+    email: string | null
+  ): Promise<string | undefined> {
     const usersRef = collection(this.firestore, '/users');
     const queryresponse = query(usersRef, where('email', '==', email));
     const querySnapshot = await getDocs(queryresponse);
@@ -329,41 +369,49 @@ export class LoginComponent implements OnDestroy, OnInit {
     return undefined;
   }
 
-
   /**
    * Initializes a subscription to watch for changes in the current user.
    * When a 'login' change type is detected, it hides the login form, displays
    * an information message, and redirects to the chat content after a specified delay.
-   * 
+   *
    * @remarks
    * - If the user is a guest, the name 'Gast' is used in the info message.
    * - The delay before redirection can be influenced by the `sessionWithIntro` property.
    * - Ensures that the info message is shown for at least `loginInfoStayTime` milliseconds.
-   * 
+   *
    * @privateRemarks
    * - The subscription is stored in `subCurrentUser`.
-   * 
+   *
    * @returns void
    */
   initCurrentUserWatch() {
-    this.subCurrentUser = this.userservice.changeCurrentUser$.subscribe((changeType) => {
-      if ('login' === changeType) {
-        this.loginFormShow = false;
-        setTimeout(() => {
-          const userName = (this.userservice.currentUser?.guest ? 'Gast' : this.userservice.currentUser?.name);
-          this.showInfoMessage('Anmelden als ' + userName, false);
-          if (this.showLoginInfoTime === null) this.showLoginInfoTime = new Date().getTime();
-          const timeElapsed = new Date().getTime() - this.showLoginInfoTime;
-          if (timeElapsed < this.loginInfoStayTime) {
-            setTimeout(() => { this.redirectToChatContent(); }, this.loginInfoStayTime - timeElapsed);
-          } else {
-            this.redirectToChatContent();
-          }
-        }, this.sessionWithIntro ? 2000 : 0);
+    this.subCurrentUser = this.userservice.changeCurrentUser$.subscribe(
+      (changeType) => {
+        if ('login' === changeType) {
+          this.loginFormShow = false;
+          setTimeout(
+            () => {
+              const userName = this.userservice.currentUser?.guest
+                ? 'Gast'
+                : this.userservice.currentUser?.name;
+              this.showInfoMessage('Anmelden als ' + userName, false);
+              if (this.showLoginInfoTime === null)
+                this.showLoginInfoTime = new Date().getTime();
+              const timeElapsed = new Date().getTime() - this.showLoginInfoTime;
+              if (timeElapsed < this.loginInfoStayTime) {
+                setTimeout(() => {
+                  this.redirectToChatContent();
+                }, this.loginInfoStayTime - timeElapsed);
+              } else {
+                this.redirectToChatContent();
+              }
+            },
+            this.sessionWithIntro ? 2000 : 0
+          );
+        }
       }
-    });
+    );
   }
-
 
   /**
    * Handles the successful login event by updating the `showLoginInfoTime` property
@@ -372,7 +420,6 @@ export class LoginComponent implements OnDestroy, OnInit {
   handleLoginSuccess() {
     this.showLoginInfoTime = new Date().getTime();
   }
-
 
   /**
    * Handles login errors by setting appropriate error messages based on the error code.
@@ -396,8 +443,8 @@ export class LoginComponent implements OnDestroy, OnInit {
       this.errorGoogleSignin =
         'Anmeldung fehlgeschlagen. Name & E-Mail unbekannt.';
     }
+    console.clear();
   }
-
 
   /**
    * Displays or hides an informational message in the login component.
@@ -416,10 +463,9 @@ export class LoginComponent implements OnDestroy, OnInit {
     }
   }
 
-
   /**
    * Redirects the user to the chat content page.
-   * 
+   *
    * This method hides any informational messages and navigates the user to the
    * '/chatcontent' route using the Angular Router.
    */
@@ -427,7 +473,6 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.showInfoMessage('', false);
     this.router.navigate(['/chatcontent']);
   }
-
 
   /**
    * Clears all error messages related to email, password, and Google sign-in.
@@ -451,14 +496,26 @@ export class LoginComponent implements OnDestroy, OnInit {
    * 2. Creates a chat with the dabubble bot.
    * 3. Sends each message in the `messagesArray` to the dabubble bot chat.
    */
-  private async implementSomeNewUserStuff(newUserID: string, messagesArray: string[]) {
-    const selfChatID = await this.channelService.addChatWithUserOnFirestore(newUserID);
-    const dabubbleBotChatID = await this.channelService.addChatWithUserOnFirestore(dabubbleBotId); // Bela Schramm
+  private async implementSomeNewUserStuff(
+    newUserID: string,
+    messagesArray: string[]
+  ) {
+    const selfChatID = await this.channelService.addChatWithUserOnFirestore(
+      newUserID
+    );
+    const dabubbleBotChatID =
+      await this.channelService.addChatWithUserOnFirestore(dabubbleBotId); // Bela Schramm
     if (dabubbleBotChatID) {
-      const dabubbleBotChat = this.channelService.getChatByID(dabubbleBotChatID);
+      const dabubbleBotChat =
+        this.channelService.getChatByID(dabubbleBotChatID);
       if (dabubbleBotChat) {
         messagesArray.forEach(async (message) => {
-          await this.messageService.addNewMessageToCollection(dabubbleBotChat, message, [], dabubbleBotId);
+          await this.messageService.addNewMessageToCollection(
+            dabubbleBotChat,
+            message,
+            [],
+            dabubbleBotId
+          );
         });
       }
     }

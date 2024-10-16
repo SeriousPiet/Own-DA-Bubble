@@ -93,6 +93,7 @@ export class NavigationService {
       this._chatViewObject = object;
       this._chatViewPath = object.chatMessagesPath;
       this.changeSubject.next('chatViewObjectSetAsChat');
+      this.userService.isUserMemberOfCurrentChannel = true;
     }
 
     this.clearThreadViewObject();
@@ -114,6 +115,7 @@ export class NavigationService {
   private setChatViewObjectAsChannel(channel: Channel): void {
     this._chatViewObject = channel;
     this._chatViewPath = channel.channelMessagesPath === '' ? undefined : channel.channelMessagesPath;
+    this.userService.isUserMemberOfCurrentChannel = channel.memberIDs.includes(this.userService.currentUserID);
     this.changeSubject.next('chatViewObjectSetAsChannel');
   }
 
@@ -134,6 +136,7 @@ export class NavigationService {
     if (chat) {
       this._chatViewObject = chat;
       this._chatViewPath = chat.chatMessagesPath;
+      this.userService.isUserMemberOfCurrentChannel = true;
     } else {
       const chatID = await this.channelService.addChatWithUserOnFirestore(user.id);
       if (chatID) {
@@ -142,6 +145,7 @@ export class NavigationService {
           if (chat) {
             this._chatViewObject = chat;
             this._chatViewPath = chat.chatMessagesPath;
+            this.userService.isUserMemberOfCurrentChannel = true;
             setTimeout(() => chatListChangeSubscription.unsubscribe(), 100);
           }
         });

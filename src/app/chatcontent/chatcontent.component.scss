@@ -4,7 +4,6 @@
 $wsm-width: clamp(18rem, 4.444vw + 14.667rem, 20rem);
 $thread-width: clamp(26rem, 13.333vw + 16rem, 32rem);
 $transition-grid: all 0.25s ease-out;
-
 $popover-padding: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
 $popover-fs: clamp(1.25rem, 4.138vw + 0.148rem, 2rem);
 
@@ -97,6 +96,7 @@ section.chatcontent.two-broad-columns {
     padding-right: 0;
     --message-padding-left: 2.25rem;
     --textarea-padding-left: 1.75rem;
+    --header-offset: 1.25rem;
   }
 
   &.no-padding-right {
@@ -156,6 +156,7 @@ section.chatcontent.two-narrow-columns {
     padding-right: 0;
     --message-padding-left: 2.25rem;
     --textarea-padding-left: 2rem;
+    --header-offset: 1.25rem;
   }
 
   &.no-padding-left {
@@ -248,14 +249,12 @@ section.chatcontent.one-broad-column {
 
 .chatview {
   grid-area: chatView;
-  overflow-y: scroll;
   overflow-x: hidden;
   opacity: 1;
 }
 
 .threadview {
   grid-area: threadView;
-  overflow-y: scroll;
   overflow-x: hidden;
   opacity: 1;
 }

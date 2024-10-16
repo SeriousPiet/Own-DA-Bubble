@@ -155,6 +155,10 @@ export class MessageTextareaComponent {
    */
   async addNewMessage() {
     if (this.ifMessageUploading || !this.allowSendMessage) return;
+    if (!this.userservice.isUserMemberOfCurrentChannel) {
+      this.showErrorWithDelay('Nur Channelmitglieder dürfen Nachrichten senden.');
+      return;
+    }
     if (await this.userservice.ifCurrentUserVerified()) {
       const newHTMLMessage = this.messageeditor.getMessageAsHTML();
       this.errorInfo = '';
@@ -205,7 +209,6 @@ export class MessageTextareaComponent {
    * @param event - The event object from the file input change event.
    */
   changeAttachmentFile(event: any) {
-    console.log(event);
     event.preventDefault();
     this.loadAttachments(event.target);
   }
