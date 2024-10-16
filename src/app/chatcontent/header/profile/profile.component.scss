@@ -61,7 +61,6 @@ $username-fs: clamp(1.5rem, 2.062vw + 0.351rem, 2rem);
 #profile-popover {
   display: none;
   top: 7rem;
-  right: calc(1.25rem + max(0px, (100vw - 1920px) / 2));
   width: fit-content;
   height: fit-content;
   min-width: 15.5rem;
