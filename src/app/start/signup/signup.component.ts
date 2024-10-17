@@ -9,6 +9,7 @@ import { addDoc, collection, doc, Firestore, serverTimestamp, updateDoc } from '
 import { ChannelService } from '../../utils/services/channel.service';
 import { MessageService } from '../../utils/services/message.service';
 import { dabubbleBotId, newUserMessages } from '../../utils/firebase/utils';
+import { NavigationService } from '../../utils/services/navigation.service';
 
 @Component({
   selector: 'app-signup',
@@ -36,6 +37,7 @@ export class SignupComponent {
   private channelService = inject(ChannelService);
   private messageService = inject(MessageService);
   private router: Router = inject(Router);
+  private navigationService = inject(NavigationService);
 
   public errorEmailExists = '';
   public loggingIn = false;
@@ -111,7 +113,7 @@ export class SignupComponent {
    * and then uses the router to navigate to the '/policy' route.
    */
   goToPolicy() {
-    this.saveFormDataToSessionStorage();
+    this.navigationService.setPreviousUrl('/signup');
     this.router.navigate(['/policy']);
   }
 

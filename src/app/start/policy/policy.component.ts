@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Location } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { NavigationService } from '../../utils/services/navigation.service';
 
 @Component({
   selector: 'app-policy',
@@ -10,10 +10,16 @@ import { Location } from '@angular/common';
   styleUrl: './policy.component.scss',
 })
 export class PolicyComponent implements OnInit {
-  constructor(private location: Location, private route: ActivatedRoute) {}
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private navigationService: NavigationService
+  ) {}
 
   goBack() {
-    this.location.back();
+    const previousUrl = this.navigationService.getPreviousUrl();
+    this.router.navigate([previousUrl]);
   }
 
   ngOnInit() {
@@ -26,4 +32,5 @@ export class PolicyComponent implements OnInit {
       }
     });
   }
+
 }

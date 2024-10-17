@@ -30,6 +30,17 @@ export class NavigationService {
   private userService: UsersService = inject(UsersService);
   private channelService: ChannelService = inject(ChannelService);
 
+  private previousUrl: string = '/';
+
+
+  setPreviousUrl(url: string) {
+    this.previousUrl = url;
+  }
+
+  getPreviousUrl(): string {
+    return this.previousUrl;
+  }
+
 
   /**
    * Sets the profile target by toggling the visibility of profile details.
