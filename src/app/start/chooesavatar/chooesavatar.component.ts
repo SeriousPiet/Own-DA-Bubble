@@ -21,8 +21,8 @@ export class ChooesavatarComponent {
 
   public userservice = inject(UsersService);
   private storage = getStorage();
-  private defaultAvatarPath: string = '../../../assets/icons/start/profile-big.svg';
-  private avatarPath: string = '../../../assets/icons/start/choose-avatar/';
+  private defaultAvatarPath: string = './assets/icons/start/profile-big.svg';
+  private avatarPath: string = './assets/icons/start/choose-avatar/';
 
   public selectedAvatarPicture: any;
   private selectedAvatarNumber: number = 0;
