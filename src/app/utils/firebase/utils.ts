@@ -20,7 +20,7 @@ const userHint1 = `<h2>Wichtiger Hinweis:</h2><p><br></p><p>Bitte verifiziere De
 const guestHint1 = `<h3>Als Gast darfst Du:</h3><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Nachrichten schreiben</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Deine Nachrichten editieren</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Mit Emojis auf Nachrichten reagieren</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Channels anlegen</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Deinen Avatar im Profileditor auswählen</li></ol><p><br></p><p>Um <em>eigene</em> Profilfotos hochzuladen musst Du Dich mit Name, E-Mail und Passwort registrieren.</p><p><br></p><p>Danke für Dein Verständnis. 🙂</p>`;
 const guestHint2 = `<h2>Ein letzter Hinweis noch:</h2><p><br></p><p>Bitte nutze die <strong>Logout</strong> Möglichkeit rechts oben im <em>Profil-Menü</em>. ☝️</p><p>Damit stellst Du sicher, das Dein gesamter Content den Du erzeugt hast, wieder gelöscht wird.</p><p><br></p><p>Vielen Dank. 👍</p><p><br></p><p>Dein DABubble Team. 🙂</p>`;
 
-export const dabubbleBotId = 'L1vx1LslWBb7nQUOLMqc';
+export const dabubbleBotId = '7pFP3ncwSUWT5IPrfgfB';
 /**
  * An array containing messages for new guests.
  *
