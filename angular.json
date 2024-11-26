@@ -32,7 +32,8 @@
               "node_modules/@ctrl/ngx-emoji-mart/picker.css",
               "src/styles.scss"
             ],
-            "scripts": ["node_modules/quill/dist/quill.js"]
+            "scripts": ["node_modules/quill/dist/quill.js"],
+            "allowedCommonJsDependencies": ["quill-delta"]
           },
           "configurations": {
             "production": {
